@@ -1,0 +1,740 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Flippermizer Table Repository</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg0:#020814;
+  --bg1:#071a2d;
+  --line:#00d9ff;
+  --line2:#22ff88;
+  --txt:#d9f8ff;
+  --muted:#8ec6d8;
+  --warn:#ffd36b;
+  --bad:#ff6d7e;
+  --book:#07172a;
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; min-height:100%; background: radial-gradient(1200px 760px at 50% 8%, #0b2843 0%, var(--bg0) 48%), linear-gradient(160deg, var(--bg1), var(--bg0)); color:var(--txt); font-family:"Press Start 2P", monospace; }
+body{ padding:10px; min-height:100vh; display:flex; justify-content:center; align-items:flex-start; }
+.repoShell{
+  width:min(calc(100vw - 12px), 2040px);
+  height:calc(100vh - 20px);
+  min-height:980px;
+  margin:0 auto;
+  border:2px solid rgba(0,217,255,.58);
+  border-radius:22px;
+  background:linear-gradient(170deg, rgba(5,24,42,.92), rgba(2,10,20,.93));
+  box-shadow:0 22px 70px rgba(0,0,0,.58), inset 0 0 0 1px rgba(255,255,255,.06);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.repoHd{ padding:14px 20px 10px; border-bottom:1px solid rgba(0,217,255,.34); background:linear-gradient(90deg, rgba(0,217,255,.10), rgba(0,0,0,0) 46%); }
+.repoTitle{ font-size:34px; letter-spacing:1.6px; line-height:1.18; text-shadow:0 0 14px rgba(0,217,255,.35); }
+.repoSub{ margin-top:12px; font-size:19px; color:var(--muted); line-height:1.75; max-width:1320px; }
+.repoMain{ display:grid; grid-template-columns: 300px minmax(0,1fr); gap:0; min-height:0; flex:1 1 auto; overflow:hidden; }
+.indexCol{ border-right:1px solid rgba(0,217,255,.24); background:linear-gradient(180deg, rgba(0,217,255,.06), rgba(0,0,0,.12)); display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.indexHd{ padding:18px 16px; font-size:18px; color:#80eaff; border-bottom:1px solid rgba(0,217,255,.2); line-height:1.4; }
+.indexList{ flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden; padding:12px; display:flex; flex-direction:column; gap:10px; }
+.indexGroupHd{
+  margin-top:10px;
+  padding:10px 4px 8px;
+  font-size:13px;
+  color:#7dd8ff;
+  letter-spacing:.55px;
+  border-bottom:1px dashed rgba(0,217,255,.26);
+  line-height:1.5;
+}
+.indexBtn{ width:100%; text-align:left; border:1px solid rgba(0,217,255,.26); border-radius:14px; background:rgba(2,14,28,.74); color:var(--txt); padding:14px 14px; font-size:14px; line-height:1.65; cursor:pointer; }
+.indexBtn:hover{ filter:brightness(1.08); }
+.indexBtn.active{ border-color:rgba(34,255,136,.82); box-shadow:0 0 16px rgba(34,255,136,.2), inset 0 0 0 1px rgba(34,255,136,.3); }
+.indexBtn.fame{
+  border-color: rgba(255,214,112,.35);
+  background: linear-gradient(180deg, rgba(46,34,10,.52), rgba(19,14,4,.56));
+}
+.indexBtn.fame.active{
+  border-color: rgba(255,214,112,.82);
+  box-shadow:0 0 16px rgba(255,214,112,.2), inset 0 0 0 1px rgba(255,214,112,.38);
+}
+.bookCol{ position:relative; padding:12px 18px 14px; display:flex; flex-direction:column; gap:10px; overflow:hidden; }
+.bookNav{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:-2px; }
+.navBtn{ border:1px solid rgba(0,217,255,.42); border-radius:12px; padding:14px 18px; background:linear-gradient(180deg, rgba(0,146,255,.24), rgba(0,74,132,.24)); color:var(--txt); font-size:14px; line-height:1.3; cursor:pointer; }
+.navBtn:hover{ filter:brightness(1.08); }
+.pageMeter{ font-size:18px; color:#9ed9ea; text-align:center; flex:1; line-height:1.4; }
+.bookFrame{ position:relative; flex:1 1 auto; min-height:0; perspective:1400px; }
+.bookPage{ position:absolute; inset:0; border:2px solid rgba(0,217,255,.46); border-radius:18px; overflow:hidden; background:linear-gradient(165deg, rgba(4,18,35,.96), rgba(1,9,18,.96)); box-shadow:0 16px 44px rgba(0,0,0,.52), inset 0 0 0 1px rgba(255,255,255,.07); display:grid; grid-template-columns: minmax(330px, 34%) minmax(0, 66%); transform-origin:left center; }
+.bookPage.flippingOut{ animation: bookFlipOut 340ms ease-in forwards; }
+.bookPage.flippingIn{ animation: bookFlipIn 360ms ease-out both; }
+@keyframes bookFlipOut{ from{ transform: rotateY(0deg) scale(1); opacity:1; } to{ transform: rotateY(-72deg) scale(.95); opacity:.25; } }
+@keyframes bookFlipIn{ from{ transform: rotateY(72deg) scale(.95); opacity:.2; } to{ transform: rotateY(0deg) scale(1); opacity:1; } }
+.pageLeft{ position:relative; border-right:1px solid rgba(0,217,255,.24); background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.42)); }
+.pageBanner{ position:absolute; inset:0; background:#061a2a center/cover no-repeat; filter:brightness(.62) saturate(.92); }
+.pageBanner::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,7,16,.22), rgba(0,8,16,.72)); }
+.pageStamp{ position:absolute; inset:auto 18px 18px 18px; z-index:2; border:1px solid rgba(0,217,255,.48); border-radius:14px; background:rgba(0,0,0,.54); padding:18px; }
+.pageStamp .tableName{ font-size:27px; line-height:1.34; text-shadow:0 0 12px rgba(0,217,255,.24); }
+.pageStamp .code{ margin-top:12px; color:#7eeeff; font-size:14px; line-height:1.45; }
+.pageStamp .worlds{ margin-top:12px; color:#9ed5e4; font-size:13px; line-height:1.8; }
+.pageRight{
+  padding:18px;
+  display:grid;
+  grid-template-columns:minmax(0, .78fr) minmax(0, 1.22fr);
+  grid-template-rows:auto auto minmax(260px, 1fr);
+  gap:16px;
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+}
+.statHd{ grid-column:1 / -1; font-size:24px; color:#9ef0ff; line-height:1.2; }
+.statGrid{ grid-column:1 / -1; display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:12px; }
+.statCard{ border:1px solid rgba(0,217,255,.24); border-radius:14px; background:rgba(0,0,0,.26); padding:14px; min-height:112px; }
+.statCard .k{ font-size:13px; color:#93cade; line-height:1.7; }
+.statCard .v{ margin-top:10px; font-size:24px; color:#e9feff; text-shadow:0 0 8px rgba(0,217,255,.22); line-height:1.3; }
+.statCard.warn .v{ color:#ffe3a4; }
+.statCard.bad .v{ color:#ffb4bf; }
+.lastRun{ grid-column:1; margin-top:0; border:1px solid rgba(34,255,136,.26); border-radius:14px; background:linear-gradient(180deg, rgba(34,255,136,.11), rgba(0,0,0,.1)); padding:16px; min-height:0; overflow:auto; }
+.lastRun .h{ font-size:14px; color:#afffd8; line-height:1.35; }
+.lastRun .txt{ margin-top:12px; font-size:13px; color:#cbf7e2; line-height:1.95; min-height:0; }
+.achWrap{ grid-column:2; margin-top:0; border:1px solid rgba(255,214,112,.34); border-radius:14px; background:linear-gradient(180deg, rgba(255,214,112,.10), rgba(0,0,0,.16)); padding:16px; min-height:0; display:flex; flex-direction:column; }
+.achWrap .h{ font-size:16px; color:#ffe8b0; line-height:1.3; }
+.achWrap .sum{ margin-top:12px; font-size:13px; color:#fff4d5; line-height:1.85; }
+.achTools{
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.achEditBtn{
+  border:1px solid rgba(255,214,112,.46);
+  border-radius:12px;
+  padding:12px 14px;
+  background:linear-gradient(180deg, rgba(255,214,112,.22), rgba(55,34,6,.34));
+  color:#fff4d5;
+  font-family:"Press Start 2P", monospace;
+  font-size:12px;
+  line-height:1.35;
+  cursor:pointer;
+}
+.achEditBtn:hover{ filter:brightness(1.08); }
+.achEditBtn.active{
+  border-color:rgba(34,255,136,.7);
+  color:#cffff0;
+  background:linear-gradient(180deg, rgba(34,255,136,.24), rgba(6,49,31,.42));
+}
+.achEditHint{
+  font-size:12px;
+  color:#f7e6bd;
+  line-height:1.85;
+}
+.achCols{ margin-top:14px; display:grid; grid-template-columns: minmax(0, 1fr); gap:16px; min-height:0; flex:1 1 auto; }
+.achCol{ border:1px solid rgba(255,214,112,.24); border-radius:12px; padding:12px; background:rgba(0,0,0,.22); min-height:0; display:flex; flex-direction:column; }
+.achCol .t{ font-size:14px; color:#ffefc8; margin-bottom:10px; line-height:1.35; }
+.achList{ display:flex; flex-direction:column; gap:12px; min-height:0; flex:1 1 auto; overflow:auto; }
+.achItem{ font-size:12px; line-height:1.85; color:#aab9bf; border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:10px 12px; background:rgba(0,0,0,.18); }
+.achItem.unlocked{ color:#fff8e4; border-color:rgba(255,214,112,.56); background:linear-gradient(180deg, rgba(255,214,112,.22), rgba(0,0,0,.18)); }
+.achItem .n{ display:block; }
+.achItem .d{ display:block; margin-top:8px; color:inherit; opacity:.82; }
+.achItem .editRow{ margin-top:8px; display:flex; justify-content:flex-end; }
+.achItem .miniEdit{
+  border:1px solid rgba(255,214,112,.44);
+  border-radius:9px;
+  padding:8px 10px;
+  background:rgba(22,14,4,.62);
+  color:#ffe6aa;
+  font-family:"Press Start 2P", monospace;
+  font-size:10px;
+  line-height:1.3;
+  cursor:pointer;
+}
+.achItem .miniEdit:hover{ filter:brightness(1.08); }
+.achItem a{
+  color:#9ce9ff;
+  text-decoration:none;
+  border-bottom:1px dotted rgba(156,233,255,.6);
+}
+.achItem a:hover{
+  color:#cbfff4;
+  border-bottom-color:rgba(203,255,244,.72);
+}
+.repoFt{ display:flex; justify-content:space-between; align-items:center; padding:8px 16px 10px; border-top:1px solid rgba(0,217,255,.22); font-size:13px; color:#8abfd0; line-height:1.45; }
+.repoLink{ color:#8ef6ff; text-decoration:none; border-bottom:1px dotted rgba(142,246,255,.55); }
+@media (max-width: 1320px){
+  .repoShell{ width:min(calc(100vw - 12px), 1848px); }
+  .repoMain{ grid-template-columns: 270px minmax(0,1fr); }
+  .bookPage{ grid-template-columns: minmax(280px, 36%) minmax(0, 64%); }
+  .pageRight{ grid-template-columns:1fr; grid-template-rows:auto auto auto minmax(0, 1fr); overflow:auto; }
+  .statGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lastRun{ grid-column:1; min-height:220px; }
+  .achWrap{ grid-column:1; min-height:420px; }
+}
+@media (max-width: 980px){
+  .repoMain{ grid-template-columns:1fr; }
+  body{ padding:6px; }
+  .repoShell{ width:calc(100vw - 12px); height:calc(100vh - 12px); min-height:0; }
+  .indexCol{ border-right:none; border-bottom:1px solid rgba(0,217,255,.24); max-height:260px; }
+  .bookPage{ grid-template-columns:1fr; }
+  .pageLeft{ min-height:280px; border-right:none; border-bottom:1px solid rgba(0,217,255,.24); }
+  .pageRight{ grid-template-columns:1fr; grid-template-rows:auto auto auto auto; overflow:auto; }
+  .statGrid{ grid-template-columns:1fr; }
+  .achCols{ grid-template-columns:1fr; }
+}
+@media (max-width: 640px){
+  .repoHd{ padding:12px 14px 10px; }
+  .repoTitle{ font-size:19px; line-height:1.35; }
+  .repoSub{ font-size:11px; }
+  .bookCol{ padding:10px; }
+  .navBtn{ padding:10px 12px; font-size:10px; }
+  .pageMeter{ font-size:11px; }
+  .indexHd{ font-size:11px; }
+  .indexBtn{ font-size:10px; }
+  .pageStamp .tableName{ font-size:16px; }
+  .pageStamp .code{ font-size:10px; }
+  .pageStamp .worlds{ font-size:9px; }
+  .statHd{ font-size:14px; }
+  .statCard .k,
+  .lastRun .h,
+  .achWrap .h,
+  .achCol .t{ font-size:10px; }
+  .statCard .v{ font-size:16px; }
+  .lastRun .txt,
+  .achWrap .sum,
+  .achEditHint,
+  .achItem,
+  .repoFt{ font-size:8px; }
+  .statGrid{ grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+  <div class="repoShell">
+    <div class="repoHd">
+      <div class="repoTitle">FLIPPERMIZER TABLE REPOSITORY // BESTIARY</div>
+      <div class="repoSub">Flip through every table in the repository. Stats are read from persistent overlay storage and update as you play randomizers.</div>
+    </div>
+    <div class="repoMain">
+      <aside class="indexCol">
+        <div class="indexHd">REPOSITORY INDEX</div>
+        <div class="indexList" id="indexList"></div>
+      </aside>
+      <section class="bookCol">
+        <div class="bookNav">
+          <button class="navBtn" id="prevBtn" type="button">PREV PAGE</button>
+          <div class="pageMeter" id="pageMeter">TABLE 1 / 25</div>
+          <button class="navBtn" id="nextBtn" type="button">NEXT PAGE</button>
+        </div>
+        <div class="bookFrame" id="bookFrame">
+          <article class="bookPage" id="bookPage">
+            <div class="pageLeft">
+              <div class="pageBanner" id="pageBanner"></div>
+              <div class="pageStamp">
+                <div class="tableName" id="stampName">Table Name</div>
+                <div class="code" id="stampCode">CODE</div>
+                <div class="worlds" id="stampWorlds">World assignment unavailable.</div>
+              </div>
+            </div>
+            <div class="pageRight">
+              <div class="statHd" id="statHd">LIFETIME RANDOMIZER RECORD</div>
+              <div class="statGrid">
+                <div class="statCard"><div class="k">How Many Times Viewed in Randomizer</div><div class="v" id="statViewed">0</div></div>
+                <div class="statCard"><div class="k">How Many Checks Cleared (across all)</div><div class="v" id="statCleared">0</div></div>
+                <div class="statCard warn"><div class="k">How Many Checks Left Behind (across all)</div><div class="v" id="statLeft">0</div></div>
+                <div class="statCard"><div class="k">Time Spent on Table</div><div class="v" id="statTime">0m 00s</div></div>
+                <div class="statCard"><div class="k">How Many Balls Earned</div><div class="v" id="statBalls">0</div></div>
+                <div class="statCard bad"><div class="k">How Many Times This Table Was a Boss Table</div><div class="v" id="statBoss">0</div></div>
+              </div>
+              <div class="lastRun">
+                <div class="h" id="lastRunHd">LAST RUN SNAPSHOT</div>
+                <div class="txt" id="lastRunTxt">No run record yet.</div>
+              </div>
+              <div class="achWrap">
+                <div class="h" id="achHd">ACHIEVEMENTS</div>
+                <div class="sum" id="achSummary">No achievements tracked yet.</div>
+                <div class="achTools">
+                  <button class="achEditBtn" id="achEditToggleBtn" type="button">EDIT DESCRIPTIONS; OFF</button>
+                  <div class="achEditHint" id="achEditHint">Toggle edit mode to customize achievement descriptions in the shared overlay storage.</div>
+                </div>
+                <div class="achCols">
+                  <div class="achCol">
+                    <div class="t" id="achTableTitle">TABLE TROPHIES</div>
+                    <div class="achList" id="achTableList"></div>
+                  </div>
+                  <div class="achCol">
+                    <div class="t" id="achRandomizerTitle">RANDOMIZER TROPHIES</div>
+                    <div class="achList" id="achRandomizerList"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+    <div class="repoFt">
+      <span>Arrow keys; navigate pages</span>
+      <a class="repoLink" href="./flippermizer_overlay_tower_v3.html">Back to Overlay</a>
+    </div>
+  </div>
+
+<script src="./flippermizer_table_repository.js"></script>
+<script>
+(function(){
+  "use strict";
+  const LS_OVERLAY = "flpr_vertical_worlds_overview_v2";
+  const LS_STATS = "flpr_table_stats_v1";
+  const LS_ACH = "flpr_achievements_v1";
+
+  const indexList = document.getElementById("indexList");
+  const pageMeter = document.getElementById("pageMeter");
+  const bookPage = document.getElementById("bookPage");
+  const pageBanner = document.getElementById("pageBanner");
+  const stampName = document.getElementById("stampName");
+  const stampCode = document.getElementById("stampCode");
+  const stampWorlds = document.getElementById("stampWorlds");
+  const statHd = document.getElementById("statHd");
+  const statViewed = document.getElementById("statViewed");
+  const statCleared = document.getElementById("statCleared");
+  const statLeft = document.getElementById("statLeft");
+  const statTime = document.getElementById("statTime");
+  const statBalls = document.getElementById("statBalls");
+  const statBoss = document.getElementById("statBoss");
+  const lastRunHd = document.getElementById("lastRunHd");
+  const lastRunTxt = document.getElementById("lastRunTxt");
+  const achHd = document.getElementById("achHd");
+  const achSummary = document.getElementById("achSummary");
+  const achTableTitle = document.getElementById("achTableTitle");
+  const achTableList = document.getElementById("achTableList");
+  const achRandomizerTitle = document.getElementById("achRandomizerTitle");
+  const achRandomizerList = document.getElementById("achRandomizerList");
+  const achEditToggleBtn = document.getElementById("achEditToggleBtn");
+  const achEditHint = document.getElementById("achEditHint");
+  let achEditMode = false;
+
+  function readJson(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      if(!raw) return fallback;
+      const parsed = JSON.parse(raw);
+      return parsed || fallback;
+    }catch(_){ return fallback; }
+  }
+  function fmtDur(ms){
+    const n = Math.max(0, Math.round(Number(ms) || 0));
+    const sec = Math.floor(n / 1000);
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    if(h > 0) return `${h}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
+    return `${m}m ${String(s).padStart(2, "0")}s`;
+  }
+  function esc(v){
+    return String(v || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+  function getAchStore(){
+    return readJson(LS_ACH, { unlocked:{}, catalog:{ tables:{}, randomizer:[] }, descOverrides:{} });
+  }
+  function saveAchStore(store){
+    try{
+      const next = (store && typeof store === "object") ? store : {};
+      localStorage.setItem(LS_ACH, JSON.stringify(next));
+    }catch(_){ }
+  }
+  function achOverrideFor(store, id){
+    const sid = String(id || "").trim();
+    if(!sid) return "";
+    return String(store?.descOverrides?.[sid] || "").trim();
+  }
+  function achDescFor(store, def){
+    const id = String(def?.id || "").trim();
+    const over = achOverrideFor(store, id);
+    return over || String(def?.desc || "");
+  }
+  function setAchDescOverride(id, value){
+    const sid = String(id || "").trim();
+    if(!sid) return false;
+    const store = getAchStore();
+    if(!store.descOverrides || typeof store.descOverrides !== "object") store.descOverrides = {};
+    const next = String(value || "").trim();
+    if(next) store.descOverrides[sid] = next;
+    else delete store.descOverrides[sid];
+    saveAchStore(store);
+    return true;
+  }
+
+  const repo = window.FLPR_TABLE_REPO;
+  const overlayState = readJson(LS_OVERLAY, {});
+  const statsStore = readJson(LS_STATS, { tables:{}, runs:[], lastRun:null });
+  const tables = (repo && typeof repo.getAllTables === "function" ? (repo.getAllTables() || []) : [])
+    .filter(t => String(t && t.code || "") && String(t.code) !== "BOSS_TABLE");
+  const designers = (repo && typeof repo.getAllDesigners === "function" ? (repo.getAllDesigners() || []) : []);
+
+  function canonicalCode(name){
+    if(repo && typeof repo.getCanonicalTableCode === "function"){
+      return String(repo.getCanonicalTableCode(name) || "").trim();
+    }
+    return "";
+  }
+  function canonicalName(name){
+    if(repo && typeof repo.getCanonicalTableName === "function"){
+      return String(repo.getCanonicalTableName(name) || name || "").trim();
+    }
+    return String(name || "").trim();
+  }
+  function resolveBannerByCode(code, name){
+    try{
+      const byCode = overlayState && overlayState.tableBannersByCode;
+      if(byCode && typeof byCode[code] === "string" && byCode[code]) return byCode[code];
+      const worlds = overlayState && overlayState.worlds;
+      const slots = overlayState && overlayState.tableBanners;
+      if(worlds && slots){
+        for(const [wk, w] of Object.entries(worlds)){
+          const arr = Array.isArray(w && w.tables) ? w.tables : [];
+          for(let i = 0; i < arr.length; i++){
+            const nm = canonicalName(arr[i]);
+            if(canonicalCode(nm) === code || canonicalName(nm) === canonicalName(name)){
+              const sk = `${wk}|${i}`;
+              if(typeof slots[sk] === "string" && slots[sk]) return slots[sk];
+            }
+          }
+        }
+      }
+    }catch(_){ }
+    return "";
+  }
+  function worldsForCode(code, name){
+    const out = [];
+    try{
+      const worlds = overlayState && overlayState.worlds;
+      if(!worlds) return out;
+      for(const [wk, w] of Object.entries(worlds)){
+        const label = String(w && w.label || wk).replace(/;/g, " - ");
+        const arr = Array.isArray(w && w.tables) ? w.tables : [];
+        if(arr.some(t => canonicalCode(t) === code || canonicalName(t) === canonicalName(name))){
+          out.push(label);
+        }
+      }
+    }catch(_){ }
+    return out;
+  }
+  function tableStatSnapshot(code){
+    const stats = (statsStore.tables && statsStore.tables[code]) ? statsStore.tables[code] : {};
+    return {
+      viewed: Number(stats.viewClicks || 0),
+      cleared: Number(stats.checksCleared || 0),
+      left: Number(stats.checksLeftBehind || 0),
+      timeMs: Number(stats.timeMs || 0),
+      balls: Number(stats.ballsEarned || 0),
+      boss: Number(stats.bossCount || 0)
+    };
+  }
+  function tableLastRunSnapshot(code){
+    return (statsStore.lastRun && statsStore.lastRun.tables && statsStore.lastRun.tables[code]) ? statsStore.lastRun.tables[code] : null;
+  }
+  function aggregateStats(codes){
+    const out = { viewed:0, cleared:0, left:0, timeMs:0, balls:0, boss:0 };
+    (codes || []).forEach((code)=>{
+      const s = tableStatSnapshot(code);
+      out.viewed += Number(s.viewed || 0);
+      out.cleared += Number(s.cleared || 0);
+      out.left += Number(s.left || 0);
+      out.timeMs += Number(s.timeMs || 0);
+      out.balls += Number(s.balls || 0);
+      out.boss += Number(s.boss || 0);
+    });
+    return out;
+  }
+
+  const tableEntries = tables.map((t)=>{
+    const code = String(t.code || "").trim();
+    const name = canonicalName(t.name || code);
+    return {
+      kind: "table",
+      code,
+      name,
+      banner: resolveBannerByCode(code, name),
+      worlds: worldsForCode(code, name),
+      stats: tableStatSnapshot(code),
+      lastRun: tableLastRunSnapshot(code)
+    };
+  });
+
+  const tableByCode = Object.create(null);
+  tableEntries.forEach((e)=>{ tableByCode[e.code] = e; });
+
+  const fameEntries = designers.map((d)=>{
+    const key = String(d.key || "").trim();
+    const related = (repo && typeof repo.getTablesForDesigner === "function")
+      ? (repo.getTablesForDesigner(key) || [])
+      : [];
+    const tableCodes = related.map((r)=>String(r && r.code || "").trim()).filter(Boolean);
+    const stats = aggregateStats(tableCodes);
+    const worlds = [];
+    tableCodes.forEach((code)=>{
+      const t = tableByCode[code];
+      if(!t || !Array.isArray(t.worlds)) return;
+      t.worlds.forEach((w)=>{
+        if(w && !worlds.includes(w)) worlds.push(w);
+      });
+    });
+    const headshot = String(d.headshot || "").trim();
+    return {
+      kind: "designer",
+      code: key.toUpperCase(),
+      name: String(d.name || key || "Unknown Designer"),
+      headline: String(d.headline || "").trim(),
+      banner: headshot || "",
+      worlds,
+      stats,
+      lastRun: null,
+      sources: Array.isArray(d.sources) ? d.sources.slice() : [],
+      relatedTables: related.map((r)=>({
+        code: String(r && r.code || "").trim(),
+        name: canonicalName(r && r.name || r && r.code || ""),
+        role: String(r && r.role || "").trim()
+      }))
+    };
+  });
+
+  const entries = tableEntries.concat(fameEntries);
+
+  let idx = 0;
+  let flipping = false;
+
+  function renderIndex(){
+    indexList.innerHTML = "";
+    const tableIdxs = [];
+    const fameIdxs = [];
+    entries.forEach((e, i)=>{
+      if(String(e?.kind || "table") === "designer") fameIdxs.push(i);
+      else tableIdxs.push(i);
+    });
+    const addGroup = (title, idxs, cls)=>{
+      if(!idxs.length) return;
+      const hd = document.createElement("div");
+      hd.className = "indexGroupHd";
+      hd.textContent = title;
+      indexList.appendChild(hd);
+      idxs.forEach((entryIdx, localIdx)=>{
+        const e = entries[entryIdx];
+        const btn = document.createElement("button");
+        btn.className = "indexBtn" + (cls ? (" " + cls) : "") + (entryIdx === idx ? " active" : "");
+        btn.textContent = `${String(localIdx + 1).padStart(2, "0")}  ${e.name}`;
+        btn.addEventListener("click", ()=>{ goTo(entryIdx); });
+        indexList.appendChild(btn);
+      });
+    };
+    addGroup("TABLE BESTIARY", tableIdxs, "");
+    addGroup("HALL OF PINBALL FAME", fameIdxs, "fame");
+  }
+
+  function renderPage(){
+    const e = entries[idx];
+    if(!e) return;
+    const isDesigner = String(e.kind || "table") === "designer";
+    const achStore = getAchStore();
+    const tableCount = tableEntries.length;
+    const fameCount = fameEntries.length;
+    const tablePos = tableEntries.findIndex((x)=>x === e);
+    const famePos = fameEntries.findIndex((x)=>x === e);
+    pageMeter.textContent = isDesigner
+      ? `HALL ${famePos + 1} / ${Math.max(1, fameCount)}`
+      : `TABLE ${tablePos + 1} / ${Math.max(1, tableCount)}`;
+    pageBanner.style.backgroundImage = e.banner ? `url("${String(e.banner).replace(/"/g, "\\\"")}")` : "none";
+    stampName.textContent = e.name;
+    stampCode.textContent = isDesigner ? "HALL OF PINBALL FAME" : e.code;
+    stampWorlds.textContent = isDesigner
+      ? (e.worlds.length ? (`Linked Worlds; ${e.worlds.join(" | ")}`) : "Linked world assignments unavailable.")
+      : (e.worlds.length ? (`Worlds; ${e.worlds.join(" | ")}`) : "World assignment unavailable.");
+    statHd.textContent = isDesigner ? "HALL OF PINBALL FAME RECORD" : "LIFETIME RANDOMIZER RECORD";
+    lastRunHd.textContent = isDesigner ? "DESIGNER SNAPSHOT" : "LAST RUN SNAPSHOT";
+    achHd.textContent = isDesigner ? "FAME ARCHIVE" : "ACHIEVEMENTS";
+    achTableTitle.textContent = isDesigner ? "FEATURED TABLES" : "TABLE TROPHIES";
+    achRandomizerTitle.textContent = isDesigner ? "SOURCE LINKS" : "RANDOMIZER TROPHIES";
+
+    statViewed.textContent = String(e.stats.viewed);
+    statCleared.textContent = String(e.stats.cleared);
+    statLeft.textContent = String(e.stats.left);
+    statTime.textContent = fmtDur(e.stats.timeMs);
+    statBalls.textContent = String(e.stats.balls);
+    statBoss.textContent = String(e.stats.boss);
+
+    if(isDesigner){
+      const rel = Array.isArray(e.relatedTables) ? e.relatedTables : [];
+      const withLastRun = rel.filter((r)=>!!tableLastRunSnapshot(r.code));
+      if(withLastRun.length){
+        const sum = withLastRun.reduce((acc, r)=>{
+          const t = tableLastRunSnapshot(r.code);
+          acc.viewed += Number(t?.viewClicks || 0);
+          acc.cleared += Number(t?.checksCleared || 0);
+          acc.left += Number(t?.checksLeftBehind || 0);
+          acc.timeMs += Number(t?.timeMs || 0);
+          acc.balls += Number(t?.ballsEarned || 0);
+          return acc;
+        }, { viewed:0, cleared:0, left:0, timeMs:0, balls:0 });
+        lastRunTxt.textContent = `${e.headline || "Designer profile loaded."} | Last run totals across credited tables; Viewed ${sum.viewed}x | Cleared ${sum.cleared} | Left ${sum.left} | Time ${fmtDur(sum.timeMs)} | Balls ${sum.balls}`;
+      }else{
+        lastRunTxt.textContent = `${e.headline || "Designer profile loaded."} | No last-run table activity captured yet for this designer.`;
+      }
+      achSummary.textContent = `Designer; ${e.name} | Tables in repository; ${rel.length}`;
+      if(achEditToggleBtn) achEditToggleBtn.style.display = "none";
+      if(achEditHint) achEditHint.style.display = "none";
+      achTableList.innerHTML = rel.length
+        ? rel.map((r)=>{
+            const t = tableByCode[r.code];
+            const role = r.role ? ` | ${esc(r.role)}` : "";
+            return `<div class="achItem unlocked"><span class="n">🕹 ${esc(r.name)}${role}</span><span class="d">Viewed ${Number(t?.stats?.viewed || 0)}x | Cleared ${Number(t?.stats?.cleared || 0)} | Balls ${Number(t?.stats?.balls || 0)}</span></div>`;
+          }).join("")
+        : `<div class="achItem">No linked tables found for this designer in repository data.</div>`;
+      const src = Array.isArray(e.sources) ? e.sources : [];
+      achRandomizerList.innerHTML = src.length
+        ? src.map((u)=>`<div class="achItem"><span class="n"><a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a></span></div>`).join("")
+        : `<div class="achItem">No public source links registered for this designer.</div>`;
+      renderIndex();
+      return;
+    }
+    if(achEditToggleBtn) achEditToggleBtn.style.display = "";
+    if(achEditHint) achEditHint.style.display = "";
+
+    if(e.lastRun){
+      lastRunTxt.textContent = `Viewed ${Number(e.lastRun.viewClicks || 0)}x | Cleared ${Number(e.lastRun.checksCleared || 0)} | Left ${Number(e.lastRun.checksLeftBehind || 0)} | Time ${fmtDur(Number(e.lastRun.timeMs || 0))} | Balls ${Number(e.lastRun.ballsEarned || 0)}${e.lastRun.wasBoss ? " | Boss Table YES" : ""}`;
+    }else{
+      lastRunTxt.textContent = "No last-run table data yet for this table.";
+    }
+    try{
+      const unlocked = (achStore && achStore.unlocked && typeof achStore.unlocked === "object") ? achStore.unlocked : {};
+      const tableDefs = Array.isArray(achStore?.catalog?.tables?.[e.code]) ? achStore.catalog.tables[e.code] : [];
+      const randomDefs = Array.isArray(achStore?.catalog?.randomizer) ? achStore.catalog.randomizer : [];
+      const knownTableIds = new Set(tableDefs.map(d => String(d?.id || "")));
+      const extraUnlockedForTable = Object.values(unlocked || {}).filter((u)=>{
+        const code = String(u?.tableCode || "").trim();
+        const id = String(u?.id || "").trim();
+        return code === e.code && id && !knownTableIds.has(id);
+      });
+      const tableCombined = tableDefs.concat(extraUnlockedForTable);
+      const tableUnlocked = tableCombined.filter(d => !!unlocked[String(d?.id || "")]);
+      const rzUnlocked = randomDefs.filter(d => !!unlocked[String(d?.id || "")]);
+      achSummary.textContent = `Table; ${tableUnlocked.length}/${tableCombined.length || 0} unlocked | Randomizer; ${rzUnlocked.length}/${randomDefs.length || 0} unlocked`;
+      achTableList.innerHTML = tableCombined.length
+        ? tableCombined.map((d)=>{
+            const id = String(d?.id || "");
+            const u = unlocked[id];
+            const cls = u ? "achItem unlocked" : "achItem";
+            const nm = String(d?.title || id || "Achievement");
+            const desc = achDescFor(achStore, d);
+            const editBtn = achEditMode ? `<div class="editRow"><button class="miniEdit" data-ach-edit="${esc(id)}" type="button">EDIT DESC</button></div>` : "";
+            return `<div class="${cls}"><span class="n">${u ? "🏆" : "⬚"} ${esc(nm)}</span>${desc ? `<span class="d">${esc(desc)}</span>` : ""}${editBtn}</div>`;
+          }).join("")
+        : `<div class="achItem">No table trophies cataloged yet. Connect overlay to AP and load checks first.</div>`;
+      achRandomizerList.innerHTML = randomDefs.length
+        ? randomDefs.map((d)=>{
+            const id = String(d?.id || "");
+            const u = unlocked[id];
+            const cls = u ? "achItem unlocked" : "achItem";
+            const nm = String(d?.title || id || "Achievement");
+            const desc = achDescFor(achStore, d);
+            const editBtn = achEditMode ? `<div class="editRow"><button class="miniEdit" data-ach-edit="${esc(id)}" type="button">EDIT DESC</button></div>` : "";
+            return `<div class="${cls}"><span class="n">${u ? "🏆" : "⬚"} ${esc(nm)}</span>${desc ? `<span class="d">${esc(desc)}</span>` : ""}${editBtn}</div>`;
+          }).join("")
+        : `<div class="achItem">No randomizer trophies cataloged yet.</div>`;
+      if(achEditMode){
+        const onEditClick = (btn)=>{
+          const id = String(btn?.getAttribute("data-ach-edit") || "").trim();
+          if(!id) return;
+          const storeNow = getAchStore();
+          const unlockedRec = storeNow?.unlocked?.[id] || {};
+          const tableBuckets = Object.values(storeNow?.catalog?.tables || {});
+          const flatTableDefs = [];
+          tableBuckets.forEach((arr)=>{
+            if(Array.isArray(arr)) arr.forEach((x)=> flatTableDefs.push(x));
+          });
+          const fromCatalog = [...(Array.isArray(storeNow?.catalog?.randomizer) ? storeNow.catalog.randomizer : []), ...flatTableDefs]
+            .find((x)=>String(x?.id || "") === id) || {};
+          const title = String(fromCatalog?.title || unlockedRec?.title || id);
+          const cur = achDescFor(storeNow, { ...fromCatalog, ...unlockedRec, id });
+          const next = prompt(`Edit description for ${title}`, cur);
+          if(next == null) return;
+          setAchDescOverride(id, next);
+          renderPage();
+        };
+        achTableList.querySelectorAll("[data-ach-edit]").forEach((btn)=> btn.addEventListener("click", ()=>onEditClick(btn)));
+        achRandomizerList.querySelectorAll("[data-ach-edit]").forEach((btn)=> btn.addEventListener("click", ()=>onEditClick(btn)));
+      }
+    }catch(_){
+      achSummary.textContent = "Achievements unavailable.";
+      achTableList.innerHTML = `<div class="achItem">Unable to load table trophies.</div>`;
+      achRandomizerList.innerHTML = `<div class="achItem">Unable to load randomizer trophies.</div>`;
+    }
+    renderIndex();
+  }
+
+  function flipTo(nextIdx){
+    if(flipping || nextIdx === idx || nextIdx < 0 || nextIdx >= entries.length) return;
+    flipping = true;
+    bookPage.classList.remove("flippingIn");
+    bookPage.classList.add("flippingOut");
+    setTimeout(()=>{
+      idx = nextIdx;
+      renderPage();
+      bookPage.classList.remove("flippingOut");
+      bookPage.classList.add("flippingIn");
+      setTimeout(()=>{
+        bookPage.classList.remove("flippingIn");
+        flipping = false;
+      }, 360);
+    }, 320);
+  }
+  function goTo(i){ flipTo(i); }
+  function goNext(){
+    if(!entries.length) return;
+    flipTo((idx + 1) % entries.length);
+  }
+  function goPrev(){
+    if(!entries.length) return;
+    flipTo((idx - 1 + entries.length) % entries.length);
+  }
+
+  document.getElementById("nextBtn").addEventListener("click", goNext);
+  document.getElementById("prevBtn").addEventListener("click", goPrev);
+  if(achEditToggleBtn){
+    const syncBtn = ()=>{
+      achEditToggleBtn.classList.toggle("active", !!achEditMode);
+      achEditToggleBtn.textContent = achEditMode ? "EDIT DESCRIPTIONS; ON" : "EDIT DESCRIPTIONS; OFF";
+      if(achEditHint){
+        achEditHint.textContent = achEditMode
+          ? "Click EDIT DESC on any trophy to customize its description. Saved to shared local storage."
+          : "Toggle edit mode to customize achievement descriptions in the shared overlay storage.";
+      }
+    };
+    syncBtn();
+    achEditToggleBtn.addEventListener("click", ()=>{
+      achEditMode = !achEditMode;
+      syncBtn();
+      renderPage();
+    });
+  }
+  document.addEventListener("keydown", (ev)=>{
+    if(ev.key === "ArrowRight") goNext();
+    else if(ev.key === "ArrowLeft") goPrev();
+  });
+
+  if(!entries.length){
+    stampName.textContent = "NO TABLES FOUND";
+    stampCode.textContent = "--";
+    stampWorlds.textContent = "Repository data unavailable.";
+    pageMeter.textContent = "TABLE 0 / 0";
+    return;
+  }
+  renderPage();
+})();
+</script>
+</body>
+</html>
