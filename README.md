@@ -1,6 +1,6 @@
-# Flippermizer Essential Overlay
+# Flippermizer
 
-Sterilized publishable overlay package for the Flippermizer project.
+Publishable essential overlay package for the Flippermizer project.
 
 ## Included
 
@@ -18,7 +18,7 @@ Sterilized publishable overlay package for the Flippermizer project.
 
 ## Notes
 
-- The publish copy removes local absolute file paths.
+- This publish copy removes local absolute file paths.
 - The local FLPR bot bridge is disabled by default in the published overlay copy.
 - JSZip is vendored locally at `vendor/jszip.min.js`.
 
