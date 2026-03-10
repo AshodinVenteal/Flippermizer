@@ -4,7 +4,7 @@ A fully built, runnable and re-runnable Archipelago AP Manual World client built
 
 It was built entirely by me, Ashodin, using CSS, JS, and HTML code over the past month from scratch, learning as I go, and copy-pasting code from other example sources online to retroactively understand the code as I built it.
 
-Streams utilizing Flippermizer can be see at http://twitch.tv/ashodin on Tuesdays every week.
+Streams utilizing Flippermizer can be seen at http://twitch.tv/ashodin on Tuesdays every week.
 
 ## What's Included?
 
