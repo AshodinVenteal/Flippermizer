@@ -12503,6 +12503,29 @@ body.flprShopSparksCat{
 .musicScenarioActs .cFile{
   min-width:110px;
 }
+.musicScenarioModeRow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.musicScenarioModeLabel{
+  font-size:8px;
+  letter-spacing:.65px;
+  color:rgba(190,226,240,.82);
+  min-width:58px;
+}
+.musicScenarioModeInput{
+  min-width:118px;
+  max-width:150px;
+  padding-right:24px;
+}
+.musicScenarioPlayToggle{
+  display:none;
+}
+.musicScenarioPlayToggle.show{
+  display:inline-flex;
+}
 .bossMonsterMount{
   position:relative;
   right:auto;
@@ -13919,7 +13942,8 @@ const defaultState = {
   tableBanners:{}, // key: world|tableIndex
   tableBannersByCode:{}, // key: repository table code
   musicRefs:{}, // scenario -> stored audio ref
-  musicMeta:{} // scenario -> { fileName, sourcePath, uploadedAt, storage }
+  musicMeta:{}, // scenario -> { fileName, sourcePath, uploadedAt, storage }
+  musicModes:{} // scenario -> true(loop) / false(play once)
 };
 
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -14057,6 +14081,7 @@ function loadState(){
     if(!s.tableBannersByCode) s.tableBannersByCode = {};
     if(!s.musicRefs || typeof s.musicRefs !== "object") s.musicRefs = {};
     if(!s.musicMeta || typeof s.musicMeta !== "object") s.musicMeta = {};
+    if(!s.musicModes || typeof s.musicModes !== "object") s.musicModes = {};
     if(!s.designerFlyers || typeof s.designerFlyers !== "object") s.designerFlyers = {};
     if(!Array.isArray(s.worldOrder) || !s.worldOrder.length) s.worldOrder = worldOrder.slice();
     const defaultsWorlds = buildDefaultWorldsFromRepo();
@@ -18024,19 +18049,83 @@ function saveUiPrefs(p){
 }
 
 const MUSIC_SCENARIOS = Object.freeze({
-  bonus_pinball:{ label:"Bonus Pinball", loop:true },
-  boss_battle:{ label:"Boss Battle", loop:true },
-  randomizer_open:{ label:"Randomizer Open", loop:false },
-  randomizer_win:{ label:"Randomizer Win", loop:false },
-  stats_page:{ label:"Stats Page Jingle", loop:true }
+  bonus_pinball:{ label:"Bonus Pinball", defaultLoop:true },
+  boss_battle:{ label:"Boss Battle", defaultLoop:true },
+  randomizer_open:{ label:"Randomizer Open", defaultLoop:false },
+  randomizer_win:{ label:"Randomizer Win", defaultLoop:false },
+  stats_page:{ label:"Stats Page Jingle", defaultLoop:true }
 });
 window.__flprMusic = window.__flprMusic || {
   audio:null,
   current:"",
   currentUrl:"",
   preview:"",
-  lockedUntil:0
+  lockedUntil:0,
+  completedOnceKey:""
 };
+function musicEnsureManager(){
+  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"" });
+  if(!mgr.previewReady || typeof mgr.previewReady !== "object") mgr.previewReady = {};
+  if(!Number.isFinite(Number(mgr.previewTimer))) mgr.previewTimer = 0;
+  if(!Number.isFinite(Number(mgr.previewToken))) mgr.previewToken = 0;
+  return mgr;
+}
+function musicClearPreviewTimer(){
+  const mgr = musicEnsureManager();
+  if(mgr.previewTimer){
+    try{ clearTimeout(mgr.previewTimer); }catch(_){}
+  }
+  mgr.previewTimer = 0;
+}
+function musicSetPreviewReady(name, ready){
+  const previews = musicEnsureManager().previewReady;
+  if(ready) previews[name] = true;
+  else delete previews[name];
+}
+function musicHasPreviewReady(name){
+  return !!musicEnsureManager().previewReady?.[name];
+}
+function musicIsPreviewPlaying(name){
+  const mgr = musicEnsureManager();
+  return String(mgr.preview || "") === name && String(mgr.current || "") === name && !!mgr.audio && !mgr.audio.paused;
+}
+function musicStartPreview(name, opts){
+  opts = opts || {};
+  const mgr = musicEnsureManager();
+  const lockMs = Math.max(0, Number(opts.lockMs) || 0);
+  const autoRelease = opts.autoRelease !== false;
+  const token = Number(mgr.previewToken || 0) + 1;
+  mgr.previewToken = token;
+  musicClearPreviewTimer();
+  if(!musicLockScenario(name, lockMs)) return false;
+  musicSetPreviewReady(name, true);
+  mgr.preview = name;
+  try{ renderMusicScenarioCard(); }catch(_){}
+  if(autoRelease && lockMs > 0){
+    mgr.previewTimer = setTimeout(()=>{
+      const liveMgr = musicEnsureManager();
+      if(Number(liveMgr.previewToken || 0) !== token) return;
+      liveMgr.previewTimer = 0;
+      if(String(liveMgr.preview || "") === name){
+        liveMgr.preview = "";
+        liveMgr.lockedUntil = 0;
+        musicRefreshScenario();
+        try{ renderMusicScenarioCard(); }catch(_){}
+      }
+    }, lockMs + 50);
+  }
+  return true;
+}
+function musicStopPreview(name){
+  const mgr = musicEnsureManager();
+  musicClearPreviewTimer();
+  mgr.previewToken = Number(mgr.previewToken || 0) + 1;
+  mgr.lockedUntil = 0;
+  if(String(mgr.preview || "") === name) mgr.preview = "";
+  if(String(mgr.current || "") === name) musicStop({ clearSrc:false });
+  musicRefreshScenario();
+  try{ renderMusicScenarioCard(); }catch(_){}
+}
 function musicGetRefs(){
   if(!state.musicRefs || typeof state.musicRefs !== "object") state.musicRefs = {};
   return state.musicRefs;
@@ -18045,13 +18134,82 @@ function musicGetMeta(){
   if(!state.musicMeta || typeof state.musicMeta !== "object") state.musicMeta = {};
   return state.musicMeta;
 }
+function musicGetModes(){
+  if(!state.musicModes || typeof state.musicModes !== "object") state.musicModes = {};
+  return state.musicModes;
+}
+function musicGetScenarioLoop(name){
+  const explicit = musicGetModes()[name];
+  if(typeof explicit === "boolean") return explicit;
+  return MUSIC_SCENARIOS[name]?.defaultLoop !== false;
+}
+function musicSetScenarioLoop(name, shouldLoop){
+  if(!MUSIC_SCENARIOS[name]) return;
+  musicGetModes()[name] = !!shouldLoop;
+  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"" });
+  if(mgr.current === name && mgr.audio){
+    try{ mgr.audio.loop = !!shouldLoop; }catch(_){}
+  }
+  saveState();
+  renderMusicScenarioCard();
+  musicRefreshScenario();
+}
+function ensureMusicScenarioControls(){
+  Object.keys(MUSIC_SCENARIOS).forEach((key)=>{
+    const row = document.querySelector(`.musicScenarioRow[data-music-scenario="${key}"]`);
+    if(!row || row.querySelector(`.musicScenarioModeInput[data-music-mode="${key}"]`)) return;
+    const wrap = document.createElement("div");
+    wrap.className = "musicScenarioModeRow";
+    const label = document.createElement("div");
+    label.className = "musicScenarioModeLabel";
+    label.textContent = "PLAY MODE";
+    const select = document.createElement("select");
+    select.className = "cInput musicScenarioModeInput";
+    select.dataset.musicMode = key;
+    const loopOpt = document.createElement("option");
+    loopOpt.value = "loop";
+    loopOpt.textContent = "LOOP";
+    const onceOpt = document.createElement("option");
+    onceOpt.value = "once";
+    onceOpt.textContent = "PLAY ONCE";
+    select.append(loopOpt, onceOpt);
+    wrap.append(label, select);
+    const acts = row.querySelector(".musicScenarioActs");
+    if(acts && !acts.querySelector(`.musicScenarioPlayToggle[data-music-play-toggle="${key}"]`)){
+      const btn = document.createElement("button");
+      btn.className = "cBtn musicScenarioPlayToggle";
+      btn.type = "button";
+      btn.dataset.musicPlayToggle = key;
+      btn.textContent = "PLAY";
+      acts.append(btn);
+    }
+    row.insertBefore(wrap, acts || null);
+  });
+}
 function musicEnsureAudio(){
-  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0 });
+  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"" });
   if(!mgr.audio){
     const a = new Audio();
     a.preload = "auto";
     a.loop = true;
     a.volume = Math.max(0, Math.min(1, Number(sfx?.vol ?? 0.55) * 0.72));
+    a.addEventListener("ended", ()=>{
+      const liveMgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"" });
+      const previewEnded = String(liveMgr.preview || "") && String(liveMgr.preview || "") === String(liveMgr.current || "");
+      if(!a.loop && liveMgr.current && liveMgr.currentUrl){
+        liveMgr.completedOnceKey = `${liveMgr.current}|${liveMgr.currentUrl}`;
+      }
+      liveMgr.preview = "";
+      if(previewEnded){
+        liveMgr.lockedUntil = 0;
+        setTimeout(()=>{
+          try{ musicRefreshScenario(); }catch(_){}
+          try{ renderMusicScenarioCard(); }catch(_){}
+        }, 0);
+        return;
+      }
+      try{ renderMusicScenarioCard(); }catch(_){}
+    });
     mgr.audio = a;
   }
   mgr.audio.volume = Math.max(0, Math.min(1, Number(sfx?.vol ?? 0.55) * 0.72));
@@ -18069,10 +18227,11 @@ function musicStop(opts){
   mgr.current = "";
   mgr.currentUrl = "";
   mgr.preview = "";
+  mgr.completedOnceKey = "";
 }
 function musicPlayScenario(name, opts){
   opts = opts || {};
-  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0 });
+  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"" });
   const refs = musicGetRefs();
   const ref = String(refs[name] || "").trim();
   if(!ref){
@@ -18083,11 +18242,13 @@ function musicPlayScenario(name, opts){
   if(!url) return false;
   if(Date.now() < Number(mgr.lockedUntil || 0) && !opts.force) return false;
   const audio = musicEnsureAudio();
-  const loop = (opts.loop != null) ? !!opts.loop : (MUSIC_SCENARIOS[name]?.loop !== false);
+  const loop = (opts.loop != null) ? !!opts.loop : musicGetScenarioLoop(name);
+  if(!opts.force && !loop && mgr.current === name && mgr.completedOnceKey === `${name}|${url}`) return true;
   if(!opts.force && mgr.current === name && mgr.currentUrl === url && audio && !audio.paused) return true;
   mgr.current = name;
   mgr.currentUrl = url;
   mgr.preview = opts.preview ? name : "";
+  mgr.completedOnceKey = "";
   audio.loop = !!loop;
   if(audio.src !== url) audio.src = url;
   try{ audio.currentTime = 0; }catch(_){}
@@ -18097,7 +18258,7 @@ function musicPlayScenario(name, opts){
   return true;
 }
 function musicLockScenario(name, lockMs){
-  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0 });
+  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"" });
   mgr.lockedUntil = Date.now() + Math.max(0, Number(lockMs) || 0);
   return musicPlayScenario(name, { force:true });
 }
@@ -18113,16 +18274,16 @@ function musicIsBossContextActive(){
 }
 function musicRefreshScenario(){
   try{
-    const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0 });
+    const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"" });
     if(Date.now() < Number(mgr.lockedUntil || 0)) return;
     const intro = document.getElementById("randomizerIntro");
     const endRun = document.getElementById("endRunOverlay");
     const bonusActive = document.body.classList.contains("bonusPinballDim");
     const bossPct = Number(window.__bossRaid?.lastPct ?? 100);
-    if(endRun?.classList.contains("show")) return void musicPlayScenario("stats_page");
-    if(intro?.classList.contains("show")) return void musicPlayScenario("randomizer_open");
-    if(bonusActive) return void musicPlayScenario("bonus_pinball");
-    if(musicIsBossContextActive() || (Number.isFinite(bossPct) && bossPct > 0 && bossPct < 100)) return void musicPlayScenario("boss_battle");
+    if(endRun?.classList.contains("show")) return void musicPlayScenario("stats_page", { forceStopIfMissing:true });
+    if(intro?.classList.contains("show")) return void musicPlayScenario("randomizer_open", { forceStopIfMissing:true });
+    if(bonusActive) return void musicPlayScenario("bonus_pinball", { forceStopIfMissing:true });
+    if(musicIsBossContextActive() || (Number.isFinite(bossPct) && bossPct > 0 && bossPct < 100)) return void musicPlayScenario("boss_battle", { forceStopIfMissing:true });
     musicStop();
   }catch(_){}
 }
@@ -18139,32 +18300,44 @@ function musicSetScenarioRef(name, ref, meta){
     };
   }else if(!refs[name]){
     delete metas[name];
+    musicSetPreviewReady(name, false);
   }
   saveState();
   renderMusicScenarioCard();
   musicRefreshScenario();
 }
 function renderMusicScenarioCard(){
+  ensureMusicScenarioControls();
   Object.keys(MUSIC_SCENARIOS).forEach((key)=>{
     const meta = document.getElementById(`musicMeta_${key}`);
     if(!meta) return;
     const ref = String(musicGetRefs()[key] || "").trim();
     const info = musicGetMeta()[key] || {};
-    const active = String(window.__flprMusic?.current || "") === key;
+    const modeInput = document.querySelector(`.musicScenarioModeInput[data-music-mode="${key}"]`);
+    const playToggle = document.querySelector(`.musicScenarioPlayToggle[data-music-play-toggle="${key}"]`);
+    if(modeInput) modeInput.value = musicGetScenarioLoop(key) ? "loop" : "once";
+    const active = String(window.__flprMusic?.current || "") === key && !!window.__flprMusic?.audio && !window.__flprMusic.audio.paused;
     const preview = String(window.__flprMusic?.preview || "") === key;
     const loaded = !!ref;
+    const previewReady = loaded && musicHasPreviewReady(key);
+    if(playToggle){
+      playToggle.classList.toggle("show", previewReady);
+      playToggle.textContent = musicIsPreviewPlaying(key) ? "STOP" : "PLAY";
+      playToggle.disabled = !loaded;
+    }
+    const modeText = musicGetScenarioLoop(key) ? "LOOP" : "PLAY ONCE";
     const status = loaded
       ? `${preview ? "PREVIEWING" : active ? "LIVE" : "READY"}; ${MUSIC_SCENARIOS[key].label.toUpperCase()} TRACK LOADED.`
       : "No track loaded.";
     if(!loaded){
-      meta.textContent = status;
-      meta.title = "";
+      meta.textContent = `${status} MODE; ${modeText}.`;
+      meta.title = `MODE; ${modeText}`;
       return;
     }
     const fileName = String(info.fileName || "").trim();
     const sourcePath = String(info.sourcePath || "").trim();
     const storage = String(info.storage || "").trim();
-    const pieces = [status];
+    const pieces = [status, `MODE; ${modeText}`];
     if(fileName) pieces.push(`FILE; ${fileName}`);
     if(sourcePath) pieces.push(`SOURCE; ${sourcePath}`);
     else if(storage) pieces.push(`SOURCE; ${storage}`);
@@ -29768,6 +29941,17 @@ clearReceivedFeedHistory();
   if(typeof prefs.sfxVol === "number") sfx.vol = prefs.sfxVol;
   if(se){ se.checked = !!sfx.enabled; se.onchange = ()=>{ sfx.enabled = !!se.checked; saveUiPrefs({...loadUiPrefs(), sfxEnabled: sfx.enabled}); playSfx("click"); }; }
    if(sv){ sv.value = String(sfx.vol ?? 0.55); sv.oninput = ()=>{ sfx.vol = parseFloat(sv.value||"0.55"); saveUiPrefs({...loadUiPrefs(), sfxVol: sfx.vol}); try{ musicEnsureAudio(); }catch(_){ } }; }
+  ensureMusicScenarioControls();
+  document.querySelectorAll(".musicScenarioModeInput").forEach((input)=>{
+    if(input.__flprBound) return;
+    input.__flprBound = true;
+    input.addEventListener("change", ()=>{
+      const scenario = String(input.dataset.musicMode || "").trim();
+      if(!scenario) return;
+      musicSetScenarioLoop(scenario, input.value !== "once");
+      try{ playSfx("click"); }catch(_){}
+    });
+  });
   document.querySelectorAll(".musicScenarioInput").forEach((input)=>{
     if(input.__flprBound) return;
     input.__flprBound = true;
@@ -29803,16 +29987,20 @@ clearReceivedFeedHistory();
       const scenario = String(btn.dataset.musicPreview || "").trim();
       try{
         playSfx("click");
-        musicLockScenario(scenario, 3600);
-        window.__flprMusic.preview = scenario;
-        renderMusicScenarioCard();
-        setTimeout(()=>{
-          if(String(window.__flprMusic?.preview || "") === scenario){
-            window.__flprMusic.preview = "";
-            musicRefreshScenario();
-            renderMusicScenarioCard();
-          }
-        }, 3650);
+        musicStartPreview(scenario, { lockMs:3600, autoRelease:true });
+      }catch(_){}
+    });
+  });
+  document.querySelectorAll("[data-music-play-toggle]").forEach((btn)=>{
+    if(btn.__flprBound) return;
+    btn.__flprBound = true;
+    btn.addEventListener("click", ()=>{
+      const scenario = String(btn.dataset.musicPlayToggle || "").trim();
+      if(!scenario) return;
+      try{
+        playSfx("click");
+        if(musicIsPreviewPlaying(scenario)) musicStopPreview(scenario);
+        else musicStartPreview(scenario, { lockMs:3600000, autoRelease:false });
       }catch(_){}
     });
   });
@@ -29821,6 +30009,10 @@ clearReceivedFeedHistory();
     btn.__flprBound = true;
     btn.addEventListener("click", async ()=>{
       const scenario = String(btn.dataset.musicClear || "").trim();
+      musicSetPreviewReady(scenario, false);
+      if(musicIsPreviewPlaying(scenario) || String(window.__flprMusic?.preview || "") === scenario){
+        musicStopPreview(scenario);
+      }
       const ref = String(musicGetRefs()[scenario] || "").trim();
       if(ref.startsWith("idb:")){
         const key = ref.slice(4);
