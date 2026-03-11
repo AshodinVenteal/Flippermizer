@@ -2327,6 +2327,45 @@ body.bonusPinballDim .capture{
   border-color:rgba(34,255,136,0.9);
   box-shadow:0 0 10px rgba(34,255,136,0.35);
 }
+.dot.eb{
+  background: linear-gradient(180deg, rgba(170,255,186,.98), rgba(46,210,116,.96));
+  border-color: rgba(120,255,180,.96);
+  color: #062112;
+  box-shadow: 0 0 14px rgba(80,255,150,.38);
+}
+.extraBallTableBtn{
+  appearance: none;
+  border: 1px solid rgba(120,255,180,.72);
+  background: linear-gradient(180deg, rgba(18,80,44,.96), rgba(8,42,24,.96));
+  color: rgba(210,255,224,.98);
+  border-radius: 999px;
+  min-width: 34px;
+  height: 22px;
+  padding: 0 9px;
+  font: inherit;
+  font-size: 8px;
+  line-height: 1;
+  letter-spacing: .5px;
+  cursor: pointer;
+  box-shadow: 0 0 14px rgba(60,255,140,.18);
+}
+.extraBallTableBtn:hover,
+.extraBallTableBtn:focus-visible{
+  filter: brightness(1.08) saturate(1.08);
+  outline: none;
+}
+.pentaCard .pentaTitle .extraBallTableBtn{
+  margin-left: auto;
+  margin-right: 34px;
+}
+.nameAlways .extraBallTableBtn{
+  min-width: 30px;
+  height: 20px;
+  padding: 0 8px;
+}
+#viewChecks .tableHead .tableName .extraBallTableBtn{
+  flex: 0 0 auto;
+}
 
 .nameOverlay{ display:none !important; }
 
@@ -2343,7 +2382,10 @@ body.bonusPinballDim .capture{
   line-height:1.35;
   color: rgba(232,250,255,0.92);
   text-align:center;
-  display:block;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
 .tile:not(.revealed) .nameAlways{
   color: rgba(232,250,255,0.72);
@@ -2794,18 +2836,40 @@ body.bonusPinballDim .capture{
   opacity:0.85;
 }
 #viewChecks .tableHead .tableName{font-size:18px; line-height:1.15; color:var(--cyan);}
-#viewChecks .tableHead .tableMeta{
-  position: absolute;
-  right: 6px;
-  top: 0;
-  bottom: 0;
+#viewChecks .tableHead .tableHeadStatus{
+  position: relative;
   z-index: 6;
-  min-width: 16px;
+  margin-left: auto;
+  padding-right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+#viewChecks .tableHead .tableMeta{
+  position: relative;
+  z-index: 1;
+  min-width: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   font-size: 0;
+  line-height: 1;
+}
+#viewChecks .tableHead .checksBallsMini{
+  padding-top: 0;
+  gap: 6px;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+#viewChecks .tableHead .checksBallsMini .dot{
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 6px;
+  font-size: 7px;
   line-height: 1;
 }
 #viewChecks .tableHead .tableMeta .apConnIcon{
@@ -2862,12 +2926,15 @@ body.bonusPinballDim .capture{
   position: relative;
   overflow: hidden;
   min-width: 0;
-  max-width: calc(100% - 28px);
+  flex: 1 1 auto;
+  max-width: none;
   padding-right: 2px;
-  width: fit-content;
+  width: auto;
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 8px;
+  text-align: left;
 }
 #viewChecks .tableHead .tableName .checksCompleteBadge{
   position: relative;
@@ -2901,6 +2968,7 @@ body.bonusPinballDim .capture{
   will-change: transform;
   min-width: 0;
   flex: 0 1 auto;
+  text-align: left;
 }
 #viewChecks .tableHead .tableName.marquee .tableNameText{
   padding-inline: var(--name-forward, 0px);
@@ -4798,6 +4866,12 @@ body.chromaBlue .bossKeyCard::before{
   transition: transform 180ms ease, background 180ms ease;
 }
 .pentaCard .miniBall.active{ background:rgba(255,255,255,.18); }
+.pentaCard .miniBall.eb{
+  background: linear-gradient(180deg, rgba(168,255,188,.96), rgba(34,196,104,.94));
+  color: #052110;
+  border-color: rgba(120,255,180,.96);
+  box-shadow: 0 0 16px rgba(66,255,146,.22), 0 6px 14px rgba(0,0,0,.32);
+}
 .pentaCard .miniBall:active{ transform:scale(.96); }
 
 /* Featured Designer overlay (Tower) */
@@ -6273,6 +6347,87 @@ body.chromaBlue .bossKeyCard::before{
   border-radius: 10px;
   padding: 8px 14px;
 }
+.extraBallDock{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.extraBallDockOverview{
+  width: 100%;
+}
+.extraBallDockChecks{
+  width: calc(100% - 24px);
+  margin: 6px auto 2px;
+}
+.extraBallTokenDock{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(120,255,180,.34);
+  background:
+    radial-gradient(120% 150% at 0% 0%, rgba(46,210,116,.16), rgba(0,0,0,0) 56%),
+    linear-gradient(180deg, rgba(5,20,14,.92), rgba(3,13,10,.90));
+  box-shadow: 0 10px 20px rgba(0,0,0,.26);
+}
+.extraBallTokenDock.armed{
+  border-color: rgba(170,255,190,.62);
+  box-shadow: 0 0 0 1px rgba(170,255,190,.22), 0 12px 24px rgba(0,0,0,.30);
+}
+.extraBallTokenLabel{
+  font-size: 8px;
+  color: rgba(214,255,226,.94);
+}
+.extraBallTokenRow{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.extraBallTokenBtn{
+  appearance: none;
+  border: 1px solid rgba(120,255,180,.72);
+  background: linear-gradient(180deg, rgba(24,96,52,.98), rgba(8,42,24,.98));
+  color: rgba(220,255,230,.98);
+  border-radius: 999px;
+  min-width: 34px;
+  height: 24px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 8px;
+  letter-spacing: .6px;
+  cursor: pointer;
+}
+.extraBallTokenBtn:disabled{
+  cursor: default;
+  opacity: .46;
+  filter: grayscale(.18) saturate(.72);
+  border-color: rgba(170,190,178,.32);
+  background: linear-gradient(180deg, rgba(44,58,50,.92), rgba(20,28,24,.92));
+  color: rgba(220,232,226,.76);
+}
+.extraBallTokenBtn.armed{
+  background: linear-gradient(180deg, rgba(220,255,230,.98), rgba(120,255,180,.98));
+  color: #06311a;
+}
+.extraBallTokenEmpty,
+.extraBallTokenNote{
+  font-size: 8px;
+  color: rgba(214,255,226,.78);
+}
+.extraBallTarget{
+  box-shadow:
+    0 0 0 2px rgba(120,255,180,.34) inset,
+    0 0 26px rgba(60,255,140,.18) !important;
+}
+.extraBallPlacementArmed [data-tablekey].extraBallTarget{
+  cursor: copy !important;
+}
+.extraBallAssigned{
+  --ringGlow: rgba(92,255,168,.24);
+}
 
 
 /* v92: lock Overview layout and show Boss Keys dock at bottom inside Overview */
@@ -7297,7 +7452,7 @@ body.chromaBlue .bossKeyCard::before{
   pointer-events: none;
   opacity: 0.18;
   background-image:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='180' viewBox='0 0 240 180'><g font-family='Segoe UI Emoji,Apple Color Emoji,Noto Color Emoji,sans-serif' font-size='20' style='fill:rgba(170,255,238,.17)'><text x='18' y='34'>âœ…</text><text x='88' y='34'>âœ…</text><text x='158' y='34'>âœ…</text><text x='228' y='34'>âœ…</text><text x='53' y='80'>âœ…</text><text x='123' y='80'>âœ…</text><text x='193' y='80'>âœ…</text><text x='18' y='126'>âœ…</text><text x='88' y='126'>âœ…</text><text x='158' y='126'>âœ…</text><text x='228' y='126'>âœ…</text><text x='53' y='172'>âœ…</text><text x='123' y='172'>âœ…</text><text x='193' y='172'>âœ…</text></g></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='180' viewBox='0 0 240 180'><g font-family='Segoe UI Symbol,Segoe UI Emoji,Apple Color Emoji,Noto Color Emoji,sans-serif' font-size='20' style='fill:rgba(170,255,238,.17)'><text x='18' y='34'>&#10003;</text><text x='88' y='34'>&#10003;</text><text x='158' y='34'>&#10003;</text><text x='228' y='34'>&#10003;</text><text x='53' y='80'>&#10003;</text><text x='123' y='80'>&#10003;</text><text x='193' y='80'>&#10003;</text><text x='18' y='126'>&#10003;</text><text x='88' y='126'>&#10003;</text><text x='158' y='126'>&#10003;</text><text x='228' y='126'>&#10003;</text><text x='53' y='172'>&#10003;</text><text x='123' y='172'>&#10003;</text><text x='193' y='172'>&#10003;</text></g></svg>"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='240' viewBox='0 0 360 240'%3E%3Cg font-family='Press%20Start%202P%2C%20monospace' font-size='26' letter-spacing='4' fill='%2300ffd5' fill-opacity='.12'%3E%3Ctext x='-30' y='120' transform='rotate(-45%20-30%20120)'%3ECHECKS%3C/text%3E%3Ctext x='120' y='120' transform='rotate(-45%20120%20120)'%3ECHECKS%3C/text%3E%3Ctext x='270' y='120' transform='rotate(-45%20270%20120)'%3ECHECKS%3C/text%3E%3Ctext x='45' y='235' transform='rotate(-45%2045%20235)'%3ECHECKS%3C/text%3E%3Ctext x='195' y='235' transform='rotate(-45%20195%20235)'%3ECHECKS%3C/text%3E%3C/g%3E%3C/svg%3E");
   background-size: 240px 180px, 360px 240px;
   background-repeat: repeat, repeat;
@@ -11930,15 +12085,28 @@ body.flprShopSparksCat{
 #viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .tableHead .tableName{
   font-size: 14px !important;
   line-height: 1.08 !important;
-  max-width: calc(100% - 24px) !important;
+  max-width: none !important;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .tableHead .tableHeadStatus{
+  gap: 6px;
+  padding-right: 0;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .tableHead .checksBallsMini{
+  gap: 4px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .tableHead .checksBallsMini .dot{
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  font-size: 6px;
+  border-width: 1px;
+  border-radius: 5px;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .tableHead .tableMeta{
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  right: 8px;
-  top: 0;
-  bottom: 0;
+  min-width: 18px;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .tableHead .tableName .checksCompleteBadge{
   font-size: 6px;
@@ -12032,13 +12200,30 @@ body.flprShopSparksCat{
 #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerOpening .tableHead .tableName{
   font-size: 14px !important;
   line-height: 1.08 !important;
-  max-width: calc(100% - 24px) !important;
+  max-width: none !important;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosing .tableHead .tableMeta,
 #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosed .tableHead .tableMeta,
 #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerReady .tableHead .tableMeta,
 #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerOpening .tableHead .tableMeta{
-  right: 8px !important;
+  min-width: 18px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosing .tableHead .checksBallsMini,
+#viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosed .tableHead .checksBallsMini,
+#viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerReady .tableHead .checksBallsMini,
+#viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerOpening .tableHead .checksBallsMini{
+  gap: 4px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosing .tableHead .checksBallsMini .dot,
+#viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosed .tableHead .checksBallsMini .dot,
+#viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerReady .tableHead .checksBallsMini .dot,
+#viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerOpening .tableHead .checksBallsMini .dot{
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  font-size: 6px;
+  border-width: 1px;
+  border-radius: 5px;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .tableHead{
   min-height: 92px !important;
@@ -12048,15 +12233,27 @@ body.flprShopSparksCat{
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .tableHead .tableName{
   font-size: 22px !important;
   line-height: 1.08 !important;
-  max-width: calc(100% - 28px) !important;
+  max-width: none !important;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .tableHead .tableMeta{
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  right: 12px;
-  top: 0;
-  bottom: 0;
+  min-width: 20px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .tableHead .tableHeadStatus{
+  gap: 12px;
+  padding-right: 4px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .tableHead .checksBallsMini{
+  gap: 6px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .tableHead .checksBallsMini .dot{
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  font-size: 7px;
+  border-width: 2px;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .tableHead .tableName .checksCompleteBadge{
   font-size: 8px;
@@ -12753,7 +12950,7 @@ body.flprShopSparksCat{
             <div class="ovModalBody">
               <div class="ovModalBig" id="ovModalBig">Progressive Ball</div>
               <div class="ovModalSub" id="ovModalSub">Medieval Madness</div>
-              <div class="ovModalMeta" id="ovModalMeta">CHECK; â€”</div>
+              <div class="ovModalMeta" id="ovModalMeta">CHECK; -</div>
               <div class="ovModalEffects">
                 <div class="sparkRing" id="sparkRing"></div>
                 <div class="confettiHost" id="confettiHost"></div>
@@ -12780,7 +12977,7 @@ body.flprShopSparksCat{
         <div class="barOuter"><div class="barFill" id="barMedFill" style="width: 0%;"></div></div>
       </div></div></div><div class="counterDrawer" data-counter="frag"><button type="button" class="counterDrawerHead" title="Pinball Fragment counter. At 5/5, it awards one ExtraBall token." data-tip="Pinball Fragment counter. At 5/5, it awards one ExtraBall token." aria-label="Pinball Fragment counter. At 5/5, it awards one ExtraBall token."><span class="drawerLabel">FRAG</span><span class="drawerVal" id="drawerVal-frag">Now 0/5</span><span class="drawerTot" id="drawerTot-frag">Collected 0</span></button><div class="counterDrawerBody"><div class="barBlock">
         <div class="barTop"><span>PINBALL FRAGMENTS</span><span id="barFragTxt">0/5</span></div>
-        <div class="barOuter silver"><div class="barFill" id="barFragFill" style="width: 0%;"></div><div class="silverBall">â—‰</div></div>
+        <div class="barOuter silver"><div class="barFill" id="barFragFill" style="width: 0%;"></div><div class="silverBall">&#9673;</div></div>
       </div></div></div></div></div>
           <div class="checksWorldTabs" id="checksWorldTabs"></div>
           <div class="checksFancyDivider" aria-hidden="true"><span class="checksFancyCore"></span></div>
@@ -12874,7 +13071,7 @@ body.flprShopSparksCat{
         <div>
           <div class="cLabel">SERVER (host:port)</div>
           <input class="cInput" id="apServer" placeholder="archipelago.gg:35073">
-          <div class="apHint" id="apConnectedHost">CONNECTED; â€”</div>
+          <div class="apHint" id="apConnectedHost">CONNECTED; -</div>
         </div>
         <div>
           <div class="cLabel">PLAYER</div>
@@ -12919,7 +13116,7 @@ body.flprShopSparksCat{
       </div>
         <div class="countRow"><span class="countLbl">Received items (total)</span><span class="countVal" id="ccRecvTotal">0</span></div>
         <div class="countRow"><span class="countLbl">Received from checks (loc&gt;0)</span><span class="countVal" id="ccRecvChecks">0</span></div>
-        <div class="countRow"><span class="countLbl">Received start/server (locâ‰¤0)</span><span class="countVal" id="ccRecvStart">0</span></div>
+              <div class="countRow"><span class="countLbl">Received start/server (loc&lt;=0)</span><span class="countVal" id="ccRecvStart">0</span></div>
         <div class="countRow"><span class="countLbl">Delta (checks - recv from checks)</span><span class="countVal" id="ccDelta" style="color: rgb(217, 251, 255);">0</span></div>
       </div><div class="cSectionTitle" id="episodeSectionTitle" style="margin-top:10px;">EPISODE TRACKING</div><div class="cRow" id="episodeCtlRow" data-episode-status="idle">
         <button class="cBtn" id="episodeStartBtn">EPISODE START</button>
@@ -13935,6 +14132,7 @@ const defaultState = {
   bossVictoryPending:false,
   bossVictoryFinalizing:false,
   extraBallTokens:0,
+  extraBallAssignments:{},
   junkRedeems:{ easy:0, medium:0 },
   relics: buildDefaultRelicsState(),
   randomizerIntro: { shownForSpoiler:false, visible:false },
@@ -13946,7 +14144,72 @@ const defaultState = {
   musicModes:{} // scenario -> true(loop) / false(play once)
 };
 
+const MUSIC_STATE_LS_KEY = "flpr_music_state_v1";
+const MUSIC_STATE_IDB_KEY = "music_state_snapshot";
+
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
+
+function buildMusicStateSnapshot(srcState){
+  const s = (srcState && typeof srcState === "object") ? srcState : {};
+  const refs = (s.musicRefs && typeof s.musicRefs === "object") ? s.musicRefs : {};
+  const meta = (s.musicMeta && typeof s.musicMeta === "object") ? s.musicMeta : {};
+  const modes = (s.musicModes && typeof s.musicModes === "object") ? s.musicModes : {};
+  return {
+    refs: JSON.parse(JSON.stringify(refs || {})),
+    meta: JSON.parse(JSON.stringify(meta || {})),
+    modes: JSON.parse(JSON.stringify(modes || {})),
+    savedAt: new Date().toISOString()
+  };
+}
+function applyMusicStateSnapshot(targetState, snapshot){
+  try{
+    const target = (targetState && typeof targetState === "object") ? targetState : null;
+    const snap = (snapshot && typeof snapshot === "object") ? snapshot : null;
+    if(!target || !snap) return false;
+    target.musicRefs = (snap.refs && typeof snap.refs === "object") ? JSON.parse(JSON.stringify(snap.refs)) : {};
+    target.musicMeta = (snap.meta && typeof snap.meta === "object") ? JSON.parse(JSON.stringify(snap.meta)) : {};
+    target.musicModes = (snap.modes && typeof snap.modes === "object") ? JSON.parse(JSON.stringify(snap.modes)) : {};
+    return true;
+  }catch(_){}
+  return false;
+}
+function readMusicStateSnapshotFromLocalStorage(){
+  try{
+    const raw = localStorage.getItem(MUSIC_STATE_LS_KEY);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    return (parsed && typeof parsed === "object") ? parsed : null;
+  }catch(_){}
+  return null;
+}
+function persistMusicStateSnapshot(srcState){
+  const snapshot = buildMusicStateSnapshot(srcState || state || {});
+  try{ localStorage.setItem(MUSIC_STATE_LS_KEY, JSON.stringify(snapshot)); }catch(_){}
+  try{
+    const blob = new Blob([JSON.stringify(snapshot)], { type:"application/json" });
+    idbPut(MUSIC_STATE_IDB_KEY, blob).catch(()=>{});
+  }catch(_){}
+}
+async function restoreMusicStateFromIDB(){
+  try{
+    const blob = await idbGet(MUSIC_STATE_IDB_KEY);
+    if(!blob) return false;
+    const raw = await blob.text();
+    if(!raw) return false;
+    const parsed = JSON.parse(raw);
+    if(!parsed || typeof parsed !== "object") return false;
+    const localSnap = readMusicStateSnapshotFromLocalStorage();
+    const localTs = Date.parse(String(localSnap?.savedAt || ""));
+    const idbTs = Date.parse(String(parsed?.savedAt || ""));
+    if(localSnap && Number.isFinite(localTs) && (!Number.isFinite(idbTs) || localTs >= idbTs)) return false;
+    if(!applyMusicStateSnapshot(state, parsed)) return false;
+    try{ saveState(); }catch(_){}
+    try{ renderMusicScenarioCard(); }catch(_){}
+    try{ musicRefreshScenario(); }catch(_){}
+    return true;
+  }catch(_){}
+  return false;
+}
 
 function seedWorld1Ball1On(s){
   const w1 = s.worlds.w1;
@@ -14035,6 +14298,106 @@ function seedApStartBaseline(s, slotData){
   seedWorld1Ball1On(s);
 }
 
+function findTableKeyByNameInState(tableName, srcState){
+  try{
+    const s = (srcState && typeof srcState === "object") ? srcState : state;
+    const worlds = (s && s.worlds && typeof s.worlds === "object") ? s.worlds : {};
+    const wantCode = getRepoCanonicalTableCode(tableName);
+    const wantCanonical = getRepoCanonicalTableName(tableName);
+    const wantNorm = normTableName(wantCanonical || tableName);
+    if(!wantNorm && !wantCode) return "";
+    for(const [wk, world] of Object.entries(worlds)){
+      const tables = Array.isArray(world?.tables) ? world.tables : [];
+      for(let idx = 0; idx < tables.length; idx++){
+        const raw = String(tables[idx] || "");
+        const tableNorm = normTableName(raw);
+        const tableCode = getRepoCanonicalTableCode(raw);
+        if((wantNorm && tableNorm === wantNorm) || (wantCode && tableCode && tableCode === wantCode)){
+          return `${wk}|${idx}`;
+        }
+      }
+    }
+  }catch(_){}
+  return "";
+}
+function getBaseBallStateForTableKey(tableKey, srcState){
+  const out = { b1:false, b2:false, b3:false, level:0 };
+  try{
+    const s = (srcState && typeof srcState === "object") ? srcState : state;
+    const tk = String(tableKey || "").trim();
+    if(!tk) return out;
+    const [wk, idxStr] = tk.split("|");
+    const idx = Number(idxStr);
+    if(!wk || !Number.isFinite(idx) || idx < 0) return out;
+    const tables = Array.isArray(s?.worlds?.[wk]?.tables) ? s.worlds[wk].tables : [];
+    if(!tables[idx] && tk !== "boss|0") return out;
+
+    let b1 = !!s?.balls?.[`${wk}|${idx}|1`];
+    let b2 = !!s?.balls?.[`${wk}|${idx}|2`];
+    let b3 = !!s?.balls?.[`${wk}|${idx}|3`];
+
+    let chosenBossKey = "";
+    try{
+      const chosenBossName = String(s?.bossTable || "").trim();
+      if(chosenBossName) chosenBossKey = findTableKeyByNameInState(chosenBossName, s);
+    }catch(_){}
+    if(tk === "boss|0" || (chosenBossKey && tk === chosenBossKey)){
+      b1 = true;
+      b2 = true;
+      b3 = true;
+    }
+    out.b1 = b1;
+    out.b2 = b2;
+    out.b3 = b3;
+    out.level = b3 ? 3 : (b2 ? 2 : (b1 ? 1 : 0));
+  }catch(_){}
+  return out;
+}
+function getLegacyExtraBallAssignmentKey(rawKey, srcState){
+  try{
+    const tk = String(rawKey || "").trim();
+    if(!tk) return "";
+    if(/^[^|]+\|\d+$/.test(tk)) return tk;
+    return findTableKeyByNameInState(tk, srcState);
+  }catch(_){}
+  return "";
+}
+function normalizeExtraBallState(srcState){
+  try{
+    const s = (srcState && typeof srcState === "object") ? srcState : state;
+    if(!s || typeof s !== "object") return 0;
+    if(!Number.isFinite(Number(s.extraBallTokens))) s.extraBallTokens = 0;
+    s.extraBallTokens = Math.max(0, Math.round(Number(s.extraBallTokens) || 0));
+    if(!s.extraBallAssignments || typeof s.extraBallAssignments !== "object") s.extraBallAssignments = {};
+    const next = {};
+    let reclaimed = 0;
+    Object.entries(s.extraBallAssignments || {}).forEach(([rawKey, rawVal])=>{
+      if(!rawVal) return;
+      const tk = String(rawKey || "").trim();
+      if(!tk || next[tk]) return;
+      const [wk, idxStr] = tk.split("|");
+      const idx = Number(idxStr);
+      const hasTable = !!(wk && Number.isFinite(idx) && idx >= 0 && (tk === "boss|0" || Array.isArray(s?.worlds?.[wk]?.tables) && idx < s.worlds[wk].tables.length));
+      if(!hasTable){
+        reclaimed++;
+        return;
+      }
+      const base = getBaseBallStateForTableKey(tk, s);
+      if(Number(base.level || 0) >= 3){
+        reclaimed++;
+        return;
+      }
+      next[tk] = true;
+    });
+    s.extraBallAssignments = next;
+    if(reclaimed > 0){
+      s.extraBallTokens = Math.max(0, Math.round(Number(s.extraBallTokens) || 0) + reclaimed);
+    }
+    return reclaimed;
+  }catch(_){}
+  return 0;
+}
+
 function loadState(){
   try{
     const raw = localStorage.getItem(LS_KEY);
@@ -14043,12 +14406,20 @@ function loadState(){
       try{ mergeBannerStateFromLegacy(s, findLegacyOverlayState()); }catch(_){}
       try{ syncTableBannerCodeMapFromSlots(s); }catch(_){}
       try{ hydrateTableBannerSlotsFromCodeMap(s, { overwrite:false }); }catch(_){}
+      try{
+        const musicSnapshot = readMusicStateSnapshotFromLocalStorage();
+        if(musicSnapshot) applyMusicStateSnapshot(s, musicSnapshot);
+      }catch(_){}
       seedWorld1Ball1On(s);
       return s;
     }
     const s = JSON.parse(raw);
     if(!s || !s.worlds || !s.selected){
       const d = clone(defaultState);
+      try{
+        const musicSnapshot = readMusicStateSnapshotFromLocalStorage();
+        if(musicSnapshot) applyMusicStateSnapshot(d, musicSnapshot);
+      }catch(_){}
       seedWorld1Ball1On(d);
       return d;
     }
@@ -14065,6 +14436,7 @@ function loadState(){
     if(typeof s.bossVictoryFinalizing !== "boolean") s.bossVictoryFinalizing = false;
     if(!Number.isFinite(Number(s.extraBallTokens))) s.extraBallTokens = 0;
     s.extraBallTokens = Math.max(0, Math.round(Number(s.extraBallTokens) || 0));
+    if(!s.extraBallAssignments || typeof s.extraBallAssignments !== "object") s.extraBallAssignments = {};
     if(!s.junkRedeems || typeof s.junkRedeems !== "object") s.junkRedeems = { easy:0, medium:0 };
     if(!Number.isFinite(Number(s.junkRedeems.easy))) s.junkRedeems.easy = 0;
     if(!Number.isFinite(Number(s.junkRedeems.medium))) s.junkRedeems.medium = Number(s.junkRedeems.med || 0) || 0;
@@ -14082,6 +14454,10 @@ function loadState(){
     if(!s.musicRefs || typeof s.musicRefs !== "object") s.musicRefs = {};
     if(!s.musicMeta || typeof s.musicMeta !== "object") s.musicMeta = {};
     if(!s.musicModes || typeof s.musicModes !== "object") s.musicModes = {};
+    try{
+      const musicSnapshot = readMusicStateSnapshotFromLocalStorage();
+      if(musicSnapshot) applyMusicStateSnapshot(s, musicSnapshot);
+    }catch(_){}
     if(!s.designerFlyers || typeof s.designerFlyers !== "object") s.designerFlyers = {};
     if(!Array.isArray(s.worldOrder) || !s.worldOrder.length) s.worldOrder = worldOrder.slice();
     const defaultsWorlds = buildDefaultWorldsFromRepo();
@@ -14108,14 +14484,32 @@ function loadState(){
 
     // Normalize table names to repository canonical names (includes legacy aliases).
     normalizeWorldTablesAgainstRepo(s);
+    if(s.tempBalls && typeof s.tempBalls === "object"){
+      Object.entries(s.tempBalls).forEach(([legacyKey, legacyLevelRaw])=>{
+        const legacyLevel = Math.max(0, Math.round(Number(legacyLevelRaw) || 0));
+        if(legacyLevel <= 0) return;
+        const resolvedKey = getLegacyExtraBallAssignmentKey(legacyKey, s);
+        if(resolvedKey){
+          s.extraBallAssignments[resolvedKey] = true;
+        }else{
+          s.extraBallTokens = Math.max(0, Math.round(Number(s.extraBallTokens) || 0) + 1);
+        }
+      });
+      delete s.tempBalls;
+    }
     // Keep banner associations portable by codename, then rehydrate slot mappings.
     syncTableBannerCodeMapFromSlots(s);
     hydrateTableBannerSlotsFromCodeMap(s, { overwrite:false });
 
     seedWorld1Ball1On(s);
+    normalizeExtraBallState(s);
     return s;
   }catch(e){
     const d = clone(defaultState);
+    try{
+      const musicSnapshot = readMusicStateSnapshotFromLocalStorage();
+      if(musicSnapshot) applyMusicStateSnapshot(d, musicSnapshot);
+    }catch(_){}
     seedWorld1Ball1On(d);
     return d;
   }
@@ -14137,16 +14531,22 @@ function saveState(){
       }
     }catch(_){ }
     normalizeWorldTablesAgainstRepo(state);
+    normalizeExtraBallState(state);
     scrubDeadBlobRefsFromState(state);
     syncTableBannerCodeMapFromSlots(state);
     hydrateTableBannerSlotsFromCodeMap(state, { overwrite:false });
+    try{ persistMusicStateSnapshot(state); }catch(_){}
     localStorage.setItem(LS_KEY, JSON.stringify(state));
     // Keep FLPR-Bot table tracking aligned with overlay worldstate writes.
     try{ syncFlprBotCurrentTable(false); }catch(_){ }
-  }catch(e){ console.warn("saveState failed", e); }
+  }catch(e){
+    try{ persistMusicStateSnapshot(state); }catch(_){}
+    console.warn("saveState failed", e);
+  }
 }
 let state = loadState();
 try{ syncBossTableAuthority({ includePlaceholder:true, syncWorldSlots:true }); }catch(_){}
+setTimeout(()=>{ try{ restoreMusicStateFromIDB(); }catch(_){ } }, 0);
 
 // ---------------- Table Repository Stats (persistent) ----------------
 const FLPR_TABLE_STATS_LS = "flpr_table_stats_v1";
@@ -14273,6 +14673,7 @@ function flprStatsCreateRun(seedName, reason){
     summaryShown: false,
     keysFound: 0,
     keyTimesMs: [],
+    unlockKeysMs: null,
     allKeysMs: null,
     bossTableCode: "",
     bossTableName: "",
@@ -14281,6 +14682,8 @@ function flprStatsCreateRun(seedName, reason){
     tables: {}
   };
 }
+const FLPR_STATS_BOSS_KEYS_UNLOCK_AT = 3;
+const FLPR_STATS_BOSS_KEYS_TRACK_MAX = 10;
 function flprStatsEnsureRun(seedName){
   const s = flprStats;
   if(!s.currentRun || s.currentRun.finalized){
@@ -14477,8 +14880,8 @@ function flprStatsRecordBossKeyCount(nextCount){
   if(!episodeCanTrack()) return;
   const run = flprStatsEnsureRun(ap?.seedName || "");
   if(!run) return;
-  const next = Math.max(0, Math.min(10, Number(nextCount) || 0));
-  const prev = Math.max(0, Math.min(10, Number(run.keysFound) || 0));
+  const next = Math.max(0, Math.min(FLPR_STATS_BOSS_KEYS_TRACK_MAX, Number(nextCount) || 0));
+  const prev = Math.max(0, Math.min(FLPR_STATS_BOSS_KEYS_TRACK_MAX, Number(run.keysFound) || 0));
   if(next <= prev){
     run.keysFound = next;
     return;
@@ -14491,10 +14894,48 @@ function flprStatsRecordBossKeyCount(nextCount){
     }
   }
   run.keysFound = next;
-  if(next >= 3 && !Number.isFinite(Number(run.allKeysMs))){
+  if(next >= FLPR_STATS_BOSS_KEYS_UNLOCK_AT && !Number.isFinite(Number(run.unlockKeysMs))){
+    run.unlockKeysMs = Math.max(0, nowMs - Number(run.startMs || nowMs));
+  }
+  if(next >= FLPR_STATS_BOSS_KEYS_TRACK_MAX && !Number.isFinite(Number(run.allKeysMs))){
     run.allKeysMs = Math.max(0, nowMs - Number(run.startMs || nowMs));
   }
   flprStatsSave();
+}
+function flprStatsGetBossKeyMilestones(run){
+  const keyRows = Array.isArray(run?.keyTimesMs) ? run.keyTimesMs.slice() : [];
+  const unlockByKey = keyRows.find((entry)=> Number(entry?.key) === FLPR_STATS_BOSS_KEYS_UNLOCK_AT);
+  const fullByKey = keyRows.find((entry)=> Number(entry?.key) === FLPR_STATS_BOSS_KEYS_TRACK_MAX);
+  const rawKeysFound = Math.max(0, Number(run?.keysFound || 0));
+  const keysFound = Math.max(0, Math.min(FLPR_STATS_BOSS_KEYS_TRACK_MAX, rawKeysFound));
+  const unlockMs = Number.isFinite(Number(run?.unlockKeysMs))
+    ? Math.max(0, Number(run.unlockKeysMs))
+    : (unlockByKey && Number.isFinite(Number(unlockByKey.ms)) ? Math.max(0, Number(unlockByKey.ms)) : (
+        (keysFound < FLPR_STATS_BOSS_KEYS_TRACK_MAX && Number.isFinite(Number(run?.allKeysMs)))
+          ? Math.max(0, Number(run.allKeysMs))
+          : null
+      ));
+  const fullMs = Number.isFinite(Number(run?.allKeysMs)) && keysFound >= FLPR_STATS_BOSS_KEYS_TRACK_MAX
+    ? Math.max(0, Number(run.allKeysMs))
+    : (fullByKey && Number.isFinite(Number(fullByKey.ms)) ? Math.max(0, Number(fullByKey.ms)) : null);
+  return {
+    keysFound,
+    keyRows: keyRows.sort((a,b)=> Number(a?.key || 0) - Number(b?.key || 0)),
+    unlockMs: Number.isFinite(Number(unlockMs)) ? Number(unlockMs) : null,
+    fullMs: Number.isFinite(Number(fullMs)) ? Number(fullMs) : null
+  };
+}
+function flprStatsGetBossHits(run){
+  try{
+    const rows = Object.values(run?.tables || {});
+    const bossRow = rows.find((row)=> !!row?.wasBoss)
+      || rows.find((row)=> String(row?.code || "") === String(run?.bossTableCode || "").trim());
+    const cleared = Math.max(0, Number(bossRow?.checksCleared || 0));
+    if(cleared <= 0) return 0;
+    const subtractVictory = !!run?.completed ? 1 : 0;
+    return Math.max(0, cleared - subtractVictory);
+  }catch(_){}
+  return 0;
 }
 function flprStatsCheckTotalsForTable(tableName){
   const nm = String(tableName || "").trim();
@@ -14590,14 +15031,29 @@ function flprStatsBuildRunSummary(run){
     }
     return acc;
   }, { views:0, cleared:0, left:0, timeMs:0, balls:0, tablesVisited:0 });
-  const bossState = (typeof bossGetVictoryProgress === "function") ? bossGetVictoryProgress() : null;
+  const keyStats = flprStatsGetBossKeyMilestones(run);
+  const bossHits = flprStatsGetBossHits(run);
   return [
     { label:"Checks Cleared", value:String(totals.cleared), sub:`${totals.left} left behind` },
     { label:"Tables Visited", value:String(totals.tablesVisited), sub:`${rows.length} tracked this run` },
     { label:"View Swaps", value:String(totals.views), sub:`Now Playing changes recorded` },
     { label:"Balls Earned", value:String(totals.balls), sub:`Across all cleared tables` },
-    { label:"Boss Keys", value:String(Math.max(0, Number(run?.keysFound || 0))), sub:Number.isFinite(Number(run?.allKeysMs)) ? `All required keys by ${flprStatsFmtClock(run.allKeysMs)}` : "Not all required keys found" },
-    { label:"Boss Hits", value:String(Math.max(0, Number(bossState?.redeemedDamage || 0))), sub:(bossState?.hpZero ? "Boss Victory is armed" : `Victory unlocks at ${Math.max(0, Number(bossState?.hpPct || 0))}% HP` ) }
+    {
+      label:"Boss Keys",
+      value:`${keyStats.keysFound}/${FLPR_STATS_BOSS_KEYS_TRACK_MAX}`,
+      sub:keyStats.fullMs != null
+        ? `All ${FLPR_STATS_BOSS_KEYS_TRACK_MAX} keys by ${flprStatsFmtClock(keyStats.fullMs)}`
+        : (keyStats.unlockMs != null
+            ? `Boss Table opened by ${flprStatsFmtClock(keyStats.unlockMs)}`
+            : "Boss Table not opened yet")
+    },
+    {
+      label:"Boss Hits",
+      value:String(bossHits),
+      sub:run?.completed
+        ? `Boss defeated in ${bossHits} hit${bossHits === 1 ? "" : "s"}`
+        : "Boss-hit checks recorded on the boss table"
+    }
   ];
 }
 function flprStatsRenderEndRunOverlay(runInput){
@@ -14625,12 +15081,13 @@ function flprStatsRenderEndRunOverlay(runInput){
     meta.appendChild(span);
   });
 
-  const keyRows = Array.isArray(run.keyTimesMs) ? run.keyTimesMs.slice().sort((a,b)=>Number(a.key)-Number(b.key)) : [];
-  const keyText = keyRows.length
-    ? keyRows.map(k => `KEY ${k.key}; ${flprStatsFmtClock(k.ms)}`).join(" | ")
+  const keyStats = flprStatsGetBossKeyMilestones(run);
+  const keyText = keyStats.keyRows.length
+    ? keyStats.keyRows.map(k => `KEY ${k.key}; ${flprStatsFmtClock(k.ms)}`).join(" | ")
     : "No key timing captured.";
-  const allKeys = Number.isFinite(Number(run.allKeysMs)) ? ` | ALL REQUIRED KEYS; ${flprStatsFmtClock(run.allKeysMs)}` : "";
-  keys.textContent = keyText + allKeys;
+  const unlockText = keyStats.unlockMs != null ? ` | BOSS TABLE OPEN; ${flprStatsFmtClock(keyStats.unlockMs)}` : "";
+  const allKeysText = keyStats.fullMs != null ? ` | ALL ${FLPR_STATS_BOSS_KEYS_TRACK_MAX} KEYS; ${flprStatsFmtClock(keyStats.fullMs)}` : "";
+  keys.textContent = keyText + unlockText + allKeysText;
 
   statsGrid.innerHTML = "";
   flprStatsBuildRunSummary(run).forEach((entry)=>{
@@ -14669,6 +15126,7 @@ function flprStatsShowEndRunOverlay(run){
   const wrap = document.getElementById("endRunOverlay");
   if(!wrap) return;
   if(!flprStatsRenderEndRunOverlay(run)) return;
+  try{ bossStopVictoryCelebration(); }catch(_){}
   wrap.classList.add("show");
   wrap.setAttribute("aria-hidden", "false");
   try{
@@ -14681,6 +15139,7 @@ function flprStatsShowEndRunOverlay(run){
     setTimeout(()=>{ try{ spawnConfetti(18); }catch(_){ } }, 620);
   }catch(_){}
   try{ playSfx("tada"); }catch(_){}
+  try{ musicStop(); }catch(_){}
   try{ musicPlayScenario("stats_page", { force:true }); }catch(_){}
 }
 function flprStatsHideEndRunOverlay(){
@@ -14707,10 +15166,15 @@ function flprStatsQueueVictorySummary(delayMs){
     }
   }catch(_){}
   flprStatsSave();
+  const waitMs = Math.max(
+    800,
+    Number(delayMs) || 0,
+    bossVictoryRemainingMs() + 60
+  );
   try{ if(flprStatsVictorySummaryTimer){ clearTimeout(flprStatsVictorySummaryTimer); } }catch(_){}
   flprStatsVictorySummaryTimer = setTimeout(()=>{
     flprStatsShowEndRunOverlay(run);
-  }, Math.max(800, Number(delayMs) || 12200));
+  }, waitMs);
 }
 function flprStatsEnsureVictorySummaryVisible(){
   try{
@@ -14727,7 +15191,7 @@ function flprStatsEnsureVictorySummaryVisible(){
   const fx = (window.__bossVictoryFx ||= { confettiTimer:null, beatTimer:null, endTimer:null });
   const stillCelebrating = !!(fx.endTimer || fx.confettiTimer || fx.beatTimer);
   if(stillCelebrating){
-    flprStatsQueueVictorySummary(900);
+    flprStatsQueueVictorySummary(bossVictoryRemainingMs() + 60);
   }else{
     try{
       run.summaryShown = true;
@@ -14878,6 +15342,7 @@ function bossHandleVictoryValidated(){
       state.bossVictoryFinalizing = true;
     }
   }catch(_){}
+  try{ episodeMarkBossComplete(); }catch(_){}
   bossClearNonVictoryNotifications();
   try{
     const fx = (window.__bossVictoryFx ||= { confettiTimer:null, beatTimer:null, endTimer:null });
@@ -15820,6 +16285,7 @@ const ACH_ACTION_ORDER = Object.freeze([
   "multiball","super_jackpot","jackpot","mode","spinner","ramps_or_orbits","targets","combo","score","lock","objective","boss_victory"
 ]);
 const FLPR_EPISODE_LS_KEY = "flpr_episode_v1";
+const FLPR_ACH_UI_LS_KEY = "flpr_achievements_ui_v1";
 const FLPR_CURRENCY_ICON = "\u{1F52E}";
 const ACH_TROPHY_ICON = "\u{1F3C6}";
 const ACH_LOCKED_ICON = "\u2B1B";
@@ -15907,7 +16373,7 @@ const ACH_CURSOR_FOLLOWER_META = Object.freeze({
       text:"#fff8cc"
     }
   },
-  flprShopCursorDog: { leader:"🐕", pointer:"🦴", pointerDx: 10, pointerDy: 10, leaderDx:-20, leaderDy:20 },
+  flprShopCursorDog: { leader:"🐕", pointer:"🦴", pointerDx: -12, pointerDy: -12, leaderDx: 14, leaderDy: 8 },
   flprShopCursorCat: { leader:"🐈", pointer:"🐟", pointerDx: 10, pointerDy: 10, leaderDx:-20, leaderDy:20 },
   flprShopCursorPig: { leader:"🐖", pointer:"🍖", pointerDx: 10, pointerDy: 10, leaderDx:-20, leaderDy:20 },
   flprShopCursorFinger: { leader:"", pointer:"👈", pointerDx: 2, pointerDy: 0, leaderDx:0, leaderDy:0 }
@@ -16084,8 +16550,8 @@ function achCursorFollowerTick(){
   st.y += (st.ty - st.y) * 0.46;
   st.lx += (st.x - st.lx) * 0.22;
   st.ly += (st.y - st.ly) * 0.22;
-  pointer.style.transform = `translate(${Math.round(st.x + (st.meta.pointerDx || 0))}px, ${Math.round(st.y + (st.meta.pointerDy || 0))}px) rotate(${Math.round(Number(st.meta.pointerRotate || 0))}deg)`;
-  leader.style.transform = `translate(${Math.round(st.lx + (st.meta.leaderDx || 0))}px, ${Math.round(st.ly + (st.meta.leaderDy || 0))}px) rotate(${Math.round(Number(st.meta.leaderRotate || 0))}deg)`;
+  pointer.style.transform = `translate(${Math.round(st.x + (st.meta.pointerDx || 0))}px, ${Math.round(st.y + (st.meta.pointerDy || 0))}px) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.pointerRotate || 0))}deg)`;
+  leader.style.transform = `translate(${Math.round(st.lx + (st.meta.leaderDx || 0))}px, ${Math.round(st.ly + (st.meta.leaderDy || 0))}px) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.leaderRotate || 0))}deg)`;
   if(Math.abs(st.tx - st.x) > 0.35 || Math.abs(st.ty - st.y) > 0.35 || Math.abs(st.x - st.lx) > 0.35 || Math.abs(st.y - st.ly) > 0.35){
     st.raf = requestAnimationFrame(achCursorFollowerTick);
   }
@@ -16454,7 +16920,33 @@ function achLoadStore(){
 }
 let achStore = achLoadStore();
 achEnsureExtendedStore();
-const achPanelUi = { notices:[], loadoutPickerType:"" };
+const ACH_LOADOUT_PICKER_TYPES = Object.freeze(["border","sparks","cursor","title"]);
+function achNormalizeLoadoutPickerType(type){
+  const want = String(type || "").trim();
+  return ACH_LOADOUT_PICKER_TYPES.includes(want) ? want : "";
+}
+function achLoadUiState(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(FLPR_ACH_UI_LS_KEY) || "{}");
+    return {
+      loadoutPickerType: achNormalizeLoadoutPickerType(raw?.loadoutPickerType)
+    };
+  }catch(_){
+    return { loadoutPickerType:"" };
+  }
+}
+const achPanelUi = { notices:[], ...achLoadUiState() };
+function achSaveUiState(){
+  try{
+    localStorage.setItem(FLPR_ACH_UI_LS_KEY, JSON.stringify({
+      loadoutPickerType: achNormalizeLoadoutPickerType(achPanelUi.loadoutPickerType)
+    }));
+  }catch(_){}
+}
+function achSetLoadoutPickerType(type){
+  achPanelUi.loadoutPickerType = achNormalizeLoadoutPickerType(type);
+  achSaveUiState();
+}
 function achNoticeHtml(){
   return (achPanelUi.notices || []).length
     ? `<div class="achPanelNoticeStack">${achPanelUi.notices.map((n)=>`<div class="achPanelNotice ${escapeHtml(String(n?.kind || "gain"))}"><div class="k">${escapeHtml(String(n?.title || "FLPRP UPDATE"))}</div><div class="v">${escapeHtml(String(n?.value || ""))}</div></div>`).join("")}</div>`
@@ -17579,7 +18071,7 @@ function renderAchievementsControlsPanel(){
     card.addEventListener("click", ()=>{
       const type = String(card.getAttribute("data-loadout-clear") || "");
       if(!achUnequipShopType(type)) return;
-      achPanelUi.loadoutPickerType = "";
+      achSetLoadoutPickerType("");
       achQueuePanelNotice("gain", "LOADOUT CLEARED", `${typeLabel(type)} set to NONE.`, 2200);
       renderAchievementsControlsPanel();
       renderHeaderTitleBadge();
@@ -17588,13 +18080,13 @@ function renderAchievementsControlsPanel(){
   panel.querySelectorAll("[data-loadout-open]").forEach((card)=>{
     card.addEventListener("click", ()=>{
       const type = String(card.getAttribute("data-loadout-open") || "");
-      achPanelUi.loadoutPickerType = achPanelUi.loadoutPickerType === type ? "" : type;
+      achSetLoadoutPickerType(achPanelUi.loadoutPickerType === type ? "" : type);
       renderAchievementsControlsPanel();
     });
   });
   panel.querySelectorAll("[data-loadout-close]").forEach((btn)=>{
     btn.addEventListener("click", ()=>{
-      achPanelUi.loadoutPickerType = "";
+      achSetLoadoutPickerType("");
       renderAchievementsControlsPanel();
     });
   });
@@ -17605,7 +18097,7 @@ function renderAchievementsControlsPanel(){
         achQueuePanelNotice("spend", "LOADOUT", "Item is not owned yet.", 2200);
         return;
       }
-      achPanelUi.loadoutPickerType = "";
+      achSetLoadoutPickerType("");
       achQueuePanelNotice("gain", "EQUIPPED", `${achFindShopItem(id)?.name || "Item"} equipped.`, 2400);
       renderAchievementsControlsPanel();
       renderHeaderTitleBadge();
@@ -18935,6 +19427,60 @@ function syncBossTableAuthority(opts){
   }
   return { changed, tableName:picked };
 }
+function bossComputeBaseMaxHp(){
+  let max = 100;
+  try{
+    const cutPct = relicBossHpReductionPct();
+    if(Number.isFinite(cutPct) && cutPct > 0){
+      max = Math.max(1, Math.round(max * (1 - cutPct)));
+    }
+  }catch(_){}
+  return Math.max(1, Math.round(Number(max) || 100));
+}
+function bossBuildFreshHpState(tableName, opts){
+  opts = opts || {};
+  const fallbackName = String(getUnifiedBossTableName({ includePlaceholder:true }) || state?.bossTable || state?.bossHpLive?.name || "Boss Table").trim() || "Boss Table";
+  const name = String(tableName || fallbackName).trim() || "Boss Table";
+  if(!opts.allowTestOverride && !ap?.connected && !!state?.bossHpTest?.forceShowCard){
+    const testMax = Math.max(1, Math.round(Number(state?.bossHpTest?.max || 100) || 100));
+    const testCur = Math.max(0, Math.min(testMax, Math.round(Number(state?.bossHpTest?.cur ?? testMax) || testMax)));
+    return { max:testMax, cur:testCur, name:String(state?.bossHpTest?.name || name) || name, inited:true };
+  }
+  const max = bossComputeBaseMaxHp();
+  return { max, cur:max, name, inited:true };
+}
+function bossResetEncounterState(reason, opts){
+  opts = opts || {};
+  const next = bossBuildFreshHpState(opts.tableName, { allowTestOverride:false });
+  state.bossHpLive = { ...(state.bossHpLive || {}), ...next };
+  state.bossHpTest = state.bossHpTest || { show:false, name:"Boss Table", cur:100, max:100, _pulse:0, forceShowCard:false };
+  state.bossHpTest.name = next.name;
+  state.bossHpTest.max = next.max;
+  state.bossHpTest.cur = next.cur;
+  state.bossHpTest.show = true;
+  state.bossVictorySent = false;
+  state.bossVictoryPending = false;
+  state.bossVictoryFinalizing = false;
+  try{
+    if(window.__bossDamageSeen && typeof window.__bossDamageSeen.clear === "function") window.__bossDamageSeen.clear();
+    else window.__bossDamageSeen = new Set();
+  }catch(_){
+    window.__bossDamageSeen = new Set();
+  }
+  try{
+    if(window.__bossRaid && typeof window.__bossRaid === "object"){
+      delete window.__bossRaid.lastPctPrevForWin;
+    }
+  }catch(_){}
+  try{ localStorage.setItem("flpr_bossHpLive_v1", JSON.stringify(state.bossHpLive)); }catch(_){}
+  try{ bossHpTestSave(); }catch(_){}
+  try{ apLog(`Boss encounter reset; ${reason || "manual"}; ${next.name}; ${next.cur}/${next.max}`); }catch(_){}
+  if(opts.render){
+    try{ bossRefreshUiOnly(); }catch(_){}
+    try{ renderChecks(); }catch(_){}
+  }
+  return next;
+}
 
 function getBossIncomingTableName(){
   try{
@@ -19074,13 +19620,22 @@ function startBossIncomingAlert(ms){
   }, duration);
 }
 
-window.__bossVictoryFx = window.__bossVictoryFx || { confettiTimer:null, beatTimer:null, endTimer:null };
+window.__bossVictoryFx = window.__bossVictoryFx || { confettiTimer:null, beatTimer:null, endTimer:null, endsAt:0 };
+
+function bossVictoryRemainingMs(){
+  try{
+    const fx = (window.__bossVictoryFx ||= { confettiTimer:null, beatTimer:null, endTimer:null, endsAt:0 });
+    return Math.max(0, Number(fx.endsAt || 0) - Date.now());
+  }catch(_){}
+  return 0;
+}
 
 function bossStopVictoryCelebration(){
-  const fx = (window.__bossVictoryFx ||= { confettiTimer:null, beatTimer:null, endTimer:null });
+  const fx = (window.__bossVictoryFx ||= { confettiTimer:null, beatTimer:null, endTimer:null, endsAt:0 });
   try{ if(fx.confettiTimer){ clearInterval(fx.confettiTimer); fx.confettiTimer = null; } }catch(_){}
   try{ if(fx.beatTimer){ clearInterval(fx.beatTimer); fx.beatTimer = null; } }catch(_){}
   try{ if(fx.endTimer){ clearTimeout(fx.endTimer); fx.endTimer = null; } }catch(_){}
+  fx.endsAt = 0;
   try{
     const stage = document.querySelector(".stage");
     if(stage) stage.classList.remove("victoryGroove");
@@ -19170,9 +19725,10 @@ function bossStartVictorySpotlights(){
 }
 
 function bossTriggerVictoryCelebration(){
-  const fx = (window.__bossVictoryFx ||= { confettiTimer:null, beatTimer:null, endTimer:null });
+  const fx = (window.__bossVictoryFx ||= { confettiTimer:null, beatTimer:null, endTimer:null, endsAt:0 });
   const durationMs = BOSS_VICTORY_CELEBRATION_MS;
   bossStopVictoryCelebration();
+  fx.endsAt = Date.now() + durationMs + 250;
   bossPlayYouDidItFanfare();
   bossStartVictorySpotlights();
   bossStartVictoryConfetti(durationMs);
@@ -19654,6 +20210,7 @@ function renderOverviewFeed(){
     const t = state.extraBallTokens || 0;
     extraLine.textContent = "EXTRABALL TOKENS; " + t;
   }
+  try{ renderExtraBallNotices(); }catch(_){}
   if(!feed) return;
   feed.innerHTML = "";
   const items = (ap.recentRewards || []).slice(-12).reverse();
@@ -19704,6 +20261,312 @@ function addRewardToOverview({locationName, itemName, tableName, itemTitle}){
   // and will ensure the DOM classes update even if already on another tab.
   try{ renderOverviewGrid(); }catch(_){}
   try{ renderOverviewFeed(); }catch(_){}
+}
+
+let extraBallNoticeExpandedUntil = 0;
+let extraBallNoticeReason = "";
+let extraBallNoticeTimer = null;
+let extraBallPlacementArmed = false;
+
+function getChecksHintMessage(){
+  try{
+    if(extraBallPlacementArmed){
+      return "EXTRABALL ARMED; click a table to place one green ball.";
+    }
+    if(isTrapCheckLockActive()){
+      return "TRAP ACTIVE; checks are locked until TRAP COMPLETE.";
+    }
+    const junkTargetDiff = getActiveJunkRedeemDifficulty();
+    if(junkTargetDiff){
+      return `JUNK REDEEM ARMED (${junkTargetDiff.toUpperCase()}); click green matching checks to redeem.`;
+    }
+  }catch(_){}
+  return "click nodes to redeem LocationChecks";
+}
+function updateChecksHintMessage(){
+  try{
+    const checksHintEl = document.querySelector("#viewChecks .checksHint");
+    if(checksHintEl) checksHintEl.textContent = getChecksHintMessage();
+  }catch(_){}
+}
+function getExtraBallButtonCount(){
+  return Math.max(0, Math.round(Number(state?.extraBallTokens || 0)));
+}
+function getExtraBallAssignmentCount(){
+  try{
+    return Object.keys(state?.extraBallAssignments || {}).filter((key)=> !!state.extraBallAssignments[key]).length;
+  }catch(_){}
+  return 0;
+}
+function getExtraBallEligibleTableCount(){
+  try{
+    let count = 0;
+    for(const [wk, world] of Object.entries(state?.worlds || {})){
+      const tables = Array.isArray(world?.tables) ? world.tables : [];
+      for(let idx = 0; idx < tables.length; idx++){
+        if(isExtraBallPlacementEligible(`${wk}|${idx}`)) count++;
+      }
+    }
+    return count;
+  }catch(_){}
+  return 0;
+}
+function hasExtraBallPlacementTargets(){
+  return getExtraBallEligibleTableCount() > 0;
+}
+function isExtraBallAssignedToTable(tableKey){
+  try{ return !!state?.extraBallAssignments?.[String(tableKey || "").trim()]; }catch(_){}
+  return false;
+}
+function isExtraBallPlacementEligible(tableKey){
+  try{
+    const tk = String(tableKey || "").trim();
+    if(!tk || isExtraBallAssignedToTable(tk) || relicIsFinalLockedTable(tk)) return false;
+    return Number(getBaseBallStateForTableKey(tk, state).level || 0) < 3;
+  }catch(_){}
+  return false;
+}
+function refreshExtraBallViews(opts){
+  opts = opts || {};
+  try{ renderSelected(); }catch(_){}
+  try{ renderOverviewGrid(); }catch(_){}
+  try{ renderOverviewFeed(); }catch(_){}
+  if(opts.renderChecks !== false){
+    try{ renderChecks(); }catch(_){}
+  }
+  try{ renderExtraBallNotices(); }catch(_){}
+  try{ applyExtraBallSelectionUi(); }catch(_){}
+  try{ updateChecksHintMessage(); }catch(_){}
+}
+function setExtraBallPlacementArmed(on, opts){
+  opts = opts || {};
+  const want = !!on;
+  if(want && getExtraBallButtonCount() <= 0) return false;
+  if(want && !hasExtraBallPlacementTargets()){
+    if(opts.toast !== false){
+      try{ toast("info", "EXTRABALL BANKED", "No table can take an Extra Ball right now. Your tokens are still banked.", 3200); }catch(_){}
+    }
+    extraBallPlacementArmed = false;
+    try{ renderExtraBallNotices(); }catch(_){}
+    try{ applyExtraBallSelectionUi(); }catch(_){}
+    try{ updateChecksHintMessage(); }catch(_){}
+    return false;
+  }
+  extraBallPlacementArmed = want;
+  try{ renderExtraBallNotices(); }catch(_){}
+  try{ applyExtraBallSelectionUi(); }catch(_){}
+  try{ updateChecksHintMessage(); }catch(_){}
+  if(opts.toast !== false){
+    if(want){
+      try{ toast("good", "EXTRABALL READY", "Click a table to place one green ball.", 2400); }catch(_){}
+    }else if(opts.showCancelToast){
+      try{ toast("info", "EXTRABALL CANCELED", "Placement mode cleared.", 1800); }catch(_){}
+    }
+  }
+  return true;
+}
+function assignExtraBallToTableKey(tableKey, opts){
+  opts = opts || {};
+  const tk = String(tableKey || "").trim();
+  if(!tk || getExtraBallButtonCount() <= 0 || !isExtraBallPlacementEligible(tk)) return false;
+  const tableName = String(opts.tableName || relicGetTableName(tk) || "Table");
+  state.extraBallTokens = Math.max(0, Math.round(Number(state.extraBallTokens || 0)) - 1);
+  state.extraBallAssignments = state.extraBallAssignments || {};
+  state.extraBallAssignments[tk] = true;
+  normalizeExtraBallState(state);
+  try{ saveState(); }catch(_){}
+  extraBallPlacementArmed = false;
+  try{ toast("good", "EXTRABALL ASSIGNED", `${tableName} ; green EB added`, 2600); }catch(_){}
+  refreshExtraBallViews({ renderChecks:true });
+  return true;
+}
+function removeExtraBallFromTableKey(tableKey, opts){
+  opts = opts || {};
+  const tk = String(tableKey || "").trim();
+  if(!tk || !isExtraBallAssignedToTable(tk)) return false;
+  const tableName = String(opts.tableName || relicGetTableName(tk) || "Table");
+  delete state.extraBallAssignments[tk];
+  state.extraBallTokens = Math.max(0, Math.round(Number(state.extraBallTokens || 0)) + 1);
+  normalizeExtraBallState(state);
+  try{ saveState(); }catch(_){}
+  try{ toast("info", "EXTRABALL RETURNED", `${tableName} ; green EB removed`, 2400); }catch(_){}
+  refreshExtraBallViews({ renderChecks:true });
+  return true;
+}
+function tryHandleExtraBallPlacementSelection(tableKey, tableName){
+  if(!extraBallPlacementArmed) return false;
+  const tk = String(tableKey || "").trim();
+  if(!tk) return false;
+  if(assignExtraBallToTableKey(tk, { tableName })) return true;
+  try{ toast("warn", "EXTRABALL BLOCKED", `${tableName || "That table"} is already full.`, 2200); }catch(_){}
+  return true;
+}
+function buildExtraBallTableButton(tableKey, opts){
+  opts = opts || {};
+  const tk = String(tableKey || "").trim();
+  if(!tk || !isExtraBallAssignedToTable(tk)) return null;
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "extraBallTableBtn";
+  btn.textContent = "EB";
+  btn.title = "Remove assigned Extra Ball";
+  btn.setAttribute("aria-label", "Remove assigned Extra Ball");
+  btn.addEventListener("click", (ev)=>{
+    try{
+      ev.preventDefault();
+      ev.stopPropagation();
+    }catch(_){}
+    removeExtraBallFromTableKey(tk, { tableName: opts.tableName });
+  });
+  return btn;
+}
+function buildExtraBallDotsMarkup(ballState){
+  const stateLike = (ballState && typeof ballState === "object") ? ballState : {};
+  const cls = (ballNum)=> `dot${stateLike[`b${ballNum}`] ? " on" : ""}${stateLike[`b${ballNum}Eb`] ? " eb" : ""}`;
+  return `
+      <div class="${cls(1)}" data-ball="1">1</div>
+      <div class="${cls(2)}" data-ball="2">2</div>
+      <div class="${cls(3)}" data-ball="3">3</div>
+    `;
+}
+function ensureChecksExtraBallDock(){
+  try{
+    const checksWrap = document.querySelector("#viewChecks .checksWrap");
+    if(!checksWrap) return null;
+    let dock = document.getElementById("checksExtraBallDock");
+    if(!dock){
+      dock = document.createElement("div");
+      dock.id = "checksExtraBallDock";
+      dock.className = "extraBallDock extraBallDockChecks";
+      const head = checksWrap.querySelector(".checksHeadRow");
+      if(head) head.insertAdjacentElement("afterend", dock);
+      else checksWrap.insertBefore(dock, checksWrap.firstChild || null);
+    }
+    return dock;
+  }catch(_){}
+  return null;
+}
+function buildExtraBallTokenStrip(host, opts){
+  if(!host) return;
+  opts = opts || {};
+  host.innerHTML = "";
+  const count = getExtraBallButtonCount();
+  const assigned = getExtraBallAssignmentCount();
+  const eligibleCount = getExtraBallEligibleTableCount();
+  const hasTargets = eligibleCount > 0;
+  const dock = document.createElement("div");
+  dock.className = "extraBallTokenDock" + (extraBallPlacementArmed ? " armed" : "");
+  const label = document.createElement("div");
+  label.className = "extraBallTokenLabel";
+  label.textContent = count > 0
+    ? `EXTRABALL TOKENS; ${count}${assigned > 0 ? ` | ACTIVE ${assigned}` : ""}${count > 0 ? ` | TARGETS ${eligibleCount}` : ""}`
+    : (assigned > 0 ? `EXTRABALL ACTIVE; ${assigned}` : "EXTRABALL TOKENS; 0");
+  dock.appendChild(label);
+  const row = document.createElement("div");
+  row.className = "extraBallTokenRow";
+  if(count > 0){
+    for(let i = 0; i < count; i++){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "extraBallTokenBtn" + (extraBallPlacementArmed ? " armed" : "");
+      btn.textContent = "EB";
+      btn.disabled = !hasTargets;
+      btn.title = !hasTargets
+        ? "No table can take an Extra Ball right now. Token remains banked."
+        : (extraBallPlacementArmed ? "Cancel Extra Ball placement" : "Arm an Extra Ball to place on a table");
+      btn.addEventListener("click", (ev)=>{
+        try{
+          ev.preventDefault();
+          ev.stopPropagation();
+        }catch(_){}
+        if(extraBallPlacementArmed) setExtraBallPlacementArmed(false, { showCancelToast:true });
+        else setExtraBallPlacementArmed(true);
+      });
+      row.appendChild(btn);
+    }
+  }else{
+    const empty = document.createElement("div");
+    empty.className = "extraBallTokenEmpty";
+    empty.textContent = assigned > 0 ? "Assigned tables can return EB from their nameplate button." : "No Extra Balls banked.";
+    row.appendChild(empty);
+  }
+  dock.appendChild(row);
+  host.appendChild(dock);
+  if(opts.showPlacementNote && extraBallPlacementArmed){
+    const note = document.createElement("div");
+    note.className = "extraBallTokenNote";
+    note.textContent = "Placement mode active. Click any eligible table.";
+    host.appendChild(note);
+  }else if(count > 0 && !hasTargets){
+    const note = document.createElement("div");
+    note.className = "extraBallTokenNote";
+    note.textContent = "No valid tables right now. Extra Ball tokens stay banked until a table can accept them.";
+    host.appendChild(note);
+  }
+}
+function renderExtraBallNotices(){
+  try{
+    const stack = document.getElementById("powerStack");
+    if(stack){
+      stack.innerHTML = "";
+      const count = getExtraBallButtonCount();
+      const assigned = getExtraBallAssignmentCount();
+      if(count > 0 && Date.now() < extraBallNoticeExpandedUntil){
+        const panel = document.createElement("div");
+        panel.className = "extraBanner extraBallNotice";
+        panel.innerHTML = `
+          <div class="t"><span>EXTRA BALL!</span><span style="opacity:0.85">${escapeHtmlTrap(String(extraBallNoticeReason || "PINBALL FRAGMENTS x5"))}</span></div>
+          <div class="b">A banked EB can be placed onto any non-full table. After placement, that added ball shows in green and can be removed from the table nameplate.</div>
+        `;
+        const btnRow = document.createElement("div");
+        btnRow.className = "btnRow";
+        const ok = document.createElement("button");
+        ok.type = "button";
+        ok.className = "btn small ok";
+        ok.textContent = extraBallPlacementArmed ? "CANCEL" : "PLACE EB";
+        ok.addEventListener("click", (ev)=>{
+          try{
+            ev.preventDefault();
+            ev.stopPropagation();
+          }catch(_){}
+          if(extraBallPlacementArmed) setExtraBallPlacementArmed(false, { showCancelToast:true });
+          else setExtraBallPlacementArmed(true);
+        });
+        btnRow.appendChild(ok);
+        panel.appendChild(btnRow);
+        stack.appendChild(panel);
+      }
+      if(count > 0 || assigned > 0 || extraBallPlacementArmed){
+        const collapsed = document.createElement("div");
+        collapsed.className = "extraBallDock extraBallDockOverview";
+        buildExtraBallTokenStrip(collapsed, { showPlacementNote:true });
+        stack.appendChild(collapsed);
+      }
+    }
+  }catch(_){}
+  try{
+    const checksDock = ensureChecksExtraBallDock();
+    if(checksDock){
+      buildExtraBallTokenStrip(checksDock, { showPlacementNote:true });
+      checksDock.style.display = (getExtraBallButtonCount() > 0 || getExtraBallAssignmentCount() > 0 || extraBallPlacementArmed) ? "" : "none";
+    }
+  }catch(_){}
+  try{ if(extraBallNoticeTimer) clearTimeout(extraBallNoticeTimer); }catch(_){}
+  if(Date.now() < extraBallNoticeExpandedUntil){
+    extraBallNoticeTimer = setTimeout(()=>{ try{ renderExtraBallNotices(); }catch(_){} }, Math.max(50, extraBallNoticeExpandedUntil - Date.now() + 20));
+  }else{
+    extraBallNoticeTimer = null;
+  }
+}
+function applyExtraBallSelectionUi(){
+  try{
+    document.querySelectorAll("[data-tablekey]").forEach((el)=>{
+      const tableKey = String(el.getAttribute("data-tablekey") || "").trim();
+      el.classList.toggle("extraBallTarget", !!(extraBallPlacementArmed && isExtraBallPlacementEligible(tableKey)));
+      el.classList.toggle("extraBallAssigned", !!isExtraBallAssignedToTable(tableKey));
+    });
+    document.body.classList.toggle("extraBallPlacementArmed", !!extraBallPlacementArmed);
+  }catch(_){}
 }
 
 function flourishBallApplied(tableName){
@@ -19779,39 +20642,9 @@ function flourishBallApplied(tableName){
 }
 
 function applyExtraBallTokenToTable(tableName){
-  const tokens = state.extraBallTokens || 0;
-  if(tokens <= 0) return;
-  state.extraBallTokens = tokens - 1;
-
-  // tempBalls: virtual unlock that does not modify real balls
-  if(!state.tempBalls) state.tempBalls = {};
-  const key = normKey(tableName);
-
-  // Determine current effective ball by scanning balls for this table
-  const info = findTableKeyByName(tableName);
-  if(!info) return;
-  const {wk, idx} = info;
-  const k1 = `${wk}|${idx}|1`;
-  const k2 = `${wk}|${idx}|2`;
-  const k3 = `${wk}|${idx}|3`;
-  const b1 = !!state.balls?.[k1];
-  const b2 = !!state.balls?.[k2];
-  const b3 = !!state.balls?.[k3];
-  let eff = b3 ? 3 : (b2 ? 2 : (b1 ? 1 : 0));
-  const temp = state.tempBalls[key] || 0;
-  eff = Math.max(eff, temp);
-
-  const next = Math.min(3, Math.max(1, eff + 1));
-  state.tempBalls[key] = next;
-
-  saveState();
-  toast("good","EXTRABALL APPLIED", `${tableName} ; virtual Ball ${next}`, 4200);
-  addRewardToOverview({ locationName:"(Fragments 5/5)", itemName:"Free ExtraBall", tableName, itemTitle:"EXTRABALL" });
-  flourishBallApplied(tableName);
-  renderOverviewGrid();
-  renderOverviewFeed();
-  renderOverviewFeed();
-  renderTower();
+  const tableKey = String(getTableKeyForName(tableName) || "").trim();
+  if(!tableKey) return false;
+  return assignExtraBallToTableKey(tableKey, { tableName });
 }
 
 ap.pending = new Set();
@@ -21196,6 +22029,16 @@ function apConnect(){
             ap.lastReceivedIndex = 0;
             try{ localStorage.setItem("flpr_ap_last_received_index", "0"); }catch(_){}
             try{ localStorage.setItem("flpr_ap_last_popup_index", "0"); }catch(_){}
+            try{
+              state.bossTable = "";
+              state.bossTableSeed = "";
+              state.bossVictorySent = false;
+              state.bossVictoryPending = false;
+              state.bossVictoryFinalizing = false;
+              state.bossHpLive = { max:100, cur:100, name:"Boss Table", inited:false };
+              state.bossHpTest = { ...(state.bossHpTest || {}), show:false, name:"Boss Table", cur:100, max:100, _pulse:0, forceShowCard:false };
+              saveState();
+            }catch(_){}
             apLog(`Seed changed; reset unlock animation replay tracker (${seedSig}).`);
             apLog("Seed changed; reset received popup/dedupe indices.");
           }
@@ -21436,7 +22279,7 @@ function normalizeRedeemDifficulty(diff){
 }
 function normalizeItemLabel(nm){
   return String(nm || "")
-    .replace(/[â€“â€”]/g, "-")
+    .replace(/[\u2013\u2014]/g, "-")
     .replace(/[:]/g, " ")
     .replace(/[_]+/g, " ")
     .replace(/\s+/g, " ")
@@ -22197,6 +23040,7 @@ function ensureBossTableSelectionForUnlock(opts){
   if(!picked) return { ok:false, reason:"pick-failed" };
 
   syncBossTableAuthority({ nameOverride:picked, includePlaceholder:false, syncWorldSlots:true });
+  bossResetEncounterState("boss-table-selected", { tableName:picked });
 
   const bossWorldKey = (typeof getBossWorldKey === "function") ? String(getBossWorldKey() || "boss") : "boss";
   if(opts.selectInTower && state?.worlds?.[bossWorldKey]){
@@ -22666,8 +23510,10 @@ function applyChecksTableNameMarquee(scope){
             void txt.offsetWidth;
             txt.style.removeProperty("animation");
             const badge = name.querySelector(".checksCompleteBadge");
+            const ebBtn = name.querySelector(".extraBallTableBtn");
             const badgeW = badge ? Math.ceil(badge.getBoundingClientRect().width || 0) + 8 : 0;
-            const avail = Math.max(0, Math.ceil((name.clientWidth || 0) - badgeW));
+            const ebW = ebBtn ? Math.ceil(ebBtn.getBoundingClientRect().width || 0) + 8 : 0;
+            const avail = Math.max(0, Math.ceil((name.clientWidth || 0) - badgeW - ebW));
             const overflow = Math.ceil((txt.scrollWidth || 0) - avail);
             if(overflow > 6){
               name.classList.add("marquee");
@@ -23215,13 +24061,21 @@ function runVictoryStatsPageTest(){
       run.durationMs = Math.max(0, run.endMs - run.startMs);
       run.completed = true;
       run.finalized = true;
-      run.keysFound = 3;
+      run.keysFound = 10;
       run.keyTimesMs = [
         { key:1, ms: 4 * 60 * 1000 + 12 * 1000, at: run.startMs + 4 * 60 * 1000 + 12 * 1000 },
         { key:2, ms: 12 * 60 * 1000 + 41 * 1000, at: run.startMs + 12 * 60 * 1000 + 41 * 1000 },
-        { key:3, ms: 19 * 60 * 1000 + 33 * 1000, at: run.startMs + 19 * 60 * 1000 + 33 * 1000 }
+        { key:3, ms: 19 * 60 * 1000 + 33 * 1000, at: run.startMs + 19 * 60 * 1000 + 33 * 1000 },
+        { key:4, ms: 20 * 60 * 1000 + 2 * 1000, at: run.startMs + 20 * 60 * 1000 + 2 * 1000 },
+        { key:5, ms: 21 * 60 * 1000 + 18 * 1000, at: run.startMs + 21 * 60 * 1000 + 18 * 1000 },
+        { key:6, ms: 22 * 60 * 1000 + 47 * 1000, at: run.startMs + 22 * 60 * 1000 + 47 * 1000 },
+        { key:7, ms: 24 * 60 * 1000 + 5 * 1000, at: run.startMs + 24 * 60 * 1000 + 5 * 1000 },
+        { key:8, ms: 25 * 60 * 1000 + 26 * 1000, at: run.startMs + 25 * 60 * 1000 + 26 * 1000 },
+        { key:9, ms: 27 * 60 * 1000 + 11 * 1000, at: run.startMs + 27 * 60 * 1000 + 11 * 1000 },
+        { key:10, ms: 28 * 60 * 1000 + 49 * 1000, at: run.startMs + 28 * 60 * 1000 + 49 * 1000 }
       ];
-      run.allKeysMs = run.keyTimesMs[2].ms;
+      run.unlockKeysMs = run.keyTimesMs[2].ms;
+      run.allKeysMs = run.keyTimesMs[9].ms;
     }else{
       run = flprStatsClone(run) || run;
       run.endMs = Date.now();
@@ -24000,17 +24854,11 @@ function renderChecks(){
   // v138: reset boss layout classes
   body.classList.remove("bossMode");
   const trapLocked = isTrapCheckLockActive();
-  const junkTargetDiff = getActiveJunkRedeemDifficulty();
   const checksHintEl = document.querySelector("#viewChecks .checksHint");
   if(checksHintEl){
-    if(trapLocked){
-      checksHintEl.textContent = "TRAP ACTIVE; checks are locked until TRAP COMPLETE.";
-    }else if(junkTargetDiff){
-      checksHintEl.textContent = `JUNK REDEEM ARMED (${junkTargetDiff.toUpperCase()}); click green matching checks to redeem.`;
-    }else{
-      checksHintEl.textContent = "click nodes to redeem LocationChecks";
-    }
+    checksHintEl.textContent = getChecksHintMessage();
   }
+  try{ renderExtraBallNotices(); }catch(_){}
 
   const firstPlayableWorldKey = getFirstPlayableWorldKey();
   let wk = ap.currentWorld || firstPlayableWorldKey;
@@ -24162,6 +25010,7 @@ function renderChecks(){
       }
     }catch(_){}
     applyChecksNowPlayingHighlight();
+    try{ applyExtraBallSelectionUi(); }catch(_){}
     return;
   }
 
@@ -24179,6 +25028,7 @@ function renderChecks(){
     renderTableBlock(body, tName, nodes || [], { tableKey:`${wk}|${idx}` });
   });
   applyChecksNowPlayingHighlight();
+  try{ applyExtraBallSelectionUi(); }catch(_){}
 }
 
 function renderTableBlock(parent, tableName, nodes, opts){
@@ -24186,22 +25036,16 @@ function renderTableBlock(parent, tableName, nodes, opts){
   try{ (nodes||[]).forEach(n=>{ if(n && typeof n.id==="number") ap.validCheckLocIds.add(n.id); }); }catch(_){ }
   const block = document.createElement("div");
   block.className = "tableBlock";
-  const isBossTableBlock = String(opts.tableKey || "").startsWith("boss|");
-  if(opts.tableKey) block.setAttribute("data-tablekey", String(opts.tableKey));
+  const tableKey = String(opts.tableKey || "").trim();
+  const isBossTableBlock = tableKey.startsWith("boss|");
+  if(tableKey) block.setAttribute("data-tablekey", tableKey);
   const getTableBallLevel = ()=>{
     try{
-      const tk = String(opts.tableKey || "");
-      const [wk, idxStr] = tk.split("|");
-      const idx = Number(idxStr);
-      if(wk === "boss") return 3; // Boss table is fully open once available.
-      if(!wk || !Number.isFinite(idx) || idx < 0) return 0;
-      const b1 = !!state?.balls?.[`${wk}|${idx}|1`];
-      const b2 = !!state?.balls?.[`${wk}|${idx}|2`];
-      const b3 = !!state?.balls?.[`${wk}|${idx}|3`];
-      return b3 ? 3 : (b2 ? 2 : (b1 ? 1 : 0));
+      return Number(getDisplayBallStateForTableKey(String(opts.tableKey || "")).level || 0);
     }catch(_){}
     return 0;
   };
+  const tableBallState = getDisplayBallStateForTableKey(tableKey);
   const tableBallLevel = getTableBallLevel();
   const tableUnlocked = tableBallLevel > 0;
   const tableCheckIds = (()=> {
@@ -24216,24 +25060,25 @@ function renderTableBlock(parent, tableName, nodes, opts){
     return [];
   })();
   const tableComplete = !!(tableUnlocked && tableCheckIds.length > 0 && tableCheckIds.every((id)=>!!ap?.checked?.has(id)));
-  const hintTargets = hintGetTargetsForTable(String(opts.tableKey || ""));
+  const hintTargets = hintGetTargetsForTable(tableKey);
   const hintOnThisTable = hintTargets.length > 0;
   const hintBossKeyOnThisTable = hintTargets.some((t)=>hintIsBossTypeLabel(t?.typeLabel));
   const trapLocked = isTrapCheckLockActive();
   const junkTargetDiff = getActiveJunkRedeemDifficulty();
-  const relicFinalLocked = relicIsFinalLockedTable(String(opts.tableKey || ""));
+  const relicFinalLocked = relicIsFinalLockedTable(tableKey);
   const tableSealed = !tableUnlocked || relicFinalLocked;
   if(tableSealed) block.classList.add("lockedTable");
   if(hintOnThisTable) block.classList.add("hintTargetChecks");
   if(hintBossKeyOnThisTable) block.classList.add("hintTargetBossChecks");
   const markNowPlaying = ()=>{ 
-    if(!opts.tableKey) return;
+    if(!tableKey) return;
+    if(tryHandleExtraBallPlacementSelection(tableKey, tableName)) return;
     if(!tableUnlocked) return;
     if(relicFinalLocked){
       toast("warn", "FINAL LOCK", `${tableName} is sealed shut.`, 2400);
       return;
     }
-    setNowPlayingFromTableKey(String(opts.tableKey), {
+    setNowPlayingFromTableKey(tableKey, {
       syncChecksWorld:true,
       countView:true,
       source:"checks-click"
@@ -24242,7 +25087,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
   const head = document.createElement("div");
   head.className = "tableHead";
   try{
-    const tk = String(opts.tableKey || "");
+    const tk = tableKey;
     let bannerUrl = "";
     if(tk.startsWith("boss|")){
       const chosenBossTableName = String(
@@ -24273,14 +25118,15 @@ function renderTableBlock(parent, tableName, nodes, opts){
       head.style.setProperty("--check-head-bg", `url("${String(bannerUrl).replace(/"/g, "\\\"")}")`);
     }
   }catch(_){}
-  if(opts.tableKey && !String(opts.tableKey).startsWith("boss|") && tableUnlocked && !relicFinalLocked){
-    head.style.cursor = "pointer";
-    head.title = "Set this table as Now Playing";
+  if(tableKey && !tableKey.startsWith("boss|") && !relicFinalLocked){
+    head.style.cursor = extraBallPlacementArmed ? "copy" : (tableUnlocked ? "pointer" : "default");
+    head.title = extraBallPlacementArmed ? "Place Extra Ball on this table" : (tableUnlocked ? "Set this table as Now Playing" : "Locked table");
     head.onclick = ()=>{ markNowPlaying(); };
     block.style.cursor = "pointer";
     block.onclick = (ev)=>{
       try{
         if(ev && ev.target && ev.target.closest && ev.target.closest(".nodeBtn")) return;
+        if(ev && ev.target && ev.target.closest && ev.target.closest(".extraBallTableBtn")) return;
       }catch(_){}
       markNowPlaying();
     };
@@ -24291,6 +25137,8 @@ function renderTableBlock(parent, tableName, nodes, opts){
   nameText.className = "tableNameText";
   nameText.textContent = tableUnlocked ? tableName : "????";
   name.appendChild(nameText);
+  const extraBallBtn = buildExtraBallTableButton(tableKey, { tableName });
+  if(extraBallBtn) name.appendChild(extraBallBtn);
   let doneBadge = null;
   if(tableComplete){
     doneBadge = document.createElement("span");
@@ -24309,8 +25157,17 @@ function renderTableBlock(parent, tableName, nodes, opts){
   }else{
     meta.textContent = "";
   }
+  const headStatus = document.createElement("div");
+  headStatus.className = "tableHeadStatus";
+  if(tableUnlocked){
+    const ballsMini = document.createElement("div");
+    ballsMini.className = "ballsMini checksBallsMini";
+    ballsMini.innerHTML = buildExtraBallDotsMarkup(tableBallState);
+    headStatus.appendChild(ballsMini);
+  }
+  headStatus.appendChild(meta);
   if(doneBadge) name.appendChild(doneBadge);
-  head.appendChild(name); head.appendChild(meta);
+  head.appendChild(name); head.appendChild(headStatus);
   const grid = document.createElement("div");
   grid.className = "nodeGrid";
   const sendCheckLocation = (n, sourceTag)=>{
@@ -24377,8 +25234,10 @@ function renderTableBlock(parent, tableName, nodes, opts){
     const btn = document.createElement("button");
     try{ btn.dataset.locid = String(Number(n?.id) || 0); }catch(_){}
     const checked = ap.checked.has(n.id);
-    const pending = (!checked && ap.pendingByLoc && ap.pendingByLoc.has(n.id));
     const bossVictoryNode = isBossTableBlock && bossIsVictoryLocationNode(n);
+    const pending = bossVictoryNode
+      ? (!!state?.bossVictoryPending || (!checked && ap.pendingByLoc && ap.pendingByLoc.has(n.id)))
+      : (!checked && ap.pendingByLoc && ap.pendingByLoc.has(n.id));
     const bossVictoryProgress = bossVictoryNode ? bossGetVictoryProgress() : null;
     const bossVictoryLocked = !!(bossVictoryNode && !checked && !pending && !bossVictoryProgress?.ready);
     btn.className = "nodeBtn" + (checked ? " checked" : "") + (pending ? " pending" : "");
@@ -24488,7 +25347,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
       }
       if(!ap.connected) return;
       if(sendCheckLocation(n, "manual")){
-        if(tableKey === "boss|0"){
+        if(String(opts.tableKey || "") === "boss|0"){
           try{ applyChecksNowPlayingHighlight(); }catch(_){}
         }else{
           renderChecks();
@@ -24540,8 +25399,10 @@ function refreshBossChecksNodeStatesInPlace(){
       const n = byId.get(id);
       if(!n) return;
       const checked = ap.checked.has(id);
-      const pending = (!checked && ap.pendingByLoc && ap.pendingByLoc.has(id));
       const bossVictoryNode = bossIsVictoryLocationNode(n);
+      const pending = bossVictoryNode
+        ? (!!state?.bossVictoryPending || (!checked && ap.pendingByLoc && ap.pendingByLoc.has(id)))
+        : (!checked && ap.pendingByLoc && ap.pendingByLoc.has(id));
       const bossVictoryProgress = bossVictoryNode ? bossGetVictoryProgress() : null;
       const bossVictoryLocked = !!(bossVictoryNode && !checked && !pending && !bossVictoryProgress?.ready);
       btn.classList.toggle("checked", checked);
@@ -24685,7 +25546,7 @@ const DESIGNER_PROFILES = {
       credit: "Headshot via Wikipedia"
     },
     bio: [
-      "Romanian-American pinball artist/designer (1944â€“2014), known for surreal visuals and playful theme tone.",
+    "Romanian-American pinball artist/designer (1944-2014), known for surreal visuals and playful theme tone.",
       "His pre-pinball background included animation and illustration work, then he moved into Williams-era machine design/art collaboration."
     ],
     trivia: [
@@ -26423,7 +27284,30 @@ state.selected = id;
 }
 
 function isRevealed(worldKey, tableIdx){
-  return !!state.balls[`${worldKey}|${tableIdx}|1`];
+  return !!getDisplayBallStateForTableKey(`${worldKey}|${tableIdx}`).b1;
+}
+
+function getDisplayBallStateForTableKey(tableKey){
+  const out = { b1:false, b2:false, b3:false, level:0, b1Eb:false, b2Eb:false, b3Eb:false, baseLevel:0, ebAssigned:false, ebBall:0 };
+  try{
+    const tk = String(tableKey || "").trim();
+    if(!tk) return out;
+    const base = getBaseBallStateForTableKey(tk, state);
+    const baseLevel = Number(base.level || 0);
+    const ebAssigned = !!state?.extraBallAssignments?.[tk];
+    const ebBall = (ebAssigned && baseLevel < 3) ? (baseLevel + 1) : 0;
+    out.b1 = !!base.b1 || ebBall === 1;
+    out.b2 = !!base.b2 || ebBall === 2;
+    out.b3 = !!base.b3 || ebBall === 3;
+    out.b1Eb = ebBall === 1;
+    out.b2Eb = ebBall === 2;
+    out.b3Eb = ebBall === 3;
+    out.baseLevel = baseLevel;
+    out.ebAssigned = ebBall > 0;
+    out.ebBall = ebBall;
+    out.level = out.b3 ? 3 : (out.b2 ? 2 : (out.b1 ? 1 : 0));
+  }catch(_){}
+  return out;
 }
 
 function renderSelected(){
@@ -26491,6 +27375,7 @@ function renderSelected(){
     }
 
     renderTowerPentagon(body, w, state.selected);
+    try{ applyExtraBallSelectionUi(); }catch(_){}
   }catch(err){
     try{ console.error("renderSelected failed", err); }catch(_){}
     const title = document.getElementById("selectedTitle");
@@ -26506,6 +27391,7 @@ function renderSelected(){
       body.appendChild(note);
       const tables = Array.isArray(world?.tables) ? world.tables : [];
       tables.forEach((t, idx)=> body.appendChild(simpleTableRow(worldKey, world, t, idx)));
+      try{ applyExtraBallSelectionUi(); }catch(_){}
     }catch(_){}
   }
 }
@@ -26794,12 +27680,15 @@ function renderTowerPentagon(container, worldObj, worldKey){
       card.setAttribute("data-idx", String(idx));
 
       card.onclick = ()=>{
+        const tableKey = `${worldKey}|${idx}`;
+        const tableName = String(state?.worlds?.[worldKey]?.tables?.[idx] || "");
+        if(tryHandleExtraBallPlacementSelection(tableKey, tableName)) return;
         window.__suppressPentaAnim = false;
         if(worldObj.locked) return;
         if(!isRevealed(worldKey, idx)) return;
-        if(relicIsFinalLockedTable(`${worldKey}|${idx}`)){
+        if(relicIsFinalLockedTable(tableKey)){
           try{
-            const lockedName = String(state?.worlds?.[worldKey]?.tables?.[idx] || "That table");
+            const lockedName = String(tableName || "That table");
             toast("warn", "FINAL LOCK", `${lockedName} is sealed shut.`, 2200);
           }catch(_){}
           return;
@@ -26962,6 +27851,7 @@ function renderTowerPentagon(container, worldObj, worldKey){
     const displayName = revealed ? tName : "????";
     const nameEl = card.querySelector(".pentaTitle .name");
     const badgeEl = card.querySelector(".pentaTitle .badgeIcon");
+    const titleEl = card.querySelector(".pentaTitle");
     nameEl.textContent = displayName;
     nameEl.classList.remove("nameLong", "nameXL");
     if(revealed){
@@ -26974,6 +27864,11 @@ function renderTowerPentagon(container, worldObj, worldKey){
       }
     }
     badgeEl.textContent = (worldEmojis[worldKey] || "");
+    try{
+      titleEl.querySelectorAll(".extraBallTableBtn").forEach((btn)=>btn.remove());
+      const ebBtn = buildExtraBallTableButton(tableKey, { tableName:tName });
+      if(ebBtn) titleEl.insertBefore(ebBtn, badgeEl);
+    }catch(_){}
     const chainOverlay = card.querySelector(".lockChainsOverlay");
     if(chainOverlay){
       chainOverlay.classList.toggle("active", lockedByBall || relicFinalLocked);
@@ -26985,8 +27880,12 @@ function renderTowerPentagon(container, worldObj, worldKey){
       lockBadgeOverlay.textContent = relicFinalLocked ? "FINAL LOCK" : "LOCK";
       if(lockedByBall || relicFinalLocked) lockBadgeOverlay.classList.remove("unlockDrop");
     }
-    card.style.cursor = (lockedByBall || relicFinalLocked) ? "not-allowed" : "pointer";
-    card.title = lockedByBall ? "Locked; unlock Ball 1 to select this table" : (relicFinalLocked ? "Final Lock sealed this table" : "Set this table as Now Playing");
+    card.style.cursor = extraBallPlacementArmed
+      ? (relicFinalLocked ? "not-allowed" : "copy")
+      : ((lockedByBall || relicFinalLocked) ? "not-allowed" : "pointer");
+    card.title = extraBallPlacementArmed
+      ? "Place Extra Ball on this table"
+      : (lockedByBall ? "Locked; unlock Ball 1 to select this table" : (relicFinalLocked ? "Final Lock sealed this table" : "Set this table as Now Playing"));
     const featuredDesigner = getFeaturedDesignerForWorld(worldKey);
     const designerBtn = card.querySelector(".designerInfoBtn");
     const showDesignerBtn = !!(revealed && featuredDesigner && isTableCreditedToDesigner(tName, featuredDesigner));
@@ -27025,12 +27924,14 @@ function renderTowerPentagon(container, worldObj, worldKey){
     }
 
     // Balls active states / lock if unrevealed
+    const displayBallState = getDisplayBallStateForTableKey(tableKey);
     const balls = card.querySelectorAll(".miniBall");
     balls.forEach((b, bi)=>{
       const bn = bi+1;
-      const key = `${worldKey}|${idx}|${bn}`;
-      const on = !!(state.balls && state.balls[key]);
+      const on = !!displayBallState[`b${bn}`];
+      const eb = !!displayBallState[`b${bn}Eb`];
       b.classList.toggle("active", on);
+      b.classList.toggle("eb", eb);
       if(!revealed){
         b.style.pointerEvents = "none";
         b.style.opacity = "0.65";
@@ -27130,9 +28031,13 @@ function getChecksLeftMarkup(tableName, hintTargets){
 }
 
 /* Overview */
-function tileEl({name, worldKey, worldIndex, tableIndex, locked, b1, b2, b3, banner, revealed, isBossTable}){
+function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, banner, revealed, isBossTable}){
   const t = document.createElement("div");
   const tableKey = `${worldKey}|${tableIndex-1}`;
+  const balls = (ballState && typeof ballState === "object") ? ballState : getDisplayBallStateForTableKey(tableKey);
+  const b1 = !!balls.b1;
+  const b2 = !!balls.b2;
+  const b3 = !!balls.b3;
   const relicFinalLocked = relicIsFinalLockedTable(tableKey);
   const hintTargets = hintGetTargetsForTable(tableKey);
   const hintOnThisTable = hintTargets.length > 0;
@@ -27171,15 +28076,24 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, b1, b2, b3, ban
     </div>
 
     <div class="ballsMini">
-      <div class="dot ${b1 ? "on" : ""}" data-ball="1">1</div>
-      <div class="dot ${b2 ? "on" : ""}" data-ball="2">2</div>
-      <div class="dot ${b3 ? "on" : ""}" data-ball="3">3</div>
+      ${buildExtraBallDotsMarkup(balls)}
     </div>
 
     <div class="nameAlways">${escapeHtml(displayName)}</div>
     ${checksMarkup}
   `;
   t.appendChild(content);
+  try{
+    const nameWrap = content.querySelector(".nameAlways");
+    if(nameWrap){
+      nameWrap.textContent = "";
+      const text = document.createElement("span");
+      text.textContent = displayName;
+      nameWrap.appendChild(text);
+      const ebBtn = buildExtraBallTableButton(tableKey, { tableName:name });
+      if(ebBtn) nameWrap.appendChild(ebBtn);
+    }
+  }catch(_){}
   if(isBossTable){
     const bossFx = document.createElement("div");
     bossFx.className = "bossTableFx";
@@ -27212,6 +28126,7 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, b1, b2, b3, ban
   }
 
   t.onclick = ()=>{
+    if(tryHandleExtraBallPlacementSelection(tableKey, name)) return;
     if(locked || relicFinalLocked){
       if(relicFinalLocked) toast("warn", "FINAL LOCK", `${name} is sealed shut.`, 2200);
       return;
@@ -27260,30 +28175,27 @@ function renderOverviewGrid(){
     const locked = !!w.locked;
 
     (w.tables || []).forEach((tableName, idx) => {
-      const k1 = `${wk}|${idx}|1`;
-      const k2 = `${wk}|${idx}|2`;
-      const k3 = `${wk}|${idx}|3`;
-      const b1 = !!(state.balls && state.balls[k1]);
-      const b2 = !!(state.balls && state.balls[k2]);
-      const b3 = !!(state.balls && state.balls[k3]);
+      const tableKey = `${wk}|${idx}`;
+      const ballState = getDisplayBallStateForTableKey(tableKey);
+      const { b1, b2, b3 } = ballState;
       const hasAnyBall = !!(b1 || b2 || b3);
-      const bKey = `${wk}|${idx}`;
       const banner = getTableBannerUrl(wk, tableName);
       const revealed = hasAnyBall;
       const travelLocked = !!locked || !hasAnyBall;
-      const isBossTable = !!bossTableKey && String(bossTableKey) === String(bKey);
+      const isBossTable = !!bossTableKey && String(bossTableKey) === String(tableKey);
 
       grid.appendChild(tileEl({
         name: tableName,
         worldKey: wk,
         worldIndex: wi+1,
         tableIndex: idx+1,
-        locked: travelLocked, b1,b2,b3, banner, revealed, isBossTable
+        locked: travelLocked, ballState, banner, revealed, isBossTable
       }));
     });
   });
   applyOverviewTableFocus();
   applyOverviewNowPlayingHighlight();
+  try{ applyExtraBallSelectionUi(); }catch(_){}
 }
 
 /* Tabs + auto swap */
@@ -28173,6 +29085,27 @@ function hintCandidatesForPool(poolName){
   }
   return (hintState.pools[poolName] || []).filter(e => !hintState.used.has(e.locationName) && !hintEntryAlreadyCollected(e));
 }
+function hintGetBossKeyHintedTableKeys(){
+  const out = new Set();
+  try{
+    (hintState?.history || []).forEach((entry)=>{
+      if(String(entry?.type || "").trim().toLowerCase() !== "boss key") return;
+      const tableName = String(entry?.target?.tableName || "").trim();
+      const tableKey = getTableKeyForName(tableName) || "";
+      if(tableKey) out.add(tableKey);
+    });
+  }catch(_){}
+  return out;
+}
+function hintProgressiveEntryTargetsBossKeyTable(entry, bossKeyTableKeys){
+  try{
+    const targetTable = parseProgressiveBallTarget(entry?.itemName);
+    if(!targetTable) return false;
+    const targetKey = getTableKeyForName(targetTable) || "";
+    return !!targetKey && bossKeyTableKeys.has(targetKey);
+  }catch(_){}
+  return false;
+}
 function hintRemainingCount(poolName){
   return hintCandidatesForPool(poolName).length;
 }
@@ -28530,8 +29463,17 @@ function hintPickFromPool(poolName, typeLabel, opts){
   }
   let sourcePool = candidates;
   if(poolName === "ball"){
-    const openNow = candidates.filter(hintIsSourceTableOpen);
-    if(openNow.length) sourcePool = openNow;
+    const bossKeyTableKeys = hintGetBossKeyHintedTableKeys();
+    const bossKeyProgressive = bossKeyTableKeys.size
+      ? candidates.filter((entry)=> hintProgressiveEntryTargetsBossKeyTable(entry, bossKeyTableKeys))
+      : [];
+    if(bossKeyProgressive.length){
+      const openBossKeyProgressive = bossKeyProgressive.filter(hintIsSourceTableOpen);
+      sourcePool = openBossKeyProgressive.length ? openBossKeyProgressive : bossKeyProgressive;
+    }else{
+      const openNow = candidates.filter(hintIsSourceTableOpen);
+      if(openNow.length) sourcePool = openNow;
+    }
   }
   const entry = sourcePool[Math.floor(Math.random() * sourcePool.length)];
   hintState.used.add(entry.locationName);
@@ -30044,6 +30986,9 @@ function renderAll(){
   try{ renderSelected(); }catch(err){ try{ console.error("renderSelected outer failed", err); }catch(_){} }
   try{ renderOverviewGrid(); }catch(err){ try{ console.error("renderOverviewGrid failed", err); }catch(_){} }
   try{ renderOverviewFeed(); }catch(err){ try{ console.error("renderOverviewFeed failed", err); }catch(_){} }
+  try{ renderExtraBallNotices(); }catch(_){ }
+  try{ applyExtraBallSelectionUi(); }catch(_){ }
+  try{ updateChecksHintMessage(); }catch(_){ }
   try{ updateCounterBars(); }catch(err){ try{ console.error("updateCounterBars failed", err); }catch(_){} }
   try{ updateBossThreatIndicators(); }catch(err){ try{ console.error("updateBossThreatIndicators failed", err); }catch(_){} }
   try{ musicRefreshScenario(); }catch(_){ }
@@ -30518,33 +31463,9 @@ function notifyAutoRedeem(label){
 // --- Extra Ball banner (Pinball Fragments x5) ---
 function showExtraBallBanner(reasonLabel){
   if(isBossVictoryFinalizing()) return;
-  const stack = document.getElementById("powerStack");
-  if(!stack) return;
-  const why = escapeHtmlTrap(String(reasonLabel || "PINBALL FRAGMENTS x5"));
-
-  const d = document.createElement("div");
-  d.className = "extraBanner extraBallNotice";
-  d.innerHTML = `
-    <div class="t"><span>EXTRA BALL!</span><span style="opacity:0.85">${why}</span></div>
-    <div class="b">If the current table does not have all balls redeemed, you can play as if you have another ball up to the maximum of 3. If you have the maximum of 3, this does nothing.</div>
-    <div class="btnRow"><button type="button" class="btn small ok">OK</button></div>
-  `;
-  const btn = d.querySelector("button.ok");
-  const closeBanner = (ev)=>{
-    try{
-      if(ev){
-        ev.preventDefault();
-        ev.stopPropagation();
-      }
-    }catch(_){}
-    try{ d.remove(); }catch(_){}
-  };
-  if(btn){
-    btn.addEventListener("click", closeBanner);
-    btn.addEventListener("pointerup", closeBanner);
-    btn.addEventListener("touchend", closeBanner, { passive:false });
-  }
-  stack.appendChild(d);
+  extraBallNoticeReason = String(reasonLabel || "PINBALL FRAGMENTS x5");
+  extraBallNoticeExpandedUntil = Date.now() + 3800;
+  try{ renderExtraBallNotices(); }catch(_){}
 }
 
 
@@ -32544,23 +33465,8 @@ window.__bossDamageSeen = window.__bossDamageSeen || new Set();
 function bossEnsureInit(){
   state.bossHpLive = state.bossHpLive || { max:100, cur:100, name:"Boss Table", inited:false };
   if(!state.bossHpLive.inited){
-    // If user set test max/cur, respect as initial values.
-    try{
-      const t = state.bossHpTest || {};
-      const mx = Number(t.max); const cu = Number(t.cur);
-      if(Number.isFinite(mx) && mx>0) state.bossHpLive.max = mx;
-      if(Number.isFinite(cu) && cu>=0) state.bossHpLive.cur = Math.min(state.bossHpLive.max, cu);
-      if(t.name) state.bossHpLive.name = t.name;
-    }catch(_){}
-    try{
-      const cutPct = relicBossHpReductionPct();
-      if(Number.isFinite(cutPct) && cutPct > 0){
-        const nextMax = Math.max(1, Math.round(Number(state.bossHpLive.max || 100) * (1 - cutPct)));
-        state.bossHpLive.max = nextMax;
-        state.bossHpLive.cur = Math.min(nextMax, nextMax);
-      }
-    }catch(_){}
-    state.bossHpLive.inited = true;
+    const next = bossBuildFreshHpState(String(state?.bossHpLive?.name || state?.bossTable || ""));
+    state.bossHpLive = { ...(state.bossHpLive || {}), ...next };
   }
   try{ syncBossTableAuthority({ includePlaceholder:true, syncWorldSlots:true }); }catch(_){}
 }
@@ -32625,6 +33531,7 @@ function bossGetVictoryProgress(){
     requiredDamage,
     hpZero,
     hpPct,
+    pending: !!state?.bossVictoryPending,
     victoryChecked,
     ready
   };
@@ -32646,20 +33553,18 @@ function bossTrySendVictoryCheck(reason){
     toast("warn","BOSS DEFEATED","No Victory check found in location list", 3400);
     return false;
   }
-  if(ap.pendingByLoc && ap.pendingByLoc.has(loc.id)) return true;
+  if(state?.bossVictoryPending || (ap.pendingByLoc && ap.pendingByLoc.has(loc.id))) return true;
   state.bossVictoryPending = true;
   try{ saveState(); }catch(_){}
-  const pend = { id:loc.id, locationName:loc.full || loc.short || ("ID " + loc.id), tableName:"Boss Table" };
-  ap.pendingQueue.push({ ...pend, sentAt: Date.now() });
-  markPending(loc.id, pend);
-  playSfx("redeem");
   apLog(`Boss victory check sent; id ${loc.id}; reason ${reason || "0% HP"}`);
   apSend({ cmd:"LocationChecks", locations:[loc.id] });
+  try{ episodeMarkBossComplete(); }catch(_){}
   try{
     apLog("Boss victory status sent; CLIENT_GOAL");
     apSend({ cmd:"StatusUpdate", status: 30 });
   }catch(_){}
   apSend({ cmd:"Sync" });
+  try{ renderChecks(); }catch(_){}
   return true;
 }
 
@@ -32793,6 +33698,7 @@ function bossApplyDamagePct(pct, sourceKey, opts){
     }
   }catch(_){}
   if(state.bossHpLive.cur === 0){
+    try{ episodeMarkBossComplete(); }catch(_){}
     try{ bossMaybeAutoClaimVictory(opts.fromCheck ? "Boss HP reached 0 from redeemed check" : "Boss HP reached 0"); }catch(_){}
   }
 }
