@@ -1584,6 +1584,12 @@ body.bonusPinballDim .capture{
   max-width:none;
   min-height:0;
   display:flex;
+  overflow:hidden;
+}
+.worldsWrap.towerScrollable{
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-right: 10px;
 }
 .rail{ pointer-events:none;
 
@@ -11935,7 +11941,7 @@ body.flprShopSparksCat{
   box-shadow: inset 0 -1px 0 rgba(0,217,255,.20);
   font-family: 'Press Start 2P', monospace;
 }
-.counterDrawerHead[data-tip]::after{
+#viewChecks.active .counterDrawerHead[data-tip]::after{
   content: attr(data-tip);
   position: absolute;
   right: calc(100% + 14px);
@@ -11971,19 +11977,19 @@ body.flprShopSparksCat{
   transition: opacity .16s ease, transform .16s ease;
   z-index: 10050;
 }
-.counterDrawerHead[data-tip]:hover::after,
-.counterDrawerHead[data-tip]:focus-visible::after{
+#viewChecks.active .counterDrawerHead[data-tip]:hover::after,
+#viewChecks.active .counterDrawerHead[data-tip]:focus-visible::after{
   opacity: 1;
   transform: translateY(-50%) translateX(0);
   transition-delay: 1s;
 }
-.counterDrawer.open .counterDrawerHead[data-tip]::after{
+#viewChecks.active .counterDrawer.open .counterDrawerHead[data-tip]::after{
   top: calc(100% + 18px);
   right: calc(100% + 10px);
   transform: translateY(10px) translateX(0);
 }
-.counterDrawer.open .counterDrawerHead[data-tip]:hover::after,
-.counterDrawer.open .counterDrawerHead[data-tip]:focus-visible::after{
+#viewChecks.active .counterDrawer.open .counterDrawerHead[data-tip]:hover::after,
+#viewChecks.active .counterDrawer.open .counterDrawerHead[data-tip]:focus-visible::after{
   opacity: 1;
   transform: translateY(0) translateX(0);
   transition-delay: 1s;
@@ -13548,6 +13554,35 @@ window.__manualDisconnect = false;
     }
     return null;
   }
+  function asArrayish(value){
+    if(Array.isArray(value)) return value.slice();
+    if(!value) return [];
+    if(typeof value !== "string" && typeof value?.[Symbol.iterator] === "function"){
+      try{ return Array.from(value).filter((entry)=> typeof entry !== "undefined"); }catch(_){}
+    }
+    if(typeof value === "object"){
+      const keys = Object.keys(value).filter((key)=> /^\d+$/.test(key)).sort((a,b)=> Number(a) - Number(b));
+      if(keys.length) return keys.map((key)=> value[key]);
+    }
+    return [];
+  }
+  function normalizeSlotDataPayload(slotData){
+    const src = (slotData && typeof slotData === "object") ? slotData : (ap?.slotData && typeof ap.slotData === "object" ? ap.slotData : {});
+    if(!src || typeof src !== "object") return {};
+    if("metasizer_table_set" in src || "progressive_ball_starts" in src || "start_inventory_from_pool" in src || "generic_checks" in src || "task_shuffle" in src){
+      return src;
+    }
+    try{
+      const playerId = String(ap?.playerId || "");
+      if(playerId && src[playerId] && typeof src[playerId] === "object") return src[playerId];
+    }catch(_){}
+    const numericKeys = Object.keys(src).filter((key)=> /^\d+$/.test(key));
+    if(numericKeys.length === 1){
+      const nested = src[numericKeys[0]];
+      if(nested && typeof nested === "object") return nested;
+    }
+    return src;
+  }
   const DEFAULT_WORLD_BANNER_REFS = Object.freeze({
     w1: "WorldsBanners/RampsRumpus-SQ.png",
     w2: "WorldsBanners/MaltDesniyWorld-SQ.png",
@@ -13573,30 +13608,56 @@ window.__manualDisconnect = false;
     dennis_nordman_party_monsters: "WorldsBanners/DennisNordmanPartyMonsters.png"
   });
   const DEFAULT_TABLE_BANNER_REFS_BY_CODE = Object.freeze({
-    MM: "WorldsBanners/MedievalMadnessCover2.png",
-    AFM: "WorldsBanners/Flyers/Attack_From_Mars_Pinball_Flyer (1).png",
-    WCS: "WorldsBanners/Flyers/WCS_flyer.jpg",
-    GET: "WorldsBanners/Flyers/getaway-high-speed-ii-the--williams-07032-01.jpg",
-    TOTAN: "WorldsBanners/Flyers/Tales_of_the_Arabian_Nights_Pinball_Flyer.png",
-    ATEAM: "WorldsBanners/Flyers/TheA-Team(Original2023)Flyer.png.1d219dc947d02e740f94eb39aba17e1b.png",
-    STTNG: "WorldsBanners/Flyers/star-trek-the-next-generation-07051-06.jpg",
-    MET: "WorldsBanners/Flyers/Meteor-flyer-pg-2.jpg",
-    HGT: "WorldsBanners/Flyers/harlem-globetrotters-on-tour-06930-01.jpg",
-    PARA: "WorldsBanners/Flyers/paragon--bally-07061-04.jpg",
-    GLIZ: "WorldsBanners/Flyers/grand-lizard-flyer-4.jpg",
-    TAXI: "WorldsBanners/Flyers/Taxi_(Lola)_flyer.jpg",
-    BOP: "WorldsBanners/Flyers/bop_flyer_mop1.jpeg",
-    HSPD: "https://www.ipdb.org/showpic.pl?id=1176&picno=4504",
-    ACDC: "https://www.ipdb.org/showpic.pl?id=5854&picno=27847&zoom=1",
-    HUR: "https://www.ipdb.org/showpic.pl?id=1257&picno=7191",
-    COMET: "https://www.ipdb.org/showpic.pl?id=548&picno=510",
-    CYC: "https://www.ipdb.org/showpic.pl?id=617&picno=4607",
-    WHRL: "https://www.ipdb.org/showpic.pl?id=2765&picno=25877",
-    PARTY: "https://www.ipdb.org/showpic.pl?id=1788&picno=3345&zoom=1",
-    EATPM: "https://www.ipdb.org/showpic.pl?id=790&picno=12989&zoom=1",
-    DRDUDE: "https://www.ipdb.org/showpic.pl?id=744&picno=9497&zoom=1",
-    PZONE: "https://www.ipdb.org/showpic.pl?id=1789&picno=53664&zoom=1",
-    SSTIFF: "https://www.ipdb.org/showpic.pl?id=3915&picno=31814&zoom=1"
+    MM: "WorldsBanners/BestiaryFlyers/MM.png",
+    AFM: "WorldsBanners/BestiaryFlyers/AFM.png",
+    WCS: "WorldsBanners/BestiaryFlyers/WCS.jpg",
+    GET: "WorldsBanners/BestiaryFlyers/GET.jpg",
+    ST13: "WorldsBanners/BestiaryFlyers/ST13.jpg",
+    TOTAN: "WorldsBanners/BestiaryFlyers/TOTAN.png",
+    FATH: "WorldsBanners/BestiaryFlyers/FATH.jpg",
+    HOOK: "WorldsBanners/BestiaryFlyers/HOOK.jpg",
+    CONGO: "WorldsBanners/BestiaryFlyers/CONGO.jpg",
+    MCAST: "WorldsBanners/BestiaryFlyers/MCAST.jpg",
+    ATEAM: "WorldsBanners/BestiaryFlyers/ATEAM.png",
+    KRID: "WorldsBanners/BestiaryFlyers/KRID.jpg",
+    HHEAT: "WorldsBanners/BestiaryFlyers/HHEAT.jpg",
+    BAYW: "WorldsBanners/BestiaryFlyers/BAYW.jpg",
+    STTNG: "WorldsBanners/BestiaryFlyers/STTNG.jpg",
+    MET: "WorldsBanners/BestiaryFlyers/MET.jpg",
+    HGT: "WorldsBanners/BestiaryFlyers/HGT.jpg",
+    DP: "WorldsBanners/BestiaryFlyers/DP.jpg",
+    PARA: "WorldsBanners/BestiaryFlyers/PARA.jpg",
+    ROBO: "WorldsBanners/BestiaryFlyers/ROBO.jpg",
+    GLIZ: "WorldsBanners/BestiaryFlyers/GLIZ.jpg",
+    JOK: "WorldsBanners/BestiaryFlyers/JOK.jpg",
+    BCAT: "WorldsBanners/BestiaryFlyers/BCAT.jpg",
+    TAXI: "WorldsBanners/BestiaryFlyers/TAXI.jpg",
+    BOP: "WorldsBanners/BestiaryFlyers/BOP.jpeg",
+    WW: "WorldsBanners/BestiaryFlyers/WW.jpg",
+    HSPD: "WorldsBanners/BestiaryFlyers/HSPD.jpg",
+    NFEAR: "WorldsBanners/BestiaryFlyers/NFEAR.jpg",
+    SMVE: "WorldsBanners/BestiaryFlyers/SMVE.jpg",
+    IMVE: "WorldsBanners/BestiaryFlyers/IMVE.png",
+    ACDC: "WorldsBanners/BestiaryFlyers/ACDC.jpg",
+    PARTY: "WorldsBanners/BestiaryFlyers/PARTY.jpg",
+    EATPM: "WorldsBanners/BestiaryFlyers/EATPM.jpg",
+    DRDUDE: "WorldsBanners/BestiaryFlyers/DRDUDE.jpg",
+    PZONE: "WorldsBanners/BestiaryFlyers/PZONE.jpg",
+    SSTIFF: "WorldsBanners/BestiaryFlyers/SSTIFF.jpg",
+    IJTPA: "WorldsBanners/BestiaryFlyers/IJTPA.jpg",
+    BSD: "WorldsBanners/BestiaryFlyers/BSD.jpg",
+    PFOR: "WorldsBanners/BestiaryFlyers/PFOR.jpg",
+    HUR: "WorldsBanners/BestiaryFlyers/HUR.jpg",
+    COMET: "WorldsBanners/BestiaryFlyers/COMET.jpg",
+    CYC: "WorldsBanners/BestiaryFlyers/CYC.jpg",
+    FH: "WorldsBanners/BestiaryFlyers/FH.jpg",
+    WHRL: "WorldsBanners/BestiaryFlyers/WHRL.jpg",
+    TAF: "WorldsBanners/BestiaryFlyers/TAF.jpg",
+    FT: "WorldsBanners/BestiaryFlyers/FT.jpg",
+    BK2K: "WorldsBanners/BestiaryFlyers/BK2K.png",
+    BROSE: "WorldsBanners/BestiaryFlyers/BROSE.jpg",
+    CFTBL: "WorldsBanners/BestiaryFlyers/CFTBL.png",
+    TOM: "WorldsBanners/BestiaryFlyers/TOM.jpg"
   });
   function normalizeWorldBannerLookup(v){
     return String(v || "").toLowerCase().replace(/[^a-z0-9_]+/g, "");
@@ -13640,6 +13701,14 @@ window.__manualDisconnect = false;
   function isDeadBlobBannerRef(ref){
     const raw = String(ref || "").trim();
     return /^blob:null\//i.test(raw);
+  }
+  function isCustomWorldBannerRef(ref){
+    const raw = String(ref || "").trim();
+    if(!raw) return false;
+    if(/^idb:/i.test(raw)) return true;
+    if(/^data:/i.test(raw)) return true;
+    if(/^blob:/i.test(raw)) return true;
+    return !/^WorldsBanners\//i.test(raw);
   }
   function scrubDeadBlobRefsFromState(srcState){
     try{
@@ -13761,7 +13830,7 @@ window.__manualDisconnect = false;
     for(const [wk, nw] of Object.entries(composed.worlds)){
       const cur = current[wk] || {};
       if(opts.keepLocked !== false && typeof cur.locked === "boolean") nw.locked = cur.locked;
-      if(opts.keepWorldBanners !== false && typeof cur.banner === "string" && cur.banner) nw.banner = cur.banner;
+      if(opts.keepWorldBanners !== false && isCustomWorldBannerRef(cur.banner)) nw.banner = cur.banner;
     }
     state.worlds = composed.worlds;
     state.worldOrder = Array.isArray(composed.worldOrder) && composed.worldOrder.length ? composed.worldOrder.slice() : getLiveWorldOrder({ worlds: composed.worlds });
@@ -13777,24 +13846,24 @@ window.__manualDisconnect = false;
   window.applyTableRepositoryLayout = applyTableRepositoryLayout;
 
   function getMetasizerSlotPayload(slotData){
-    const src = (slotData && typeof slotData === "object") ? slotData : (ap?.slotData && typeof ap.slotData === "object" ? ap.slotData : {});
+    const src = normalizeSlotDataPayload(slotData);
     const payload = src?.metasizer_table_set;
     if(!payload || typeof payload !== "object" || !payload.enabled) return null;
-    const activeTables = Array.isArray(payload.active_tables) ? payload.active_tables.filter(Boolean) : [];
-    const layoutWorlds = Array.isArray(payload?.world_layout?.worlds) ? payload.world_layout.worlds.filter(Boolean) : [];
+    const activeTables = asArrayish(payload.active_tables).filter(Boolean);
+    const layoutWorlds = asArrayish(payload?.world_layout?.worlds).filter(Boolean);
     if(!activeTables.length && !layoutWorlds.length) return null;
     return payload;
   }
   function buildMetasizerWorldState(payload){
     const defaultsWorlds = buildDefaultWorldsFromRepo();
     const currentWorlds = (state && state.worlds && typeof state.worlds === "object") ? state.worlds : {};
-    const layoutWorlds = Array.isArray(payload?.world_layout?.worlds) ? payload.world_layout.worlds : [];
+    const layoutWorlds = asArrayish(payload?.world_layout?.worlds);
     const nextWorlds = {};
     const nextOrder = [];
     layoutWorlds.forEach((entry, idx)=>{
       const wk = String(entry?.key || `w${idx + 1}`).trim() || `w${idx + 1}`;
       const label = String(entry?.label || `World ${idx + 1}; Metatable Pool ${idx + 1}`).trim() || `World ${idx + 1}; Metatable Pool ${idx + 1}`;
-      const tables = (Array.isArray(entry?.tables) ? entry.tables : [])
+      const tables = asArrayish(entry?.tables)
         .map((name)=> getRepoCanonicalTableName(name))
         .filter(Boolean);
       if(!tables.length) return;
@@ -13802,23 +13871,24 @@ window.__manualDisconnect = false;
       nextWorlds[wk] = {
         label,
         locked: (typeof cur.locked === "boolean") ? cur.locked : true,
-        banner: (typeof cur.banner === "string" && cur.banner)
+        banner: isCustomWorldBannerRef(cur.banner)
           ? cur.banner
           : getDefaultWorldBannerRef(
               wk,
               [label]
-                .concat(Array.isArray(entry?.group_keys) ? entry.group_keys : [])
-                .concat(Array.isArray(entry?.group_labels) ? entry.group_labels : [])
+                .concat(asArrayish(entry?.group_keys))
+                .concat(asArrayish(entry?.group_labels))
             ),
         tables
       };
       nextOrder.push(wk);
     });
+    const bossFallbackLabel = String(payload?.world_layout?.boss_label || `World ${Math.max(1, nextOrder.length + 1)}; Boss`).trim() || `World ${Math.max(1, nextOrder.length + 1)}; Boss`;
     const bossCurrentKey = (currentWorlds && currentWorlds.boss) ? "boss" : "";
     const bossCurrent = (bossCurrentKey && currentWorlds[bossCurrentKey]) ? currentWorlds[bossCurrentKey] : {};
-    const bossDefault = defaultsWorlds?.boss || { label:"World 6; Boss", locked:true, banner:getDefaultWorldBannerRef("boss"), tables:["(Boss Table)"] };
+    const bossDefault = defaultsWorlds?.boss || { label:bossFallbackLabel, locked:true, banner:getDefaultWorldBannerRef("boss"), tables:["(Boss Table)"] };
     nextWorlds.boss = {
-      label: String(bossCurrent?.label || bossDefault.label || "World 6; Boss"),
+      label: String(payload?.world_layout?.boss_label || bossFallbackLabel || bossDefault.label),
       locked: (typeof bossCurrent?.locked === "boolean") ? bossCurrent.locked : !!bossDefault.locked,
       banner: (typeof bossCurrent?.banner === "string" && bossCurrent.banner) ? bossCurrent.banner : String(bossDefault.banner || getDefaultWorldBannerRef("boss")),
       tables: Array.isArray(bossCurrent?.tables) && bossCurrent.tables.length
@@ -14130,6 +14200,12 @@ function getLiveWorldOrder(srcState){
   }
   return out.length ? out : fallback;
 }
+function getNonBossWorldCount(srcState){
+  return getLiveWorldOrder(srcState).filter((wk)=> !isBossWorldId(wk, srcState)).length;
+}
+function getBossWorldDefaultLabel(srcState){
+  return `World ${Math.max(1, getNonBossWorldCount(srcState) + 1)}; Boss`;
+}
 const DEFAULT_WORLD_GROUP_SIZE = 5;
 const DEFAULT_WORLD_TABLES_PER_PAGE = 25;
 const DEFAULT_WORLD_WORLDS_PER_PAGE = 5;
@@ -14148,6 +14224,11 @@ function clampWorldPageIndex(pageIdx, srcState, slotData){
   const raw = Math.floor(Number(pageIdx) || 0);
   return Math.max(0, Math.min(spec.totalPages - 1, raw));
 }
+function shouldShowBossWorldOnPage(pageIdx, srcState, slotData){
+  const spec = getWorldPagingSpec(srcState, slotData);
+  const page = clampWorldPageIndex(pageIdx, srcState, slotData);
+  return page >= (spec.totalPages - 1);
+}
 function getVisibleNonBossWorldOrder(srcState, opts){
   const s = srcState || state || {};
   const spec = getWorldPagingSpec(s, opts?.slotData);
@@ -14157,8 +14238,9 @@ function getVisibleNonBossWorldOrder(srcState, opts){
 }
 function getWorldPageForWorldKey(worldKey, srcState, slotData){
   const wk = String(worldKey || "").trim();
-  if(!wk || isBossWorldId(wk, srcState)) return clampWorldPageIndex(srcState?.worldPage, srcState, slotData);
   const spec = getWorldPagingSpec(srcState, slotData);
+  if(!wk) return clampWorldPageIndex(srcState?.worldPage, srcState, slotData);
+  if(isBossWorldId(wk, srcState)) return Math.max(0, spec.totalPages - 1);
   const idx = spec.nonBossWorlds.indexOf(wk);
   if(idx < 0) return 0;
   return Math.floor(idx / spec.worldsPerPage);
@@ -14166,8 +14248,8 @@ function getWorldPageForWorldKey(worldKey, srcState, slotData){
 function getPageAnchorWorldKey(){
   const selected = String(state?.selected || "");
   const checksWorld = String(ap?.currentWorld || "");
-  if(activeView === "checks" && checksWorld && !isBossWorldId(checksWorld)) return checksWorld;
-  if(selected && !isBossWorldId(selected)) return selected;
+  if(activeView === "checks" && checksWorld) return checksWorld;
+  if(selected) return selected;
   return getFirstPlayableWorldKey(state);
 }
 function syncWorldPageToActiveContext(){
@@ -14177,7 +14259,7 @@ function getTowerWorldOrder(srcState){
   const s = srcState || state || {};
   const out = getVisibleNonBossWorldOrder(s);
   const bossKey = resolveBossWorldKeyFromState(s);
-  if(s?.worlds?.[bossKey]) out.push(bossKey);
+  if(s?.worlds?.[bossKey] && shouldShowBossWorldOnPage(s?.worldPage, s, ap?.slotData)) out.push(bossKey);
   return out;
 }
 function resolveBossWorldKeyFromState(srcState){
@@ -14205,7 +14287,7 @@ function getChecksWorldOrder(srcState){
   const out = getVisibleNonBossWorldOrder(s).filter((wk)=> !!(s?.worlds?.[wk]));
   const bossKey = resolveBossWorldKeyFromState(s);
   if(out.includes(bossKey)) return out;
-  if(s?.worlds?.[bossKey]) out.push(bossKey);
+  if(s?.worlds?.[bossKey] && shouldShowBossWorldOnPage(s?.worldPage, s, ap?.slotData)) out.push(bossKey);
   return out;
 }
 function getOverviewWorldOrder(srcState){
@@ -14218,14 +14300,20 @@ function setWorldPage(pageIdx, opts){
   state.worldPage = nextPage;
   const visible = getVisibleNonBossWorldOrder(state, { page:nextPage });
   const fallback = String(visible[0] || getFirstPlayableWorldKey(state) || "");
+  const bossVisible = shouldShowBossWorldOnPage(nextPage, state, ap?.slotData);
   if(activeView === "checks"){
     const cur = String(ap?.currentWorld || "");
-    if(cur && !isBossWorldId(cur) && !visible.includes(cur) && fallback){
+    if(cur && isBossWorldId(cur) && !bossVisible && fallback){
+      ap.currentWorld = fallback;
+    }else if(cur && !isBossWorldId(cur) && !visible.includes(cur) && fallback){
       ap.currentWorld = fallback;
     }
   }else{
     const cur = String(state?.selected || "");
-    if(cur && !isBossWorldId(cur) && !visible.includes(cur) && fallback){
+    if(cur && isBossWorldId(cur) && !bossVisible && fallback){
+      state.lastSelected = state.selected;
+      state.selected = fallback;
+    }else if(cur && !isBossWorldId(cur) && !visible.includes(cur) && fallback){
       state.lastSelected = state.selected;
       state.selected = fallback;
     }
@@ -14443,7 +14531,7 @@ function seedWorld1Ball1On(s){
   });
 }
 function isSeedRandomStartEnabled(slotData){
-  const src = (slotData && typeof slotData === "object") ? slotData : (ap?.slotData && typeof ap.slotData === "object" ? ap.slotData : {});
+  const src = normalizeSlotDataPayload(slotData);
   try{
     if(getMetasizerSlotPayload(src)) return true;
     return !!src?.random_start_tables_open;
@@ -14470,11 +14558,11 @@ function appendSeedStartTableKeyMatches(outKeys, tableName, worlds){
   }
 }
 function getSeedStartTableKeysFromSlotData(slotData, worldsOverride){
-  const src = (slotData && typeof slotData === "object") ? slotData : (ap?.slotData && typeof ap.slotData === "object" ? ap.slotData : {});
+  const src = normalizeSlotDataPayload(slotData);
   const worlds = (worldsOverride && typeof worldsOverride === "object") ? worldsOverride : (state?.worlds || {});
   const keys = [];
   try{
-    const entries = Array.isArray(src?.progressive_ball_starts) ? src.progressive_ball_starts : [];
+    const entries = asArrayish(src?.progressive_ball_starts);
     for(const entry of entries){
       if(!entry || typeof entry !== "object") continue;
       const count = Math.max(0, Math.round(Number(entry.count) || 0));
@@ -14497,7 +14585,7 @@ function getSeedStartTableKeysFromSlotData(slotData, worldsOverride){
   }catch(_){}
   try{
     const metasizer = getMetasizerSlotPayload(src);
-    const startTables = Array.isArray(metasizer?.starting_open_tables) ? metasizer.starting_open_tables : [];
+    const startTables = asArrayish(metasizer?.starting_open_tables);
     startTables.forEach((tableName)=> appendSeedStartTableKeyMatches(keys, tableName, worlds));
   }catch(_){}
   return [...new Set(keys)];
@@ -20953,11 +21041,48 @@ function normalizeGenericLocationLookupName(locationName){
     .replace(/\s+/g, " ")
     .toLowerCase();
 }
+const SCORE_ADJUSTMENT_MODES = Object.freeze({
+  0: "easy",
+  1: "normal",
+  2: "hard",
+  3: "maddening"
+});
+function getScoreAdjustmentMode(slotData){
+  const src = (slotData && typeof slotData === "object") ? slotData : (ap?.slotData && typeof ap.slotData === "object" ? ap.slotData : {});
+  const raw = src?.score_adjustment_mode;
+  if(typeof raw === "string"){
+    const normalized = String(raw || "").trim().toLowerCase();
+    if(["easy","normal","hard","maddening"].includes(normalized)) return normalized;
+  }
+  const numeric = Number(raw);
+  if(Number.isFinite(numeric) && SCORE_ADJUSTMENT_MODES[Math.round(numeric)]){
+    return SCORE_ADJUSTMENT_MODES[Math.round(numeric)];
+  }
+  return "normal";
+}
+function getScoreAdjustmentMultiplier(slotData){
+  const mode = getScoreAdjustmentMode(slotData);
+  if(mode === "easy") return 0.5;
+  if(mode === "hard") return 1.5;
+  if(mode === "maddening") return 2;
+  return 1;
+}
+function formatAdjustedScoreTarget(rawTarget, slotData){
+  const clean = String(rawTarget || "").trim();
+  if(!clean) return "";
+  const digits = clean.replace(/[^\d]/g, "");
+  if(!digits) return clean;
+  const multiplier = getScoreAdjustmentMultiplier(slotData);
+  const scaled = Math.max(0, Math.round(Number(digits) * multiplier));
+  const hasPlus = /\+\s*$/.test(clean);
+  const formatted = scaled.toLocaleString("en-US");
+  return hasPlus ? `${formatted}+` : formatted;
+}
 function remapGenericObjectiveLabel(label){
   const raw = String(label || "").trim();
   if(!raw) return "";
   const scoreMatch = raw.match(/^(easy|medium|hard)\s+score\s*\(([^)]+)\)$/i);
-  if(scoreMatch) return `Obtain a score of ${scoreMatch[2]}`;
+  if(scoreMatch) return `Obtain a score of ${formatAdjustedScoreTarget(scoreMatch[2])}`;
   return raw;
 }
 function extractGenericSlotMeta(locationName){
@@ -21006,7 +21131,13 @@ function getDisplayedLocationName(locationName){
   const raw = String(locationName || "").trim();
   if(!raw) return "";
   const entry = getTaskShuffleEntryForLocationName(raw) || getGenericCheckEntryForLocationName(raw);
-  if(!entry) return raw;
+  if(!entry){
+    const split = splitLocName(raw);
+    const table = String(split?.table || "").trim();
+    const rest = String(split?.rest || "").trim();
+    const display = remapGenericObjectiveLabel(rest);
+    return table && display ? `${table} - ${display}` : raw;
+  }
   const table = String(entry.target_table || entry.table || splitLocName(raw).table || "").trim();
   const display = remapGenericObjectiveLabel(String(entry.objective || entry.display_name || entry.title || "").trim());
   return table && display ? `${table} - ${display}` : (display || raw);
@@ -21046,9 +21177,10 @@ function applyGenericCheckPayloadToLocations(){
   }catch(_){}
 }
 function setGenericCheckPayload(slotData){
-  const payload = slotData?.generic_checks;
-  const taskPayload = slotData?.task_shuffle;
-  ap.slotData = (slotData && typeof slotData === "object") ? slotData : {};
+  const normalizedSlotData = normalizeSlotDataPayload(slotData);
+  const payload = normalizedSlotData?.generic_checks;
+  const taskPayload = normalizedSlotData?.task_shuffle;
+  ap.slotData = normalizedSlotData;
   try{ applyConnectedWorldLayoutFromSlotData(ap.slotData, { save:false, render:false }); }catch(_){}
   const isActiveEntry = (entry, locationName)=>{
     const tableName = String(entry?.table || splitLocName(locationName).table || "").trim();
@@ -21059,17 +21191,13 @@ function setGenericCheckPayload(slotData){
     byLocation: new Map(),
     byLocationNormalized: new Map(),
     bySlot: new Map(),
-    entries: Array.isArray(payload?.entries)
-      ? payload.entries.filter((entry)=> isActiveEntry(entry, String(entry?.location || "")))
-      : []
+    entries: asArrayish(payload?.entries).filter((entry)=> isActiveEntry(entry, String(entry?.location || "")))
   };
   ap.taskShuffle = {
     enabled: !!taskPayload?.enabled,
     byLocation: new Map(),
     byLocationNormalized: new Map(),
-    entries: Array.isArray(taskPayload?.entries)
-      ? taskPayload.entries.filter((entry)=> isActiveEntry(entry, String(entry?.location || "")))
-      : []
+    entries: asArrayish(taskPayload?.entries).filter((entry)=> isActiveEntry(entry, String(entry?.location || "")))
   };
   try{
     const byLoc = payload?.by_location || {};
@@ -21643,6 +21771,15 @@ function processReceivedItem(it, itemIndex, locId, opts){
   const isPinballFragment = isPinballFragmentItem(effectiveName);
   const isBossSegmentItem = isBossSegmentItemName(effectiveName);
   const explicitBossPct = bossDamageParse(effectiveName);
+  const pairedIsBossCheck = !!(paired && (isBossPercentHpLocationNode(paired) || bossIsVictoryLocationNode(paired)));
+  if(paired?.tableName && !pairedIsBossCheck && !isActiveSeedTableName(paired.tableName)){
+    apLog(`Ignoring off-seed receipt from ${paired.tableName}: ${effectiveName}`);
+    return;
+  }
+  if(isProgressiveBallItem && progressiveTarget && !isActiveSeedTableName(progressiveTarget)){
+    apLog(`Ignoring off-seed Progressive Ball target: ${progressiveTarget}`);
+    return;
+  }
   
   // Boss segment flow: do not show standard Overview reward popup; roll weighted damage into the raid bar.
   try{
@@ -22935,6 +23072,9 @@ function apReconcileWorldStateFromReceived(){
 
     // Start from default for canonical AP baseline.
     const base = clone(defaultState);
+    if(keepWorlds){
+      try{ base.worlds = clone(keepWorlds); }catch(_){ base.worlds = keepWorlds; }
+    }
     seedApStartBaseline(base, ap?.slotData);
 
     // Count Progressive Ball items by target table (normalized to tower key)
@@ -22958,6 +23098,10 @@ for(const r of (received || [])){
       const nm = String(r.itemName || r.baseItemName || "");
       const table = parseProgressiveBallTarget(nm);
       if(!table) continue;
+      if(!isActiveSeedTableName(table)){
+        try{ apLog(`Ignoring off-seed Progressive Ball inventory target: ${table}`); }catch(_){}
+        continue;
+      }
       const baseKey = getTableKeyForName(table);
       if(!baseKey) continue;
 
@@ -23095,6 +23239,10 @@ for(const r of (received || [])){
 }
 function applyProgressiveBallToTower(tableName){
   // Progressive Ball: +1 ball level for the target table, capped at 3.
+  if(!isActiveSeedTableName(tableName)){
+    apLog("Progressive Ball target is not in the active seed: " + tableName);
+    return;
+  }
   const baseKey = getTableKeyForName(tableName);
   if(!baseKey){
     apLog("Progressive Ball target not found in tower: " + tableName);
@@ -24707,7 +24855,7 @@ function checksTabLabel(wk){
 function checksTabLabelParts(wk){
   try{
     if(wk === "boss"){
-      const rawBoss = String(state?.worlds?.[wk]?.label || "World 6; Boss").trim();
+      const rawBoss = String(state?.worlds?.[wk]?.label || getBossWorldDefaultLabel(state)).trim();
       const partsBoss = rawBoss.split(";").map(s=>String(s||"").trim()).filter(Boolean);
       const mainBoss = partsBoss[0] || "BOSS";
       const subBoss = partsBoss.slice(1).join(" ; ");
@@ -27539,10 +27687,12 @@ function updateClimber(){
 
 function renderWorldButtons(){
   const container = document.getElementById("worlds");
+  const wrap = document.querySelector(".worldsWrap");
   const existing = new Map(Array.from(container.querySelectorAll(".world[data-world]")).map(el => [String(el.dataset.world || ""), el]));
   const liveTargets = hintGetLiveTargets();
   syncWorldPageToActiveContext();
   const liveOrder = getTowerWorldOrder();
+  if(wrap) wrap.classList.toggle("towerScrollable", liveOrder.length > 6);
 
   const focusWorld = liveOrder.includes(state.selected) ? state.selected : null;
   const bossWorldKey = (typeof getBossWorldKey === "function") ? String(getBossWorldKey() || "boss") : "boss";
@@ -27633,6 +27783,12 @@ state.selected = id;
   existing.forEach((node)=>{
     try{ node.remove(); }catch(_){}
   });
+  if(wrap && liveOrder.length > 6){
+    const selectedEl = container.querySelector(`[data-world="${state.selected}"]`);
+    if(selectedEl && typeof selectedEl.scrollIntoView === "function"){
+      try{ selectedEl.scrollIntoView({ block:"nearest", inline:"nearest" }); }catch(_){}
+    }
+  }
   updateBossThreatIndicators();
   try{ enforceBossTowerThreatVisual(towerBossThreatWanted); }catch(_){}
   try{ updateClimber(); }catch(_){}
