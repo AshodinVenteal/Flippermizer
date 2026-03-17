@@ -49,7 +49,44 @@
     "lock 2 balls and start multiball at the genie": "Light and lock two balls, then shoot Genie start to begin multiball.",
     "pick up 1 passenger": "Shoot the lit pickup/passenger shot once to load a passenger.",
     "score 1 goal": "Shoot the lit soccer goal/goal mouth shot and register one goal.",
-    "relight laser kick kickback": "Hit the relight target/lane for Laser Kick until kickback is active again."
+    "relight laser kick kickback": "Hit the relight target/lane for Laser Kick until kickback is active again.",
+    "advance 1 raft": "Shoot the lit hazard/raft path enough times to advance raft progress by one step.",
+    "complete river once": "Finish one full River progression sequence by collecting the required lit shots.",
+    "reach class 6 river": "Advance the White Water river classes until Class 6 is reached.",
+    "collect a 1 000 000 right ramp shot": "Light the right ramp for its 1,000,000 award, then shoot it before the light times out.",
+    "collect a ferris wheel award": "Light the Ferris Wheel, then shoot the Ferris Wheel shot to cash in one award.",
+    "spell palace and collect the jackpot": "Complete P-A-L-A-C-E to light the jackpot, then shoot the lit collect shot before it expires.",
+    "light the center ramp": "Complete the qualifier targets so the center ramp becomes lit, then confirm the light is active.",
+    "complete the 1986 top lanes": "Roll through the top lanes until the full 1-9-8-6 set is completed.",
+    "make 3 consecutive center ramp shots": "Hit the center ramp three times in succession before the sequence times out.",
+    "light extra ball at the cycle jump ramp": "Build enough progress on the cycle/jump ramp feature to light an Extra Ball there.",
+    "start double scoring": "Complete the required setup so the table enters its double-scoring phase.",
+    "complete 1 direction": "Finish one full directional shot set on Whirlwind to complete a single direction.",
+    "collect a super cellar award": "Light the Super Cellar, then shoot it while lit to collect the award.",
+    "light quick multiball": "Advance multiball qualifiers until Quick Multiball is lit and ready to start.",
+    "collect the hideout jackpot": "During High Speed multiball/chase, shoot the hideout when jackpot is lit.",
+    "start payback time": "Advance No Fear far enough to light and begin Payback Time.",
+    "start no limits": "Complete the required No Fear progression so No Limits becomes available, then start it.",
+    "start battle royale": "Complete the villain requirements that light Battle Royale, then start it at the lit shot.",
+    "qualify war machine multiball": "Advance Iron Man enough to light War Machine Multiball without needing to start it yet.",
+    "reach mark 6 to light jericho": "Build Iron Man armor progress to Mark 6 so Jericho becomes lit.",
+    "light do or die hurry up": "Complete the required setup to light the Do or Die hurry-up shot.",
+    "collect a door prize": "Shoot the lit Party Animal scoop/award shot to collect one Door Prize.",
+    "collect a party animal letter": "Light and collect one PARTY ANIMAL letter award.",
+    "collect the party bonus": "Light the Party Bonus, then shoot the collect shot while it is active.",
+    "complete bat": "Complete the B-A-T bank/lane sequence once.",
+    "spell elvira": "Collect the E-L-V-I-R-A letters until the full name is completed.",
+    "bring the mixmaster online": "Advance Dr. Dude enough to power up the Mixmaster feature and bring it online.",
+    "complete reflex 1 2 3": "Complete the Reflex 1-2-3 sequence by hitting each required step in order.",
+    "start dance contest": "Light the Dance Contest mode and shoot the start shot to begin it.",
+    "make a song request": "Shoot the Party Zone request shot when lit to queue one song request.",
+    "complete way out of control": "Start Way Out Of Control and finish its required lit shots before the timer expires.",
+    "invite 1 party member at the cosmic cottage": "Shoot the Cosmic Cottage when lit to invite one party member.",
+    "collect the big bang jackpot": "During Party Zone multiball, build and collect the Big Bang Jackpot at the lit shot.",
+    "collect a spider wheel award": "Shoot the Spider Wheel when lit and collect one award from it.",
+    "complete return of the dead heads": "Start Return of the Dead Heads and finish the required shot sequence.",
+    "light scared stiff": "Progress the main table features until Scared Stiff is lit and ready.",
+    "start scared stiff": "Once lit, shoot the start shot to begin Scared Stiff."
   });
 
   const RULES = [
@@ -120,6 +157,151 @@
     {
       re: /^light or collect extra ball$/,
       desc: "Either light Extra Ball or fully collect it, depending on current table state."
+    },
+    {
+      re: /^light lock for multiball$/,
+      desc: "Advance the table's lock qualifiers until a ball lock for multiball is lit."
+    },
+    {
+      re: /^start any whirlpool mode$/,
+      desc: "Shoot the Whirlpool when a mode is ready so one Whirlpool mode begins."
+    },
+    {
+      re: /^lock 1 ball at the juggler$/,
+      desc: "Light the Juggler lock and shoot it once to lock a ball."
+    },
+    {
+      re: /^complete the ducks targets$/,
+      desc: "Knock down/finish the Ducks targets until the full bank is completed."
+    },
+    {
+      re: /^complete the orange standup targets$/,
+      desc: "Hit each orange standup target required for one full completion."
+    },
+    {
+      re: /^complete the white standup targets$/,
+      desc: "Hit each white standup target required for one full completion."
+    },
+    {
+      re: /^complete the shooting gallery targets$/,
+      desc: "Finish the entire Shooting Gallery target bank."
+    },
+    {
+      re: /^complete the ball toss targets$/,
+      desc: "Finish the Ball Toss target bank to complete that feature once."
+    },
+    {
+      re: /^make 1 comet ramp shot$/,
+      desc: "Shoot the Comet ramp once cleanly."
+    },
+    {
+      re: /^light the 1 000 000 comet ramp shot$/,
+      desc: "Complete the needed setup so the Comet ramp is lit for its 1,000,000 award."
+    },
+    {
+      re: /^complete the green stoplight targets$/,
+      desc: "Finish the green stoplight target bank to advance the stoplight sequence."
+    },
+    {
+      re: /^make (\d+) freeways?(?: on one ball)?$/,
+      desc: function(match){
+        const count = String(match[1] || "").trim();
+        return "Shoot the lit freeway/orbit enough times to collect " + count + " Freeway award" + (count === "1" ? "" : "s") + (/\bone ball\b/i.test(match.input || "") ? " on the same ball." : ".");
+      }
+    },
+    {
+      re: /^reach red light$/,
+      desc: "Advance the stoplight progression until Red Light is reached."
+    },
+    {
+      re: /^start any minor challenge$/,
+      desc: "Light and start any of No Fear's smaller timed challenge modes."
+    },
+    {
+      re: /^complete air challenge$/,
+      desc: "Start Air Challenge and complete its required lit shots before time runs out."
+    },
+    {
+      re: /^start any white mode$/,
+      desc: "Shoot the currently lit white insert mode shot to begin any white mode."
+    },
+    {
+      re: /^light a 2x shot multiplier$/,
+      desc: "Build the necessary table progress so a 2x shot multiplier becomes lit."
+    },
+    {
+      re: /^start black suit multiball$/,
+      desc: "Qualify Black Suit Multiball, then shoot the lit start shot."
+    },
+    {
+      re: /^complete any level (\d+) villain mode$/,
+      desc: function(match){
+        const level = String(match[1] || "").trim();
+        return "Start any Level " + level + " villain mode and finish all lit required shots for that mode.";
+      }
+    },
+    {
+      re: /^complete the iron man targets once$/,
+      desc: "Finish one full completion of the Iron Man target bank."
+    },
+    {
+      re: /^spell f i r e once$/,
+      desc: "Complete the F-I-R-E letter sequence one time."
+    },
+    {
+      re: /^start [23]x playfield$/,
+      desc: "Advance the needed shots/features until the playfield multiplier is lit, then start it."
+    },
+    {
+      re: /^collect a song jackpot$/,
+      desc: "During a song-based feature, shoot the currently lit jackpot shot to collect it."
+    },
+    {
+      re: /^complete the jukebox targets$/,
+      desc: "Finish the full Jukebox target bank."
+    },
+    {
+      re: /^complete pig out and collect a toadstool award$/,
+      desc: "Spell/finish PIG-OUT, then shoot the Toadstool while its award is lit."
+    },
+    {
+      re: /^spell party animal and start multiball$/,
+      desc: "Collect the PARTY ANIMAL letters and then shoot the lit multiball start."
+    },
+    {
+      re: /^light lock at the left orbit$/,
+      desc: "Advance Elvira enough to light the left orbit for a lock."
+    },
+    {
+      re: /^collect the multiball jackpot$/,
+      desc: "During multiball, shoot one of the currently lit jackpot shots to collect it."
+    },
+    {
+      re: /^complete 1 color shot$/,
+      desc: "Finish one full color-shot objective on Dr. Dude."
+    },
+    {
+      re: /^complete the r e f l e x targets$/,
+      desc: "Hit the R-E-F-L-E-X targets until the full sequence is completed."
+    },
+    {
+      re: /^double the jackpot during multiball$/,
+      desc: "During multiball, complete the required setup to raise the jackpot to its doubled value."
+    },
+    {
+      re: /^invite (\d+) party member at the cosmic cottage$/,
+      desc: function(match){
+        const count = String(match[1] || "").trim();
+        return "Shoot the Cosmic Cottage while lit to invite " + count + " party member" + (count === "1" ? "" : "s") + ".";
+      }
+    },
+    {
+      re: /^complete any tale$/,
+      desc: "Start any Tale mode on Scared Stiff and finish it successfully."
+    },
+    {
+      re: /^start crate multiball$/,
+      desc: "Qualify Crate Multiball and shoot the lit start shot to begin it."
     },
     {
       re: /^start any timed mode$/,
