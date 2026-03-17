@@ -13556,22 +13556,6 @@ window.__manualDisconnect = false;
     w5: "WorldsBanners/FeaturedDevPython-SQ.png",
     boss: "WorldsBanners/BossTableSQ.png"
   });
-  const DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP = Object.freeze({
-    rampsrumpus: "WorldsBanners/RampsRumpus-SQ.png",
-    maltdesniyworld: "WorldsBanners/MaltDesniyWorld-SQ.png",
-    vintagetelevision: "WorldsBanners/VintageTelevision-SQ.png",
-    spinnersparring: "WorldsBanners/SpinnerSparring-SQ.png",
-    featureddesignerpythonanghelo: "WorldsBanners/FeaturedDevPython-SQ.png",
-    pythonangheloshowcase: "WorldsBanners/FeaturedDevPython-SQ.png",
-    python_anghelo_showcase: "WorldsBanners/FeaturedDevPython-SQ.png",
-    stormchasers: "WorldsBanners/StormChasers.png",
-    steveritchieshowcase: "WorldsBanners/FeaturedDev-SteveRitchie.png",
-    featureddesignersteveritchie: "WorldsBanners/FeaturedDev-SteveRitchie.png",
-    steve_ritchie_showcase: "WorldsBanners/FeaturedDev-SteveRitchie.png",
-    dennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
-    featureddesignerdennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
-    dennis_nordman_party_monsters: "WorldsBanners/DennisNordmanPartyMonsters.png"
-  });
   const DEFAULT_TABLE_BANNER_REFS_BY_CODE = Object.freeze({
     MM: "WorldsBanners/MedievalMadnessCover2.png",
     AFM: "WorldsBanners/Flyers/Attack_From_Mars_Pinball_Flyer (1).png",
@@ -13585,34 +13569,10 @@ window.__manualDisconnect = false;
     PARA: "WorldsBanners/Flyers/paragon--bally-07061-04.jpg",
     GLIZ: "WorldsBanners/Flyers/grand-lizard-flyer-4.jpg",
     TAXI: "WorldsBanners/Flyers/Taxi_(Lola)_flyer.jpg",
-    BOP: "WorldsBanners/Flyers/bop_flyer_mop1.jpeg",
-    HSPD: "https://www.ipdb.org/showpic.pl?id=1176&picno=4504",
-    ACDC: "https://www.ipdb.org/showpic.pl?id=5854&picno=27847&zoom=1",
-    HUR: "https://www.ipdb.org/showpic.pl?id=1257&picno=7191",
-    COMET: "https://www.ipdb.org/showpic.pl?id=548&picno=510",
-    CYC: "https://www.ipdb.org/showpic.pl?id=617&picno=4607",
-    WHRL: "https://www.ipdb.org/showpic.pl?id=2765&picno=25877",
-    PARTY: "https://www.ipdb.org/showpic.pl?id=1788&picno=3345&zoom=1",
-    EATPM: "https://www.ipdb.org/showpic.pl?id=790&picno=12989&zoom=1",
-    DRDUDE: "https://www.ipdb.org/showpic.pl?id=744&picno=9497&zoom=1",
-    PZONE: "https://www.ipdb.org/showpic.pl?id=1789&picno=53664&zoom=1",
-    SSTIFF: "https://www.ipdb.org/showpic.pl?id=3915&picno=31814&zoom=1"
+    BOP: "WorldsBanners/Flyers/bop_flyer_mop1.jpeg"
   });
-  function normalizeWorldBannerLookup(v){
-    return String(v || "").toLowerCase().replace(/[^a-z0-9_]+/g, "");
-  }
-  function resolveDefaultWorldBannerByLookup(values){
-    const list = Array.isArray(values) ? values : [values];
-    for(const raw of list){
-      const key = normalizeWorldBannerLookup(raw);
-      if(key && DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key]) return String(DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key] || "");
-    }
-    return "";
-  }
-  function getDefaultWorldBannerRef(worldKey, extraLookups){
+  function getDefaultWorldBannerRef(worldKey){
     const wk = String(worldKey || "").trim();
-    const fromLookup = resolveDefaultWorldBannerByLookup([wk].concat(Array.isArray(extraLookups) ? extraLookups : []));
-    if(fromLookup) return fromLookup;
     if(DEFAULT_WORLD_BANNER_REFS[wk]) return String(DEFAULT_WORLD_BANNER_REFS[wk] || "");
     const match = wk.match(/^w(\d+)$/i);
     if(match){
@@ -13796,14 +13756,7 @@ window.__manualDisconnect = false;
       nextWorlds[wk] = {
         label,
         locked: (typeof cur.locked === "boolean") ? cur.locked : true,
-        banner: (typeof cur.banner === "string" && cur.banner)
-          ? cur.banner
-          : getDefaultWorldBannerRef(
-              wk,
-              [label]
-                .concat(Array.isArray(entry?.group_keys) ? entry.group_keys : [])
-                .concat(Array.isArray(entry?.group_labels) ? entry.group_labels : [])
-            ),
+        banner: (typeof cur.banner === "string" && cur.banner) ? cur.banner : getDefaultWorldBannerRef(wk),
         tables
       };
       nextOrder.push(wk);
@@ -25744,33 +25697,13 @@ function splitLabel(label){
 
 const DESIGNER_SOURCE_LINKS = {
   wiki_python: "https://en.wikipedia.org/wiki/Python_Anghelo",
-  wiki_steve: "https://en.wikipedia.org/wiki/Steve_Ritchie",
-  wiki_dennis: "https://en.wikipedia.org/wiki/Dennis_Nordman",
-  kineticist_steve: "https://www.kineticist.com/pinball-people/steve-ritchie",
-  kineticist_dennis: "https://www.kineticist.com/pinball-people/dennis-nordman",
   ipdb_grand_lizard: "https://www.ipdb.org/machine.cgi?id=1070",
   ipdb_jokerz: "https://www.ipdb.org/machine.cgi?id=1308",
   ipdb_bad_cats: "https://www.ipdb.org/machine.cgi?id=127",
   ipdb_taxi: "https://www.ipdb.org/machine.cgi?id=2505",
   ipdb_bride_pinbot: "https://www.ipdb.org/machine.cgi?id=1502",
-  ipdb_high_speed: "https://www.ipdb.org/machine.cgi?id=1176",
-  ipdb_no_fear: "https://www.ipdb.org/machine.cgi?id=2852",
-  ipdb_spiderman_ve: "https://www.ipdb.org/machine.cgi?id=6328",
-  ipdb_acdc: "https://www.ipdb.org/machine.cgi?id=5854",
-  ipdb_party_animal: "https://www.ipdb.org/machine.cgi?id=1788",
-  ipdb_elvira_party_monsters: "https://www.ipdb.org/machine.cgi?id=790",
-  ipdb_dr_dude: "https://www.ipdb.org/machine.cgi?id=744",
-  ipdb_party_zone: "https://www.ipdb.org/machine.cgi?id=1789",
-  ipdb_scared_stiff: "https://www.ipdb.org/machine.cgi?id=3915",
   ipdb_flyer_jokerz_front: "https://www.ipdb.org/showpic.pl?id=1308&picno=4512",
   ipdb_flyer_bad_cats_front: "https://www.ipdb.org/showpic.pl?id=127&picno=4510",
-  ipdb_flyer_high_speed_front: "https://www.ipdb.org/showpic.pl?id=1176&picno=4504",
-  ipdb_flyer_acdc_front: "https://www.ipdb.org/showpic.pl?id=5854&picno=27847&zoom=1",
-  ipdb_flyer_party_animal_front: "https://www.ipdb.org/showpic.pl?id=1788&picno=3345&zoom=1",
-  ipdb_flyer_elvira_party_monsters_front: "https://www.ipdb.org/showpic.pl?id=790&picno=12989&zoom=1",
-  ipdb_flyer_dr_dude_front: "https://www.ipdb.org/showpic.pl?id=744&picno=9497&zoom=1",
-  ipdb_flyer_party_zone_front: "https://www.ipdb.org/showpic.pl?id=1789&picno=53664&zoom=1",
-  ipdb_flyer_scared_stiff_front: "https://www.ipdb.org/showpic.pl?id=3915&picno=31814&zoom=1",
   forum_watercolor: "https://pinside.com/pinball/forum/topic/python-anghelo-and-his-bad-cats-watercolour-painting-from-1970",
   forum_legacy: "https://pinside.com/pinball/forum/topic/rip-python-anghelo",
   forum_doctor_flash: "https://pinside.com/pinball/machine/black-knight-2000/details"
@@ -25781,16 +25714,7 @@ const DESIGNER_TABLE_CREDITS = {
   "jokerz": [{ designer:"Python Anghelo", role:"Co-design", sourceKey:"ipdb_jokerz" }],
   "badcats": [{ designer:"Python Anghelo", role:"Artwork", sourceKey:"ipdb_bad_cats" }],
   "taxi": [{ designer:"Python Anghelo", role:"Design and artwork", sourceKey:"ipdb_taxi" }],
-  "brideofpinbot": [{ designer:"Python Anghelo", role:"Concept and artwork", sourceKey:"ipdb_bride_pinbot" }],
-  "highspeed": [{ designer:"Steve Ritchie", role:"Design", sourceKey:"ipdb_high_speed" }],
-  "nofeardangeroussports": [{ designer:"Steve Ritchie", role:"Design", sourceKey:"ipdb_no_fear" }],
-  "spidermanvaultedition": [{ designer:"Steve Ritchie", role:"Design", sourceKey:"ipdb_spiderman_ve" }],
-  "acdc": [{ designer:"Steve Ritchie", role:"Design", sourceKey:"ipdb_acdc" }],
-  "partyanimal": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_party_animal" }],
-  "elviraandthepartymonsters": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_elvira_party_monsters" }],
-  "drdude": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_dr_dude" }],
-  "partyzone": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_party_zone" }],
-  "scaredstiff": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_scared_stiff" }]
+  "brideofpinbot": [{ designer:"Python Anghelo", role:"Concept and artwork", sourceKey:"ipdb_bride_pinbot" }]
 };
 
 const DESIGNER_PROFILES = {
@@ -25854,96 +25778,6 @@ const DESIGNER_PROFILES = {
       { label:"IPDB; Bride of Pinbot", sourceKey:"ipdb_bride_pinbot" },
       { label:"Pinside Forum; Bad Cats watercolor thread", sourceKey:"forum_watercolor" },
       { label:"Pinside Forum; RIP Python Anghelo", sourceKey:"forum_legacy" }
-    ]
-  },
-  steveritchie: {
-    name: "Steve Ritchie",
-    title: "FEATURED DESIGNER; STEVE RITCHIE",
-    subtitle: "Fast-flow featured-designer profile built around Steve Ritchie IPDB credits.",
-    headshot: {
-      url: "https://cdn.prod.website-files.com/630f7e3a17d08a21ae05d20a/6488d9903fad2a1a24140473_oVi6PajYe-f3Ubw1gZ6luGz6RaBfP4Qo_fzXr0Iwenw.avif",
-      source: "https://www.kineticist.com/pinball-people/steve-ritchie",
-      credit: "Headshot via Kineticist"
-    },
-    bio: [
-      "Steve Ritchie is one of the defining modern pinball designers, known for layouts built around speed, direct shot geometry, and strong return-to-action flow.",
-      "This world card stays tied to confirmed IPDB credits, so it highlights the Steve-authored machines in the stream pack instead of treating every playable table in the showcase as a designer credit."
-    ],
-    trivia: [
-      {
-        text: "Pinball players often describe him as the \"King of Flow\" because his games tend to keep the ball moving quickly from shot to shot.",
-        sourceKey: "wiki_steve",
-        sourceLabel: "Wikipedia"
-      },
-      {
-        text: "Ritchie is also known for performing callouts and voice work on some of his own games, giving them an immediately recognizable personality.",
-        sourceKey: "wiki_steve",
-        sourceLabel: "Wikipedia"
-      },
-      {
-        text: "This featured-designer world favors VPX stream-ready builds, but the info card still limits itself to the tables Steve is actually credited on.",
-        sourceKey: "ipdb_high_speed",
-        sourceLabel: "IPDB set"
-      }
-    ],
-    games: [
-      { title:"High Speed (Williams, 1986)", tableName:"High Speed", credit:"Design credit.", sourceKey:"ipdb_high_speed", flyerKey:"ipdb_flyer_high_speed_front" },
-      { title:"No Fear: Dangerous Sports (Williams, 1995)", tableName:"No Fear: Dangerous Sports", credit:"Design credit.", sourceKey:"ipdb_no_fear", flyerKey:"" },
-      { title:"Spider-Man Vault Edition (Stern, 2016)", tableName:"Spider-Man Vault Edition", credit:"Design credit.", sourceKey:"ipdb_spiderman_ve", flyerKey:"" },
-      { title:"AC/DC (Stern, 2012)", tableName:"AC/DC", credit:"Design credit.", sourceKey:"ipdb_acdc", flyerKey:"ipdb_flyer_acdc_front" }
-    ],
-    anecdotes: [
-      {
-        text:"High Speed works as a clean mission statement for Ritchie's style: straightforward objectives, urgent pacing, and shots that want to be repeated at speed.",
-        sourceKey:"ipdb_high_speed"
-      },
-      {
-        text:"The Williams-to-Stern spread in this profile shows how consistent his design identity stayed even as the table eras changed around him.",
-        sourceKey:"wiki_steve"
-      },
-      {
-        text:"The stream-ready showcase pack can be broader than the strict IPDB credit list used by this info card, so the profile stays intentionally source-first."
-      }
-    ],
-    sources: [
-      { label:"Wikipedia; Steve Ritchie", sourceKey:"wiki_steve" },
-      { label:"Kineticist; Steve Ritchie", sourceKey:"kineticist_steve" },
-      { label:"IPDB; High Speed", sourceKey:"ipdb_high_speed" },
-      { label:"IPDB; No Fear: Dangerous Sports", sourceKey:"ipdb_no_fear" },
-      { label:"IPDB; Spider-Man Vault Edition", sourceKey:"ipdb_spiderman_ve" },
-      { label:"IPDB; AC/DC", sourceKey:"ipdb_acdc" }
-    ]
-  },
-  dennisnordman: {
-    name: "Dennis Nordman",
-    title: "FEATURED DESIGNER; DENNIS NORDMAN",
-    subtitle: "IPDB-backed party-monster credits for the Dennis Nordman showcase pack.",
-    headshot: {
-      url: "https://cdn.prod.website-files.com/630f7e3a17d08a21ae05d20a/6488a16e9c66d4d332855397_YJ96O1wGQIRziUlZ8CRsUwivcOKWV0VNE40NXpXeNx4.avif",
-      source: "https://www.kineticist.com/pinball-people/dennis-nordman",
-      credit: "Headshot via Kineticist"
-    },
-    bio: [
-      "IPDB credits Dennis Nordman on Party Animal, Elvira and the Party Monsters, Dr. Dude, Party Zone, and Scared Stiff.",
-      "Those same tables now feed the Bestiary and the featured-designer flyer carousel with direct IPDB sources."
-    ],
-    trivia: [],
-    games: [
-      { title:"Party Animal (Bally, 1987)", tableName:"Party Animal", credit:"Design credit.", sourceKey:"ipdb_party_animal", flyerKey:"ipdb_flyer_party_animal_front" },
-      { title:"Elvira and the Party Monsters (Bally, 1989)", tableName:"Elvira and the Party Monsters", credit:"Design credit.", sourceKey:"ipdb_elvira_party_monsters", flyerKey:"ipdb_flyer_elvira_party_monsters_front" },
-      { title:"Dr. Dude (Bally, 1990)", tableName:"Dr. Dude", credit:"Design credit.", sourceKey:"ipdb_dr_dude", flyerKey:"ipdb_flyer_dr_dude_front" },
-      { title:"Party Zone (Bally, 1991)", tableName:"Party Zone", credit:"Design credit.", sourceKey:"ipdb_party_zone", flyerKey:"ipdb_flyer_party_zone_front" },
-      { title:"Scared Stiff (Bally, 1996)", tableName:"Scared Stiff", credit:"Design credit.", sourceKey:"ipdb_scared_stiff", flyerKey:"ipdb_flyer_scared_stiff_front" }
-    ],
-    anecdotes: [],
-    sources: [
-      { label:"Wikipedia; Dennis Nordman", sourceKey:"wiki_dennis" },
-      { label:"Kineticist; Dennis Nordman", sourceKey:"kineticist_dennis" },
-      { label:"IPDB; Party Animal", sourceKey:"ipdb_party_animal" },
-      { label:"IPDB; Elvira and the Party Monsters", sourceKey:"ipdb_elvira_party_monsters" },
-      { label:"IPDB; Dr. Dude", sourceKey:"ipdb_dr_dude" },
-      { label:"IPDB; Party Zone", sourceKey:"ipdb_party_zone" },
-      { label:"IPDB; Scared Stiff", sourceKey:"ipdb_scared_stiff" }
     ]
   }
 };

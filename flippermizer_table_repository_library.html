@@ -391,8 +391,10 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
   }
   function resolveBannerByCode(code, name){
     try{
+      const repoTable = (repo && typeof repo.getTableByCode === "function") ? repo.getTableByCode(code) : null;
+      const repoBanner = String(repoTable && repoTable.banner || "").trim();
       const byCode = overlayState && overlayState.tableBannersByCode;
-      if(byCode && typeof byCode[code] === "string" && byCode[code]) return byCode[code];
+      if(byCode && typeof byCode[code] === "string" && byCode[code] && !String(byCode[code]).startsWith("idb:")) return byCode[code];
       const worlds = overlayState && overlayState.worlds;
       const slots = overlayState && overlayState.tableBanners;
       if(worlds && slots){
@@ -402,11 +404,12 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
             const nm = canonicalName(arr[i]);
             if(canonicalCode(nm) === code || canonicalName(nm) === canonicalName(name)){
               const sk = `${wk}|${i}`;
-              if(typeof slots[sk] === "string" && slots[sk]) return slots[sk];
+              if(typeof slots[sk] === "string" && slots[sk] && !String(slots[sk]).startsWith("idb:")) return slots[sk];
             }
           }
         }
       }
+      if(repoBanner) return repoBanner;
     }catch(_){ }
     return "";
   }

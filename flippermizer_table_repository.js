@@ -93,6 +93,16 @@
     { code:'BOP', slug:'bride_of_pinbot', name:'Bride of Pinbot', aliases:['Bride Of Pinbot','Bride of Pin*Bot'] },
 
     { code:'WW', slug:'white_water', name:'White Water', aliases:[] },
+    { code:'HSPD', slug:'high_speed', name:'High Speed', aliases:[] },
+    { code:'NFEAR', slug:'no_fear_dangerous_sports', name:'No Fear: Dangerous Sports', aliases:['No Fear'] },
+    { code:'SMVE', slug:'spider_man_vault_edition', name:'Spider-Man Vault Edition', aliases:['Spider-Man VE','Spider-Man (Vault Edition)'] },
+    { code:'IMVE', slug:'iron_man_vault_edition', name:'Iron Man Vault Edition', aliases:['Iron Man VE','Iron Man (Vault Edition)','Iron Man Pro Vault Edition'] },
+    { code:'ACDC', slug:'acdc', name:'AC/DC', aliases:['ACDC'] },
+    { code:'PARTY', slug:'party_animal', name:'Party Animal', aliases:[] },
+    { code:'EATPM', slug:'elvira_and_the_party_monsters', name:'Elvira and the Party Monsters', aliases:['Elvira & the Party Monsters'] },
+    { code:'DRDUDE', slug:'dr_dude', name:'Dr. Dude', aliases:['Dr. Dude And His Excellent Ray'] },
+    { code:'PZONE', slug:'party_zone', name:'Party Zone', aliases:[] },
+    { code:'SSTIFF', slug:'scared_stiff', name:'Scared Stiff', aliases:[] },
     { code:'IJTPA', slug:'indiana_jones_the_pinball_adventure', name:'Indiana Jones: The Pinball Adventure', aliases:['Indiana Jones TPA','Williams Indiana Jones','Indiana Jones'] },
     { code:'BSD', slug:'bram_stokers_dracula', name:'Bram Stoker\'s Dracula', aliases:['Bram Stoker’s Dracula','Dracula'] },
     { code:'PFOR', slug:'police_force', name:'Police Force', aliases:[] },
@@ -110,6 +120,50 @@
 
     { code:'BOSS_TABLE', slug:'boss_table_placeholder', name:'(Boss Table)', aliases:['Boss Table','Boss'] }
   ];
+
+  var TABLE_BANNER_REFS = {
+    MM: 'WorldsBanners/MedievalMadnessCover2.png',
+    AFM: 'WorldsBanners/Flyers/Attack_From_Mars_Pinball_Flyer (1).png',
+    WCS: 'WorldsBanners/Flyers/WCS_flyer.jpg',
+    GET: 'WorldsBanners/Flyers/getaway-high-speed-ii-the--williams-07032-01.jpg',
+    TOTAN: 'WorldsBanners/Flyers/Tales_of_the_Arabian_Nights_Pinball_Flyer.png',
+    HOOK: 'WorldsBanners/Flyers/pinside_archive_241_4f05a302d3c7.jpg',
+    CONGO: 'WorldsBanners/Flyers/pinside_archive_31_e7cd021afce8.jpg',
+    MCAST: 'WorldsBanners/Flyers/$_1.jpg',
+    ATEAM: 'WorldsBanners/Flyers/TheA-Team(Original2023)Flyer.png.1d219dc947d02e740f94eb39aba17e1b.png',
+    KRID: 'WorldsBanners/Flyers/images.jpg',
+    HHEAT: 'WorldsBanners/Flyers/pinside_archive_240_510e39bd3ca6.jpg',
+    BAYW: 'WorldsBanners/Flyers/s-l1200.jpg',
+    STTNG: 'WorldsBanners/Flyers/star-trek-the-next-generation-07051-06.jpg',
+    MET: 'WorldsBanners/Flyers/Meteor-flyer-pg-2.jpg',
+    HGT: 'WorldsBanners/Flyers/harlem-globetrotters-on-tour-06930-01.jpg',
+    DP: 'WorldsBanners/Flyers/s-l400 (1).jpg',
+    PARA: 'WorldsBanners/Flyers/paragon--bally-07061-04.jpg',
+    ROBO: 'WorldsBanners/Flyers/s-l400 (2).jpg',
+    GLIZ: 'WorldsBanners/Flyers/grand-lizard-flyer-4.jpg',
+    JOK: 'WorldsBanners/Flyers/s-l400 (3).jpg',
+    BCAT: 'WorldsBanners/Flyers/pinside_archive_791_ecf6b4fec986.jpg',
+    TAXI: 'WorldsBanners/Flyers/Taxi_(Lola)_flyer.jpg',
+    BOP: 'WorldsBanners/Flyers/bop_flyer_mop1.jpeg',
+    WW: 'https://www.ipdb.org/showpic.pl?id=2768&picno=31013&zoom=1',
+    HSPD: 'https://www.ipdb.org/showpic.pl?id=1176&picno=4504',
+    IMVE: 'https://www.ipdb.org/showpic.pl?id=6154&picno=35786',
+    ACDC: 'https://www.ipdb.org/showpic.pl?id=5854&picno=27847&zoom=1',
+    PARTY: 'https://www.ipdb.org/showpic.pl?id=1788&picno=3345&zoom=1',
+    EATPM: 'https://www.ipdb.org/showpic.pl?id=790&picno=12989&zoom=1',
+    DRDUDE: 'https://www.ipdb.org/showpic.pl?id=744&picno=9497&zoom=1',
+    PZONE: 'https://www.ipdb.org/showpic.pl?id=1789&picno=53664&zoom=1',
+    SSTIFF: 'https://www.ipdb.org/showpic.pl?id=3915&picno=31814&zoom=1',
+    IJTPA: 'https://www.ipdb.org/showpic.pl?id=1267&picno=7798',
+    TAF: 'https://www.ipdb.org/showpic.pl?id=20&picno=3831',
+    FH: 'https://www.ipdb.org/showpic.pl?id=966&picno=1503',
+    FT: 'https://www.ipdb.org/showpic.pl?id=891&picno=1684',
+    BROSE: 'https://www.ipdb.org/showpic.pl?id=313&picno=555',
+    HUR: 'https://www.ipdb.org/showpic.pl?id=1257&picno=7191',
+    COMET: 'https://www.ipdb.org/showpic.pl?id=548&picno=510',
+    CYC: 'https://www.ipdb.org/showpic.pl?id=617&picno=4607',
+    WHRL: 'https://www.ipdb.org/showpic.pl?id=2765&picno=25877'
+  };
 
   var DEFAULT_WORLD_TABLE_CODES = {
     w1: ['MM','AFM','WCS','GET','ST13'],
@@ -135,6 +189,37 @@
         'https://www.ipdb.org/machine.cgi?id=2505',
         'https://www.ipdb.org/machine.cgi?id=1502'
       ]
+    },
+    {
+      key: 'steveritchie',
+      name: 'Steve Ritchie',
+      aliases: ['Steve', 'King Steve', 'Steve Ritchie'],
+      headline: 'Fast-flowing rules designer behind a long run of Williams and Stern hits.',
+      headshot: 'https://cdn.prod.website-files.com/630f7e3a17d08a21ae05d20a/6488d9903fad2a1a24140473_oVi6PajYe-f3Ubw1gZ6luGz6RaBfP4Qo_fzXr0Iwenw.avif',
+      sources: [
+        'https://en.wikipedia.org/wiki/Steve_Ritchie',
+        'https://www.kineticist.com/pinball-people/steve-ritchie',
+        'https://www.ipdb.org/machine.cgi?id=1176',
+        'https://www.ipdb.org/machine.cgi?id=2852',
+        'https://www.ipdb.org/machine.cgi?id=6328',
+        'https://www.ipdb.org/machine.cgi?id=5854'
+      ]
+    },
+    {
+      key: 'dennisnordman',
+      name: 'Dennis Nordman',
+      aliases: ['Dennis', 'Dennis Nordman'],
+      headline: 'Designer of irreverent Bally and Williams fan favorites with big toys and strong visual hooks.',
+      headshot: 'https://cdn.prod.website-files.com/630f7e3a17d08a21ae05d20a/6488a16e9c66d4d332855397_YJ96O1wGQIRziUlZ8CRsUwivcOKWV0VNE40NXpXeNx4.avif',
+      sources: [
+        'https://en.wikipedia.org/wiki/Dennis_Nordman',
+        'https://www.kineticist.com/pinball-people/dennis-nordman',
+        'https://www.ipdb.org/machine.cgi?id=1788',
+        'https://www.ipdb.org/machine.cgi?id=790',
+        'https://www.ipdb.org/machine.cgi?id=744',
+        'https://www.ipdb.org/machine.cgi?id=1789',
+        'https://www.ipdb.org/machine.cgi?id=3915'
+      ]
     }
   ];
 
@@ -143,7 +228,16 @@
     JOK: [{ designerKey:'pythonanghelo', role:'Co-design' }],
     BCAT: [{ designerKey:'pythonanghelo', role:'Artwork' }],
     TAXI: [{ designerKey:'pythonanghelo', role:'Design and artwork' }],
-    BOP: [{ designerKey:'pythonanghelo', role:'Concept and artwork' }]
+    BOP: [{ designerKey:'pythonanghelo', role:'Concept and artwork' }],
+    HSPD: [{ designerKey:'steveritchie', role:'Design' }],
+    NFEAR: [{ designerKey:'steveritchie', role:'Design' }],
+    SMVE: [{ designerKey:'steveritchie', role:'Design' }],
+    ACDC: [{ designerKey:'steveritchie', role:'Design' }],
+    PARTY: [{ designerKey:'dennisnordman', role:'Design' }],
+    EATPM: [{ designerKey:'dennisnordman', role:'Design' }],
+    DRDUDE: [{ designerKey:'dennisnordman', role:'Design' }],
+    PZONE: [{ designerKey:'dennisnordman', role:'Design' }],
+    SSTIFF: [{ designerKey:'dennisnordman', role:'Design' }]
   };
 
   var TABLE_BY_CODE = Object.create(null);
@@ -156,7 +250,8 @@
       code: String(t.code || '').trim(),
       slug: String(t.slug || '').trim(),
       name: String(t.name || '').trim(),
-      aliases: Array.isArray(t.aliases) ? t.aliases.slice() : []
+      aliases: Array.isArray(t.aliases) ? t.aliases.slice() : [],
+      banner: String(TABLE_BANNER_REFS[String(t.code || '').trim()] || '').trim()
     };
     if(!table.code || !table.name) return;
     TABLE_BY_CODE[table.code] = table;
@@ -320,7 +415,16 @@
   }
 
   function getAllTables(){
-    return TABLES.map(function(t){ return { code:t.code, slug:t.slug, name:t.name, aliases:(t.aliases||[]).slice() }; });
+    return TABLES.map(function(t){
+      var code = String(t.code || '').trim();
+      return {
+        code: code,
+        slug: t.slug,
+        name: t.name,
+        aliases: (t.aliases||[]).slice(),
+        banner: String(TABLE_BANNER_REFS[code] || '').trim()
+      };
+    });
   }
 
   function resolveDesigner(query){
@@ -380,7 +484,7 @@
   }
 
   var repo = {
-    version: '1.1.0',
+    version: '1.2.0',
     worldOrder: getWorldOrder(),
     worldSpecs: JSON.parse(JSON.stringify(WORLD_SPECS)),
     defaultWorldTableCodes: JSON.parse(JSON.stringify(DEFAULT_WORLD_TABLE_CODES)),

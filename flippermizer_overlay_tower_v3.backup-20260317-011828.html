@@ -297,55 +297,6 @@ body[class*="flprShopBorder"] .captureShopBorder{
   position:relative;
   isolation:isolate;
 }
-.worldPageDock{
-  display:none;
-  align-items:center;
-  gap:8px;
-  margin-left: 8px;
-  padding: 6px 8px;
-  border: 2px solid rgba(0,166,255,0.34);
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(7,26,44,0.88), rgba(3,16,26,0.84));
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
-}
-.worldPageDock.active{
-  display:flex;
-}
-.worldPageBtn{
-  min-width: 54px;
-  padding: 8px 10px 7px;
-  border-radius: 10px;
-  border: 2px solid rgba(0,166,255,0.55);
-  background: linear-gradient(180deg, rgba(3,20,34,0.96), rgba(2,10,18,0.94));
-  color: var(--text);
-  font-size: 8px;
-  cursor: pointer;
-}
-.worldPageBtn:hover:not(:disabled){
-  border-color: rgba(34,255,136,0.88);
-  color: rgba(34,255,136,0.96);
-}
-.worldPageBtn:disabled{
-  opacity: .4;
-  cursor: default;
-}
-.worldPageMeta{
-  display:flex;
-  flex-direction:column;
-  gap: 2px;
-  min-width: 124px;
-  text-align:center;
-}
-.worldPageMetaMain{
-  font-size: 9px;
-  color: var(--cyan);
-  line-height: 1.2;
-}
-.worldPageMetaSub{
-  font-size: 7px;
-  color: rgba(232,250,255,0.72);
-  line-height: 1.2;
-}
 .headerTabGlow{
   position:absolute;
   z-index:0;
@@ -12898,14 +12849,6 @@ body.flprShopSparksCat{
           <button class="tab" id="tabChecks">CHECKS</button>
           <button class="tab" id="tabHints">HINTS</button>
         </div>
-        <div class="worldPageDock" id="worldPageDock" hidden>
-          <button class="worldPageBtn" id="worldPagePrevBtn" type="button">PREV</button>
-          <div class="worldPageMeta">
-            <div class="worldPageMetaMain" id="worldPageMetaMain">PAGE 1 / 1</div>
-            <div class="worldPageMetaSub" id="worldPageMetaSub">TABLES 1-25</div>
-          </div>
-          <button class="worldPageBtn" id="worldPageNextBtn" type="button">NEXT</button>
-        </div>
       </div>
     </div>
     <div class="toastWrap" id="toastWrap"></div>
@@ -13556,22 +13499,6 @@ window.__manualDisconnect = false;
     w5: "WorldsBanners/FeaturedDevPython-SQ.png",
     boss: "WorldsBanners/BossTableSQ.png"
   });
-  const DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP = Object.freeze({
-    rampsrumpus: "WorldsBanners/RampsRumpus-SQ.png",
-    maltdesniyworld: "WorldsBanners/MaltDesniyWorld-SQ.png",
-    vintagetelevision: "WorldsBanners/VintageTelevision-SQ.png",
-    spinnersparring: "WorldsBanners/SpinnerSparring-SQ.png",
-    featureddesignerpythonanghelo: "WorldsBanners/FeaturedDevPython-SQ.png",
-    pythonangheloshowcase: "WorldsBanners/FeaturedDevPython-SQ.png",
-    python_anghelo_showcase: "WorldsBanners/FeaturedDevPython-SQ.png",
-    stormchasers: "WorldsBanners/StormChasers.png",
-    steveritchieshowcase: "WorldsBanners/FeaturedDev-SteveRitchie.png",
-    featureddesignersteveritchie: "WorldsBanners/FeaturedDev-SteveRitchie.png",
-    steve_ritchie_showcase: "WorldsBanners/FeaturedDev-SteveRitchie.png",
-    dennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
-    featureddesignerdennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
-    dennis_nordman_party_monsters: "WorldsBanners/DennisNordmanPartyMonsters.png"
-  });
   const DEFAULT_TABLE_BANNER_REFS_BY_CODE = Object.freeze({
     MM: "WorldsBanners/MedievalMadnessCover2.png",
     AFM: "WorldsBanners/Flyers/Attack_From_Mars_Pinball_Flyer (1).png",
@@ -13585,34 +13512,10 @@ window.__manualDisconnect = false;
     PARA: "WorldsBanners/Flyers/paragon--bally-07061-04.jpg",
     GLIZ: "WorldsBanners/Flyers/grand-lizard-flyer-4.jpg",
     TAXI: "WorldsBanners/Flyers/Taxi_(Lola)_flyer.jpg",
-    BOP: "WorldsBanners/Flyers/bop_flyer_mop1.jpeg",
-    HSPD: "https://www.ipdb.org/showpic.pl?id=1176&picno=4504",
-    ACDC: "https://www.ipdb.org/showpic.pl?id=5854&picno=27847&zoom=1",
-    HUR: "https://www.ipdb.org/showpic.pl?id=1257&picno=7191",
-    COMET: "https://www.ipdb.org/showpic.pl?id=548&picno=510",
-    CYC: "https://www.ipdb.org/showpic.pl?id=617&picno=4607",
-    WHRL: "https://www.ipdb.org/showpic.pl?id=2765&picno=25877",
-    PARTY: "https://www.ipdb.org/showpic.pl?id=1788&picno=3345&zoom=1",
-    EATPM: "https://www.ipdb.org/showpic.pl?id=790&picno=12989&zoom=1",
-    DRDUDE: "https://www.ipdb.org/showpic.pl?id=744&picno=9497&zoom=1",
-    PZONE: "https://www.ipdb.org/showpic.pl?id=1789&picno=53664&zoom=1",
-    SSTIFF: "https://www.ipdb.org/showpic.pl?id=3915&picno=31814&zoom=1"
+    BOP: "WorldsBanners/Flyers/bop_flyer_mop1.jpeg"
   });
-  function normalizeWorldBannerLookup(v){
-    return String(v || "").toLowerCase().replace(/[^a-z0-9_]+/g, "");
-  }
-  function resolveDefaultWorldBannerByLookup(values){
-    const list = Array.isArray(values) ? values : [values];
-    for(const raw of list){
-      const key = normalizeWorldBannerLookup(raw);
-      if(key && DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key]) return String(DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key] || "");
-    }
-    return "";
-  }
-  function getDefaultWorldBannerRef(worldKey, extraLookups){
+  function getDefaultWorldBannerRef(worldKey){
     const wk = String(worldKey || "").trim();
-    const fromLookup = resolveDefaultWorldBannerByLookup([wk].concat(Array.isArray(extraLookups) ? extraLookups : []));
-    if(fromLookup) return fromLookup;
     if(DEFAULT_WORLD_BANNER_REFS[wk]) return String(DEFAULT_WORLD_BANNER_REFS[wk] || "");
     const match = wk.match(/^w(\d+)$/i);
     if(match){
@@ -13796,14 +13699,7 @@ window.__manualDisconnect = false;
       nextWorlds[wk] = {
         label,
         locked: (typeof cur.locked === "boolean") ? cur.locked : true,
-        banner: (typeof cur.banner === "string" && cur.banner)
-          ? cur.banner
-          : getDefaultWorldBannerRef(
-              wk,
-              [label]
-                .concat(Array.isArray(entry?.group_keys) ? entry.group_keys : [])
-                .concat(Array.isArray(entry?.group_labels) ? entry.group_labels : [])
-            ),
+        banner: (typeof cur.banner === "string" && cur.banner) ? cur.banner : getDefaultWorldBannerRef(wk),
         tables
       };
       nextOrder.push(wk);
@@ -13825,7 +13721,6 @@ window.__manualDisconnect = false;
   function finalizeWorldLayoutChange(opts){
     opts = opts || {};
     state.worldOrder = getLiveWorldOrder(state);
-    state.worldPage = clampWorldPageIndex(state?.worldPage, state);
     if(!state.worlds?.[state.selected]) state.selected = getFirstPlayableWorldKey(state);
     if(!state.worlds?.[state.lastSelected]) state.lastSelected = state.selected;
     if(!state.worlds?.[ap?.currentWorld]) ap.currentWorld = state.selected;
@@ -13905,12 +13800,6 @@ window.__manualDisconnect = false;
       }
     }
     return null;
-  }
-  function isActiveSeedTableName(tableName){
-    const raw = String(tableName || "").trim();
-    if(!raw) return false;
-    if(/boss table/i.test(raw)) return true;
-    return !!getTableKeyForName(raw);
   }
   function getWorldIdForTableKey(tableKey){
     const parts = String(tableKey||"").split("|");
@@ -14124,56 +14013,6 @@ function getLiveWorldOrder(srcState){
   }
   return out.length ? out : fallback;
 }
-const DEFAULT_WORLD_GROUP_SIZE = 5;
-const DEFAULT_WORLD_TABLES_PER_PAGE = 25;
-const DEFAULT_WORLD_WORLDS_PER_PAGE = 5;
-function getWorldPagingSpec(srcState, slotData){
-  const metasizer = getMetasizerSlotPayload(slotData);
-  const layout = metasizer?.world_layout || {};
-  const groupSize = Math.max(1, Math.round(Number(layout.group_size || DEFAULT_WORLD_GROUP_SIZE) || DEFAULT_WORLD_GROUP_SIZE));
-  const tablesPerPage = Math.max(groupSize, Math.round(Number(layout.tables_per_page || DEFAULT_WORLD_TABLES_PER_PAGE) || DEFAULT_WORLD_TABLES_PER_PAGE));
-  const worldsPerPage = Math.max(1, Math.round(Number(layout.worlds_per_page || Math.floor(tablesPerPage / Math.max(1, groupSize)) || DEFAULT_WORLD_WORLDS_PER_PAGE) || DEFAULT_WORLD_WORLDS_PER_PAGE));
-  const nonBossWorlds = getLiveWorldOrder(srcState).filter((wk)=> !isBossWorldId(wk, srcState));
-  const totalPages = Math.max(1, Math.ceil(nonBossWorlds.length / worldsPerPage));
-  return { groupSize, tablesPerPage, worldsPerPage, totalPages, nonBossWorlds };
-}
-function clampWorldPageIndex(pageIdx, srcState, slotData){
-  const spec = getWorldPagingSpec(srcState, slotData);
-  const raw = Math.floor(Number(pageIdx) || 0);
-  return Math.max(0, Math.min(spec.totalPages - 1, raw));
-}
-function getVisibleNonBossWorldOrder(srcState, opts){
-  const s = srcState || state || {};
-  const spec = getWorldPagingSpec(s, opts?.slotData);
-  const page = clampWorldPageIndex((opts && "page" in opts) ? opts.page : s?.worldPage, s, opts?.slotData);
-  const start = page * spec.worldsPerPage;
-  return spec.nonBossWorlds.slice(start, start + spec.worldsPerPage);
-}
-function getWorldPageForWorldKey(worldKey, srcState, slotData){
-  const wk = String(worldKey || "").trim();
-  if(!wk || isBossWorldId(wk, srcState)) return clampWorldPageIndex(srcState?.worldPage, srcState, slotData);
-  const spec = getWorldPagingSpec(srcState, slotData);
-  const idx = spec.nonBossWorlds.indexOf(wk);
-  if(idx < 0) return 0;
-  return Math.floor(idx / spec.worldsPerPage);
-}
-function getPageAnchorWorldKey(){
-  const selected = String(state?.selected || "");
-  const checksWorld = String(ap?.currentWorld || "");
-  if(activeView === "checks" && checksWorld && !isBossWorldId(checksWorld)) return checksWorld;
-  if(selected && !isBossWorldId(selected)) return selected;
-  return getFirstPlayableWorldKey(state);
-}
-function syncWorldPageToActiveContext(){
-  state.worldPage = getWorldPageForWorldKey(getPageAnchorWorldKey(), state, ap?.slotData);
-}
-function getTowerWorldOrder(srcState){
-  const s = srcState || state || {};
-  const out = getVisibleNonBossWorldOrder(s);
-  const bossKey = resolveBossWorldKeyFromState(s);
-  if(s?.worlds?.[bossKey]) out.push(bossKey);
-  return out;
-}
 function resolveBossWorldKeyFromState(srcState){
   try{
     const worlds = srcState?.worlds || state?.worlds || {};
@@ -14196,69 +14035,14 @@ function getFirstPlayableWorldKey(srcState){
 }
 function getChecksWorldOrder(srcState){
   const s = srcState || state || {};
-  const out = getVisibleNonBossWorldOrder(s).filter((wk)=> !!(s?.worlds?.[wk]));
-  const bossKey = resolveBossWorldKeyFromState(s);
-  if(out.includes(bossKey)) return out;
-  if(s?.worlds?.[bossKey]) out.push(bossKey);
+  const keys = getLiveWorldOrder(s);
+  const out = keys.filter((wk)=> !!(s?.worlds?.[wk]));
+  if(out.includes("boss")) return out;
+  if(s?.worlds?.boss) out.push("boss");
   return out;
 }
 function getOverviewWorldOrder(srcState){
-  return getVisibleNonBossWorldOrder(srcState);
-}
-function setWorldPage(pageIdx, opts){
-  opts = opts || {};
-  const nextPage = clampWorldPageIndex(pageIdx, state, ap?.slotData);
-  const prevPage = clampWorldPageIndex(state?.worldPage, state, ap?.slotData);
-  state.worldPage = nextPage;
-  const visible = getVisibleNonBossWorldOrder(state, { page:nextPage });
-  const fallback = String(visible[0] || getFirstPlayableWorldKey(state) || "");
-  if(activeView === "checks"){
-    const cur = String(ap?.currentWorld || "");
-    if(cur && !isBossWorldId(cur) && !visible.includes(cur) && fallback){
-      ap.currentWorld = fallback;
-    }
-  }else{
-    const cur = String(state?.selected || "");
-    if(cur && !isBossWorldId(cur) && !visible.includes(cur) && fallback){
-      state.lastSelected = state.selected;
-      state.selected = fallback;
-    }
-  }
-  if(opts.save !== false) saveState();
-  if(opts.render !== false){
-    try{ renderWorldPageDock(); }catch(_){}
-    try{ renderWorldButtons(); }catch(_){}
-    try{ renderSelected(); }catch(_){}
-    try{ renderOverviewGrid(); }catch(_){}
-    try{ renderOverviewFeed(); }catch(_){}
-    try{ renderChecksWorldTabs(); }catch(_){}
-    try{ renderChecks(); }catch(_){}
-  }
-  return nextPage !== prevPage;
-}
-function renderWorldPageDock(){
-  const dock = document.getElementById("worldPageDock");
-  const prevBtn = document.getElementById("worldPagePrevBtn");
-  const nextBtn = document.getElementById("worldPageNextBtn");
-  const main = document.getElementById("worldPageMetaMain");
-  const sub = document.getElementById("worldPageMetaSub");
-  if(!dock || !prevBtn || !nextBtn || !main || !sub) return;
-  const spec = getWorldPagingSpec(state, ap?.slotData);
-  const page = clampWorldPageIndex(state?.worldPage, state, ap?.slotData);
-  state.worldPage = page;
-  const visible = getVisibleNonBossWorldOrder(state, { page });
-  const visibleTableCount = visible.reduce((sum, wk)=> sum + (Array.isArray(state?.worlds?.[wk]?.tables) ? state.worlds[wk].tables.length : 0), 0);
-  const show = spec.totalPages > 1 && activeView !== "hints";
-  dock.hidden = !show;
-  dock.classList.toggle("active", show);
-  prevBtn.disabled = page <= 0;
-  nextBtn.disabled = page >= spec.totalPages - 1;
-  prevBtn.onclick = ()=>{ playSfx("click"); setWorldPage(state.worldPage - 1); };
-  nextBtn.onclick = ()=>{ playSfx("click"); setWorldPage(state.worldPage + 1); };
-  main.textContent = `PAGE ${page + 1} / ${spec.totalPages}`;
-  const firstTable = (page * spec.tablesPerPage) + 1;
-  const lastTable = Math.max(firstTable, firstTable + visibleTableCount - 1);
-  sub.textContent = `TABLES ${firstTable}-${lastTable}`;
+  return getLiveWorldOrder(srcState).filter((wk)=> !isBossWorldId(wk, srcState));
 }
 
 function readOverlayStateFromLocalStorage(key){
@@ -14338,7 +14122,6 @@ const defaultState = {
   selected:"w1",
   lastSelected:"w1",
   layoutMode:"base",
-  worldPage:0,
   worldOrder: worldOrder.slice(),
   worlds: buildDefaultWorldsFromRepo(),
   bossTable:"",
@@ -14676,7 +14459,6 @@ function loadState(){
       if(musicSnapshot) applyMusicStateSnapshot(s, musicSnapshot);
     }catch(_){}
     if(!s.designerFlyers || typeof s.designerFlyers !== "object") s.designerFlyers = {};
-    s.worldPage = clampWorldPageIndex(s.worldPage, s);
     if(!Array.isArray(s.worldOrder) || !s.worldOrder.length) s.worldOrder = worldOrder.slice();
     const defaultsWorlds = buildDefaultWorldsFromRepo();
     if(!s.worlds || typeof s.worlds !== "object") s.worlds = clone(defaultsWorlds);
@@ -20915,7 +20697,7 @@ function findTableKeyByName(tableName){
       if(wk && Number.isFinite(idx) && idx >= 0) return { wk, idx };
     }
   }catch(_){}
-  const keys = getLiveWorldOrder().filter((wk)=> !isBossWorldId(wk));
+  const keys = getOverviewWorldOrder();
   for(const wk of keys){
     const w = state.worlds?.[wk];
     if(!w) continue;
@@ -21044,33 +20826,24 @@ function setGenericCheckPayload(slotData){
   const taskPayload = slotData?.task_shuffle;
   ap.slotData = (slotData && typeof slotData === "object") ? slotData : {};
   try{ applyConnectedWorldLayoutFromSlotData(ap.slotData, { save:false, render:false }); }catch(_){}
-  const isActiveEntry = (entry, locationName)=>{
-    const tableName = String(entry?.table || splitLocName(locationName).table || "").trim();
-    return !tableName || isActiveSeedTableName(tableName);
-  };
   ap.genericChecks = {
     enabled: !!payload?.enabled,
     byLocation: new Map(),
     byLocationNormalized: new Map(),
     bySlot: new Map(),
-    entries: Array.isArray(payload?.entries)
-      ? payload.entries.filter((entry)=> isActiveEntry(entry, String(entry?.location || "")))
-      : []
+    entries: Array.isArray(payload?.entries) ? payload.entries.slice() : []
   };
   ap.taskShuffle = {
     enabled: !!taskPayload?.enabled,
     byLocation: new Map(),
     byLocationNormalized: new Map(),
-    entries: Array.isArray(taskPayload?.entries)
-      ? taskPayload.entries.filter((entry)=> isActiveEntry(entry, String(entry?.location || "")))
-      : []
+    entries: Array.isArray(taskPayload?.entries) ? taskPayload.entries.slice() : []
   };
   try{
     const byLoc = payload?.by_location || {};
     Object.entries(byLoc).forEach(([locationName, entry])=>{
       if(!locationName || !entry || typeof entry !== "object") return;
       const copy = { ...entry };
-      if(!isActiveEntry(copy, String(locationName))) return;
       ap.genericChecks.byLocation.set(String(locationName), copy);
       ap.genericChecks.byLocationNormalized.set(normalizeGenericLocationLookupName(locationName), copy);
       const tableKey = normKey(String(copy.table || splitLocName(locationName).table || ""));
@@ -21110,7 +20883,6 @@ function setGenericCheckPayload(slotData){
     const byLoc = taskPayload?.by_location || {};
     Object.entries(byLoc).forEach(([locationName, entry])=>{
       if(!locationName || !entry || typeof entry !== "object") return;
-      if(!isActiveEntry(entry, String(locationName))) return;
       ap.taskShuffle.byLocation.set(String(locationName), { ...entry });
       ap.taskShuffle.byLocationNormalized.set(normalizeGenericLocationLookupName(locationName), { ...entry });
     });
@@ -24892,7 +24664,6 @@ function triggerChecksDividerSnapFx(mode){
 function renderChecksWorldTabs(){
   const wrap = document.getElementById("checksWorldTabs");
   if(!wrap) return;
-  syncWorldPageToActiveContext();
   const bossUnlocked = isBossUnlocked();
   const bossKeyCount = Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(window.__apBossKeyCount ?? getBossKeysAcquiredCount()) || 0));
   const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
@@ -25744,33 +25515,13 @@ function splitLabel(label){
 
 const DESIGNER_SOURCE_LINKS = {
   wiki_python: "https://en.wikipedia.org/wiki/Python_Anghelo",
-  wiki_steve: "https://en.wikipedia.org/wiki/Steve_Ritchie",
-  wiki_dennis: "https://en.wikipedia.org/wiki/Dennis_Nordman",
-  kineticist_steve: "https://www.kineticist.com/pinball-people/steve-ritchie",
-  kineticist_dennis: "https://www.kineticist.com/pinball-people/dennis-nordman",
   ipdb_grand_lizard: "https://www.ipdb.org/machine.cgi?id=1070",
   ipdb_jokerz: "https://www.ipdb.org/machine.cgi?id=1308",
   ipdb_bad_cats: "https://www.ipdb.org/machine.cgi?id=127",
   ipdb_taxi: "https://www.ipdb.org/machine.cgi?id=2505",
   ipdb_bride_pinbot: "https://www.ipdb.org/machine.cgi?id=1502",
-  ipdb_high_speed: "https://www.ipdb.org/machine.cgi?id=1176",
-  ipdb_no_fear: "https://www.ipdb.org/machine.cgi?id=2852",
-  ipdb_spiderman_ve: "https://www.ipdb.org/machine.cgi?id=6328",
-  ipdb_acdc: "https://www.ipdb.org/machine.cgi?id=5854",
-  ipdb_party_animal: "https://www.ipdb.org/machine.cgi?id=1788",
-  ipdb_elvira_party_monsters: "https://www.ipdb.org/machine.cgi?id=790",
-  ipdb_dr_dude: "https://www.ipdb.org/machine.cgi?id=744",
-  ipdb_party_zone: "https://www.ipdb.org/machine.cgi?id=1789",
-  ipdb_scared_stiff: "https://www.ipdb.org/machine.cgi?id=3915",
   ipdb_flyer_jokerz_front: "https://www.ipdb.org/showpic.pl?id=1308&picno=4512",
   ipdb_flyer_bad_cats_front: "https://www.ipdb.org/showpic.pl?id=127&picno=4510",
-  ipdb_flyer_high_speed_front: "https://www.ipdb.org/showpic.pl?id=1176&picno=4504",
-  ipdb_flyer_acdc_front: "https://www.ipdb.org/showpic.pl?id=5854&picno=27847&zoom=1",
-  ipdb_flyer_party_animal_front: "https://www.ipdb.org/showpic.pl?id=1788&picno=3345&zoom=1",
-  ipdb_flyer_elvira_party_monsters_front: "https://www.ipdb.org/showpic.pl?id=790&picno=12989&zoom=1",
-  ipdb_flyer_dr_dude_front: "https://www.ipdb.org/showpic.pl?id=744&picno=9497&zoom=1",
-  ipdb_flyer_party_zone_front: "https://www.ipdb.org/showpic.pl?id=1789&picno=53664&zoom=1",
-  ipdb_flyer_scared_stiff_front: "https://www.ipdb.org/showpic.pl?id=3915&picno=31814&zoom=1",
   forum_watercolor: "https://pinside.com/pinball/forum/topic/python-anghelo-and-his-bad-cats-watercolour-painting-from-1970",
   forum_legacy: "https://pinside.com/pinball/forum/topic/rip-python-anghelo",
   forum_doctor_flash: "https://pinside.com/pinball/machine/black-knight-2000/details"
@@ -25781,16 +25532,7 @@ const DESIGNER_TABLE_CREDITS = {
   "jokerz": [{ designer:"Python Anghelo", role:"Co-design", sourceKey:"ipdb_jokerz" }],
   "badcats": [{ designer:"Python Anghelo", role:"Artwork", sourceKey:"ipdb_bad_cats" }],
   "taxi": [{ designer:"Python Anghelo", role:"Design and artwork", sourceKey:"ipdb_taxi" }],
-  "brideofpinbot": [{ designer:"Python Anghelo", role:"Concept and artwork", sourceKey:"ipdb_bride_pinbot" }],
-  "highspeed": [{ designer:"Steve Ritchie", role:"Design", sourceKey:"ipdb_high_speed" }],
-  "nofeardangeroussports": [{ designer:"Steve Ritchie", role:"Design", sourceKey:"ipdb_no_fear" }],
-  "spidermanvaultedition": [{ designer:"Steve Ritchie", role:"Design", sourceKey:"ipdb_spiderman_ve" }],
-  "acdc": [{ designer:"Steve Ritchie", role:"Design", sourceKey:"ipdb_acdc" }],
-  "partyanimal": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_party_animal" }],
-  "elviraandthepartymonsters": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_elvira_party_monsters" }],
-  "drdude": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_dr_dude" }],
-  "partyzone": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_party_zone" }],
-  "scaredstiff": [{ designer:"Dennis Nordman", role:"Design", sourceKey:"ipdb_scared_stiff" }]
+  "brideofpinbot": [{ designer:"Python Anghelo", role:"Concept and artwork", sourceKey:"ipdb_bride_pinbot" }]
 };
 
 const DESIGNER_PROFILES = {
@@ -25854,96 +25596,6 @@ const DESIGNER_PROFILES = {
       { label:"IPDB; Bride of Pinbot", sourceKey:"ipdb_bride_pinbot" },
       { label:"Pinside Forum; Bad Cats watercolor thread", sourceKey:"forum_watercolor" },
       { label:"Pinside Forum; RIP Python Anghelo", sourceKey:"forum_legacy" }
-    ]
-  },
-  steveritchie: {
-    name: "Steve Ritchie",
-    title: "FEATURED DESIGNER; STEVE RITCHIE",
-    subtitle: "Fast-flow featured-designer profile built around Steve Ritchie IPDB credits.",
-    headshot: {
-      url: "https://cdn.prod.website-files.com/630f7e3a17d08a21ae05d20a/6488d9903fad2a1a24140473_oVi6PajYe-f3Ubw1gZ6luGz6RaBfP4Qo_fzXr0Iwenw.avif",
-      source: "https://www.kineticist.com/pinball-people/steve-ritchie",
-      credit: "Headshot via Kineticist"
-    },
-    bio: [
-      "Steve Ritchie is one of the defining modern pinball designers, known for layouts built around speed, direct shot geometry, and strong return-to-action flow.",
-      "This world card stays tied to confirmed IPDB credits, so it highlights the Steve-authored machines in the stream pack instead of treating every playable table in the showcase as a designer credit."
-    ],
-    trivia: [
-      {
-        text: "Pinball players often describe him as the \"King of Flow\" because his games tend to keep the ball moving quickly from shot to shot.",
-        sourceKey: "wiki_steve",
-        sourceLabel: "Wikipedia"
-      },
-      {
-        text: "Ritchie is also known for performing callouts and voice work on some of his own games, giving them an immediately recognizable personality.",
-        sourceKey: "wiki_steve",
-        sourceLabel: "Wikipedia"
-      },
-      {
-        text: "This featured-designer world favors VPX stream-ready builds, but the info card still limits itself to the tables Steve is actually credited on.",
-        sourceKey: "ipdb_high_speed",
-        sourceLabel: "IPDB set"
-      }
-    ],
-    games: [
-      { title:"High Speed (Williams, 1986)", tableName:"High Speed", credit:"Design credit.", sourceKey:"ipdb_high_speed", flyerKey:"ipdb_flyer_high_speed_front" },
-      { title:"No Fear: Dangerous Sports (Williams, 1995)", tableName:"No Fear: Dangerous Sports", credit:"Design credit.", sourceKey:"ipdb_no_fear", flyerKey:"" },
-      { title:"Spider-Man Vault Edition (Stern, 2016)", tableName:"Spider-Man Vault Edition", credit:"Design credit.", sourceKey:"ipdb_spiderman_ve", flyerKey:"" },
-      { title:"AC/DC (Stern, 2012)", tableName:"AC/DC", credit:"Design credit.", sourceKey:"ipdb_acdc", flyerKey:"ipdb_flyer_acdc_front" }
-    ],
-    anecdotes: [
-      {
-        text:"High Speed works as a clean mission statement for Ritchie's style: straightforward objectives, urgent pacing, and shots that want to be repeated at speed.",
-        sourceKey:"ipdb_high_speed"
-      },
-      {
-        text:"The Williams-to-Stern spread in this profile shows how consistent his design identity stayed even as the table eras changed around him.",
-        sourceKey:"wiki_steve"
-      },
-      {
-        text:"The stream-ready showcase pack can be broader than the strict IPDB credit list used by this info card, so the profile stays intentionally source-first."
-      }
-    ],
-    sources: [
-      { label:"Wikipedia; Steve Ritchie", sourceKey:"wiki_steve" },
-      { label:"Kineticist; Steve Ritchie", sourceKey:"kineticist_steve" },
-      { label:"IPDB; High Speed", sourceKey:"ipdb_high_speed" },
-      { label:"IPDB; No Fear: Dangerous Sports", sourceKey:"ipdb_no_fear" },
-      { label:"IPDB; Spider-Man Vault Edition", sourceKey:"ipdb_spiderman_ve" },
-      { label:"IPDB; AC/DC", sourceKey:"ipdb_acdc" }
-    ]
-  },
-  dennisnordman: {
-    name: "Dennis Nordman",
-    title: "FEATURED DESIGNER; DENNIS NORDMAN",
-    subtitle: "IPDB-backed party-monster credits for the Dennis Nordman showcase pack.",
-    headshot: {
-      url: "https://cdn.prod.website-files.com/630f7e3a17d08a21ae05d20a/6488a16e9c66d4d332855397_YJ96O1wGQIRziUlZ8CRsUwivcOKWV0VNE40NXpXeNx4.avif",
-      source: "https://www.kineticist.com/pinball-people/dennis-nordman",
-      credit: "Headshot via Kineticist"
-    },
-    bio: [
-      "IPDB credits Dennis Nordman on Party Animal, Elvira and the Party Monsters, Dr. Dude, Party Zone, and Scared Stiff.",
-      "Those same tables now feed the Bestiary and the featured-designer flyer carousel with direct IPDB sources."
-    ],
-    trivia: [],
-    games: [
-      { title:"Party Animal (Bally, 1987)", tableName:"Party Animal", credit:"Design credit.", sourceKey:"ipdb_party_animal", flyerKey:"ipdb_flyer_party_animal_front" },
-      { title:"Elvira and the Party Monsters (Bally, 1989)", tableName:"Elvira and the Party Monsters", credit:"Design credit.", sourceKey:"ipdb_elvira_party_monsters", flyerKey:"ipdb_flyer_elvira_party_monsters_front" },
-      { title:"Dr. Dude (Bally, 1990)", tableName:"Dr. Dude", credit:"Design credit.", sourceKey:"ipdb_dr_dude", flyerKey:"ipdb_flyer_dr_dude_front" },
-      { title:"Party Zone (Bally, 1991)", tableName:"Party Zone", credit:"Design credit.", sourceKey:"ipdb_party_zone", flyerKey:"ipdb_flyer_party_zone_front" },
-      { title:"Scared Stiff (Bally, 1996)", tableName:"Scared Stiff", credit:"Design credit.", sourceKey:"ipdb_scared_stiff", flyerKey:"ipdb_flyer_scared_stiff_front" }
-    ],
-    anecdotes: [],
-    sources: [
-      { label:"Wikipedia; Dennis Nordman", sourceKey:"wiki_dennis" },
-      { label:"Kineticist; Dennis Nordman", sourceKey:"kineticist_dennis" },
-      { label:"IPDB; Party Animal", sourceKey:"ipdb_party_animal" },
-      { label:"IPDB; Elvira and the Party Monsters", sourceKey:"ipdb_elvira_party_monsters" },
-      { label:"IPDB; Dr. Dude", sourceKey:"ipdb_dr_dude" },
-      { label:"IPDB; Party Zone", sourceKey:"ipdb_party_zone" },
-      { label:"IPDB; Scared Stiff", sourceKey:"ipdb_scared_stiff" }
     ]
   }
 };
@@ -27535,8 +27187,7 @@ function renderWorldButtons(){
   const container = document.getElementById("worlds");
   const existing = new Map(Array.from(container.querySelectorAll(".world[data-world]")).map(el => [String(el.dataset.world || ""), el]));
   const liveTargets = hintGetLiveTargets();
-  syncWorldPageToActiveContext();
-  const liveOrder = getTowerWorldOrder();
+  const liveOrder = getLiveWorldOrder();
 
   const focusWorld = liveOrder.includes(state.selected) ? state.selected : null;
   const bossWorldKey = (typeof getBossWorldKey === "function") ? String(getBossWorldKey() || "boss") : "boss";
@@ -28659,8 +28310,6 @@ function setTabUI(){
   setSwapMeterActivePanel(activeView);
   layoutSwapMeterTracks();
   try{ updateHeaderTabHighlight(); }catch(_){}
-  try{ syncWorldPageToActiveContext(); }catch(_){}
-  try{ renderWorldPageDock(); }catch(_){}
 }
 function ensureHeaderTabHighlight(){
   const tabs = document.getElementById("headerTabs");
@@ -29021,10 +28670,8 @@ function hintGetLiveTargets(){
   const pushTarget = (src)=>{
     try{
       if(!src) return;
-      if(src.tableName && !isActiveSeedTableName(src.tableName)) return;
       const t = { ...src, solved:true };
       if(!t.tableKey && t.tableName) t.tableKey = getTableKeyForName(t.tableName) || "";
-      if(!t.tableKey) return;
       if(!(Number.isFinite(Number(t.locId)) && Number(t.locId) > 0)){
         const node = hintResolveNodeForTarget(t.tableName, t.locationShort);
         if(node && Number.isFinite(Number(node.id))) t.locId = Number(node.id);
@@ -29361,7 +29008,6 @@ function hintBuildPools(entries){
   const isProgressiveBall = (item)=> /^Progressive\s*Ball\b/i.test(item);
   const isBoss = (item)=> /\bboss\s*key\b/i.test(item) && !/\bhint\b/i.test(item);
   for(const e of (entries || [])){
-    if(!isActiveSeedTableName(e?.tableName)) continue;
     const item = String(e.itemName || "").trim();
     const key = `${e.tableName} - ${e.locationName}`;
     const entry = { tableName: e.tableName, locationName: key, locationShort: e.locationName, rawLine: e.rawLine, itemName: item };
@@ -31334,10 +30980,8 @@ function renderWorlds(){
 
 function renderAll(){
   try{ syncBossTableAuthority({ includePlaceholder:true, syncWorldSlots:true }); }catch(_){}
-  try{ syncWorldPageToActiveContext(); }catch(_){}
   try{ setHeader(); }catch(err){ try{ console.error("setHeader failed", err); }catch(_){} }
   try{ renderRelicsHeaderBtn(); }catch(_){ }
-  try{ renderWorldPageDock(); }catch(err){ try{ console.error("renderWorldPageDock failed", err); }catch(_){} }
   try{ renderWorldButtons(); }catch(err){ try{ console.error("renderWorldButtons failed", err); }catch(_){} }
   try{ renderSelected(); }catch(err){ try{ console.error("renderSelected outer failed", err); }catch(_){} }
   try{ renderOverviewGrid(); }catch(err){ try{ console.error("renderOverviewGrid failed", err); }catch(_){} }
