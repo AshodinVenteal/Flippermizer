@@ -13625,6 +13625,12 @@ window.__manualDisconnect = false;
   function getDefaultTableBannerRef(tableName){
     try{
       const code = getRepoCanonicalTableCode(tableName);
+      const repo = getTableRepo();
+      if(code && repo && typeof repo.getTableByCode === "function"){
+        const table = repo.getTableByCode(code);
+        const banner = String(table && table.banner || "").trim();
+        if(banner) return banner;
+      }
       if(code && DEFAULT_TABLE_BANNER_REFS_BY_CODE[code]){
         return String(DEFAULT_TABLE_BANNER_REFS_BY_CODE[code] || "");
       }
