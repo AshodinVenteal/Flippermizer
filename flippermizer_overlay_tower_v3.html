@@ -4,6 +4,21 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Flippermizer Tower + Overview (2x; World Subtitles; Table Reveal; Banners)</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<script>
+(() => {
+  try {
+    const params = new URLSearchParams(window.location.search || "");
+    const mode = String(params.get("launcherGraphicsMode") || "").trim();
+    if (!mode) return;
+    window.__flprLauncherGraphicsMode = mode;
+    document.documentElement.classList.add("launcherGraphicsMode");
+    document.documentElement.classList.add(`launcherGraphicsMode-${mode}`);
+    if (mode === "software_fallback") {
+      document.documentElement.classList.add("launcherSoftwareFallback");
+    }
+  } catch (_) {}
+})();
+</script>
 
 <style>
 :root{
@@ -34,6 +49,99 @@ html,body{
   font-family:'Press Start 2P', monospace;
   overflow:hidden;
   color:var(--text);
+}
+
+html.launcherSoftwareFallback *,
+html.launcherSoftwareFallback *::before,
+html.launcherSoftwareFallback *::after{
+  backdrop-filter:none !important;
+}
+html.launcherSoftwareFallback .globalFxLayer,
+html.launcherSoftwareFallback .fxLayer,
+html.launcherSoftwareFallback .confettiHost,
+html.launcherSoftwareFallback .bkConfettiLayer,
+html.launcherSoftwareFallback .victorySpotlight,
+html.launcherSoftwareFallback .victoryConfetto,
+html.launcherSoftwareFallback .randomizerIntroSteam,
+html.launcherSoftwareFallback .randomizerIntroConfetto,
+html.launcherSoftwareFallback .bossUnlockFx,
+html.launcherSoftwareFallback .bossUnlockFxOutside,
+html.launcherSoftwareFallback .bossAttackLane,
+html.launcherSoftwareFallback .bossRaidSparks,
+html.launcherSoftwareFallback .bossIncomingNotice::before,
+html.launcherSoftwareFallback .bossInfoPic::before,
+html.launcherSoftwareFallback .bossInfoPic::after,
+html.launcherSoftwareFallback .bossInfoCard::before,
+html.launcherSoftwareFallback .bossRaidFrame::before,
+html.launcherSoftwareFallback .world.bossThreatPulse::before,
+html.launcherSoftwareFallback .world.bossThreatPulse::after,
+html.launcherSoftwareFallback .checksWrap::before,
+html.launcherSoftwareFallback .checksWrap::after{
+  display:none !important;
+}
+html.launcherSoftwareFallback .capture,
+html.launcherSoftwareFallback .controls,
+html.launcherSoftwareFallback .randomizerIntro,
+html.launcherSoftwareFallback .randomizerIntroSign,
+html.launcherSoftwareFallback .bossDock,
+html.launcherSoftwareFallback .bossKeyCard,
+html.launcherSoftwareFallback .tableBlock,
+html.launcherSoftwareFallback .tile,
+html.launcherSoftwareFallback .world,
+html.launcherSoftwareFallback .nodeBtn,
+html.launcherSoftwareFallback .bossInfoCard,
+html.launcherSoftwareFallback .bossRaidFrame,
+html.launcherSoftwareFallback .toast,
+html.launcherSoftwareFallback .toast2,
+html.launcherSoftwareFallback .hintMonitor,
+html.launcherSoftwareFallback .endRunScreen,
+html.launcherSoftwareFallback .achievementModalCard,
+html.launcherSoftwareFallback .panel,
+html.launcherSoftwareFallback .tab{
+  box-shadow:none !important;
+  text-shadow:none !important;
+}
+html.launcherSoftwareFallback .bossMonsterMount,
+html.launcherSoftwareFallback .bossMonsterAura,
+html.launcherSoftwareFallback .bossMonsterMood,
+html.launcherSoftwareFallback .bossMonsterLimb,
+html.launcherSoftwareFallback .world.bossThreatPulse,
+html.launcherSoftwareFallback .bossRetaliationBannerWarn.next,
+html.launcherSoftwareFallback .bossRetaliationBannerWarn.locked,
+html.launcherSoftwareFallback .bossRaidFrame.meltdown,
+html.launcherSoftwareFallback .bossRaidFrame.exploding,
+html.launcherSoftwareFallback .capture.introReveal > .header,
+html.launcherSoftwareFallback .capture.introReveal > .toastWrap,
+html.launcherSoftwareFallback .capture.introReveal > .viewport,
+html.launcherSoftwareFallback .capture.introReveal > .bossDock,
+html.launcherSoftwareFallback .capture.introReveal > #fx{
+  animation:none !important;
+}
+html.launcherSoftwareFallback .view,
+html.launcherSoftwareFallback .tab,
+html.launcherSoftwareFallback .panelBtn,
+html.launcherSoftwareFallback .world,
+html.launcherSoftwareFallback .tile,
+html.launcherSoftwareFallback .nodeBtn,
+html.launcherSoftwareFallback .bossKeyCard,
+html.launcherSoftwareFallback .trapBanner,
+html.launcherSoftwareFallback .musicToast,
+html.launcherSoftwareFallback .bossBattleNotice,
+html.launcherSoftwareFallback .bossIncomingNotice,
+html.launcherSoftwareFallback .checksWrap,
+html.launcherSoftwareFallback .bossInfoCard{
+  transition-duration:0.01ms !important;
+  transition-delay:0ms !important;
+}
+html.launcherSoftwareFallback .captureShopBorder::after,
+html.launcherSoftwareFallback .bossMonsterMount,
+html.launcherSoftwareFallback .bossMonsterMood,
+html.launcherSoftwareFallback .bossMonsterAura,
+html.launcherSoftwareFallback .hintMonitor,
+html.launcherSoftwareFallback .bossInfoPic,
+html.launcherSoftwareFallback .bossCardBg,
+html.launcherSoftwareFallback .bossCardOverlay{
+  filter:none !important;
 }
 
 /* FX */
@@ -2085,6 +2193,24 @@ body.bonusPinballDim .capture{
   color: rgba(232,250,255,0.96);
   text-shadow: 0 2px 0 rgba(0,0,0,0.65), 0 0 12px rgba(0,217,255,0.18);
 }
+.tableNameBadgeSmall{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:8px;
+  padding:1px 7px 0 7px;
+  border:1px solid rgba(0,217,255,0.30);
+  border-radius:999px;
+  background:rgba(4,14,28,0.72);
+  color:rgba(170,228,255,0.92);
+  font-size:.68em;
+  font-weight:700;
+  letter-spacing:.04em;
+  line-height:1.2;
+  vertical-align:middle;
+  white-space:nowrap;
+  box-shadow:0 0 10px rgba(0,166,255,0.12);
+}
 .tableName .badgeIcon{
   position:absolute;
   right: 0;
@@ -2445,6 +2571,11 @@ body.bonusPinballDim .capture{
   align-items:center;
   justify-content:center;
   gap:8px;
+  flex-wrap:wrap;
+}
+.nameAlways .tableNameBadgeSmall{
+  margin-left:0;
+  font-size:.9em;
 }
 .tile:not(.revealed) .nameAlways{
   color: rgba(232,250,255,0.72);
@@ -5141,6 +5272,11 @@ body.chromaBlue .bossKeyCard::before{
   font-size:18px;
   line-height:1.02;
   text-shadow:0 2px 10px rgba(0,0,0,.55);
+}
+.pentaCard .pentaTitle .name .tableNameBadgeSmall{
+  margin-left:-4px;
+  margin-top:2px;
+  font-size:.56em;
 }
 .pentaCard .pentaTitle .name.nameLong{ font-size:16px; }
 .pentaCard .pentaTitle .name.nameXL{ font-size:14px; letter-spacing:.2px; }
@@ -9086,13 +9222,16 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   transform: translate3d(0,0,0) scale(1.0);
   font-size: calc(18px * 1.25) !important;
   line-height: 1.08 !important;
-  padding: 8px 12px 7px !important;
+  padding: 10px 12px 10px !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 4px;
+  gap: 2px;
   white-space: normal !important;
   text-overflow: clip !important;
+}
+#viewChecks .checksWorldTabs .wTab.tabSlotMain > *{
+  transform: translateY(3px);
 }
 #viewChecks .checksWorldTabs .wTab.tabSlotMain .wTabMainLine{
   display: block;
@@ -9103,6 +9242,7 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   font-size: calc(18px * 1.16) !important;
   line-height: 1.03;
   letter-spacing: .01em;
+  transform: none;
 }
 #viewChecks .checksWorldTabs .wTab.tabSlotMain .wTabSubLine{
   display: block;
@@ -9131,8 +9271,8 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 #viewChecks .checksWorldTabs .wTab.tabSlotMain::after{
   content:"";
   position:absolute;
-  inset:-3px;
-  border-radius: 18px;
+  inset:0;
+  border-radius: 14px;
   pointer-events:none;
   border: 2px solid rgba(166,238,255,.86);
   background:
@@ -14156,6 +14296,53 @@ window.__manualDisconnect = false;
       return String(repo.getCanonicalTableCode(v) || "").trim() || null;
     }
     return null;
+  }
+  function getRepoDisplayTableName(v){
+    const repo = getTableRepo();
+    if(repo && typeof repo.getDisplayTableName === "function"){
+      return String(repo.getDisplayTableName(v) || "").trim() || String(v || "").trim();
+    }
+    return String(v || "").trim();
+  }
+  function getRepoTableMeta(v){
+    const repo = getTableRepo();
+    if(repo && typeof repo.getTableMeta === "function"){
+      const meta = repo.getTableMeta(v);
+      return (meta && typeof meta === "object") ? meta : null;
+    }
+    return null;
+  }
+  function getRepoDisplayTableParts(v){
+    const meta = getRepoTableMeta(v);
+    const fallback = String(v || "").trim();
+    const title = String(meta?.name || getRepoCanonicalTableName(v) || fallback).trim() || fallback;
+    const manufacturer = String(meta?.manufacturer || "").trim();
+    const year = Number.isFinite(Number(meta?.year)) ? String(Number(meta.year)) : "";
+    const badge = [manufacturer, year].filter(Boolean).join(" ");
+    return { title, badge };
+  }
+  function setTableLabelWithBadge(host, rawName, opts){
+    opts = opts || {};
+    if(!host) return;
+    const lockedText = opts.lockedText == null ? "????" : String(opts.lockedText);
+    if(opts.locked){
+      host.textContent = lockedText;
+      return;
+    }
+    const parts = getRepoDisplayTableParts(rawName);
+    const titleText = String(parts.title || rawName || "").trim() || String(rawName || "").trim();
+    const badgeText = String(parts.badge || "").trim();
+    host.textContent = "";
+    const text = document.createElement("span");
+    text.className = "tableNamePrimary";
+    text.textContent = titleText;
+    host.appendChild(text);
+    if(badgeText){
+      const badge = document.createElement("span");
+      badge.className = "tableNameBadgeSmall";
+      badge.textContent = badgeText;
+      host.appendChild(badge);
+    }
   }
   function asArrayish(value){
     if(Array.isArray(value)) return value.slice();
@@ -21351,7 +21538,7 @@ function bossIncomingShowOverlay(duration){
     if(fx.clearTimer){ clearTimeout(fx.clearTimer); fx.clearTimer = null; }
   }catch(_){}
 
-  const fullName = String(getBossIncomingTableName() || "Boss Table").toUpperCase();
+  const fullName = String(getRepoDisplayTableName(getBossIncomingTableName() || "Boss Table") || "Boss Table").toUpperCase();
   nm.textContent = "";
   wrap.classList.remove("hide");
   void wrap.offsetWidth;
@@ -27301,7 +27488,7 @@ function renderChecks(){
         bannerName.className = "bossBannerTitle";
         bannerName.id = "bossBannerTitle";
         bannerName.textContent = bossRevealReady
-          ? String(getUnifiedBossTableName({ includePlaceholder:false }) || "Boss Table").toUpperCase()
+          ? String(getRepoDisplayTableName(getUnifiedBossTableName({ includePlaceholder:false }) || "Boss Table") || "Boss Table").toUpperCase()
           : "BOSS TABLE";
         pic.appendChild(bannerName);
         const retaliationWarn = document.createElement("div");
@@ -27496,7 +27683,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
   name.className = "tableName";
   const nameText = document.createElement("span");
   nameText.className = "tableNameText";
-  nameText.textContent = tableUnlocked ? tableName : "????";
+  setTableLabelWithBadge(nameText, tableName, { locked: !tableUnlocked });
   name.appendChild(nameText);
   const extraBallBtn = buildExtraBallTableButton(tableKey, { tableName });
   if(extraBallBtn) name.appendChild(extraBallBtn);
@@ -28804,8 +28991,9 @@ function openDesignerInfoOverlay(designerName, opts){
   const profile = getDesignerProfile(designerName);
   const dName = String(designerName || profile?.name || "Unknown Designer").trim() || "Unknown Designer";
   const tableName = String(opts.tableName || "").trim();
+  const displayTableName = tableName ? getRepoDisplayTableName(tableName) : "";
   const worldName = String(worldLabel(opts.worldKey || state?.selected || "") || "").trim();
-  const contextLine = [worldName ? `World; ${worldName}` : "", tableName ? `Table; ${tableName}` : ""].filter(Boolean).join(" | ");
+  const contextLine = [worldName ? `World; ${worldName}` : "", displayTableName ? `Table; ${displayTableName}` : ""].filter(Boolean).join(" | ");
 
   if(profile){
     titleEl.textContent = String(profile.title || `FEATURED DESIGNER; ${dName.toUpperCase()}`);
@@ -29764,7 +29952,7 @@ function renderWorldButtons(){
   const towerBossThreatWanted =
     towerBossUnlockedNow
     && !(typeof isBossDefeatedForThreatVisual === "function" ? isBossDefeatedForThreatVisual() : false);
-  const bossNameCenter = String((typeof getBossIncomingTableName === "function" ? getBossIncomingTableName() : (state?.bossTable || "Boss Table")) || "Boss Table").trim();
+  const bossNameCenter = String(getRepoDisplayTableName((typeof getBossIncomingTableName === "function" ? getBossIncomingTableName() : (state?.bossTable || "Boss Table")) || "Boss Table") || "Boss Table").trim();
   const bossKeyCount = Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(window.__apBossKeyCount ?? getBossKeysAcquiredCount()) || 0));
 
   liveOrder.forEach(id=>{
@@ -30410,11 +30598,11 @@ function renderTowerPentagon(container, worldObj, worldKey){
       + (isHintTargetTable ? " hintTargetTower" : "")
       + (hintBossKeyOnCard ? " hintTargetTowerBoss" : "");
     card.setAttribute("data-table-name", tName);
-    const displayName = revealed ? tName : "????";
+    const displayName = revealed ? getRepoDisplayTableParts(tName).title : "????";
     const nameEl = card.querySelector(".pentaTitle .name");
     const badgeEl = card.querySelector(".pentaTitle .badgeIcon");
     const titleEl = card.querySelector(".pentaTitle");
-    nameEl.textContent = displayName;
+    setTableLabelWithBadge(nameEl, tName, { locked: !revealed });
     nameEl.classList.remove("nameLong", "nameXL");
     if(revealed){
       const tokens = displayName.split(/\s+/).filter(Boolean);
@@ -30529,7 +30717,7 @@ function simpleTableRow(worldKey, worldObj, t, idx){
   row.className = "tableRow";
   const revealed = isRevealed(worldKey, idx);
   if(!revealed) row.classList.add("isLockedTable");
-  const name = revealed ? t : "????";
+  const name = revealed ? getRepoDisplayTableParts(t).title : "????";
   const bannerUrl = getTableBannerUrl(worldKey, t);
   row.innerHTML = `
     <div class="tableBanner"></div>
@@ -30537,12 +30725,14 @@ function simpleTableRow(worldKey, worldObj, t, idx){
     <div class="lockChainsOverlay ${revealed ? "" : "active"}"></div>
     <div class="lockBadgeOverlay ${revealed ? "" : "active"}">LOCK</div>
     <div class="tableContent">
-      <div class="tableName"><div class="name">${escapeHtml(name)}</div><div class="badgeIcon">${worldEmojis[worldKey] || ""}</div></div>
+      <div class="tableName"><div class="name"></div><div class="badgeIcon">${worldEmojis[worldKey] || ""}</div></div>
     </div>
   `;
   try{
     const bannerEl = row.querySelector(".tableBanner");
     if(bannerEl) bannerEl.style.backgroundImage = bannerUrl ? `url('${bannerUrl}')` : "none";
+    const nameEl = row.querySelector(".tableName .name");
+    if(nameEl) setTableLabelWithBadge(nameEl, t, { locked: !revealed });
   }catch(_){}
   return row;
 }
@@ -30629,7 +30819,7 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
   const content = document.createElement("div");
   content.style.position = "relative";
   content.style.zIndex = "2";
-  const displayName = revealed ? name : "????";
+  const displayName = revealed ? getRepoDisplayTableParts(name).title : "????";
   const checksMarkup = revealed ? getChecksLeftMarkup(name, hintTargets) : "";
   content.innerHTML = `
     <div class="topRow">
@@ -30648,10 +30838,7 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
   try{
     const nameWrap = content.querySelector(".nameAlways");
     if(nameWrap){
-      nameWrap.textContent = "";
-      const text = document.createElement("span");
-      text.textContent = displayName;
-      nameWrap.appendChild(text);
+      setTableLabelWithBadge(nameWrap, name, { locked: !revealed });
       const ebBtn = buildExtraBallTableButton(tableKey, { tableName:name });
       if(ebBtn) nameWrap.appendChild(ebBtn);
     }
@@ -31393,7 +31580,7 @@ function hintSubmitTableGuess(){
   const node = hintResolveNodeForTarget(target.tableName, target.locationShort);
   if(node && Number.isFinite(Number(node.id))) target.locId = Number(node.id);
 
-  const revealText = `TABLE; ${target.tableName} // CHECK; ${target.locationShort}`;
+  const revealText = `TABLE; ${getRepoDisplayTableName(target.tableName)} // CHECK; ${target.locationShort}`;
   const revealMeta = `Source: ${target.typeLabel || "Hint"} | Full Reveal`;
   const revealMs = Number(hintShowReveal(
     { text: revealText, meta: revealMeta, prelude: "Identity confirmed. Here is your full hint." },
@@ -31584,7 +31771,7 @@ function hintMakeMysteryHint(entry, typeLabel){
   }[srcType] || "Something important is concealed.";
   const maskedTable = hintMaskPhrase(entry?.tableName || "UNKNOWN TABLE");
   const checkCue = hintShortCheckTag(entry?.locationShort || entry?.locationName || "");
-  const fullRevealText = `TABLE; ${String(entry?.tableName || "UNKNOWN TABLE")} // CHECK; ${String(entry?.locationShort || entry?.locationName || "UNKNOWN CHECK")}`;
+  const fullRevealText = `TABLE; ${getRepoDisplayTableName(String(entry?.tableName || "UNKNOWN TABLE"))} // CHECK; ${String(entry?.locationShort || entry?.locationName || "UNKNOWN CHECK")}`;
   const target = hintBuildTargetFromEntry(entry, srcType);
   return {
     text: `${opener} ${maskedTable} // ${checkCue}`,
@@ -31860,7 +32047,7 @@ function hintMarkHistoryDecrypted(target){
       if(!e.fullText){
         const tn = String(target?.tableName || "").trim();
         const lc = String(target?.locationShort || target?.locationFull || "").trim();
-        if(tn || lc) e.fullText = `TABLE; ${tn} // CHECK; ${lc}`;
+        if(tn || lc) e.fullText = `TABLE; ${getRepoDisplayTableName(tn)} // CHECK; ${lc}`;
       }
     });
     if(changed && hintState.hintopediaOpen) hintRenderHintopedia();
@@ -34980,7 +35167,7 @@ function showProgressiveBallCard(tableName, filledCount, tableKey, opts){
 
   const hud = document.createElement("div");
   hud.className = "pballZoomHud";
-  hud.innerHTML = `<div class="pballTitle">PROGRESSIVE BALL</div><div class="pballName">${(tableName || "TABLE").toUpperCase()}</div>`;
+  hud.innerHTML = `<div class="pballTitle">PROGRESSIVE BALL</div><div class="pballName">${getRepoDisplayTableName(tableName || "TABLE").toUpperCase()}</div>`;
   card.appendChild(hud);
 
   const sockets = document.createElement("div");
@@ -35078,7 +35265,7 @@ function showProgressiveBallCard(tableName, filledCount, tableKey, opts){
   }else{
     const mini = document.createElement("div");
     mini.className = "pballMiniFallback";
-    mini.innerHTML = `<div class="pballMiniName">${escapeHtml(tableName || "TABLE")}</div>`;
+    mini.innerHTML = `<div class="pballMiniName">${escapeHtml(getRepoDisplayTableName(tableName || "TABLE"))}</div>`;
     cloneWrap.appendChild(mini);
   }
 

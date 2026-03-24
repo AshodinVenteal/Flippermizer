@@ -121,8 +121,62 @@
     { code:'BOSS_TABLE', slug:'boss_table_placeholder', name:'(Boss Table)', aliases:['Boss Table','Boss'] }
   ];
 
+  var TABLE_DISPLAY_META_BY_CODE = {
+    MM:{ displayName:'Medieval Madness (Williams 1997)', manufacturer:'Williams', year:1997 },
+    AFM:{ displayName:'Attack from Mars (Bally 1995)', manufacturer:'Bally', year:1995 },
+    WCS:{ displayName:'World Cup Soccer (Bally 1994)', manufacturer:'Bally', year:1994 },
+    GET:{ displayName:'The Getaway: High Speed II (Williams 1992)', manufacturer:'Williams', year:1992 },
+    ST13:{ displayName:'Star Trek (Stern 2013)', manufacturer:'Stern', year:2013 },
+    TOTAN:{ displayName:'Tales of the Arabian Nights (Williams 1996)', manufacturer:'Williams', year:1996 },
+    FATH:{ displayName:'Fathom (Bally 1981)', manufacturer:'Bally', year:1981 },
+    HOOK:{ displayName:'Hook (Data East 1992)', manufacturer:'Data East', year:1992 },
+    CONGO:{ displayName:'Congo (Williams 1995)', manufacturer:'Williams', year:1995 },
+    MCAST:{ displayName:'Mystery Castle (Alvin G 1993)', manufacturer:'Alvin G', year:1993 },
+    ATEAM:{ displayName:'The A-Team (Gottlieb 1983)', manufacturer:'Gottlieb', year:1983 },
+    KRID:{ displayName:'Knight Rider (Bally 1982)', manufacturer:'Bally', year:1982 },
+    HHEAT:{ displayName:'Hollywood Heat (Gottlieb 1986)', manufacturer:'Gottlieb', year:1986 },
+    BAYW:{ displayName:'Baywatch (Sega 1995)', manufacturer:'Sega', year:1995 },
+    STTNG:{ displayName:'Star Trek: The Next Generation (Williams 1993)', manufacturer:'Williams', year:1993 },
+    MET:{ displayName:'Meteor (Stern 1979)', manufacturer:'Stern', year:1979 },
+    HGT:{ displayName:'Harlem Globetrotters (Bally 1979)', manufacturer:'Bally', year:1979 },
+    DP:{ displayName:'Dolly Parton (Bally 1979)', manufacturer:'Bally', year:1979 },
+    PARA:{ displayName:'Paragon (Bally 1979)', manufacturer:'Bally', year:1979 },
+    ROBO:{ displayName:'RoboCop (Data East 1989)', manufacturer:'Data East', year:1989 },
+    GLIZ:{ displayName:'Grand Lizard (Williams 1986)', manufacturer:'Williams', year:1986 },
+    JOK:{ displayName:'Jokerz! (Williams 1988)', manufacturer:'Williams', year:1988 },
+    BCAT:{ displayName:'Bad Cats (Williams 1989)', manufacturer:'Williams', year:1989 },
+    TAXI:{ displayName:'Taxi (Williams 1988)', manufacturer:'Williams', year:1988 },
+    BOP:{ displayName:'The Machine: Bride of Pinbot (Williams 1991)', manufacturer:'Williams', year:1991 },
+    WW:{ displayName:'White Water (Williams 1993)', manufacturer:'Williams', year:1993 },
+    HSPD:{ displayName:'High Speed (Williams 1986)', manufacturer:'Williams', year:1986 },
+    NFEAR:{ displayName:'No Fear: Dangerous Sports (Williams 1995)', manufacturer:'Williams', year:1995 },
+    SMVE:{ displayName:'Spider-Man Vault Edition (Stern 2016)', manufacturer:'Stern', year:2016 },
+    IMVE:{ displayName:'Iron Man Vault Edition (Stern 2014)', manufacturer:'Stern', year:2014 },
+    ACDC:{ displayName:'AC/DC (Stern 2012)', manufacturer:'Stern', year:2012 },
+    PARTY:{ displayName:'Party Animal (Bally 1987)', manufacturer:'Bally', year:1987 },
+    EATPM:{ displayName:'Elvira and the Party Monsters (Bally 1989)', manufacturer:'Bally', year:1989 },
+    DRDUDE:{ displayName:'Dr. Dude and his Excellent Ray (Bally 1990)', manufacturer:'Bally', year:1990 },
+    PZONE:{ displayName:'Party Zone (Bally 1991)', manufacturer:'Bally', year:1991 },
+    SSTIFF:{ displayName:'Scared Stiff (Bally 1996)', manufacturer:'Bally', year:1996 },
+    IJTPA:{ displayName:'Indiana Jones: The Pinball Adventure (Williams 1993)', manufacturer:'Williams', year:1993 },
+    BSD:{ displayName:'Bram Stoker\'s Dracula (Williams 1993)', manufacturer:'Williams', year:1993 },
+    PFOR:{ displayName:'Police Force (Williams 1989)', manufacturer:'Williams', year:1989 },
+    HUR:{ displayName:'Hurricane (Williams 1991)', manufacturer:'Williams', year:1991 },
+    COMET:{ displayName:'Comet (Williams 1985)', manufacturer:'Williams', year:1985 },
+    CYC:{ displayName:'Cyclone (Williams 1988)', manufacturer:'Williams', year:1988 },
+    FH:{ displayName:'FunHouse (Williams 1990)', manufacturer:'Williams', year:1990 },
+    WHRL:{ displayName:'Whirlwind (Williams 1990)', manufacturer:'Williams', year:1990 },
+    TAF:{ displayName:'The Addams Family (Bally 1992)', manufacturer:'Bally', year:1992 },
+    FT:{ displayName:'Fish Tales (Williams 1992)', manufacturer:'Williams', year:1992 },
+    BK2K:{ displayName:'Black Knight 2000 (Williams 1989)', manufacturer:'Williams', year:1989 },
+    BROSE:{ displayName:'Black Rose (Bally 1992)', manufacturer:'Bally', year:1992 },
+    CFTBL:{ displayName:'Creature from the Black Lagoon (Bally 1992)', manufacturer:'Bally', year:1992 },
+    TOM:{ displayName:'Theatre of Magic (Bally 1995)', manufacturer:'Bally', year:1995 },
+    BOSS_TABLE:{ displayName:'(Boss Table)', manufacturer:'', year:null }
+  };
+
   var TABLE_BANNER_REFS = {
-    MM: 'WorldsBanners/BestiaryFlyers/MM.png',
+    MM: 'WorldsBanners/MedievalMadnessCover.png',
     AFM: 'WorldsBanners/BestiaryFlyers/AFM.png',
     WCS: 'WorldsBanners/BestiaryFlyers/WCS.jpg',
     GET: 'WorldsBanners/BestiaryFlyers/GET.jpg',
@@ -254,10 +308,14 @@
   var DESIGNER_KEY_BY_LOOKUP = Object.create(null);
 
   TABLES.forEach(function(t){
+    var extraMeta = TABLE_DISPLAY_META_BY_CODE[String(t.code || '').trim()] || {};
     var table = {
       code: String(t.code || '').trim(),
       slug: String(t.slug || '').trim(),
       name: String(t.name || '').trim(),
+      displayName: String(extraMeta.displayName || t.name || '').trim(),
+      manufacturer: String(extraMeta.manufacturer || '').trim(),
+      year: Number.isFinite(Number(extraMeta.year)) ? Number(extraMeta.year) : null,
       aliases: Array.isArray(t.aliases) ? t.aliases.slice() : [],
       banner: String(TABLE_BANNER_REFS[String(t.code || '').trim()] || '').trim()
     };
@@ -319,6 +377,26 @@
   function getCanonicalTableCode(query){
     var t = resolveTable(query);
     return t ? t.code : null;
+  }
+
+  function getDisplayTableName(query){
+    var t = resolveTable(query);
+    return t ? String(t.displayName || t.name || '').trim() : String(query || '').trim();
+  }
+
+  function getTableMeta(query){
+    var t = resolveTable(query);
+    if(!t) return null;
+    return {
+      code: t.code,
+      slug: t.slug,
+      name: t.name,
+      displayName: t.displayName || t.name,
+      manufacturer: t.manufacturer || '',
+      year: t.year,
+      aliases: (t.aliases || []).slice(),
+      banner: t.banner || ''
+    };
   }
 
   function toWorldSpec(worldKey, worldInput, options){
@@ -425,10 +503,14 @@
   function getAllTables(){
     return TABLES.map(function(t){
       var code = String(t.code || '').trim();
+      var resolved = getTableByCode(code);
       return {
         code: code,
         slug: t.slug,
         name: t.name,
+        displayName: resolved ? (resolved.displayName || resolved.name) : t.name,
+        manufacturer: resolved ? (resolved.manufacturer || '') : '',
+        year: resolved ? resolved.year : null,
         aliases: (t.aliases||[]).slice(),
         banner: String(TABLE_BANNER_REFS[code] || '').trim()
       };
@@ -485,6 +567,7 @@
       out.push({
         code: code,
         name: t ? t.name : code,
+        displayName: t ? (t.displayName || t.name) : code,
         role: String(match.role || '').trim()
       });
     });
@@ -492,7 +575,7 @@
   }
 
   var repo = {
-    version: '1.2.0',
+    version: '1.3.0',
     worldOrder: getWorldOrder(),
     worldSpecs: JSON.parse(JSON.stringify(WORLD_SPECS)),
     defaultWorldTableCodes: JSON.parse(JSON.stringify(DEFAULT_WORLD_TABLE_CODES)),
@@ -502,6 +585,8 @@
     getTableByCode: getTableByCode,
     getCanonicalTableName: getCanonicalTableName,
     getCanonicalTableCode: getCanonicalTableCode,
+    getDisplayTableName: getDisplayTableName,
+    getTableMeta: getTableMeta,
     getAllTables: getAllTables,
     resolveDesigner: resolveDesigner,
     getAllDesigners: getAllDesigners,
