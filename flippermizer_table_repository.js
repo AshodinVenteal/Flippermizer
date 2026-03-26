@@ -75,7 +75,7 @@
     { code:'MCAST', slug:'mystery_castle', name:'Mystery Castle', aliases:['Black Castle'] },
 
     { code:'ATEAM', slug:'the_a_team', name:'The A-Team', aliases:['A Team'] },
-    { code:'KRID', slug:'knight_rider', name:'Knight Rider', aliases:[] },
+    { code:'BAT66', slug:'batman_66', name:'Batman 66', aliases:['Batman (66 Premium)','Batman (66 Limited Edition)','Batman 66 Stern Tribute'] },
     { code:'HHEAT', slug:'hollywood_heat', name:'Hollywood Heat', aliases:[] },
     { code:'BAYW', slug:'baywatch', name:'Baywatch', aliases:[] },
     { code:'STTNG', slug:'star_trek_the_next_generation', name:'Star Trek The Next Generation', aliases:['Star Trek TNG','Star Trek Next Gen','STTNG'] },
@@ -132,8 +132,8 @@
     HOOK:{ displayName:'Hook (Data East 1992)', manufacturer:'Data East', year:1992 },
     CONGO:{ displayName:'Congo (Williams 1995)', manufacturer:'Williams', year:1995 },
     MCAST:{ displayName:'Mystery Castle (Alvin G 1993)', manufacturer:'Alvin G', year:1993 },
-    ATEAM:{ displayName:'The A-Team (Gottlieb 1983)', manufacturer:'Gottlieb', year:1983 },
-    KRID:{ displayName:'Knight Rider (Bally 1982)', manufacturer:'Bally', year:1982 },
+    ATEAM:{ displayName:'The A-Team (Original VPX 2023)', manufacturer:'Original VPX', year:2023 },
+    BAT66:{ displayName:'Batman 66 (Stern 2016)', manufacturer:'Stern', year:2016 },
     HHEAT:{ displayName:'Hollywood Heat (Gottlieb 1986)', manufacturer:'Gottlieb', year:1986 },
     BAYW:{ displayName:'Baywatch (Sega 1995)', manufacturer:'Sega', year:1995 },
     STTNG:{ displayName:'Star Trek: The Next Generation (Williams 1993)', manufacturer:'Williams', year:1993 },
@@ -187,7 +187,7 @@
     CONGO: 'WorldsBanners/BestiaryFlyers/CONGO.jpg',
     MCAST: 'WorldsBanners/BestiaryFlyers/MCAST.jpg',
     ATEAM: 'WorldsBanners/BestiaryFlyers/ATEAM.png',
-    KRID: 'WorldsBanners/BestiaryFlyers/KRID.jpg',
+    BAT66: 'WorldsBanners/BestiaryFlyers/BAT66.png',
     HHEAT: 'WorldsBanners/BestiaryFlyers/HHEAT.jpg',
     BAYW: 'WorldsBanners/BestiaryFlyers/BAYW.jpg',
     STTNG: 'WorldsBanners/BestiaryFlyers/STTNG.jpg',
@@ -231,7 +231,7 @@
   var DEFAULT_WORLD_TABLE_CODES = {
     w1: ['MM','AFM','WCS','GET','ST13'],
     w2: ['TOTAN','FATH','HOOK','CONGO','MCAST'],
-    w3: ['ATEAM','KRID','HHEAT','BAYW','STTNG'],
+    w3: ['ATEAM','BAT66','HHEAT','BAYW','STTNG'],
     w4: ['MET','HGT','DP','PARA','ROBO'],
     w5: ['GLIZ','JOK','BCAT','TAXI','BOP'],
     boss: ['BOSS_TABLE']

@@ -3228,7 +3228,30 @@ body.bonusPinballDim .capture{
 }
 .nodeBtn .nodeTitle{
   display:block;
-  margin-top: 10px;
+  margin-top: 5px;
+}
+.nodeBtn.scoreNode .nodeTitle{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  line-height:1.22;
+}
+.nodeBtn.taskNode .nodeTitle{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  line-height:1.14;
+}
+.nodeBtn.scoreNode .nodeTitle .scoreLead{
+  font-size:7px;
+  letter-spacing:.12em;
+  color:rgba(232,250,255,0.72);
+}
+.nodeBtn.scoreNode .nodeTitle .scoreValue{
+  font-size:18px;
+  line-height:1.1;
+  color:rgba(245,252,255,0.98);
+  text-shadow:0 0 12px rgba(88,226,255,.18);
 }
 .nodeBtn:after{
   content:"";
@@ -3599,21 +3622,138 @@ body.bonusPinballDim .capture{
   transform-origin: bottom right;
 }
 .trapStack.bossChecksPortal{
-  right: 22px;
+  right: 18px;
   bottom: 18px;
-  width: 360px;
-  transform: scale(1.34);
+  width: min(calc(100% - 36px), 760px);
+  max-height: min(340px, calc(100% - 390px));
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-content: flex-end;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 6px 2px 0;
+  transform: scale(1);
   transform-origin: bottom right;
   z-index: 112;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(130,248,255,.55) rgba(8,18,26,.35);
 }
 .trapStack.bossChecksPortal.split{
-  width: 760px;
-  flex-direction: row;
-  align-items: stretch;
+  width: min(calc(100% - 36px), 760px);
+  max-height: min(340px, calc(100% - 390px));
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  align-content: flex-end;
+}
+.trapStack.bossChecksPortal.combining .trapBanner{
+  animation: bossTrapTileCombineKF 640ms cubic-bezier(.22,.82,.26,1) both;
+}
+.trapStack.bossChecksPortal .trapBanner{
+  flex: 0 0 222px;
+  width: 222px;
+  min-width: 222px;
+  max-width: 222px;
+  direction: ltr;
 }
 .trapStack.bossChecksPortal.split .trapBanner{
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 0 0 222px;
+  min-width: 222px;
+}
+.trapStack.bossChecksPortal.combining .trapBanner{
+  animation: bossTrapCombineTileKF 760ms cubic-bezier(.18,.86,.24,1) both;
+}
+.trapStack.bossChecksPortal.combining .trapBanner:nth-child(2){
+  animation-delay: 70ms;
+}
+.trapStack.bossChecksPortal.combining .trapBanner:nth-child(3){
+  animation-delay: 140ms;
+}
+.trapStack.bossChecksPortal.combining .trapBanner:nth-child(4){
+  animation-delay: 210ms;
+}
+.trapStack.bossChecksPortal.combining .trapBanner:nth-child(5){
+  animation-delay: 280ms;
+}
+.bossTrapMergeNotice{
+  position:absolute;
+  right: 22px;
+  bottom: 206px;
+  width: min(calc(100% - 40px), 520px);
+  padding: 16px 18px 15px;
+  border-radius: 18px;
+  border: 2px solid rgba(255,146,216,.92);
+  background:
+    radial-gradient(110% 140% at 50% 0%, rgba(255,186,112,.18), rgba(0,0,0,0) 56%),
+    radial-gradient(120% 120% at 50% 58%, rgba(176,84,255,.22), rgba(0,0,0,0) 64%),
+    linear-gradient(180deg, rgba(74,16,44,.96), rgba(26,8,24,.94));
+  color: rgba(255,242,250,.98);
+  text-align: center;
+  z-index: 118;
+  pointer-events: none;
+  box-shadow:
+    0 20px 48px rgba(0,0,0,.48),
+    0 0 30px rgba(255,92,188,.28);
+  opacity: 0;
+  transform: translateY(12px) scale(.92);
+  animation: bossTrapMergeNoticeKF var(--mergeNoticeMs, 2800ms) cubic-bezier(.18,.84,.22,1) forwards;
+}
+.bossTrapMergeNotice .kicker{
+  font-size: 11px;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(255,212,244,.90);
+}
+.bossTrapMergeNotice .headline{
+  margin-top: 6px;
+  font-size: 21px;
+  line-height: 1.14;
+  letter-spacing: .08em;
+  font-weight: 900;
+  color: rgba(255,246,210,.98);
+}
+.bossTrapMergeNotice .sub{
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255,228,240,.9);
+}
+.bossTrapMergeNotice::before,
+.bossTrapMergeNotice::after{
+  content:"";
+  position:absolute;
+  inset:-14px;
+  border-radius: 24px;
+  pointer-events:none;
+}
+.bossTrapMergeNotice::before{
+  background:
+    radial-gradient(circle at 32% 48%, rgba(255,210,96,.34), rgba(0,0,0,0) 18%),
+    radial-gradient(circle at 50% 36%, rgba(255,120,168,.30), rgba(0,0,0,0) 22%),
+    radial-gradient(circle at 68% 52%, rgba(126,214,255,.26), rgba(0,0,0,0) 18%);
+  filter: blur(6px);
+}
+.bossTrapMergeNotice::after{
+  border: 1px solid rgba(255,186,236,.28);
+  animation: bossTrapMergeRingKF 720ms ease-out both;
+}
+.trapStack.bossChecksPortal::-webkit-scrollbar{
+  width: 10px;
+}
+.trapStack.bossChecksPortal::-webkit-scrollbar-track{
+  background: rgba(8,18,26,.35);
+  border-radius: 999px;
+}
+.trapStack.bossChecksPortal::-webkit-scrollbar-thumb{
+  background: linear-gradient(180deg, rgba(118,246,255,.72), rgba(80,144,255,.58));
+  border-radius: 999px;
+}
+@keyframes bossTrapTileCombineKF{
+  0%{ transform: translateY(24px) scale(.88); opacity:0; }
+  42%{ transform: translateY(-8px) scale(1.05); opacity:1; }
+  100%{ transform: translateY(0) scale(1); opacity:1; }
 }
 .trapBanner.queuedTrap{
   border-color: rgba(255,166,120,0.92);
@@ -3623,6 +3763,23 @@ body.bonusPinballDim .capture{
 }
 .trapBanner.queuedTrap .t{
   color: rgba(255,226,198,0.92);
+}
+@keyframes bossTrapCombineTileKF{
+  0%{ transform: scale(.9) translateY(10px); opacity:0; filter:brightness(1.28); }
+  35%{ transform: scale(1.06) translateY(-8px); opacity:1; }
+  100%{ transform: scale(1) translateY(0); opacity:1; filter:none; }
+}
+@keyframes bossTrapMergeNoticeKF{
+  0%{ opacity:0; transform: translateY(14px) scale(.88); }
+  16%{ opacity:1; transform: translateY(-6px) scale(1.05); }
+  32%{ opacity:1; transform: translateY(0) scale(1); }
+  82%{ opacity:1; transform: translateY(0) scale(1); }
+  100%{ opacity:0; transform: translateY(-12px) scale(1.02); }
+}
+@keyframes bossTrapMergeRingKF{
+  0%{ opacity:0; transform: scale(.78); }
+  35%{ opacity:1; transform: scale(1.04); }
+  100%{ opacity:0; transform: scale(1.18); }
 }
 
 .extraBanner{
@@ -6266,6 +6423,42 @@ body.chromaBlue .bossKeyCard::before{
   line-height:1.6;
   color:rgba(225,247,255,.76);
 }
+.relicHoverTip{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:calc(100% + 10px);
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(116,240,255,.22);
+  background:rgba(5,15,24,.96);
+  box-shadow:0 14px 28px rgba(0,0,0,.45);
+  color:rgba(234,250,255,.92);
+  font-size:8px;
+  line-height:1.55;
+  opacity:0;
+  transform:translateY(6px);
+  pointer-events:none;
+  transition:opacity .16s ease, transform .16s ease;
+  transition-delay:0s;
+  z-index:8;
+  white-space:normal;
+}
+.relicHoverTip::after{
+  content:"";
+  position:absolute;
+  left:22px;
+  top:100%;
+  border-width:7px 7px 0 7px;
+  border-style:solid;
+  border-color:rgba(5,15,24,.96) transparent transparent transparent;
+}
+.relicItem.isLocked:hover .relicHoverTip,
+.relicItem.isLocked:focus-visible .relicHoverTip{
+  opacity:1;
+  transform:translateY(0);
+  transition-delay:.5s;
+}
 .relicItemMeta{
   margin-top:10px;
   display:flex;
@@ -6815,12 +7008,23 @@ body.chromaBlue .bossKeyCard::before{
   flex-direction: column;
   gap: 6px;
 }
+.extraBallDock.minimized{
+  align-items:flex-end;
+}
 .extraBallDockOverview{
   width: 100%;
 }
 .extraBallDockChecks{
   width: calc(100% - 24px);
   margin: 6px auto 2px;
+}
+.extraBallDockChecks.minimized{
+  position:absolute;
+  top:14px;
+  right:14px;
+  width:auto;
+  margin:0;
+  z-index:9;
 }
 .extraBallTokenDock{
   display: flex;
@@ -6839,15 +7043,29 @@ body.chromaBlue .bossKeyCard::before{
   border-color: rgba(170,255,190,.62);
   box-shadow: 0 0 0 1px rgba(170,255,190,.22), 0 12px 24px rgba(0,0,0,.30);
 }
+.extraBallTokenDock.minimized{
+  gap:10px;
+  padding:10px 12px;
+  border-width:2px;
+  border-color:rgba(120,255,180,.64);
+  box-shadow:0 14px 28px rgba(0,0,0,.34), 0 0 20px rgba(60,255,140,.14);
+}
 .extraBallTokenLabel{
   font-size: 8px;
   color: rgba(214,255,226,.94);
+}
+.extraBallTokenDock.minimized .extraBallTokenLabel,
+.extraBallTokenDock.minimized .extraBallTokenNote{
+  display:none;
 }
 .extraBallTokenRow{
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 6px;
+}
+.extraBallTokenDock.minimized .extraBallTokenRow{
+  gap:10px;
 }
 .extraBallTokenBtn{
   appearance: none;
@@ -6862,6 +7080,32 @@ body.chromaBlue .bossKeyCard::before{
   font-size: 8px;
   letter-spacing: .6px;
   cursor: pointer;
+}
+.extraBallTokenBtn.large{
+  min-width:56px;
+  height:38px;
+  padding:0 14px;
+  font-size:12px;
+  border-width:2px;
+}
+.extraBallMiniToggle{
+  appearance:none;
+  border:1px solid rgba(170,255,190,.56);
+  background:linear-gradient(180deg, rgba(10,42,24,.96), rgba(4,20,12,.96));
+  color:rgba(218,255,228,.96);
+  border-radius:999px;
+  min-width:76px;
+  height:26px;
+  padding:0 10px;
+  font:inherit;
+  font-size:7px;
+  letter-spacing:.08em;
+  cursor:pointer;
+}
+.extraBallTokenDock.minimized .extraBallMiniToggle{
+  min-width:88px;
+  height:32px;
+  font-size:8px;
 }
 .extraBallTokenBtn:disabled{
   cursor: default;
@@ -9980,6 +10224,99 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 #viewChecks .bossBattleNotice.retaliation .sub{
   color: rgba(255,212,212,.9);
 }
+#viewChecks .bossBattleNotice.phase2{
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  min-width: 0;
+  max-width: none;
+  padding: 12px 18px 10px;
+  border-width: 3px;
+  border-color: rgba(255,112,196,.96);
+  background:
+    radial-gradient(44% 54% at 50% 50%, rgba(255,226,126,.26), rgba(0,0,0,0) 24%),
+    radial-gradient(74% 80% at 50% 50%, rgba(255,126,164,.26), rgba(0,0,0,0) 42%),
+    radial-gradient(120% 130% at 50% 46%, rgba(174,82,255,.22), rgba(0,0,0,0) 62%),
+    linear-gradient(180deg, rgba(72,12,32,.97), rgba(28,8,30,.95));
+  box-shadow:
+    0 20px 54px rgba(0,0,0,.52),
+    0 0 28px rgba(255,90,170,.42),
+    0 0 48px rgba(153,76,255,.24);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  animation: bossBattleNoticePhase2KF var(--bossNoticeMs, 4200ms) cubic-bezier(.16,.84,.18,1) forwards;
+  overflow: visible;
+}
+#viewChecks .bossBattleNotice.phase2 .headline{
+  position: relative;
+  z-index: 2;
+  font-size: 28px;
+  line-height: 1.18;
+  letter-spacing: .08em;
+  color: rgba(255,244,198,.99);
+  padding: 0;
+  text-shadow:
+    0 0 16px rgba(255,206,108,.34),
+    0 0 26px rgba(255,96,188,.30);
+}
+#viewChecks .bossBattleNotice.phase2 .sub{
+  position: relative;
+  z-index: 2;
+  margin-top: 6px;
+  padding: 0;
+  font-size: 13px;
+  letter-spacing: .18em;
+  color: rgba(255,214,244,.90);
+  text-transform: uppercase;
+}
+#viewChecks .bossBattleNotice.fusion{
+  top: -6px;
+  border-color: rgba(172,132,255,.94);
+  background:
+    radial-gradient(140% 150% at 50% 0%, rgba(160,132,255,.20), rgba(0,0,0,0) 58%),
+    linear-gradient(180deg, rgba(34,18,72,.96), rgba(16,8,34,.94));
+  box-shadow:
+    0 18px 42px rgba(0,0,0,.48),
+    0 0 30px rgba(160,132,255,.34);
+}
+#viewChecks .bossBattleNotice.fusion .headline{
+  color: rgba(246,236,255,.98);
+}
+#viewChecks .bossBattleNotice.fusion .sub{
+  color: rgba(224,214,255,.88);
+}
+#viewChecks .bossBattleNotice.phase2::before,
+#viewChecks .bossBattleNotice.phase2::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  pointer-events:none;
+  z-index: 1;
+}
+#viewChecks .bossBattleNotice.phase2::before{
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,244,188,.52) 0%, rgba(255,184,112,.34) 18%, rgba(255,102,164,.20) 36%, rgba(0,0,0,0) 68%);
+  filter: blur(8px);
+  opacity: .94;
+}
+#viewChecks .bossBattleNotice.phase2::after{
+  width: 360px;
+  height: 360px;
+  background:
+    conic-gradient(from 0deg, rgba(255,240,188,.22), rgba(255,112,188,.06), rgba(160,112,255,.22), rgba(255,240,188,.22));
+  clip-path: polygon(50% 0%, 58% 28%, 88% 12%, 72% 38%, 100% 50%, 72% 62%, 88% 88%, 58% 72%, 50% 100%, 42% 72%, 12% 88%, 28% 62%, 0% 50%, 28% 38%, 12% 12%, 42% 28%);
+  opacity: .82;
+  filter: blur(1px);
+}
 #viewChecks .bossTrapLockPlate{
   position: absolute;
   left: 50%;
@@ -10019,7 +10356,7 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   pointer-events: none;
 }
 #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig.bossChecksDisabled::after{
-  content: "BOSS RETALIATION ACTIVE";
+  content: attr(data-lock-label);
   position: absolute;
   inset: auto 18px 18px 18px;
   display: flex;
@@ -10082,6 +10419,23 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
     0 16px 40px rgba(0,0,0,.45),
     0 0 24px rgba(76,208,255,.24);
 }
+#viewChecks .bossBattleNotice.viewerAssist{
+  border-color: rgba(214,132,255,.96);
+  background:
+    radial-gradient(120% 140% at 50% 0%, rgba(201,120,255,.22), rgba(0,0,0,0) 60%),
+    linear-gradient(180deg, rgba(34,14,48,.96), rgba(14,8,22,.95));
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.45),
+    0 0 26px rgba(188,104,255,.30);
+}
+#viewChecks .bossBattleNotice .kicker{
+  margin-bottom: 8px;
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,214,246,.96);
+}
 #viewChecks .bossBattleNotice .headline{
   font-size: 20px;
   line-height: 1.22;
@@ -10109,6 +10463,13 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 @keyframes bossBattleNoticeDismissKF{
   0%{ opacity:1; transform: translateX(-50%) translateY(0) scale(1); }
   100%{ opacity:0; transform: translateX(-50%) translateY(-8px) scale(.96); }
+}
+@keyframes bossBattleNoticePhase2KF{
+  0%{ opacity:0; transform: scale(.12); filter: blur(5px) saturate(1.28); }
+  12%{ opacity:1; transform: scale(1.18); filter: blur(0) saturate(1.1); }
+  22%{ opacity:1; transform: scale(.94); filter: blur(0); }
+  84%{ opacity:1; transform: scale(1); filter: blur(0); }
+  100%{ opacity:0; transform: scale(1.08); filter: blur(1px); }
 }
 #viewChecks .bossTableViz{
   width: min(94%, 860px);
@@ -11597,6 +11958,59 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   background:linear-gradient(180deg, rgba(34,255,136,.92), rgba(162,255,201,.66));
   box-shadow:0 0 16px rgba(34,255,136,.28);
 }
+.achCtlItem.justCompletedItem{
+  overflow:visible;
+}
+.achJustCompletedTip{
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:calc(100% + 10px);
+  padding:12px 14px 11px;
+  border-radius:12px;
+  border:1px solid rgba(34,255,136,.44);
+  background:
+    linear-gradient(180deg, rgba(12,34,26,.97), rgba(4,14,10,.98)),
+    rgba(0,0,0,.32);
+  color:#dff8ea;
+  box-shadow:
+    0 16px 28px rgba(0,0,0,.34),
+    0 0 18px rgba(34,255,136,.10);
+  opacity:0;
+  transform:translateY(6px);
+  pointer-events:none;
+  transition:opacity .16s ease, transform .16s ease;
+  transition-delay:0s;
+  z-index:6;
+}
+.achCtlItem.justCompletedItem:hover .achJustCompletedTip{
+  opacity:1;
+  transform:translateY(0);
+  transition-delay:.22s;
+}
+.achJustCompletedTip::after{
+  content:"";
+  position:absolute;
+  left:22px;
+  top:100%;
+  width:14px;
+  height:14px;
+  background:rgba(8,24,18,.98);
+  border-right:1px solid rgba(34,255,136,.44);
+  border-bottom:1px solid rgba(34,255,136,.44);
+  transform:translateY(-7px) rotate(45deg);
+}
+.achJustCompletedTipTitle{
+  font-size:10px;
+  line-height:1.7;
+  color:#f0fff6;
+  margin-bottom:6px;
+}
+.achJustCompletedTipDesc{
+  font-size:9px;
+  line-height:1.9;
+  color:#b9ead0;
+}
 .achCtlItem .n{
   font-size:12px;
   color:#d7f8ff;
@@ -11931,9 +12345,9 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   animation: achPreviewLeaderDrift 2300ms ease-in-out infinite alternate;
 }
 @keyframes achPreviewPointerDrift{
-  0%{ transform: translate(22px, 48px) rotate(var(--previewPointerRotate, 0deg)); }
-  50%{ transform: translate(98px, 20px) rotate(var(--previewPointerRotate, 0deg)); }
-  100%{ transform: translate(148px, 54px) rotate(var(--previewPointerRotate, 0deg)); }
+  0%{ transform: translate(22px, 48px) rotate(var(--previewPointerRotate, 0deg)) scaleX(var(--previewPointerScaleX, 1)); }
+  50%{ transform: translate(98px, 20px) rotate(var(--previewPointerRotate, 0deg)) scaleX(var(--previewPointerScaleX, 1)); }
+  100%{ transform: translate(148px, 54px) rotate(var(--previewPointerRotate, 0deg)) scaleX(var(--previewPointerScaleX, 1)); }
 }
 @keyframes achPreviewLeaderDrift{
   0%{ transform: translate(2px, 58px); }
@@ -13003,16 +13417,16 @@ body.flprShopSparksCat{
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .nodeGrid{
   display: grid !important;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  padding: 10px 10px 12px;
+  gap: 6px;
+  padding: 6px 6px 8px;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .nodeBtn{
-  min-height: 98px;
+  min-height: 76px;
   border-width: 2px;
   font-size: 9px !important;
   line-height: 1.28 !important;
-  padding: 10px 10px 9px !important;
-  border-radius: 14px;
+  padding: 6px 8px 6px !important;
+  border-radius: 12px;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .nodeBtn::before{
   content: none;
@@ -13047,14 +13461,18 @@ body.flprShopSparksCat{
   z-index: 1;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .nodeBtn .nodeTitle{
-  margin-top: 30px;
+  margin-top: 20px;
   font-size: 11px;
-  line-height: 1.2;
+  line-height: 1.08;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .nodeBtn.taskNode .nodeTitle{
+  font-size: 14px;
+  line-height: 1.02;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .nodeBtn .small{
-  margin-top: 4px;
-  font-size: 8px;
-  line-height: 1.18;
+  margin-top: 1px;
+  font-size: 6px;
+  line-height: 1.06;
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .nodeBtn .tierBadge{
   left: 0;
@@ -13292,6 +13710,15 @@ body.flprShopSparksCat{
   border-radius:10px;
   border:1px solid rgba(0,217,255,.26);
   background: rgba(0,0,0,.28);
+}
+.seedWordLabel{
+  color: rgba(255,228,128,.98);
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+.seedCodeDigits{
+  color: rgba(210,236,255,.72);
+  font-size: 9px;
 }
 .endRunKeys{
   border:1px solid rgba(255,198,92,.35);
@@ -14010,7 +14437,7 @@ body.flprShopSparksCat{
         <button class="miniBtn" id="tbToggleBtn" type="button" title="Toggle Table Banners">+</button>
       </div><div class="collapsed" id="tableBannersWrap">
         <div class="cNote">Banners appear on Overview tiles; and behind B1/B2/B3 for that table in Tower.</div>
-        <div class="cGrid" id="tileBannerControls"><div class="cTileRow"><div class="cTileName">W1-1  [MM]  Medieval Madness</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W1-2  [AFM]  Attack from Mars</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W1-3  [WCS]  World Cup Soccer</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W1-4  [GET]  The Getaway</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W1-5  [ST13]  Star Trek (Stern 2013)</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-1  [TOTAN]  Tales of the Arabian Nights</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-2  [FATH]  Fathom</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-3  [HOOK]  Hook</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-4  [CONGO]  Congo</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-5  [MCAST]  Mystery Castle</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-1  [ATEAM]  The A-Team</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-2  [KRID]  Knight Rider</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-3  [HHEAT]  Hollywood Heat</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-4  [BAYW]  Baywatch</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-5  [STTNG]  Star Trek The Next Generation</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-1  [MET]  Meteor</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-2  [HGT]  Harlem Globetrotters</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-3  [DP]  Dolly Parton</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-4  [PARA]  Paragon</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-5  [ROBO]  Robocop</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-1  [GLIZ]  Grand Lizard</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-2  [JOK]  Jokerz!</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-3  [BCAT]  Bad Cats</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-4  [TAXI]  Taxi</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-5  [BOP]  Bride of Pinbot</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div></div>
+        <div class="cGrid" id="tileBannerControls"><div class="cTileRow"><div class="cTileName">W1-1  [MM]  Medieval Madness</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W1-2  [AFM]  Attack from Mars</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W1-3  [WCS]  World Cup Soccer</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W1-4  [GET]  The Getaway</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W1-5  [ST13]  Star Trek (Stern 2013)</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-1  [TOTAN]  Tales of the Arabian Nights</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-2  [FATH]  Fathom</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-3  [HOOK]  Hook</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-4  [CONGO]  Congo</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W2-5  [MCAST]  Mystery Castle</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-1  [ATEAM]  The A-Team</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-2  [BAT66]  Batman 66</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-3  [HHEAT]  Hollywood Heat</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-4  [BAYW]  Baywatch</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W3-5  [STTNG]  Star Trek The Next Generation</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-1  [MET]  Meteor</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-2  [HGT]  Harlem Globetrotters</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-3  [DP]  Dolly Parton</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-4  [PARA]  Paragon</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W4-5  [ROBO]  Robocop</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-1  [GLIZ]  Grand Lizard</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-2  [JOK]  Jokerz!</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-3  [BCAT]  Bad Cats</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-4  [TAXI]  Taxi</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div><div class="cTileRow"><div class="cTileName">W5-5  [BOP]  Bride of Pinbot</div><div class="cActions"><label class="cFile">UPLOAD<input type="file" accept="image/*" class="hiddenFile"></label><button class="cBtn">CLEAR</button></div></div></div>
       </div></div><div class="controlsTabPanel" data-ctrl-panel="testing"><div class="ctrlCard"><div class="cSectionTitle">BOSS DAMAGE TEST</div><div class="hpTestRow" style="margin-top:8px;">
         <button class="hpBtn" id="hpTestDamage10">-10%</button>
         <button class="hpBtn" id="hpTestDamage25">-25%</button>
@@ -14410,7 +14837,7 @@ window.__manualDisconnect = false;
     CONGO: "WorldsBanners/BestiaryFlyers/CONGO.jpg",
     MCAST: "WorldsBanners/BestiaryFlyers/MCAST.jpg",
     ATEAM: "WorldsBanners/BestiaryFlyers/ATEAM.png",
-    KRID: "WorldsBanners/BestiaryFlyers/KRID.jpg",
+    BAT66: "WorldsBanners/BestiaryFlyers/BAT66.png",
     HHEAT: "WorldsBanners/BestiaryFlyers/HHEAT.jpg",
     BAYW: "WorldsBanners/BestiaryFlyers/BAYW.jpg",
     STTNG: "WorldsBanners/BestiaryFlyers/STTNG.jpg",
@@ -14563,7 +14990,7 @@ window.__manualDisconnect = false;
     return {
       w1:{label:"World 1; Ramps Rumpus", locked:false, banner:getDefaultWorldBannerRef("w1"), tables:["Medieval Madness","Attack from Mars","World Cup Soccer","The Getaway","Star Trek (Stern 2013)"]},
       w2:{label:"World 2; Malt Desniy World", locked:true,  banner:getDefaultWorldBannerRef("w2"), tables:["Tales of the Arabian Nights","Fathom","Hook","Congo","Mystery Castle"]},
-      w3:{label:"World 3; Vintage Television", locked:true, banner:getDefaultWorldBannerRef("w3"), tables:["The A-Team","Knight Rider","Hollywood Heat","Baywatch","Star Trek The Next Generation"]},
+      w3:{label:"World 3; Vintage Television", locked:true, banner:getDefaultWorldBannerRef("w3"), tables:["The A-Team","Batman 66","Hollywood Heat","Baywatch","Star Trek The Next Generation"]},
       w4:{label:"World 4; Spinner Sparring", locked:true,  banner:getDefaultWorldBannerRef("w4"), tables:["Meteor","Harlem Globetrotters","Dolly Parton","Paragon","Robocop"]},
       w5:{label:"World 5; Featured Designer; Python Anghelo", locked:true,  banner:getDefaultWorldBannerRef("w5"), tables:["Grand Lizard","Jokerz!","Bad Cats","Taxi","Bride of Pinbot"]},
       boss:{label:"World 6; Boss", locked:true, banner:getDefaultWorldBannerRef("boss"), tables:["(Boss Table)"]}
@@ -15540,12 +15967,22 @@ function getBaseBallStateForTableKey(tableKey, srcState){
     let b2 = !!s?.balls?.[`${wk}|${idx}|2`];
     let b3 = !!s?.balls?.[`${wk}|${idx}|3`];
 
-    let chosenBossKey = "";
+    let revealReady = false;
     try{
-      const chosenBossName = String(s?.bossTable || "").trim();
-      if(chosenBossName) chosenBossKey = findTableKeyByNameInState(chosenBossName, s);
+      const activeState = (!srcState || srcState === state);
+      if(activeState && typeof isBossTableRevealReady === "function"){
+        revealReady = !!isBossTableRevealReady();
+      }else{
+        const redeemed = Number(
+          Array.isArray(window?.bossKeysState)
+            ? window.bossKeysState.reduce((n, k)=> n + ((k && k.acquired) ? 1 : 0), 0)
+            : 0
+        );
+        const required = Math.max(1, Number(getBossKeysRequiredForOpen(ap?.slotData) || 3));
+        revealReady = redeemed >= required;
+      }
     }catch(_){}
-    if(tk === "boss|0" || (chosenBossKey && tk === chosenBossKey)){
+    if(revealReady && isBossWorldId(wk, s) && idx === 0){
       b1 = true;
       b2 = true;
       b3 = true;
@@ -16261,6 +16698,47 @@ function flprStatsFmtClock(ms){
   const s = sec % 60;
   return `${m}:${String(s).padStart(2, "0")}`;
 }
+const FLPR_SEED_WORDS = [
+  "AURORA","COMET","NEBULA","METEOR","NOVA","QUASAR","SOLAR","LUNAR",
+  "EMBER","CINDER","FLARE","SPARK","VOLT","PLASMA","RADIANT","PRISM",
+  "ECHO","RIDDLE","ORBIT","ROCKET","GALAXY","COSMOS","ZENITH","APEX",
+  "PHOTON","PULSAR","SONIC","ASTRAL","PINBALL","ARCADE","TITAN","VECTOR",
+  "TEMPEST","CYCLONE","WHIRLWIND","RAMPAGE","JACKPOT","MULTIBALL","BONUS","TOWER",
+  "RELIC","BOSS","KEYSTONE","MIDWAY","SILVER","GOLDEN","DIAMOND","ONYX",
+  "FALCON","DRAGON","PHOENIX","COBRA","VIPER","PANTHER","RAVEN","WOLF",
+  "THUNDER","MONSOON","TORNADO","LIGHTNING","AFTERSHOCK","OVERDRIVE","HYPER","TURBO",
+  "RETRO","VINTAGE","COSMIC","MYSTIC","ENIGMA","SPECTRUM","MIRAGE","PARAGON",
+  "BLAZE","FUSION","NITRO","BOOSTER","STARBURST","SKYLINE","SUNBURST","MIDNIGHT",
+  "JETSTREAM","POWERHOUSE","HOTSHOT","SKYFIRE","MOONSHOT","WILDCARD","HIGHWIRE","POWERPLAY",
+  "CATALYST","SHOWDOWN","BARRAGE","UPLINK","STARLIT","IRONCLAD","BLACKOUT","OVERLOAD",
+  "FREETILT","UPRAMP","LOCKSHOT","DROPBANK","SKILLSHOT","HEATWAVE","NIGHTDRIVE","SUNSPOT",
+  "MOONRISE","STARFALL","AIRSTREAM","FASTLANE","MAINLINE","VICTORY","ENCORE","FINALFORM",
+  "DREAMWAVE","SIDESPIN","TOPLANE","BACKGLASS","FLIPSIDE","MEGATILT","POWERGRID","AFTERGLOW"
+];
+const FLPR_SEED_WORD_BLOCKLIST = [
+  "ASS","ASSHOLE","BITCH","CUNT","DICK","DYKE","FAG","FAGGOT","FUCK","NIG","NIGGER",
+  "PISS","PRICK","PUSSY","SHIT","SLUT","SPIC","TWAT","WHORE"
+];
+function flprSeedWordIsSafe(word){
+  const upper = String(word || "").trim().toUpperCase();
+  if(!upper) return false;
+  return !FLPR_SEED_WORD_BLOCKLIST.some((bad)=> upper.includes(String(bad || "").trim().toUpperCase()));
+}
+function flprSeedWord(seedName){
+  const raw = String(seedName || "").trim();
+  if(!raw) return "UNKNOWN";
+  let hash = 0;
+  for(let i = 0; i < raw.length; i++){
+    hash = ((hash * 131) + raw.charCodeAt(i)) >>> 0;
+  }
+  const list = Array.isArray(FLPR_SEED_WORDS) ? FLPR_SEED_WORDS : [];
+  if(!list.length) return "UNKNOWN";
+  for(let i = 0; i < list.length; i++){
+    const candidate = String(list[(hash + i) % list.length] || "").trim().toUpperCase();
+    if(flprSeedWordIsSafe(candidate)) return candidate;
+  }
+  return "UNKNOWN";
+}
 function flprStatsBuildRunSummary(run){
   const rows = Object.values(run?.tables || {});
   const totals = rows.reduce((acc, row)=>{
@@ -16311,16 +16789,22 @@ function flprStatsRenderEndRunOverlay(runInput){
   if(!sub || !meta || !keys || !statsGrid || !tbody) return false;
 
   const seedName = String(run.seedName || ap?.seedName || "Unknown Seed");
-  sub.textContent = `Randomizer complete for ${seedName}.`;
+  const seedWord = flprSeedWord(seedName);
+  sub.textContent = `Randomizer complete for ${seedWord}.`;
   meta.innerHTML = "";
   const metaParts = [
+    { html:`Seed Code <span class="seedWordLabel">${escapeHtml(seedWord)}</span> <span class="seedCodeDigits">(${escapeHtml(seedName)})</span>` },
     `Run ID ${String(run.id || "").slice(-10)}`,
     `Duration ${flprStatsFmtDuration(run.durationMs || (Date.now() - Number(run.startMs || Date.now())))}`,
     `Boss ${String(run.bossTableName || "Unknown")}`
   ];
   metaParts.forEach((txt)=>{
     const span = document.createElement("span");
-    span.textContent = txt;
+    if(txt && typeof txt === "object" && typeof txt.html === "string"){
+      span.innerHTML = txt.html;
+    }else{
+      span.textContent = String(txt || "");
+    }
     meta.appendChild(span);
   });
 
@@ -17088,6 +17572,31 @@ function armJunkRedeemTargetMode(diff){
 function isTrapCheckLockActive(){
   return !!(ap && (ap.trapLock || ap.trapActive));
 }
+function setBossPhase2RedeemPause(durationMs){
+  const ms = Math.max(0, Math.round(Number(durationMs || 0) || 0));
+  try{
+    ap.bossPhase2NoticeUntil = ms > 0 ? (Date.now() + ms) : 0;
+  }catch(_){}
+  try{
+    if(window.__bossPhase2PauseTimer) clearTimeout(window.__bossPhase2PauseTimer);
+  }catch(_){}
+  if(ms > 0){
+    try{
+      window.__bossPhase2PauseTimer = setTimeout(()=>{
+        try{
+          ap.bossPhase2NoticeUntil = 0;
+          if(activeView === "checks") renderChecks();
+        }catch(_){}
+      }, ms + 60);
+    }catch(_){}
+  }
+}
+function isBossPhase2RedeemPauseActive(){
+  try{
+    return Date.now() < Math.max(0, Number(ap?.bossPhase2NoticeUntil || 0));
+  }catch(_){}
+  return false;
+}
 function armTrapLockFx(mode, opts){
   opts = opts || {};
   const fxMode = String(mode || "").trim().toLowerCase();
@@ -17426,7 +17935,8 @@ const RELIC_DEFS = Object.freeze([
     title:"Tilted Compass",
     emoji:"🧭",
     effect:"At run start, marks 1 table in each world that is guaranteed to contain at least 1 progression check.",
-    unlock:"Clear at least 1 check in every non-boss world in a single randomizer run.",
+    unlock:"In one run, clear at least 1 check in every non-boss world.",
+    unlockHint:"You need one successful check from each regular world before the seed ends. Boss world does not count for this unlock.",
     lore:"The compass was pulled from a cabinet backbox that kept pointing at unopened routes. Its needle leans toward certainty and hates wasted motion."
   },
   {
@@ -17436,7 +17946,8 @@ const RELIC_DEFS = Object.freeze([
     title:"Cold Open",
     emoji:"❄️",
     effect:"At run start, marks 1 guaranteed progression table per world; when a table goes dry, one marked table becomes the active pivot target.",
-    unlock:"Pivot after a dry streak and find progression within your next 3 checks 10 times.",
+    unlock:"After a dry streak, pivot and find progression within your next 3 checks 10 times.",
+    unlockHint:"A dry streak means a short run of checks without progression. The game counts it when you switch routes and recover quickly.",
     lore:"A pale strip of film spliced from failed openings. It only warms when you leave a dead scene before it kills the pacing."
   },
   {
@@ -17446,7 +17957,8 @@ const RELIC_DEFS = Object.freeze([
     title:"First Blood",
     emoji:"🩸",
     effect:"One of the first 5 visited tables becomes the First Blood target; fully clear it, then fully clear its world to start the boss at 10% less HP.",
-    unlock:"Finish the First Blood requirement in 5 different runs.",
+    unlock:"Complete the First Blood route in 5 different runs.",
+    unlockHint:"In a run where a First Blood target appears, fully clear that target table and then fully clear the rest of its world.",
     lore:"Its red lacquer never dries. The relic remembers the first table that asked for total commitment and the worlds that answered."
   },
   {
@@ -17457,6 +17969,7 @@ const RELIC_DEFS = Object.freeze([
     emoji:"🌀",
     effect:"After 4 checks on the same table, reveals whether progression still remains there or not, using spoiler truth.",
     unlock:"In 5 different runs, stay on one table long enough to reach 8 checks.",
+    unlockHint:"You need to commit to a single table and dig deep. The run counts as soon as one table reaches 8 cleared checks.",
     lore:"A wound copper spring from a prototype lane guide. Hold your line long enough and it tells you whether stubbornness is wisdom or waste."
   },
   {
@@ -17467,6 +17980,7 @@ const RELIC_DEFS = Object.freeze([
     emoji:"🪟",
     effect:"Leave checks behind, then clear at least that many checks on your next table; the old table softly glows if progression still remains there.",
     unlock:"Return to an abandoned table and find progression there 10 times.",
+    unlockHint:"Leave a table with checks still available, play elsewhere for a bit, then come back and find progression on that original table.",
     lore:"A cracked pane from a service door that never shut correctly. Through it, abandoned tables keep staring back."
   },
   {
@@ -17477,6 +17991,7 @@ const RELIC_DEFS = Object.freeze([
     emoji:"🛣️",
     effect:"After 3 checks on a table without finding any Progressive Balls or Boss Keys, hints a random table that does contain a Progressive Ball.",
     unlock:"Recover from a 3-check drought into a Progressive Ball or Boss Key table 10 times.",
+    unlockHint:"Go 3 checks without finding a Progressive Ball or Boss Key, then route into a table that does contain one of those progression items.",
     lore:"Drawn in grease pencil by a routed tournament tech. Every deadlane on the page ends beside one surviving shot."
   },
   {
@@ -17487,6 +18002,7 @@ const RELIC_DEFS = Object.freeze([
     emoji:"🗝️",
     effect:"When a Boss Key is found, freely checks 1 more node on that table; if none remain, stores 2 free checks for the next selected table.",
     unlock:"Collect 15 Boss Keys across all runs.",
+    unlockHint:"This one is cumulative. Every Boss Key from every completed seed contributes to the total.",
     lore:"An overfull keyring from a row of tournament locks. Every new key drags another hidden latch open with it."
   },
   {
@@ -17497,6 +18013,7 @@ const RELIC_DEFS = Object.freeze([
     emoji:"🔒",
     effect:"When you are 1 key away from the boss table opening, half of the remaining non-key tables lock shut for the rest of the run.",
     unlock:"Open the boss table in 10 different runs.",
+    unlockHint:"You only need to reach the point where the boss table opens. You do not need to defeat the boss for this unlock to count.",
     lore:"The iron lock clicks before the last key arrives. It hates indecision and cuts whole branches off the tree to prove the point."
   },
   {
@@ -17507,6 +18024,7 @@ const RELIC_DEFS = Object.freeze([
     emoji:"⚡",
     effect:"After beating the boss, your next new seed begins with the boss at 85% HP.",
     unlock:"Defeat the boss 3 times.",
+    unlockHint:"This counts full seed clears. Each time the boss dies and Boss Victory is completed, it adds one toward the total.",
     lore:"A live shard from a drained raid coil. It stores the echo of one victory and spends it on the next monster that wakes up."
   }
 ]);
@@ -17789,12 +18307,12 @@ const ACH_CURSOR_FOLLOWER_META = Object.freeze({
       text:"#fff8cc"
     }
   },
-  flprShopCursorDog: { leader:"🐕", pointer:"🦴", pointerDx: -12, pointerDy: -12, leaderDx: 14, leaderDy: 8 },
+  flprShopCursorDog: { leader:"🐕", pointer:"🦴", pointerDx: -12, pointerDy: -12, leaderDx: 14, leaderDy: 8, pointerScaleX:-1 },
   flprShopCursorCat: { leader:"🐈", pointer:"🐟", pointerDx: 10, pointerDy: 10, leaderDx:-20, leaderDy:20 },
   flprShopCursorPig: { leader:"🐖", pointer:"🍖", pointerDx: 10, pointerDy: 10, leaderDx:-20, leaderDy:20 },
   flprShopCursorFinger: { leader:"", pointer:"👈", pointerDx: 2, pointerDy: 0, leaderDx:0, leaderDy:0 }
 });
-const ACH_CLICK_SEQUENCE_CODES = Object.freeze(["TAXI","BAYW","KRID"]);
+const ACH_CLICK_SEQUENCE_CODES = Object.freeze(["TAXI","BAYW","BAT66"]);
 
 function episodeFreshState(){
   return {
@@ -17966,7 +18484,7 @@ function achCursorFollowerTick(){
   st.y += (st.ty - st.y) * 0.46;
   st.lx += (st.x - st.lx) * 0.22;
   st.ly += (st.y - st.ly) * 0.22;
-  pointer.style.transform = `translate(${Math.round(st.x + (st.meta.pointerDx || 0))}px, ${Math.round(st.y + (st.meta.pointerDy || 0))}px) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.pointerRotate || 0))}deg)`;
+  pointer.style.transform = `translate(${Math.round(st.x + (st.meta.pointerDx || 0))}px, ${Math.round(st.y + (st.meta.pointerDy || 0))}px) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.pointerRotate || 0))}deg) scaleX(${Number(st.meta.pointerScaleX || 1)})`;
   leader.style.transform = `translate(${Math.round(st.lx + (st.meta.leaderDx || 0))}px, ${Math.round(st.ly + (st.meta.leaderDy || 0))}px) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.leaderRotate || 0))}deg)`;
   if(Math.abs(st.tx - st.x) > 0.35 || Math.abs(st.ty - st.y) > 0.35 || Math.abs(st.x - st.lx) > 0.35 || Math.abs(st.y - st.ly) > 0.35){
     st.raf = requestAnimationFrame(achCursorFollowerTick);
@@ -18236,7 +18754,7 @@ function achRunCursorPreview(item, host){
     const map = {
       flprShopCursorStarter: { leader:"🐦‍🔥", pointer:"◥", fingerOnly:false, pointerRotate:-15, pointerSize:22, leaderSize:24 },
       flprShopCursorSpark: { leader:"", pointer:"⚡", fingerOnly:true, pointerRotate:-45 },
-      flprShopCursorDog: { leader:"🐕", pointer:"🦴", fingerOnly:false },
+      flprShopCursorDog: { leader:"🐕", pointer:"🦴", fingerOnly:false, pointerScaleX:-1 },
       flprShopCursorCat: { leader:"🐈", pointer:"🐟", fingerOnly:false },
       flprShopCursorPig: { leader:"🐖", pointer:"🍖", fingerOnly:false },
       flprShopCursorFinger: { leader:"", pointer:"👈", fingerOnly:true }
@@ -18250,6 +18768,7 @@ function achRunCursorPreview(item, host){
     const pointer = demo.querySelector(".pointer");
     if(pointer){
       if(Number.isFinite(Number(meta.pointerRotate))) pointer.style.setProperty("--previewPointerRotate", `${Math.round(Number(meta.pointerRotate || 0))}deg`);
+      if(Number.isFinite(Number(meta.pointerScaleX))) pointer.style.setProperty("--previewPointerScaleX", String(Number(meta.pointerScaleX || 1)));
       if(Number.isFinite(Number(meta.pointerSize))) pointer.style.fontSize = `${Math.round(Number(meta.pointerSize || 22))}px`;
     }
     fx.appendChild(demo);
@@ -19017,6 +19536,15 @@ function episodeMarkBossComplete(){
   if(st !== "active" && st !== "paused") return;
   episodeSetStatus("complete", "boss-defeated");
 }
+function episodeNeedsManualStartGate(){
+  const st = String(episodeState?.status || "idle");
+  if(st === "active" || st === "paused") return false;
+  try{
+    const slotData = ap?.slotData;
+    if(slotData && typeof slotData === "object" && Object.keys(slotData).length) return true;
+  }catch(_){ }
+  return !!ap?.connected;
+}
 function updateEpisodeControlsUi(){
   const startBtn = document.getElementById("episodeStartBtn");
   const endBtn = document.getElementById("episodeEndBtn");
@@ -19296,7 +19824,7 @@ function renderAchievementsControlsPanel(){
           <button class="cBtn danger" id="achResetProgressBtn">RESET ACHIEVEMENTS + FLPRP</button>
         </div>
         <div class="cSectionTitle">JUST COMPLETED</div>
-        <div class="achList">${justDone.length ? justDone.map((r)=>`<div class="achCtlItem unlocked"><div class="n">${ACH_TROPHY_ICON} ${escapeHtml(String(r?.title || "Achievement"))}</div><div class="d">${escapeHtml(String(r?.desc || ""))}</div><div class="meta"><span>${achFmtWhen(r?.unlockedAt)}</span><span>+${Math.max(0, Number(r?.points || 0))} ${FLPR_CURRENCY_ICON}</span></div></div>`).join("") : `<div class="achCtlItem"><div class="d">No completions yet in this session.</div></div>`}</div>
+        <div class="achList">${justDone.length ? justDone.map((r)=>`<div class="achCtlItem unlocked justCompletedItem"><div class="n">${ACH_TROPHY_ICON} ${escapeHtml(String(r?.title || "Achievement"))}</div><div class="d">${escapeHtml(String(r?.desc || ""))}</div><div class="meta"><span>${achFmtWhen(r?.unlockedAt)}</span><span>+${Math.max(0, Number(r?.points || 0))} ${FLPR_CURRENCY_ICON}</span></div><div class="achJustCompletedTip"><div class="achJustCompletedTipTitle">${ACH_TROPHY_ICON} ${escapeHtml(String(r?.title || "Achievement"))}</div><div class="achJustCompletedTipDesc">${escapeHtml(String(r?.desc || "No description set."))}</div></div></div>`).join("") : `<div class="achCtlItem"><div class="d">No completions yet in this session.</div></div>`}</div>
         <div class="cSectionTitle" style="margin-top:8px;">CLOSEST TO COMPLETION</div>
         <div class="achList closestList">${closest.length ? closest.map((x)=>`<div class="achCtlItem achClosestItem"><div class="n">${escapeHtml(String(x.def?.title || "Achievement"))}</div><div class="achClosestProgWrap"><div class="achClosestProgMeta"><span class="progressTxt">PROGRESS; ${x.pr.cur}/${x.pr.goal}</span><span class="rewardTxt">REWARD; +${achPointsForPayload(x.def)} ${FLPR_CURRENCY_ICON}</span></div><div class="achProg achClosestProg"><span style="width:${Math.round(x.pr.pct*100)}%;"></span></div></div></div>`).join("") : `<div class="achCtlItem"><div class="d">No in-progress achievements yet.</div></div>`}</div>
       </div>
@@ -19944,6 +20472,51 @@ function getActiveTrapDisplayName(entry){
     .map((part)=> String(part?.name || "").trim())
     .filter(Boolean))).join(" + ");
 }
+function bossBuildTrapAmalgamCopy(entry){
+  const names = Array.from(new Set(getTrapEntryList(entry).map((part)=> String(part?.name || "").trim()).filter(Boolean)));
+  if(names.length < 2) return null;
+  const has = (needle)=> names.some((name)=> String(name || "").toLowerCase() === String(needle || "").toLowerCase());
+  let attackName = "CHAIN RETALIATION";
+  let attackText = `${names.join(" + ")} stack together. Clear every retaliation before the boss lets checks reopen.`;
+  if(has("Filter Trap") && has("No Nudging")){
+    attackName = "STATIC BLINDSPOT";
+    attackText = "Sight distortion and control loss hit together. Read the lane cleanly and survive without nudging.";
+  }else if(has("Filter Trap") && has("Intentional Drain")){
+    attackName = "VOID CASCADE";
+    attackText = "The table muddies your vision and demands a deliberate drain. The boss wants the whole ball gone.";
+  }else if(has("No Cradle Allowed") && has("Dead Flip")){
+    attackName = "PANIC RALLY";
+    attackText = "No settling and no safe catches. React instantly and keep the ball alive through chaos.";
+  }else if(has("Backhand Only") && has("Orbit First Shot")){
+    attackName = "CROSS-CUT AMBUSH";
+    attackText = "The boss forces a technical opening line and punishes any lazy first shot.";
+  }else if(has("Tilt Warning Required") && has("No Nudging")){
+    attackName = "GLASS CANNON";
+    attackText = "You must dance on the edge of danger while the boss takes away your usual recovery tool.";
+  }else if(has("Soft Plunge Only") && has("Center Drain Mandate")){
+    attackName = "TRAPDOOR ENTRY";
+    attackText = "The boss turns the launch itself into a setup for collapse. One bad feed and the lane folds on you.";
+  }
+  return {
+    kicker: "AMALGAMATED RETALIATION",
+    headline: attackName,
+    sub: `${attackText} Active traps; ${names.join(" + ")}.`
+  };
+}
+function showBossTrapMergeNotice(entry){
+  const copy = bossBuildTrapAmalgamCopy(entry);
+  if(!copy) return;
+  try{
+    bossRaidShowBattleNotice({
+      kicker: copy.kicker || "AMALGAMATED RETALIATION",
+      headline: copy.headline || "CHAIN RETALIATION",
+      sub: copy.sub || "",
+      retaliation: true,
+      fusion: true,
+      durationMs: 3200
+    });
+  }catch(_){}
+}
 function canStackBossTrapWithActive(nextEntry){
   const active = ap.trapActive;
   if(!active || typeof active !== "object") return false;
@@ -19956,14 +20529,14 @@ function renderActiveTrapBanner(){
   const wrap = document.getElementById("trapStack");
   if(!wrap) return;
   if(!active || typeof active !== "object"){
-    wrap.classList.remove("split");
+    wrap.classList.remove("split", "combining");
     wrap.innerHTML = "";
     return;
   }
   try{ ensureTrapStackPortal(active.portal); }catch(_){}
   const entries = getTrapEntryList(active);
-  const sideBySide = String(active.portal || "").trim() === "bossChecks" && entries.length > 1;
-  wrap.classList.toggle("split", sideBySide);
+  const tiledBossStack = String(active.portal || "").trim() === "bossChecks" && entries.length > 1;
+  wrap.classList.toggle("split", tiledBossStack);
   wrap.innerHTML = entries.map((entry, index)=> buildTrapBannerMarkup(entry, { index })).join("");
   wrap.querySelectorAll(".trapDoneBtn").forEach((btn)=>{
     btn.addEventListener("click", ()=>{
@@ -20029,7 +20602,7 @@ function showNextTrapBanner(){
     ap.trapActive = null;
     try{ setTrapCheckLock(false, { silent:true }); }catch(_){}
     if(wrap){
-      wrap.classList.remove("split");
+      wrap.classList.remove("split", "combining");
       wrap.innerHTML = "";
     }
     return;
@@ -20049,6 +20622,16 @@ function showNextTrapBanner(){
   ap.activeTrapFilterModes = getTrapEntryFilterModes(ap.trapActive);
   try{ refreshCaptureTrapFilterModes(); }catch(_){}
   renderActiveTrapBanner();
+  if(String(ap?.trapActive?.portal || "").trim() === "bossChecks" && getTrapEntryList(ap.trapActive).length > 1){
+    const wrap = document.getElementById("trapStack");
+    if(wrap){
+      wrap.classList.remove("combining");
+      void wrap.offsetWidth;
+      wrap.classList.add("combining");
+      setTimeout(()=>{ try{ wrap.classList.remove("combining"); }catch(_){ } }, 980);
+    }
+    try{ showBossTrapMergeNotice(ap.trapActive); }catch(_){}
+  }
 }
 
 // Helper for safe HTML injection in banners
@@ -20158,14 +20741,16 @@ window.__flprMusic = window.__flprMusic || {
   preview:"",
   lockedUntil:0,
   completedOnceKey:"",
-  pendingBossPhase2:false
+  pendingBossPhase2:false,
+  phase2NoticeShown:false
 };
 function musicEnsureManager(){
-  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"", pendingBossPhase2:false });
+  const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"", pendingBossPhase2:false, phase2NoticeShown:false });
   if(!mgr.previewReady || typeof mgr.previewReady !== "object") mgr.previewReady = {};
   if(!Number.isFinite(Number(mgr.previewTimer))) mgr.previewTimer = 0;
   if(!Number.isFinite(Number(mgr.previewToken))) mgr.previewToken = 0;
   if(typeof mgr.pendingBossPhase2 !== "boolean") mgr.pendingBossPhase2 = false;
+  if(typeof mgr.phase2NoticeShown !== "boolean") mgr.phase2NoticeShown = false;
   return mgr;
 }
 function musicClearPreviewTimer(){
@@ -20369,6 +20954,7 @@ function musicGetBossBattleScenario(){
 function musicDisarmBossPhase2Transition(){
   const mgr = musicEnsureManager();
   mgr.pendingBossPhase2 = false;
+  mgr.phase2NoticeShown = false;
   try{
     const audio = mgr.audio;
     if(audio && mgr.current === "boss_battle_beginning") audio.loop = !!musicGetScenarioLoop("boss_battle_beginning");
@@ -20383,6 +20969,21 @@ function musicArmBossPhase2Transition(){
     if(audio && mgr.current === "boss_battle_beginning") audio.loop = false;
   }catch(_){}
   return true;
+}
+function musicShowBossPhase2Notice(){
+  const mgr = musicEnsureManager();
+  if(mgr.phase2NoticeShown) return;
+  mgr.phase2NoticeShown = true;
+  try{ setBossPhase2RedeemPause(4200); }catch(_){}
+  try{ renderChecks(); }catch(_){}
+  try{
+    bossRaidShowBattleNotice({
+      headline: "THIS ISN'T EVEN MY FINAL FORM! PHASE 2",
+      sub: "Boss Battle Escalation",
+      phase2: true,
+      durationMs: 4200
+    });
+  }catch(_){}
 }
 function normalizeMusicRefToken(v){
   return String(v || "").trim().replace(/\\/g, "/").toLowerCase();
@@ -20556,6 +21157,7 @@ function musicStop(opts){
   mgr.preview = "";
   mgr.completedOnceKey = "";
   mgr.pendingBossPhase2 = false;
+  mgr.phase2NoticeShown = false;
 }
 function musicPlayScenario(name, opts){
   opts = opts || {};
@@ -20591,6 +21193,9 @@ function musicPlayScenario(name, opts){
   if(p && p.catch) p.catch(()=>{});
   if(!opts.preview && (prevCurrent !== String(name || "") || prevUrl !== url)){
     try{ musicShowNowPlayingToast(name, info); }catch(_){}
+    if(String(name || "") === "boss_battle_phase2"){
+      try{ musicShowBossPhase2Notice(); }catch(_){}
+    }
   }
   try{ renderMusicScenarioCard(); }catch(_){}
   return true;
@@ -21152,6 +21757,9 @@ function wireOpeningRandomizerIntro(){
   try{ delete btn.dataset.wired; }catch(_){ }
   const handler = (ev)=>{
     try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){ }
+    try{ episodeStartOrResume(); }catch(_){ }
+    try{ flprStatsStartRun(ap?.seedName || "", "randomizer-intro-start"); }catch(_){ }
+    try{ renderAchievementsControlsPanel(); }catch(_){ }
     try{ startOpeningRandomizerIntro(); }catch(err){ try{ console.error("startOpeningRandomizerIntro failed", err); }catch(_){} }
   };
   try{ btn.onclick = handler; }catch(_){ }
@@ -21161,14 +21769,20 @@ function wireOpeningRandomizerIntro(){
 function maybeAutoShowOpeningRandomizer(){
   const fx = (window.__openingRandomizerFx ||= { active:false, opening:false, shownForZeroStart:false, hideTimer:null, burstTimer:null, steamTimer:null, steamStopTimer:null });
   const openingState = getOpeningRandomizerPersistState();
-  const zeroStart = isZeroStartSeedState(state);
-  if(!zeroStart) return;
+  const shouldGateForEpisodeStart = episodeNeedsManualStartGate();
+  if(!shouldGateForEpisodeStart){
+    if(openingState.visible){
+      openingState.visible = false;
+      try{ saveState(); }catch(_){ }
+    }
+    return;
+  }
   if(openingState.visible){
     showOpeningRandomizerIntro({ reason: "restore-open", playSound:false });
     return;
   }
   if(openingState.shownForSpoiler || fx.shownForZeroStart || fx.active) return;
-  showOpeningRandomizerIntro({ reason: "zero-start" });
+  showOpeningRandomizerIntro({ reason: "episode-start-gate" });
 }
 
 function runOpeningRandomizerTestFlow(){
@@ -21233,12 +21847,15 @@ function syncBossTableAuthority(opts){
   const syncWorldSlots = (opts.syncWorldSlots !== false);
   const currentSeedSig = getBossSeedSignature();
   const savedBossSeedSig = String(state?.bossTableSeed || "").trim();
+  const revealReady = (typeof isBossTableRevealReady === "function") ? !!isBossTableRevealReady() : false;
+  const hasExplicitOverride = !!normalizeBossTableName(opts.nameOverride);
   let picked = normalizeBossTableName(opts.nameOverride);
   if(!picked) picked = getUnifiedBossTableName({ includePlaceholder });
   if(!picked && includePlaceholder) picked = "Boss Table";
+  if(!revealReady && !hasExplicitOverride){
+    picked = "Boss Table";
+  }
   try{
-    const revealReady = (typeof isBossTableRevealReady === "function") ? !!isBossTableRevealReady() : false;
-    const hasExplicitOverride = !!normalizeBossTableName(opts.nameOverride);
     const seedLockedBoss = !!(
       savedBossSeedSig &&
       !isBossTablePlaceholderName(picked) &&
@@ -22268,6 +22885,17 @@ let extraBallNoticeExpandedUntil = 0;
 let extraBallNoticeReason = "";
 let extraBallNoticeTimer = null;
 let extraBallPlacementArmed = false;
+const EXTRA_BALL_MINIMIZED_LS = "flpr_extra_ball_minimized_v1";
+let extraBallUiMinimized = false;
+try{ extraBallUiMinimized = localStorage.getItem(EXTRA_BALL_MINIMIZED_LS) === "1"; }catch(_){}
+function setExtraBallUiMinimized(on){
+  extraBallUiMinimized = !!on;
+  try{ localStorage.setItem(EXTRA_BALL_MINIMIZED_LS, extraBallUiMinimized ? "1" : "0"); }catch(_){}
+  try{ renderExtraBallNotices(); }catch(_){}
+}
+function toggleExtraBallUiMinimized(){
+  setExtraBallUiMinimized(!extraBallUiMinimized);
+}
 
 function bossGetRetaliationPhaseFromPct(pct){
   return Number(pct) <= 50 ? "phase2" : "phase1";
@@ -22677,20 +23305,34 @@ function buildExtraBallTokenStrip(host, opts){
   const eligibleCount = getExtraBallEligibleTableCount();
   const hasTargets = eligibleCount > 0;
   const dock = document.createElement("div");
-  dock.className = "extraBallTokenDock" + (extraBallPlacementArmed ? " armed" : "");
+  const minimized = (opts.minimized !== undefined) ? !!opts.minimized : !!extraBallUiMinimized;
+  dock.className = "extraBallTokenDock" + (extraBallPlacementArmed ? " armed" : "") + (minimized ? " minimized" : "");
   const label = document.createElement("div");
   label.className = "extraBallTokenLabel";
   label.textContent = count > 0
     ? `EXTRABALL TOKENS; ${count}${assigned > 0 ? ` | ACTIVE ${assigned}` : ""}${count > 0 ? ` | TARGETS ${eligibleCount}` : ""}`
     : (assigned > 0 ? `EXTRABALL ACTIVE; ${assigned}` : "EXTRABALL TOKENS; 0");
   dock.appendChild(label);
+  const toggleBtn = document.createElement("button");
+  toggleBtn.type = "button";
+  toggleBtn.className = "extraBallMiniToggle";
+  toggleBtn.textContent = minimized ? "EXPAND" : "MINIMIZE";
+  toggleBtn.title = minimized ? "Show the full Extra Ball dock" : "Collapse into large EB overlay buttons";
+  toggleBtn.addEventListener("click", (ev)=>{
+    try{
+      ev.preventDefault();
+      ev.stopPropagation();
+    }catch(_){}
+    toggleExtraBallUiMinimized();
+  });
+  dock.appendChild(toggleBtn);
   const row = document.createElement("div");
   row.className = "extraBallTokenRow";
   if(count > 0){
     for(let i = 0; i < count; i++){
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "extraBallTokenBtn" + (extraBallPlacementArmed ? " armed" : "");
+      btn.className = "extraBallTokenBtn" + (extraBallPlacementArmed ? " armed" : "") + (minimized ? " large" : "");
       btn.textContent = "EB";
       btn.disabled = !hasTargets;
       btn.title = !hasTargets
@@ -22714,12 +23356,12 @@ function buildExtraBallTokenStrip(host, opts){
   }
   dock.appendChild(row);
   host.appendChild(dock);
-  if(opts.showPlacementNote && extraBallPlacementArmed){
+  if(!minimized && opts.showPlacementNote && extraBallPlacementArmed){
     const note = document.createElement("div");
     note.className = "extraBallTokenNote";
     note.textContent = "Placement mode active. Click any eligible table.";
     host.appendChild(note);
-  }else if(count > 0 && !hasTargets){
+  }else if(!minimized && count > 0 && !hasTargets){
     const note = document.createElement("div");
     note.className = "extraBallTokenNote";
     note.textContent = "No valid tables right now. Extra Ball tokens stay banked until a table can accept them.";
@@ -22733,7 +23375,7 @@ function renderExtraBallNotices(){
       stack.innerHTML = "";
       const count = getExtraBallButtonCount();
       const assigned = getExtraBallAssignmentCount();
-      if(count > 0 && Date.now() < extraBallNoticeExpandedUntil){
+      if(!extraBallUiMinimized && count > 0 && Date.now() < extraBallNoticeExpandedUntil){
         const panel = document.createElement("div");
         panel.className = "extraBanner extraBallNotice";
         panel.innerHTML = `
@@ -22760,8 +23402,8 @@ function renderExtraBallNotices(){
       }
       if(count > 0 || assigned > 0 || extraBallPlacementArmed){
         const collapsed = document.createElement("div");
-        collapsed.className = "extraBallDock extraBallDockOverview";
-        buildExtraBallTokenStrip(collapsed, { showPlacementNote:true });
+        collapsed.className = "extraBallDock extraBallDockOverview" + (extraBallUiMinimized ? " minimized" : "");
+        buildExtraBallTokenStrip(collapsed, { showPlacementNote:true, minimized: extraBallUiMinimized });
         stack.appendChild(collapsed);
       }
     }
@@ -22769,7 +23411,8 @@ function renderExtraBallNotices(){
   try{
     const checksDock = ensureChecksExtraBallDock();
     if(checksDock){
-      buildExtraBallTokenStrip(checksDock, { showPlacementNote:true });
+      checksDock.className = "extraBallDock extraBallDockChecks" + (extraBallUiMinimized ? " minimized" : "");
+      buildExtraBallTokenStrip(checksDock, { showPlacementNote:true, minimized: extraBallUiMinimized });
       checksDock.style.display = (getExtraBallButtonCount() > 0 || getExtraBallAssignmentCount() > 0 || extraBallPlacementArmed) ? "" : "none";
     }
   }catch(_){}
@@ -27374,6 +28017,8 @@ function renderChecks(){
   // v138: reset boss layout classes
   body.classList.remove("bossMode");
   const trapLocked = isTrapCheckLockActive();
+  const phase2Locked = isBossPhase2RedeemPauseActive();
+  const checksLocked = trapLocked || phase2Locked;
   const trapLockFxMode = getTrapLockFxMode();
   const checksHintEl = document.querySelector("#viewChecks .checksHint");
   if(checksHintEl){
@@ -27401,11 +28046,13 @@ function renderChecks(){
     body.textContent = "No world data.";
     return;
   }
-  if(trapLocked){
+  if(checksLocked){
     if(wk !== "boss"){
       const lockNote = document.createElement("div");
       lockNote.className = "checksTrapLockNote";
-      lockNote.textContent = "TRAP LOCK; complete the active trap to re-enable check redemptions.";
+      lockNote.textContent = phase2Locked
+        ? "PHASE 2 SHIFT; wait for the boss transition burst to finish before redeeming checks."
+        : "TRAP LOCK; complete the active trap to re-enable check redemptions.";
       body.appendChild(lockNote);
     }
   }
@@ -27491,11 +28138,6 @@ function renderChecks(){
           ? String(getRepoDisplayTableName(getUnifiedBossTableName({ includePlaceholder:false }) || "Boss Table") || "Boss Table").toUpperCase()
           : "BOSS TABLE";
         pic.appendChild(bannerName);
-        const retaliationWarn = document.createElement("div");
-        retaliationWarn.className = "bossRetaliationBannerWarn";
-        retaliationWarn.id = "bossRetaliationBannerWarn";
-        pic.appendChild(retaliationWarn);
-
         const right = document.createElement("div");
         right.className = "bossInfoRight";
 
@@ -27542,7 +28184,12 @@ function renderChecks(){
     try{
       if(bossBlock){
         bossBlock.classList.add("bossChecksBig");
-        if(trapLocked) bossBlock.classList.add("bossChecksDisabled");
+        if(checksLocked){
+          bossBlock.classList.add("bossChecksDisabled");
+          bossBlock.dataset.lockLabel = phase2Locked ? "PHASE 2 SHIFT" : "BOSS RETALIATION ACTIVE";
+        }else{
+          try{ delete bossBlock.dataset.lockLabel; }catch(_){}
+        }
         if(trapLockFxMode){
           bossBlock.classList.add(trapLockFxMode === "locking" ? "trapLocking" : "trapUnlocking");
           appendTrapLockAnimFx(bossBlock, trapLockFxMode, { noExplosion:true });
@@ -27550,7 +28197,7 @@ function renderChecks(){
         }
         const scaler = document.createElement("div");
         scaler.className = "bossChecksScaler";
-        if(trapLocked) scaler.classList.add("bossChecksDisabled");
+        if(checksLocked) scaler.classList.add("bossChecksDisabled");
         bossBlock.parentNode.insertBefore(scaler, bossBlock);
         scaler.appendChild(bossBlock);
       }
@@ -27833,7 +28480,16 @@ function renderTableBlock(parent, tableName, nodes, opts){
     const bossTaskName = isBossTableBlock ? getTaskNameFromLocationNode(n) : "";
     const displayTaskName = getTaskNameFromLocationNode(n) || String(n.short || n.full || "").trim();
     const bossTaskCategory = isBossTableBlock ? achClassifyTaskName(bossTaskName || n.short || n.full || "") : "";
-    title.textContent = bossVictoryNode ? "Boss Victory" : (isBossTableBlock ? bossAttackTitleForCategory(bossTaskCategory, bossTaskName || n.short || n.full || "") : displayTaskName);
+    const scoreTitleMatch = (!isBossTableBlock && !bossVictoryNode)
+      ? String(displayTaskName || "").match(/^obtain a score of\s+(.+)$/i)
+      : null;
+    if(scoreTitleMatch){
+      btn.classList.add("scoreNode");
+      title.innerHTML = `<span class="scoreLead">SCORE TARGET</span><span class="scoreValue">${escapeHtml(String(scoreTitleMatch[1] || "").trim())}</span>`;
+    }else{
+      if(!bossVictoryNode) btn.classList.add("taskNode");
+      title.textContent = bossVictoryNode ? "Boss Victory" : (isBossTableBlock ? bossAttackTitleForCategory(bossTaskCategory, bossTaskName || n.short || n.full || "") : displayTaskName);
+    }
     const small = document.createElement("div");
     small.className = "small";
     if(bossVictoryNode && !checked && !pending){
@@ -27876,6 +28532,10 @@ function renderTableBlock(parent, tableName, nodes, opts){
       }
       if(relicFinalLocked){
         toast("warn", "FINAL LOCK", `${tableName} is sealed shut.`, 2400);
+        return;
+      }
+      if(isBossPhase2RedeemPauseActive()){
+        toast("warn","PHASE 2 SHIFT", "Wait for the phase transition burst to clear before redeeming checks.", 2600);
         return;
       }
       if(isTrapCheckLockActive()){
@@ -29786,6 +30446,7 @@ function renderRelicsOverlay(){
                 </div>
                 <div class="relicItemName">${escapeHtml(def.title)}</div>
                 <div class="relicItemDesc">${escapeHtml(isUnlocked ? def.effect : def.unlock)}</div>
+                ${!isUnlocked ? `<div class="relicHoverTip">${escapeHtml(def.unlockHint || def.unlock || "")}</div>` : ``}
                 <div class="relicItemMeta">
                   <span class="relicPill ${isUnlocked ? "" : "locked"}">${isUnlocked ? "Unlocked" : `Locked ${progress.cur}/${progress.goal}`}</span>
                   ${isEquipped ? `<span class="relicPill">Equipped</span>` : ``}
@@ -32723,7 +33384,7 @@ const HINT_DEMO_SPOILER = [
   "Locations:",
   "Meteor - Easy Score (70,507+): Ball 2 - Hook",
   "Taxi - Start Multiball and score a Jackpot: Ball 1 - Star Trek",
-  "Knight Rider - Medium Score (21,875,000+): Unlock Ball 3",
+  "Batman 66 - Medium Score (38,053,082+): Unlock Ball 3",
   "Fathom - Hard Score (718,507+): Boss Key",
   "",
   "Playthrough:",
@@ -33623,6 +34284,15 @@ function wireControls(){
       episodeStartOrResume();
       try{ flprStatsStartRun(ap?.seedName || "", "episode-start"); }catch(_){}
       try{ renderAchievementsControlsPanel(); }catch(_){}
+      try{
+        const intro = document.getElementById("randomizerIntro");
+        const introVisible = !!intro?.classList?.contains("show");
+        const introOpening = !!intro?.classList?.contains("opening");
+        const introClosing = !!intro?.classList?.contains("closing");
+        if(introVisible && !introOpening && !introClosing){
+          startOpeningRandomizerIntro();
+        }
+      }catch(_){ }
     };
   }
   if(episodeEndBtn){
@@ -35716,7 +36386,7 @@ const BOSS_MONSTER_META = Object.freeze({
   CONGO:{ aura:"🌴", body:"🦍", left:"🥁", right:"💥", alt:"🗿", color:"#ffd18a" },
   MCAST:{ aura:"🏰", body:"👻", left:"🕯️", right:"🔮", alt:"🦇", color:"#dfc9ff" },
   ATEAM:{ aura:"📺", body:"🚐", left:"💣", right:"🛠️", alt:"⭐", color:"#ffc18a" },
-  KRID:{ aura:"🚨", body:"🚗", left:"⚙️", right:"💥", alt:"🌃", color:"#8de1ff" },
+  BAT66:{ aura:"🦇", body:"📺", left:"🃏", right:"❓", alt:"☎️", color:"#79d6ff" },
   HHEAT:{ aura:"🎬", body:"🔥", left:"🎥", right:"💡", alt:"🌴", color:"#ffbb7e" },
   BAYW:{ aura:"🌊", body:"🚤", left:"🏖️", right:"🚨", alt:"☀️", color:"#8fe4ff" },
   STTNG:{ aura:"🪐", body:"🤖", left:"🚀", right:"🖖", alt:"✨", color:"#9be7ff" },
@@ -36015,18 +36685,6 @@ function bossRaidRenderInto(container, opts){
   const displayName = String((b.name||"Boss Table")).toUpperCase();
   const bannerName = document.getElementById("bossBannerTitle");
   if(bannerName) bannerName.textContent = displayName;
-  const retaliationWarn = document.getElementById("bossRetaliationBannerWarn");
-  if(retaliationWarn){
-    const copy = bossGetRetaliationBannerCopy();
-    retaliationWarn.classList.remove("show", "next", "locked");
-    if(copy && copy.text){
-      retaliationWarn.textContent = String(copy.text || "");
-      retaliationWarn.classList.add("show");
-      retaliationWarn.classList.add(String(copy.mode || "next") === "locked" ? "locked" : "next");
-    }else{
-      retaliationWarn.textContent = "";
-    }
-  }
 
   const max = Math.max(1, Number(b.max)||1);
   const cur = Math.max(0, Math.min(max, Number(b.cur)||0));
@@ -36789,6 +37447,7 @@ function bossBuildAttackInfo(opts){
   const pct = Math.max(1, Math.round(Number(opts.pct) || 0));
   const assist = !!opts.assist;
   const username = String(opts.username || "A player").trim() || "A player";
+  const viewerDamage = assist && /bonus pinball/i.test(sourceLabel);
   const bossName = String(getUnifiedBossTableName({ includePlaceholder:false }) || state?.bossHpLive?.name || "Boss Table").trim() || "Boss Table";
   const variants = assist
     ? [
@@ -36803,7 +37462,9 @@ function bossBuildAttackInfo(opts){
         { icon:"🪽", action:"FLIPPER SHOT", verb:"launched into" }
       ];
   const pick = variants[Math.floor(Math.random() * variants.length)] || variants[0];
-  const headline = assist
+  const headline = viewerDamage
+    ? `${pick.action}; ${pct}% to ${bossName}!`
+    : assist
     ? `${username} assisted the battle! ${pct}% to ${bossName}!`
     : `You ${pick.verb} ${bossName} for ${pct}%! ${bossRandomPepTalk()}`;
   const sub = assist
@@ -36812,10 +37473,12 @@ function bossBuildAttackInfo(opts){
   return {
     icon: pick.icon,
     action: pick.action,
+    kicker: viewerDamage ? `VIEWER DAMAGE! by ${username}` : "",
     headline,
     sub,
     pct,
     assist,
+    viewerDamage,
     bossName,
     username,
     sourceLabel
@@ -36824,18 +37487,22 @@ function bossBuildAttackInfo(opts){
 
 function bossRaidShowBattleNotice(info){
   const lane = document.getElementById("bossAttackLane");
+  const bar = document.getElementById("bossRaidBar");
   const frame = document.getElementById("bossRaidFrame");
   const card = document.querySelector("#viewChecks .bossInfoCard");
   const isRetaliation = !!info?.retaliation;
-  const host = isRetaliation ? (card || frame || lane) : (frame || card || lane);
+  const host = isRetaliation ? (card || frame || lane) : (info?.phase2 ? (bar || frame || card || lane) : (frame || card || lane));
   if(!host || !info) return;
   const note = document.createElement("div");
   note.className = "bossBattleNotice" + (info.assist ? " assist" : "") + (isRetaliation ? " retaliation" : "");
-  if(!isRetaliation) note.classList.add("dismissible");
+  if(info.viewerDamage) note.classList.add("viewerAssist");
+  if(info.phase2) note.classList.add("phase2");
+  if(info.fusion) note.classList.add("fusion");
+  if(!isRetaliation && !info.phase2) note.classList.add("dismissible");
   if(Number.isFinite(Number(info.durationMs)) && Number(info.durationMs) > 0){
     note.style.setProperty("--bossNoticeMs", `${Math.round(Number(info.durationMs))}ms`);
   }
-  note.innerHTML = `<div class="headline">${escapeHtml(info.headline || "")}</div><div class="sub">${escapeHtml(info.sub || "")}</div>`;
+  note.innerHTML = `${info.kicker ? `<div class="kicker">${escapeHtml(info.kicker || "")}</div>` : ""}<div class="headline">${escapeHtml(info.headline || "")}</div><div class="sub">${escapeHtml(info.sub || "")}</div>`;
   host.appendChild(note);
   if(!isRetaliation){
     note.addEventListener("click", ()=>{
@@ -36843,12 +37510,22 @@ function bossRaidShowBattleNotice(info){
         if(note.dataset.dismissing === "1") return;
         note.dataset.dismissing = "1";
         note.classList.add("dismissing");
+        if(info?.phase2){
+          try{ setBossPhase2RedeemPause(0); }catch(_){}
+          try{ if(activeView === "checks") renderChecks(); }catch(_){}
+        }
         setTimeout(()=>{ try{ note.remove(); }catch(_){ } }, 240);
       }catch(_){}
     });
   }
   const removeMs = Math.max(800, Math.round(Number(info.durationMs || 15200) || 15200) + 260);
-  setTimeout(()=>{ try{ note.remove(); }catch(_){ } }, removeMs);
+  setTimeout(()=>{
+    try{ note.remove(); }catch(_){ }
+    if(info?.phase2){
+      try{ setBossPhase2RedeemPause(0); }catch(_){}
+      try{ if(activeView === "checks") renderChecks(); }catch(_){}
+    }
+  }, removeMs);
 }
 
 function bossApplyDamagePct(pct, sourceKey, opts){
