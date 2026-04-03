@@ -117,6 +117,36 @@
     { code:'BROSE', slug:'black_rose', name:'Black Rose', aliases:[] },
     { code:'CFTBL', slug:'creature_from_the_black_lagoon', name:'Creature from the Black Lagoon', aliases:['Creature'] },
     { code:'TOM', slug:'theatre_of_magic', name:'Theatre of Magic', aliases:['Theater of Magic'] },
+    { code:'CVOL', slug:'cirqus_voltaire', name:'Cirqus Voltaire', aliases:[] },
+    { code:'AGBW', slug:'als_garage_band_goes_on_a_world_tour', name:'Al\'s Garage Band Goes on a World Tour', aliases:['Als Garage Band Goes on a World Tour','Als Garage Band'] },
+    { code:'CIRC80', slug:'circus_gottlieb_1980', name:'Circus', aliases:['Circus (Gottlieb 1980)'] },
+    { code:'POTO', slug:'phantom_of_the_opera', name:'Phantom of the Opera', aliases:[] },
+    { code:'BFOR', slug:'batman_forever', name:'Batman Forever', aliases:[] },
+    { code:'DMAN', slug:'demolition_man', name:'Demolition Man', aliases:[] },
+    { code:'GEYE', slug:'goldeneye', name:'GoldenEye', aliases:['007 GoldenEye'] },
+    { code:'JPARK', slug:'jurassic_park', name:'Jurassic Park', aliases:['Jurassic Park (Data East 1993)'] },
+    { code:'LAH', slug:'last_action_hero', name:'Last Action Hero', aliases:[] },
+    { code:'STARG', slug:'stargate', name:'Stargate', aliases:[] },
+    { code:'STROP', slug:'starship_troopers', name:'Starship Troopers', aliases:[] },
+    { code:'ID4', slug:'independence_day', name:'Independence Day', aliases:['ID4'] },
+    { code:'XFILES', slug:'the_x_files', name:'The X-Files', aliases:['X-Files'] },
+    { code:'AERO', slug:'aerosmith', name:'Aerosmith', aliases:[] },
+    { code:'BEAT', slug:'the_beatles', name:'The Beatles', aliases:[] },
+    { code:'ELVIS', slug:'elvis', name:'Elvis', aliases:[] },
+    { code:'RSTON', slug:'rolling_stones', name:'Rolling Stones', aliases:['The Rolling Stones'] },
+    { code:'FREDDY', slug:'freddy_a_nightmare_on_elm_street', name:'Freddy: A Nightmare on Elm Street', aliases:['Freddy A Nightmare on Elm Street'] },
+    { code:'MBASH', slug:'monster_bash', name:'Monster Bash', aliases:[] },
+    { code:'TFTC', slug:'tales_from_the_crypt', name:'Tales from the Crypt', aliases:[] },
+    { code:'GOT', slug:'game_of_thrones', name:'Game of Thrones', aliases:[] },
+    { code:'STRANG', slug:'stranger_things', name:'Stranger Things', aliases:[] },
+    { code:'MANDO', slug:'the_mandalorian', name:'The Mandalorian', aliases:['Mandalorian'] },
+    { code:'TWD', slug:'the_walking_dead', name:'The Walking Dead', aliases:['Walking Dead'] },
+    { code:'CORV', slug:'corvette', name:'Corvette', aliases:[] },
+    { code:'DHARRY', slug:'dirty_harry', name:'Dirty Harry', aliases:[] },
+    { code:'JDREDD', slug:'judge_dredd', name:'Judge Dredd', aliases:[] },
+    { code:'DEADP', slug:'deadpool', name:'Deadpool', aliases:[] },
+    { code:'GHOST', slug:'ghostbusters', name:'Ghostbusters', aliases:[] },
+    { code:'RBULL', slug:'rocky_and_bullwinkle', name:'The Adventures of Rocky and Bullwinkle and Friends', aliases:['Rocky and Bullwinkle','Adventures of Rocky and Bullwinkle and Friends'] },
 
     { code:'BOSS_TABLE', slug:'boss_table_placeholder', name:'(Boss Table)', aliases:['Boss Table','Boss'] }
   ];
@@ -172,6 +202,36 @@
     BROSE:{ displayName:'Black Rose (Bally 1992)', manufacturer:'Bally', year:1992 },
     CFTBL:{ displayName:'Creature from the Black Lagoon (Bally 1992)', manufacturer:'Bally', year:1992 },
     TOM:{ displayName:'Theatre of Magic (Bally 1995)', manufacturer:'Bally', year:1995 },
+    CVOL:{ displayName:'Cirqus Voltaire (Bally 1997)', manufacturer:'Bally', year:1997 },
+    AGBW:{ displayName:'Al\'s Garage Band Goes on a World Tour (Alvin G 1992)', manufacturer:'Alvin G', year:1992 },
+    CIRC80:{ displayName:'Circus (Gottlieb 1980)', manufacturer:'Gottlieb', year:1980 },
+    POTO:{ displayName:'Phantom of the Opera (Data East 1990)', manufacturer:'Data East', year:1990 },
+    BFOR:{ displayName:'Batman Forever (Sega 1995)', manufacturer:'Sega', year:1995 },
+    DMAN:{ displayName:'Demolition Man (Williams 1994)', manufacturer:'Williams', year:1994 },
+    GEYE:{ displayName:'GoldenEye (Sega 1996)', manufacturer:'Sega', year:1996 },
+    JPARK:{ displayName:'Jurassic Park (Data East 1993)', manufacturer:'Data East', year:1993 },
+    LAH:{ displayName:'Last Action Hero (Data East 1993)', manufacturer:'Data East', year:1993 },
+    STARG:{ displayName:'Stargate (Gottlieb 1995)', manufacturer:'Gottlieb', year:1995 },
+    STROP:{ displayName:'Starship Troopers (Sega 1997)', manufacturer:'Sega', year:1997 },
+    ID4:{ displayName:'Independence Day (Sega 1996)', manufacturer:'Sega', year:1996 },
+    XFILES:{ displayName:'The X-Files (Sega 1997)', manufacturer:'Sega', year:1997 },
+    AERO:{ displayName:'Aerosmith (Original 2021)', manufacturer:'Original VPX', year:2021 },
+    BEAT:{ displayName:'The Beatles (Stern 2018)', manufacturer:'Stern', year:2018 },
+    ELVIS:{ displayName:'Elvis (Stern 2004)', manufacturer:'Stern', year:2004 },
+    RSTON:{ displayName:'Rolling Stones (Bally 1979)', manufacturer:'Bally', year:1979 },
+    FREDDY:{ displayName:'Freddy: A Nightmare on Elm Street (Gottlieb 1994)', manufacturer:'Gottlieb', year:1994 },
+    MBASH:{ displayName:'Monster Bash (Williams 1998)', manufacturer:'Williams', year:1998 },
+    TFTC:{ displayName:'Tales from the Crypt (Data East 1993)', manufacturer:'Data East', year:1993 },
+    GOT:{ displayName:'Game of Thrones (Stern 2015)', manufacturer:'Stern', year:2015 },
+    STRANG:{ displayName:'Stranger Things (Stern 2019)', manufacturer:'Stern', year:2019 },
+    MANDO:{ displayName:'The Mandalorian (Stern 2021)', manufacturer:'Stern', year:2021 },
+    TWD:{ displayName:'The Walking Dead (Stern 2014)', manufacturer:'Stern', year:2014 },
+    CORV:{ displayName:'Corvette (Midway 1994)', manufacturer:'Midway', year:1994 },
+    DHARRY:{ displayName:'Dirty Harry (Williams 1995)', manufacturer:'Williams', year:1995 },
+    JDREDD:{ displayName:'Judge Dredd (Bally 1993)', manufacturer:'Bally', year:1993 },
+    DEADP:{ displayName:'Deadpool (Stern 2018)', manufacturer:'Stern', year:2018 },
+    GHOST:{ displayName:'Ghostbusters (Original VPX Mod)', manufacturer:'Original VPX Mod', year:null },
+    RBULL:{ displayName:'The Adventures of Rocky and Bullwinkle and Friends (Data East 1993)', manufacturer:'Data East', year:1993 },
     BOSS_TABLE:{ displayName:'(Boss Table)', manufacturer:'', year:null }
   };
 
@@ -220,6 +280,36 @@
     PFOR: 'WorldsBanners/BestiaryFlyers/PFOR.jpg',
     CFTBL: 'WorldsBanners/BestiaryFlyers/CFTBL.png',
     TOM: 'WorldsBanners/BestiaryFlyers/TOM.jpg',
+    CVOL: 'WorldsBanners/BestiaryFlyers/CVOL.jpg',
+    AGBW: 'WorldsBanners/BestiaryFlyers/AGBW.jpg',
+    CIRC80: 'WorldsBanners/BestiaryFlyers/CIRC80.jpg',
+    POTO: 'WorldsBanners/BestiaryFlyers/POTO.jpg',
+    BFOR: 'WorldsBanners/BestiaryFlyers/BFOR.jpg',
+    DMAN: 'WorldsBanners/BestiaryFlyers/DMAN.jpg',
+    GEYE: 'WorldsBanners/BestiaryFlyers/GEYE.jpg',
+    JPARK: 'WorldsBanners/BestiaryFlyers/JPARK.jpg',
+    LAH: 'WorldsBanners/BestiaryFlyers/LAH.jpg',
+    STARG: 'WorldsBanners/BestiaryFlyers/STARG.jpg',
+    STROP: 'WorldsBanners/BestiaryFlyers/STROP.jpg',
+    ID4: 'WorldsBanners/BestiaryFlyers/ID4.jpg',
+    XFILES: 'WorldsBanners/BestiaryFlyers/XFILES.jpg',
+    AERO: 'WorldsBanners/BestiaryFlyers/AERO.jpg',
+    BEAT: 'WorldsBanners/BestiaryFlyers/BEAT.jpg',
+    ELVIS: 'WorldsBanners/BestiaryFlyers/ELVIS.jpg',
+    RSTON: 'WorldsBanners/BestiaryFlyers/RSTON.jpg',
+    FREDDY: 'WorldsBanners/BestiaryFlyers/FREDDY.jpg',
+    MBASH: 'WorldsBanners/BestiaryFlyers/MBASH.jpg',
+    TFTC: 'WorldsBanners/BestiaryFlyers/TFTC.jpg',
+    GOT: 'WorldsBanners/BestiaryFlyers/GOT.jpg',
+    STRANG: 'WorldsBanners/BestiaryFlyers/STRANG.jpg',
+    MANDO: 'WorldsBanners/BestiaryFlyers/MANDO.jpg',
+    TWD: 'WorldsBanners/BestiaryFlyers/TWD.jpg',
+    CORV: 'WorldsBanners/BestiaryFlyers/CORV.jpg',
+    DHARRY: 'WorldsBanners/BestiaryFlyers/DHARRY.jpg',
+    JDREDD: 'WorldsBanners/BestiaryFlyers/JDREDD.jpg',
+    DEADP: 'WorldsBanners/BestiaryFlyers/DEADP.jpg',
+    GHOST: 'WorldsBanners/BestiaryFlyers/GHOST.jpg',
+    RBULL: 'WorldsBanners/BestiaryFlyers/RBULL.jpg',
     HUR: 'WorldsBanners/BestiaryFlyers/HUR.jpg',
     COMET: 'WorldsBanners/BestiaryFlyers/COMET.jpg',
     CYC: 'WorldsBanners/BestiaryFlyers/CYC.jpg',
@@ -235,6 +325,98 @@
     w4: ['MET','HGT','DP','PARA','ROBO'],
     w5: ['GLIZ','JOK','BCAT','TAXI','BOP'],
     boss: ['BOSS_TABLE']
+  };
+
+  var TABLE_WORLD_GROUPS_BY_CODE = {
+    MM: ['Ramps Rumpus'],
+    AFM: ['Ramps Rumpus','Sci-Fi Signal'],
+    WCS: ['Ramps Rumpus'],
+    GET: ['Ramps Rumpus'],
+    ST13: ['Ramps Rumpus','Modern Stern Spotlight'],
+
+    TOTAN: ['Malt Desniy World'],
+    FATH: ['Malt Desniy World'],
+    HOOK: ['Malt Desniy World'],
+    CONGO: ['Malt Desniy World'],
+    MCAST: ['Malt Desniy World'],
+
+    ATEAM: ['Vintage Television'],
+    BAT66: ['Vintage Television','Comic Book Collision'],
+    HHEAT: ['Vintage Television'],
+    BAYW: ['Vintage Television'],
+    STTNG: ['Vintage Television'],
+
+    MET: ['Spinner Sparring'],
+    HGT: ['Spinner Sparring'],
+    DP: ['Spinner Sparring'],
+    PARA: ['Spinner Sparring'],
+    ROBO: ['Spinner Sparring','Badge, Bullets, and Chases'],
+
+    GLIZ: ['Featured Designer - Python Anghelo'],
+    JOK: ['Featured Designer - Python Anghelo'],
+    BCAT: ['Featured Designer - Python Anghelo'],
+    TAXI: ['Featured Designer - Python Anghelo'],
+    BOP: ['Featured Designer - Python Anghelo'],
+
+    WW: ['Storm Chasers'],
+    HUR: ['Storm Chasers'],
+    COMET: ['Storm Chasers'],
+    CYC: ['Storm Chasers'],
+    WHRL: ['Storm Chasers'],
+
+    HSPD: ['Featured Designer - Steve Ritchie'],
+    NFEAR: ['Featured Designer - Steve Ritchie'],
+    SMVE: ['Featured Designer - Steve Ritchie','Comic Book Collision'],
+    IMVE: ['Featured Designer - Steve Ritchie'],
+    ACDC: ['Featured Designer - Steve Ritchie','Rock Legends'],
+
+    PARTY: ['Featured Designer - Dennis Nordman - Party Monsters'],
+    EATPM: ['Featured Designer - Dennis Nordman - Party Monsters'],
+    DRDUDE: ['Featured Designer - Dennis Nordman - Party Monsters'],
+    PZONE: ['Featured Designer - Dennis Nordman - Party Monsters'],
+    SSTIFF: ['Featured Designer - Dennis Nordman - Party Monsters'],
+
+    CVOL: ['The Show Must Go On'],
+    AGBW: ['The Show Must Go On'],
+    CIRC80: ['The Show Must Go On'],
+    POTO: ['The Show Must Go On'],
+    TOM: ['The Show Must Go On'],
+
+    BFOR: ['90s Movie Mayhem'],
+    DMAN: ['90s Movie Mayhem'],
+    GEYE: ['90s Movie Mayhem'],
+    JPARK: ['90s Movie Mayhem'],
+    LAH: ['90s Movie Mayhem'],
+
+    STARG: ['Sci-Fi Signal'],
+    STROP: ['Sci-Fi Signal'],
+    ID4: ['Sci-Fi Signal'],
+    XFILES: ['Sci-Fi Signal'],
+
+    AERO: ['Rock Legends'],
+    BEAT: ['Rock Legends'],
+    ELVIS: ['Rock Legends'],
+    RSTON: ['Rock Legends'],
+
+    BSD: ['Legendary Williams','Monster Bash Deluxe'],
+    CFTBL: ['Legendary Williams','Monster Bash Deluxe'],
+    FREDDY: ['Monster Bash Deluxe'],
+    MBASH: ['Monster Bash Deluxe'],
+    TFTC: ['Monster Bash Deluxe'],
+
+    GOT: ['Modern Stern Spotlight'],
+    STRANG: ['Modern Stern Spotlight'],
+    MANDO: ['Modern Stern Spotlight'],
+    TWD: ['Modern Stern Spotlight'],
+
+    CORV: ['Badge, Bullets, and Chases'],
+    DHARRY: ['Badge, Bullets, and Chases'],
+    JDREDD: ['Badge, Bullets, and Chases'],
+    PFOR: ['Midnight Classics','Badge, Bullets, and Chases'],
+
+    DEADP: ['Comic Book Collision'],
+    GHOST: ['Comic Book Collision'],
+    RBULL: ['Comic Book Collision']
   };
 
   var DESIGNERS = [
@@ -394,9 +576,16 @@
       displayName: t.displayName || t.name,
       manufacturer: t.manufacturer || '',
       year: t.year,
+      worldGroups: Array.isArray(TABLE_WORLD_GROUPS_BY_CODE[t.code]) ? TABLE_WORLD_GROUPS_BY_CODE[t.code].slice() : [],
       aliases: (t.aliases || []).slice(),
       banner: t.banner || ''
     };
+  }
+
+  function getTableWorldGroups(query){
+    var t = resolveTable(query);
+    if(!t) return [];
+    return Array.isArray(TABLE_WORLD_GROUPS_BY_CODE[t.code]) ? TABLE_WORLD_GROUPS_BY_CODE[t.code].slice() : [];
   }
 
   function toWorldSpec(worldKey, worldInput, options){
@@ -511,6 +700,7 @@
         displayName: resolved ? (resolved.displayName || resolved.name) : t.name,
         manufacturer: resolved ? (resolved.manufacturer || '') : '',
         year: resolved ? resolved.year : null,
+        worldGroups: resolved ? (resolved.worldGroups || []).slice() : [],
         aliases: (t.aliases||[]).slice(),
         banner: String(TABLE_BANNER_REFS[code] || '').trim()
       };
@@ -575,7 +765,7 @@
   }
 
   var repo = {
-    version: '1.3.0',
+    version: '1.4.0',
     worldOrder: getWorldOrder(),
     worldSpecs: JSON.parse(JSON.stringify(WORLD_SPECS)),
     defaultWorldTableCodes: JSON.parse(JSON.stringify(DEFAULT_WORLD_TABLE_CODES)),
@@ -587,6 +777,7 @@
     getCanonicalTableCode: getCanonicalTableCode,
     getDisplayTableName: getDisplayTableName,
     getTableMeta: getTableMeta,
+    getTableWorldGroups: getTableWorldGroups,
     getAllTables: getAllTables,
     resolveDesigner: resolveDesigner,
     getAllDesigners: getAllDesigners,
