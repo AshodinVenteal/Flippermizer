@@ -19,6 +19,97 @@
   } catch (_) {}
 })();
 </script>
+<script>
+(() => {
+  const BOOT_PANEL_ID = "flprBootFailPanel";
+  window.__flprBootDiag = window.__flprBootDiag || { errors:[], shown:false, bootDone:false };
+  const bootState = window.__flprBootDiag;
+  function ensurePanel(){
+    let el = document.getElementById(BOOT_PANEL_ID);
+    if(el) return el;
+    el = document.createElement("div");
+    el.id = BOOT_PANEL_ID;
+    el.style.cssText = [
+      "position:fixed",
+      "left:16px",
+      "right:16px",
+      "bottom:16px",
+      "z-index:2147483647",
+      "display:none",
+      "padding:14px 16px",
+      "border:2px solid rgba(255,122,122,.92)",
+      "border-radius:14px",
+      "background:rgba(16,6,10,.96)",
+      "color:#fff4f4",
+      "font:12px/1.45 monospace",
+      "box-shadow:0 12px 32px rgba(0,0,0,.48)"
+    ].join(";");
+    document.documentElement.appendChild(el);
+    return el;
+  }
+  function showPanel(reason){
+    try{
+      const el = ensurePanel();
+      const last = bootState.errors[bootState.errors.length - 1] || {};
+      el.innerHTML = `
+        <div style="font-weight:700;color:#ffb7b7;margin-bottom:8px;">OVERLAY SAFE MODE</div>
+        <div style="margin-bottom:10px;">The overlay boot did not complete normally. This usually means a startup script error or poisoned saved overlay state.</div>
+        <div style="margin-bottom:10px;color:#ffd6d6;">Reason: ${String(reason || last.message || "unknown")}</div>
+        <div style="margin-bottom:12px;white-space:pre-wrap;max-height:160px;overflow:auto;border:1px solid rgba(255,180,180,.25);padding:8px;border-radius:8px;background:rgba(255,255,255,.04);">${String(last.message || "No error captured yet.")}</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button type="button" onclick="window.__flprBootDiagResetOverlayState && window.__flprBootDiagResetOverlayState()" style="padding:8px 10px;cursor:pointer;">RESET OVERLAY STATE</button>
+          <button type="button" onclick="location.reload()" style="padding:8px 10px;cursor:pointer;">RELOAD</button>
+        </div>
+      `;
+      el.style.display = "block";
+      bootState.shown = true;
+    }catch(_){}
+  }
+  window.__flprBootDiagResetOverlayState = () => {
+    try{
+      const keys = [
+        "flpr_vertical_worlds_overview_v4_recover",
+        "flpr_controls_tab_v1",
+        "flpr_overlay_failure_log_v1",
+        "flpr_overlay_boot_log_v1",
+        "flpr_bonus_pinball_active_v1",
+        "flpr_music_state_v1"
+      ];
+      keys.forEach((key)=>{ try{ localStorage.removeItem(key); }catch(_){} });
+    }catch(_){}
+    location.reload();
+  };
+  window.addEventListener("error", (ev) => {
+    try{
+      bootState.errors.push({
+        message: `${String(ev?.message || "error")} @ ${String(ev?.filename || "inline")}:${Number(ev?.lineno || 0)}`
+      });
+      if(!bootState.bootDone){
+        setTimeout(()=>showPanel("window error"), 0);
+      }
+    }catch(_){}
+  });
+  window.addEventListener("unhandledrejection", (ev) => {
+    try{
+      const msg = (ev?.reason && (ev.reason.stack || ev.reason.message)) ? (ev.reason.stack || ev.reason.message) : String(ev?.reason || "promise rejection");
+      bootState.errors.push({ message: msg });
+      if(!bootState.bootDone){
+        setTimeout(()=>showPanel("unhandled rejection"), 0);
+      }
+    }catch(_){}
+  });
+  setTimeout(()=>{
+    try{
+      if(bootState.bootDone) return;
+      const worldsCount = document.querySelectorAll("#worlds [data-world]").length;
+      const selectedCount = document.querySelectorAll("#selectedBody > *").length;
+      if(worldsCount === 0 || selectedCount === 0){
+        showPanel("boot watchdog: main overlay did not populate");
+      }
+    }catch(_){}
+  }, 2200);
+})();
+</script>
 
 <style>
 :root{
@@ -4058,6 +4149,25 @@ body.bonusPinballDim .capture{
   font-size:7px;
   color: rgba(232,250,255,0.55);
 }
+.overlayVersionCodeNote{
+  margin-top:2px;
+  font-size:8px;
+  color: rgba(196,236,255,.72);
+}
+.overlayVersionCodeNote .code{
+  color: rgba(112,255,194,.94);
+  letter-spacing: .14em;
+  text-shadow: 0 0 10px rgba(34,255,136,.18);
+}
+.overlayChangelogNote{
+  margin-top:2px;
+  font-size:8px;
+  line-height:1.45;
+  color: rgba(255,226,176,.78);
+}
+.overlayChangelogNote .label{
+  color: rgba(255,246,214,.92);
+}
 .barBlock{ margin-top:10px; }
 .barTop{
   display:flex; justify-content:space-between; gap:12px;
@@ -6425,9 +6535,10 @@ body.chromaBlue .bossKeyCard::before{
 }
 .relicHoverTip{
   position:absolute;
-  left:12px;
-  right:12px;
-  bottom:calc(100% + 10px);
+  top:50%;
+  right:calc(100% + 12px);
+  width:220px;
+  max-width:220px;
   padding:10px 12px;
   border-radius:12px;
   border:1px solid rgba(116,240,255,.22);
@@ -6437,7 +6548,7 @@ body.chromaBlue .bossKeyCard::before{
   font-size:8px;
   line-height:1.55;
   opacity:0;
-  transform:translateY(6px);
+  transform:translate(-6px, -50%);
   pointer-events:none;
   transition:opacity .16s ease, transform .16s ease;
   transition-delay:0s;
@@ -6447,16 +6558,17 @@ body.chromaBlue .bossKeyCard::before{
 .relicHoverTip::after{
   content:"";
   position:absolute;
-  left:22px;
-  top:100%;
-  border-width:7px 7px 0 7px;
+  left:100%;
+  top:50%;
+  transform:translateY(-50%);
+  border-width:7px 0 7px 7px;
   border-style:solid;
-  border-color:rgba(5,15,24,.96) transparent transparent transparent;
+  border-color:transparent transparent transparent rgba(5,15,24,.96);
 }
 .relicItem.isLocked:hover .relicHoverTip,
 .relicItem.isLocked:focus-visible .relicHoverTip{
   opacity:1;
-  transform:translateY(0);
+  transform:translate(0, -50%);
   transition-delay:.5s;
 }
 .relicItemMeta{
@@ -6697,6 +6809,90 @@ body.chromaBlue .bossKeyCard::before{
   background:rgba(255,112,112,.10);
   color:#ffc0c0;
 }
+.relicRunRack{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+.relicRunCard{
+  position:relative;
+  overflow:hidden;
+  padding:12px 12px 11px;
+  border-radius:16px;
+  border:1px solid rgba(116,240,255,.20);
+  background:
+    radial-gradient(90% 70% at 50% 0%, rgba(116,240,255,.10), rgba(0,0,0,0) 58%),
+    linear-gradient(180deg, rgba(8,18,28,.92), rgba(3,10,18,.96));
+  box-shadow:0 0 0 1px rgba(255,255,255,.03) inset;
+}
+.relicRunCardHd{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.relicRunCardName{
+  font-size:9px;
+  color:#eefcff;
+  letter-spacing:.08em;
+}
+.relicRunCardEmoji{
+  font-size:19px;
+}
+.relicRunCardBody{
+  margin-top:8px;
+  display:grid;
+  gap:7px;
+}
+.relicRunCardDesc,
+.relicRunCardEarn{
+  font-size:7px;
+  line-height:1.55;
+  color:rgba(220,244,255,.76);
+}
+.relicRunCardEarn{
+  color:rgba(255,226,176,.74);
+}
+.relicRunCardMeta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.relicRunCharge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 8px 3px;
+  border-radius:999px;
+  border:1px solid rgba(116,240,255,.22);
+  background:rgba(4,16,24,.74);
+  font-size:7px;
+  color:#e0fbff;
+}
+.relicRunUseBtn{
+  min-width:110px;
+  padding:8px 10px 7px;
+  border-radius:12px;
+  border:1px solid rgba(116,240,255,.28);
+  background:rgba(8,20,30,.88);
+  color:#effcff;
+  font-family:'Press Start 2P', monospace;
+  font-size:7px;
+  cursor:pointer;
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.relicRunUseBtn:hover:not(:disabled){
+  transform:translateY(-1px);
+  border-color:rgba(34,255,136,.72);
+  box-shadow:0 0 18px rgba(34,255,136,.14);
+}
+.relicRunUseBtn:disabled{
+  opacity:.42;
+  cursor:not-allowed;
+  filter:grayscale(.34);
+}
 .relicMarkerTag{
   position:absolute;
   z-index:5;
@@ -6818,6 +7014,121 @@ body.chromaBlue .bossKeyCard::before{
 }
 .designerFlyerHint{
   font-size:8px;
+}
+.relicCenterNotice{
+  position:fixed;
+  left:50%;
+  top:47%;
+  transform:translate(-50%, -50%) scale(.86);
+  z-index:99998;
+  width:min(620px, calc(100vw - 48px));
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .26s ease, transform .26s ease;
+}
+.relicCenterNotice.show{
+  opacity:1;
+  transform:translate(-50%, -50%) scale(1);
+}
+.relicCenterCard{
+  position:relative;
+  overflow:hidden;
+  padding:20px 22px 18px;
+  border-radius:20px;
+  border:2px solid rgba(116,240,255,.36);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,222,132,.16), rgba(0,0,0,0) 34%),
+    radial-gradient(circle at 50% 50%, rgba(116,240,255,.14), rgba(0,0,0,0) 52%),
+    linear-gradient(180deg, rgba(6,18,30,.96), rgba(3,10,18,.98));
+  box-shadow:
+    0 18px 48px rgba(0,0,0,.42),
+    0 0 0 1px rgba(255,255,255,.05) inset,
+    0 0 34px rgba(116,240,255,.12);
+}
+.relicCenterCard::before{
+  content:"";
+  position:absolute;
+  inset:-12% -8%;
+  background:
+    radial-gradient(circle at 20% 22%, rgba(255,220,120,.14), rgba(0,0,0,0) 20%),
+    radial-gradient(circle at 82% 18%, rgba(255,138,138,.12), rgba(0,0,0,0) 18%),
+    radial-gradient(circle at 50% 0%, rgba(116,240,255,.18), rgba(0,0,0,0) 28%);
+  pointer-events:none;
+}
+.relicCenterTag{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:5px 10px 4px;
+  border-radius:999px;
+  border:1px solid rgba(116,240,255,.24);
+  background:rgba(4,16,24,.74);
+  font-size:8px;
+  color:#dffbff;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+.relicCenterBig{
+  position:relative;
+  margin-top:12px;
+  font-size:28px;
+  line-height:1.16;
+  color:#f2fcff;
+  text-shadow:0 0 22px rgba(116,240,255,.18);
+}
+.relicCenterSub{
+  position:relative;
+  margin-top:10px;
+  font-size:10px;
+  line-height:1.6;
+  color:rgba(220,244,255,.82);
+}
+.relicCenterMeta{
+  position:relative;
+  margin-top:12px;
+  font-size:8px;
+  line-height:1.6;
+  color:rgba(255,226,182,.72);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.relicCenterBurst{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+.relicCenterBurst::before,
+.relicCenterBurst::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  border-radius:999px;
+  transform:translate(-50%, -50%);
+  pointer-events:none;
+}
+.relicCenterBurst::before{
+  width:220px;
+  height:220px;
+  background:radial-gradient(circle, rgba(255,228,150,.24), rgba(255,228,150,0) 68%);
+  animation:relicBurstPulse 820ms ease-out 1;
+}
+.relicCenterBurst::after{
+  width:320px;
+  height:320px;
+  background:radial-gradient(circle, rgba(116,240,255,.16), rgba(116,240,255,0) 72%);
+  animation:relicBurstPulseWide 980ms ease-out 1;
+}
+@keyframes relicBurstPulse{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.34); }
+  22%{ opacity:1; transform:translate(-50%, -50%) scale(1); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.28); }
+}
+@keyframes relicBurstPulseWide{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.26); }
+  18%{ opacity:.82; transform:translate(-50%, -50%) scale(.84); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.34); }
 }
 
 /* Boss Keys subtle repeating word banner */
@@ -14823,7 +15134,9 @@ window.__manualDisconnect = false;
     steve_ritchie_showcase: "WorldsBanners/FeaturedDev-SteveRitchie.png",
     dennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
     featureddesignerdennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
-    dennis_nordman_party_monsters: "WorldsBanners/DennisNordmanPartyMonsters.png"
+    dennis_nordman_party_monsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
+    theshowmustgoon: "WorldsBanners/TheShowMustGoOn.png",
+    the_show_must_go_on: "WorldsBanners/TheShowMustGoOn.png"
   });
   const DEFAULT_TABLE_BANNER_REFS_BY_CODE = Object.freeze({
     MM: "WorldsBanners/BestiaryFlyers/MM.png",
@@ -14875,18 +15188,49 @@ window.__manualDisconnect = false;
     BK2K: "WorldsBanners/BestiaryFlyers/BK2K.png",
     BROSE: "WorldsBanners/BestiaryFlyers/BROSE.jpg",
     CFTBL: "WorldsBanners/BestiaryFlyers/CFTBL.png",
-    TOM: "WorldsBanners/BestiaryFlyers/TOM.jpg"
+    TOM: "WorldsBanners/BestiaryFlyers/TOM.jpg",
+    CVOL: "WorldsBanners/BestiaryFlyers/CVOL.jpg",
+    AGBW: "WorldsBanners/BestiaryFlyers/AGBW.jpg",
+    CIRC80: "WorldsBanners/BestiaryFlyers/CIRC80.jpg",
+    POTO: "WorldsBanners/BestiaryFlyers/POTO.jpg"
   });
   const DEFAULT_TABLE_BANNER_REF_SET = new Set(
     Object.values(DEFAULT_TABLE_BANNER_REFS_BY_CODE || {}).map((v)=>String(v || "").trim()).filter(Boolean)
   );
+  let __worldBannerLookupOverrideCache = null;
+  function getStoredWorldBannerRefsByLookup(){
+    if(__worldBannerLookupOverrideCache && typeof __worldBannerLookupOverrideCache === "object"){
+      return __worldBannerLookupOverrideCache;
+    }
+    const out = {};
+    try{
+      ["flpr_vertical_worlds_overview_v4_recover", "flpr_vertical_worlds_overview_v2"].forEach((key)=>{
+        if(Object.keys(out).length) return;
+        const raw = localStorage.getItem(String(key || ""));
+        if(!raw) return;
+        const parsed = JSON.parse(raw);
+        const map = parsed && parsed.worldBannerRefsByLookup;
+        if(map && typeof map === "object"){
+          Object.keys(map).forEach((lookup)=>{
+            const norm = normalizeWorldBannerLookup(lookup);
+            const ref = String(map[lookup] || "").trim();
+            if(norm && ref) out[norm] = ref;
+          });
+        }
+      });
+    }catch(_){}
+    __worldBannerLookupOverrideCache = out;
+    return __worldBannerLookupOverrideCache;
+  }
   function normalizeWorldBannerLookup(v){
     return String(v || "").toLowerCase().replace(/[^a-z0-9_]+/g, "");
   }
   function resolveDefaultWorldBannerByLookup(values){
     const list = Array.isArray(values) ? values : [values];
+    const custom = getStoredWorldBannerRefsByLookup();
     for(const raw of list){
       const key = normalizeWorldBannerLookup(raw);
+      if(key && custom[key]) return String(custom[key] || "");
       if(key && DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key]) return String(DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key] || "");
     }
     return "";
@@ -15262,6 +15606,8 @@ function safeApConnect(){
   }
 }
 const LS_KEY = "flpr_vertical_worlds_overview_v4_recover";
+const FLPR_OVERLAY_VERSION_CODE = "2026.03.27-WORLD-SMGO-2";
+const FLPR_OVERLAY_CHANGELOG = "Pulled real Show Must Go On flyer art and switched the overlay to the new CVOL/AGBW/CIRC80/POTO flyer files.";
 const LEGACY_MAIN_STATE_KEYS = [
   "flpr_vertical_worlds_overview_v3_restore",
   "flpr_vertical_worlds_overview_v2"
@@ -16211,6 +16557,7 @@ function saveState(){
     try{ persistMusicStateSnapshot(state); }catch(_){}
     try{ writeBossHpLiveSnapshotToLocalStorage(String(state?.bossTableSeed || ""), state?.bossHpLive || null); }catch(_){}
     try{ bossHpTestSave(); }catch(_){}
+    try{ __worldBannerLookupOverrideCache = null; }catch(_){}
     localStorage.setItem(LS_KEY, JSON.stringify(state));
     // Keep FLPR-Bot table tracking aligned with overlay worldstate writes.
     try{ syncFlprBotCurrentTable(false); }catch(_){ }
@@ -18036,6 +18383,54 @@ const RELIC_ACH_DEF_BY_ID = Object.freeze(ACH_RANDOMIZER_DEFS.reduce((acc, def)=
   acc[String(def.id || "")] = def;
   return acc;
 }, {}));
+const SIMPLE_RELIC_DEFS = Object.freeze([
+  {
+    id:"scout_ping",
+    title:"Scout Ping",
+    emoji:"📡",
+    effect:"Scan the current table for a quick route read. If spoiler truth is available, it tells you whether progression still remains there.",
+    earn:"Earned when one table gets pushed 3 checks deep in the same run."
+  },
+  {
+    id:"route_echo",
+    title:"Route Echo",
+    emoji:"🪞",
+    effect:"Marks one table in the selected world so you have a visible route reminder to return to.",
+    earn:"Earned after clearing at least 1 check in 3 different non-boss worlds in one run, then again after all 5."
+  },
+  {
+    id:"pocket_ace",
+    title:"Pocket Ace",
+    emoji:"🎱",
+    effect:"If the boss is open, cash it in for 1 free boss damage check. Otherwise it banks 1 Extra Ball token into the run.",
+    earn:"Earned from the first Boss Key of the run, then again when the boss table opens."
+  }
+]);
+const SIMPLE_RELIC_DEF_BY_ID = Object.freeze(SIMPLE_RELIC_DEFS.reduce((acc, def)=>{
+  acc[def.id] = def;
+  return acc;
+}, {}));
+function buildDefaultSimpleRelicRuntimeState(){
+  return {
+    discovered: {
+      scout_ping: false,
+      route_echo: false,
+      pocket_ace: false
+    },
+    charges: {
+      scout_ping: 0,
+      route_echo: 0,
+      pocket_ace: 0
+    },
+    scoutAwardedTables: {},
+    routeEchoMilestones: {},
+    routeMarks: {},
+    pocketAceMilestones: {
+      firstBossKey: false,
+      bossOpen: false
+    }
+  };
+}
 function relicFreshRunState(seedSig){
   return {
     seedSig: String(seedSig || ""),
@@ -18059,7 +18454,8 @@ function relicFreshRunState(seedSig){
     lastTableKey: "",
     tableStats: {},
     abandoned: null,
-    bossUnlockCredited: false
+    bossUnlockCredited: false,
+    simple: buildDefaultSimpleRelicRuntimeState()
   };
 }
 function buildDefaultRelicsState(){
@@ -18068,6 +18464,7 @@ function buildDefaultRelicsState(){
     loadout: { opening:"", route:"", boss:"" },
     progress: {
       coldOpenPivotRecoveries: 0,
+      tiltedCompassBestWorlds: 0,
       firstBloodWorldCompletions: 0,
       deepCoilRuns: 0,
       looseGlassRecoveries: 0,
@@ -18095,6 +18492,7 @@ function relicNormalizeState(raw){
   });
   const progress = {
     coldOpenPivotRecoveries: Math.max(0, Number(src?.progress?.coldOpenPivotRecoveries || 0)),
+    tiltedCompassBestWorlds: Math.max(0, Number(src?.progress?.tiltedCompassBestWorlds || 0)),
     firstBloodWorldCompletions: Math.max(0, Number(src?.progress?.firstBloodWorldCompletions || 0)),
     deepCoilRuns: Math.max(0, Number(src?.progress?.deepCoilRuns || 0)),
     looseGlassRecoveries: Math.max(0, Number(src?.progress?.looseGlassRecoveries || 0)),
@@ -18140,6 +18538,22 @@ function relicNormalizeState(raw){
     targetTableKey: String(runSrc.abandoned.targetTableKey || "")
   } : null;
   run.bossUnlockCredited = !!runSrc.bossUnlockCredited;
+  const simpleSrc = (runSrc.simple && typeof runSrc.simple === "object") ? runSrc.simple : {};
+  const simpleBase = buildDefaultSimpleRelicRuntimeState();
+  simpleBase.discovered.scout_ping = !!simpleSrc?.discovered?.scout_ping;
+  simpleBase.discovered.route_echo = !!simpleSrc?.discovered?.route_echo;
+  simpleBase.discovered.pocket_ace = !!simpleSrc?.discovered?.pocket_ace;
+  simpleBase.charges.scout_ping = Math.max(0, Math.round(Number(simpleSrc?.charges?.scout_ping || 0)));
+  simpleBase.charges.route_echo = Math.max(0, Math.round(Number(simpleSrc?.charges?.route_echo || 0)));
+  simpleBase.charges.pocket_ace = Math.max(0, Math.round(Number(simpleSrc?.charges?.pocket_ace || 0)));
+  simpleBase.scoutAwardedTables = { ...(simpleSrc.scoutAwardedTables || {}) };
+  simpleBase.routeEchoMilestones = { ...(simpleSrc.routeEchoMilestones || {}) };
+  simpleBase.routeMarks = { ...(simpleSrc.routeMarks || {}) };
+  simpleBase.pocketAceMilestones = {
+    firstBossKey: !!simpleSrc?.pocketAceMilestones?.firstBossKey,
+    bossOpen: !!simpleSrc?.pocketAceMilestones?.bossOpen
+  };
+  run.simple = simpleBase;
   return {
     unlocked,
     loadout,
@@ -18185,7 +18599,8 @@ function relicGetUnlockProgress(id){
   if(rid === "tilted_compass"){
     const worlds = Object.keys(state?.relics?.run?.checkedWorlds || {}).filter((wk)=> wk && wk !== "boss");
     const goal = ["w1","w2","w3","w4","w5"].filter((wk)=> !!state?.worlds?.[wk]).length || 5;
-    return { cur: Math.min(goal, worlds.length), goal };
+    const best = Math.max(0, Number(p.tiltedCompassBestWorlds || 0));
+    return { cur: Math.min(goal, Math.max(best, worlds.length)), goal };
   }
   if(rid === "cold_open") return { cur: Math.min(10, Number(p.coldOpenPivotRecoveries || 0)), goal: 10 };
   if(rid === "first_blood") return { cur: Math.min(5, Number(p.firstBloodWorldCompletions || 0)), goal: 5 };
@@ -18200,6 +18615,210 @@ function relicGetUnlockProgress(id){
 function relicFormatProgressText(id){
   const pr = relicGetUnlockProgress(id);
   return `${Math.max(0, Number(pr.cur || 0))}/${Math.max(1, Number(pr.goal || 1))}`;
+}
+function relicSaveProgressState(){
+  try{ saveState(); }catch(_){}
+  try{
+    const overlay = document.getElementById("relicsOverlay");
+    if(overlay && !overlay.classList.contains("hidden")) renderRelicsOverlay();
+  }catch(_){}
+}
+function relicGetSimpleRunState(){
+  relicEnsureState();
+  const run = state?.relics?.run || relicFreshRunState("");
+  if(!run.simple || typeof run.simple !== "object") run.simple = buildDefaultSimpleRelicRuntimeState();
+  return run.simple;
+}
+function relicGetSimpleDef(id){
+  return SIMPLE_RELIC_DEF_BY_ID[String(id || "").trim()] || null;
+}
+function relicGetSimpleChargeCount(id){
+  const def = relicGetSimpleDef(id);
+  if(!def) return 0;
+  const runSimple = relicGetSimpleRunState();
+  return Math.max(0, Math.round(Number(runSimple?.charges?.[def.id] || 0)));
+}
+function relicAwardSimpleRelic(id, reason, amount){
+  const def = relicGetSimpleDef(id);
+  if(!def || !episodeCanTrack()) return false;
+  const add = Math.max(1, Math.round(Number(amount || 1) || 1));
+  const runSimple = relicGetSimpleRunState();
+  runSimple.charges[def.id] = Math.max(0, Math.round(Number(runSimple.charges[def.id] || 0))) + add;
+  runSimple.discovered[def.id] = true;
+  relicSaveProgressState();
+  showRelicCenterNotice({
+    kind:"available",
+    tag:"RUN RELIC AVAILABLE",
+    big:`${def.emoji} ${def.title}`,
+    sub:def.effect,
+    meta:`${reason || def.earn} | Charges ${runSimple.charges[def.id]}`
+  });
+  try{ toast("good", "RUN RELIC READY", `${def.title} | Charges ${runSimple.charges[def.id]}`, 3200); }catch(_){}
+  return true;
+}
+function relicResolveActiveTableKey(){
+  try{ syncFlprBotCurrentTableSnapshot(); }catch(_){}
+  const currentName = String(state?.currentTable || "").trim();
+  const currentKey = String(getTableKeyForName(currentName) || "");
+  if(currentKey) return currentKey;
+  const worlds = [String(ap?.currentWorld || ""), String(state?.currentWorld || ""), String(state?.selected || "")]
+    .filter((v, idx, arr)=> v && arr.indexOf(v) === idx && !isBossWorldId(v));
+  for(const wk of worlds){
+    if(state?.worlds?.[wk]) return getChecksNowPlayingTableKey() || getOverviewNowPlayingTableKey() || "";
+  }
+  return getChecksNowPlayingTableKey() || getOverviewNowPlayingTableKey() || "";
+}
+function relicResolveRouteEchoWorldKey(){
+  const choices = [String(state?.selected || ""), String(ap?.currentWorld || ""), String(state?.currentWorld || "")]
+    .filter((v, idx, arr)=> v && arr.indexOf(v) === idx && !isBossWorldId(v) && !!state?.worlds?.[v]);
+  return choices[0] || "";
+}
+function relicRefreshVisualState(){
+  try{ saveState(); }catch(_){}
+  try{ renderAll(); }catch(_){}
+  try{
+    const overlay = document.getElementById("relicsOverlay");
+    if(overlay && !overlay.classList.contains("hidden")) renderRelicsOverlay();
+  }catch(_){}
+}
+function relicUsePocketAceBossCheck(){
+  const nodes = Array.isArray(resolveBossChecksNodes?.()) ? resolveBossChecksNodes() : [];
+  const target = nodes.find((node)=>{
+    const id = Number(node?.id);
+    if(!Number.isFinite(id) || id <= 0) return false;
+    if(ap?.checked?.has?.(id)) return false;
+    if(bossIsVictoryLocationNode?.(node)) return false;
+    return true;
+  }) || null;
+  if(!target) return false;
+  try{ handleCheckedLocations([Number(target.id)], { awardAchievements:true, source:"simple-relic-pocket-ace" }); }catch(_){ return false; }
+  try{ bossHandleRetaliationAfterDamageReceipt(); }catch(_){}
+  return true;
+}
+function relicUseSimpleRelic(id){
+  const def = relicGetSimpleDef(id);
+  if(!def) return false;
+  const runSimple = relicGetSimpleRunState();
+  const charges = relicGetSimpleChargeCount(def.id);
+  if(charges <= 0){
+    try{ toast("warn", "NO RUN RELIC", `${def.title} is not charged right now.`, 2400); }catch(_){}
+    return false;
+  }
+  if(def.id === "scout_ping"){
+    const tableKey = relicResolveActiveTableKey();
+    if(!tableKey){
+      try{ toast("warn", "SCOUT PING", "No current table is selected yet.", 2400); }catch(_){}
+      return false;
+    }
+    const tableName = relicGetTableName(tableKey) || "Current table";
+    let detail = "";
+    if(relicHasSpoilerTruth()){
+      const hasProgress = relicTableHasProgressionLeft(tableKey, "all");
+      relicGetRunState().deepCoilHints[tableKey] = hasProgress ? "progress" : "empty";
+      detail = hasProgress ? `${tableName} still has progression.` : `${tableName} has no spoiler-truth progression left.`;
+    }else{
+      const remaining = relicGetUncheckedNodesForTable(tableKey).length;
+      detail = `${tableName} has ${remaining} unchecked check${remaining === 1 ? "" : "s"} left.`;
+    }
+    runSimple.charges[def.id] = Math.max(0, charges - 1);
+    relicRefreshVisualState();
+    try{ toast("info", "SCOUT PING", detail, 3200); }catch(_){}
+    return true;
+  }
+  if(def.id === "route_echo"){
+    const wk = relicResolveRouteEchoWorldKey();
+    if(!wk){
+      try{ toast("warn", "ROUTE ECHO", "Pick a non-boss world first.", 2400); }catch(_){}
+      return false;
+    }
+    let target = "";
+    if(relicHasSpoilerTruth()){
+      const candidates = relicProgressionTableCandidates(wk, "all").filter((key)=> relicTableHasRemainingChecks(key));
+      target = relicPickDeterministic(candidates, `route-echo|${wk}|${charges}`);
+    }
+    if(!target){
+      const tables = Array.isArray(state?.worlds?.[wk]?.tables) ? state.worlds[wk].tables : [];
+      let bestCount = -1;
+      tables.forEach((_, idx)=>{
+        const key = `${wk}|${idx}`;
+        const remaining = relicGetUncheckedNodesForTable(key).length;
+        if(remaining > bestCount){
+          bestCount = remaining;
+          target = key;
+        }
+      });
+    }
+    if(!target){
+      try{ toast("warn", "ROUTE ECHO", "No route target is available in that world.", 2600); }catch(_){}
+      return false;
+    }
+    runSimple.charges[def.id] = Math.max(0, charges - 1);
+    runSimple.routeMarks[wk] = target;
+    relicRefreshVisualState();
+    try{ toast("good", "ROUTE ECHO", `${relicGetTableName(target) || "A table"} marked in ${splitLabel(state?.worlds?.[wk]?.label || wk).main || wk}.`, 3400); }catch(_){}
+    return true;
+  }
+  if(def.id === "pocket_ace"){
+    runSimple.charges[def.id] = Math.max(0, charges - 1);
+    const bossOpen = !!(typeof isBossUnlocked === "function" ? isBossUnlocked() : (state?.bossOpen || false));
+    const usedBossHit = bossOpen ? relicUsePocketAceBossCheck() : false;
+    if(!usedBossHit){
+      state.extraBallTokens = Math.max(0, Math.round(Number(state.extraBallTokens || 0))) + 1;
+    }
+    relicRefreshVisualState();
+    try{
+      toast("good", "POCKET ACE", usedBossHit ? "Free boss damage check claimed." : "Extra Ball token +1 banked.", 3000);
+    }catch(_){}
+    return true;
+  }
+  return false;
+}
+let relicCenterNoticeTimer = 0;
+function ensureRelicCenterNotice(){
+  let wrap = document.getElementById("relicCenterNotice");
+  if(wrap) return wrap;
+  wrap = document.createElement("div");
+  wrap.id = "relicCenterNotice";
+  wrap.className = "relicCenterNotice";
+  wrap.setAttribute("aria-hidden", "true");
+  wrap.innerHTML = `
+    <div class="relicCenterCard" id="relicCenterCard">
+      <div class="relicCenterBurst"></div>
+      <div class="relicCenterTag" id="relicCenterTag">RELIC UNLOCKED</div>
+      <div class="relicCenterBig" id="relicCenterBig">Tilted Compass</div>
+      <div class="relicCenterSub" id="relicCenterSub">A new relic has entered the run.</div>
+      <div class="relicCenterMeta" id="relicCenterMeta">TRACKED ACROSS RUNS</div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  return wrap;
+}
+function showRelicCenterNotice(opts){
+  opts = opts || {};
+  const wrap = ensureRelicCenterNotice();
+  const tagEl = document.getElementById("relicCenterTag");
+  const bigEl = document.getElementById("relicCenterBig");
+  const subEl = document.getElementById("relicCenterSub");
+  const metaEl = document.getElementById("relicCenterMeta");
+  const card = document.getElementById("relicCenterCard");
+  if(!wrap || !tagEl || !bigEl || !subEl || !metaEl || !card) return;
+  tagEl.textContent = String(opts.tag || "RELIC UNLOCKED");
+  bigEl.textContent = String(opts.big || "Relic");
+  subEl.textContent = String(opts.sub || "");
+  metaEl.textContent = String(opts.meta || "");
+  wrap.classList.remove("show");
+  wrap.setAttribute("aria-hidden", "false");
+  void wrap.offsetWidth;
+  wrap.classList.add("show");
+  try{ playSfx("unlock"); }catch(_){}
+  try{ sparksAtElement(card); }catch(_){}
+  setTimeout(()=>{ try{ sparksAtElement(card); }catch(_){} }, 220);
+  setTimeout(()=>{ try{ sparksAtElement(card); }catch(_){} }, 420);
+  if(relicCenterNoticeTimer) clearTimeout(relicCenterNoticeTimer);
+  relicCenterNoticeTimer = setTimeout(()=>{
+    wrap.classList.remove("show");
+    wrap.setAttribute("aria-hidden", "true");
+  }, Math.max(2600, Number(opts.holdMs || 3600)));
 }
 const ACH_ACTION_META = Object.freeze({
   multiball: { suffix:"Ball Brawl", desc:"Clear a multiball objective." },
@@ -24432,7 +25051,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
       hintRefreshAllHighlights();
     }
   }catch(_){}
-  try{ relicHandleRewardReceipt(effectiveName, relicTableKey); }catch(_){}
+  try{ relicHandleRewardReceipt(effectiveName, relicTableKey, { isSnapshot:!!opts.isSnapshot, isFlush:!!opts.isFlush }); }catch(_){}
 
   // Move to Overview feed
   if(!opts.noFeed && !isBossSegmentItem){
@@ -24768,7 +25387,7 @@ function handleCheckedLocations(list, opts){
       if(allowAchievements){
         try{ achHandleCheckCleared(id); }catch(_){}
       }
-      try{ relicHandleCheckCleared(id); }catch(_){}
+      try{ relicHandleCheckCleared(id, opts); }catch(_){}
     }
     clearPending(id);
     try{
@@ -29984,10 +30603,14 @@ function relicCheckUnlockById(id, reason){
     try{ achUnlock(def.achId, { ...achDef, type:"randomizer" }); }catch(_){}
   }
   try{ achUnlock("rz:relic-armory", { ...(RELIC_ACH_DEF_BY_ID["rz:relic-armory"] || {}), type:"randomizer" }); }catch(_){}
-  try{ playSfx("unlock"); }catch(_){}
+  showRelicCenterNotice({
+    tag:"RELIC UNLOCKED",
+    big:`${def.emoji} ${def.title}`,
+    sub:def.effect,
+    meta:reason || def.unlock
+  });
   try{ toast("good", "RELIC UNLOCKED", `${def.title} | ${reason || def.unlock}`, 4200); }catch(_){}
-  try{ saveState(); }catch(_){}
-  try{ renderRelicsOverlay(); }catch(_){}
+  relicSaveProgressState();
   return true;
 }
 function relicSetEquipped(slot, id, opts){
@@ -30039,6 +30662,9 @@ function relicGetMarkerSpecs(tableKey){
   }
   if(relicIsEquipped("first_blood") && String(run.firstBloodTableKey || "") === key){
     out.push({ text: run.firstBloodComplete ? "First Blood Cleared" : "First Blood", cls:"markerFirstBlood" });
+  }
+  if(String(run?.simple?.routeMarks?.[wk] || "") === key){
+    out.push({ text:"Route Echo", cls:"markerCompass" });
   }
   const coil = String(run?.deepCoilHints?.[key] || "");
   if(coil === "progress") out.push({ text:"Progression Still Here", cls:"markerDeepProgress" });
@@ -30112,12 +30738,26 @@ function relicMaybeSelectFirstBloodTable(){
   const tableName = relicGetTableName(run.firstBloodTableKey);
   try{ toast("info", "FIRST BLOOD", tableName ? `${tableName} marked for full clear.` : "Target table designated.", 3200); }catch(_){}
 }
-function relicRegisterWorldCheck(worldKey){
+function relicRegisterWorldCheck(worldKey, opts){
   const wk = String(worldKey || "").trim();
   if(!wk || wk === "boss") return;
   const run = relicGetRunState();
   run.checkedWorlds[wk] = true;
+  const isSnapshotReplay = String(opts?.source || "").trim() === "connected-snapshot";
+  if(isSnapshotReplay) return;
+  const worldCount = Object.keys(run.checkedWorlds || {}).filter((key)=> key && key !== "boss").length;
+  state.relics.progress.tiltedCompassBestWorlds = Math.max(0, Number(state?.relics?.progress?.tiltedCompassBestWorlds || 0), worldCount);
+  const runSimple = relicGetSimpleRunState();
+  if(worldCount >= 3 && !runSimple.routeEchoMilestones["3"]){
+    runSimple.routeEchoMilestones["3"] = true;
+    relicAwardSimpleRelic("route_echo", "3 worlds answered with cleared checks.", 1);
+  }
+  if(worldCount >= 5 && !runSimple.routeEchoMilestones["5"]){
+    runSimple.routeEchoMilestones["5"] = true;
+    relicAwardSimpleRelic("route_echo", "All 5 worlds answered in this run.", 1);
+  }
   relicCheckUnlockById("tilted_compass", "Every world answered with at least one cleared check.");
+  relicSaveProgressState();
 }
 function relicApplyDeadlaneTargetFrom(tableKey){
   const run = relicGetRunState();
@@ -30204,16 +30844,19 @@ function relicHandleTableSwitch(prevKey, nextKey){
   }
   run.lastTableKey = next;
   if(next) relicEnsureTableStats(next);
+  relicSaveProgressState();
 }
-function relicHandleCheckCleared(locId){
+function relicHandleCheckCleared(locId, opts){
   if(!episodeCanTrack()) return;
   const tableKey = relicGetTableKeyFromLocId(locId);
   if(!tableKey) return;
   const wk = String(tableKey.split("|")[0] || "");
-  relicRegisterWorldCheck(wk);
+  const isSnapshotReplay = String(opts?.source || "").trim() === "connected-snapshot";
+  relicRegisterWorldCheck(wk, opts);
   const run = relicGetRunState();
   const stats = relicEnsureTableStats(tableKey);
   stats.checks = Math.max(0, Number(stats.checks || 0)) + 1;
+  if(isSnapshotReplay) return;
   if(relicIsEquipped("deep_coil")){
     if(stats.checks === 4 && !run.deepCoilHints[tableKey]){
       run.deepCoilHints[tableKey] = relicTableHasProgressionLeft(tableKey, "all") ? "progress" : "empty";
@@ -30224,6 +30867,11 @@ function relicHandleCheckCleared(locId){
       state.relics.progress.deepCoilRuns = Math.max(0, Number(state.relics.progress.deepCoilRuns || 0)) + 1;
       relicCheckUnlockById("deep_coil", "Stayed deep enough on one table to make the coil talk.");
     }
+  }
+  const runSimple = relicGetSimpleRunState();
+  if(stats.checks >= 3 && !runSimple.scoutAwardedTables?.[tableKey]){
+    runSimple.scoutAwardedTables[tableKey] = true;
+    relicAwardSimpleRelic("scout_ping", `${relicGetTableName(tableKey) || "A table"} was pushed 3 checks deep.`, 1);
   }
   if(relicIsEquipped("deadlane_map") && stats.checks >= 3 && !stats.foundProgressiveBall && !stats.foundBossKey && !run.deadlaneTarget){
     run.lastDryTableKey = tableKey;
@@ -30245,19 +30893,22 @@ function relicHandleCheckCleared(locId){
     }
   }
   relicMaybeFinalizeFirstBlood(tableKey);
+  relicSaveProgressState();
 }
-function relicHandleRewardReceipt(itemName, tableKey){
+function relicHandleRewardReceipt(itemName, tableKey, opts){
   if(!episodeCanTrack()) return;
   const key = String(tableKey || "");
   if(!key) return;
   const run = relicGetRunState();
   const stats = relicEnsureTableStats(key);
+  const isSnapshotReplay = !!opts?.isSnapshot || !!opts?.isFlush;
   const item = String(itemName || "");
   const gotBall = !!parseProgressiveBallTarget(item);
   const gotBossKey = isBossKeyItemName(item);
   if(gotBall) stats.foundProgressiveBall = true;
   if(gotBossKey) stats.foundBossKey = true;
   if(gotBall || gotBossKey) run.lastDryTableKey = "";
+  if(isSnapshotReplay) return;
   if(run.coldOpenRecovery && String(run.coldOpenRecovery.tableKey || "") === key && Number(run.coldOpenRecovery.remaining || 0) > 0 && (gotBall || gotBossKey)){
     state.relics.progress.coldOpenPivotRecoveries = Math.max(0, Number(state.relics.progress.coldOpenPivotRecoveries || 0)) + 1;
     relicCheckUnlockById("cold_open", "Pivoted out of a dry scene and found progression in time.");
@@ -30273,6 +30924,11 @@ function relicHandleRewardReceipt(itemName, tableKey){
   if(gotBossKey){
     state.relics.progress.bossKeysLifetime = Math.max(0, Number(state.relics.progress.bossKeysLifetime || 0)) + 1;
     relicCheckUnlockById("brass_keyring", "Collected enough Boss Keys to wake the ring.");
+    const runSimple = relicGetSimpleRunState();
+    if(!runSimple.pocketAceMilestones.firstBossKey){
+      runSimple.pocketAceMilestones.firstBossKey = true;
+      relicAwardSimpleRelic("pocket_ace", "First Boss Key of the run collected.", 1);
+    }
     if(relicIsEquipped("brass_keyring")){
       const sameTableSpent = relicApplyFreeChecks(key, 1, "same-table");
       if(sameTableSpent <= 0){
@@ -30286,12 +30942,19 @@ function relicHandleRewardReceipt(itemName, tableKey){
     delete run.looseGlassGlow[key];
     relicCheckUnlockById("loose_glass", "Returned to a table that still had something hidden in it.");
   }
+  relicSaveProgressState();
 }
 function relicHandleBossKeysCountChanged(prevCount, nextCount){
   if(!episodeCanTrack()) return;
   const run = relicGetRunState();
   const prev = Math.max(0, Number(prevCount || 0));
   const next = Math.max(0, Number(nextCount || 0));
+  const bossKeyGoal = Math.max(1, Number(getBossKeysRequiredForOpen() || BOSS_KEYS_COUNT || 3));
+  const runSimple = relicGetSimpleRunState();
+  if(next >= bossKeyGoal && !runSimple.pocketAceMilestones.bossOpen){
+    runSimple.pocketAceMilestones.bossOpen = true;
+    relicAwardSimpleRelic("pocket_ace", "Boss table opened for this run.", 1);
+  }
   if(next >= getBossKeysRequiredForOpen() && !run.bossUnlockCredited){
     run.bossUnlockCredited = true;
     state.relics.progress.bossUnlockRuns = Math.max(0, Number(state.relics.progress.bossUnlockRuns || 0)) + 1;
@@ -30316,7 +30979,7 @@ function relicHandleBossKeysCountChanged(prevCount, nextCount){
   const take = Math.max(1, Math.ceil(sorted.length * 0.5));
   run.finalLockedTables = sorted.slice(0, take);
   run.finalLockApplied = true;
-  try{ saveState(); }catch(_){}
+  relicSaveProgressState();
   try{ renderAll(); }catch(_){}
   try{ toast("warn", "FINAL LOCK", `${take} table${take === 1 ? "" : "s"} were sealed shut.`, 3600); }catch(_){}
 }
@@ -30331,7 +30994,7 @@ function relicRegisterBossVictory(){
     state.relics.carry.aftershockCharges = Math.max(0, Math.round(Number(state.relics.carry.aftershockCharges || 0))) + 1;
     try{ toast("good", "AFTERSHOCK STORED", "Next seed's boss will start at 85% HP.", 3600); }catch(_){}
   }
-  try{ saveState(); }catch(_){}
+  relicSaveProgressState();
   try{ renderAll(); }catch(_){}
 }
 function relicBossHpReductionPct(){
@@ -30349,6 +31012,7 @@ function renderRelicsOverlay(){
   const body = document.getElementById("relicsBody");
   if(!body) return;
   relicEnsureState();
+  const runSimple = relicGetSimpleRunState();
   const selectedId = relicGetSelectedId();
   const selected = relicGetDef(selectedId) || RELIC_DEFS[0];
   const unlocked = selected ? relicIsUnlocked(selected.id) : false;
@@ -30383,6 +31047,31 @@ function renderRelicsOverlay(){
                 <div class="relicPedestalName">${escapeHtml(equippedLabel)}</div>
                 <div class="relicPedestalState">${escapeHtml(stateText)}</div>
                 ${def ? `<button class="relicPedestalClear" type="button" data-relic-clear="${slot}">REMOVE</button>` : `<div class="relicPedestalHint">Click this pedestal to equip an unlocked ${escapeHtml(meta.label.toLowerCase())} relic.</div>`}
+              </div>
+            </div>`;
+          }).join("")}
+        </div>
+      </div>
+      <div class="relicsPane">
+        <div class="relicsPaneHd">
+          <div class="relicsPaneTtl">RUN RELICS</div>
+          <div class="relicsPaneSub">These are lightweight run charges that appear through normal play. Use them while the seed is active for quick routing help or support.</div>
+        </div>
+        <div class="relicRunRack">
+          ${SIMPLE_RELIC_DEFS.map((def)=>{
+            const charges = Math.max(0, Number(runSimple?.charges?.[def.id] || 0));
+            return `<div class="relicRunCard">
+              <div class="relicRunCardHd">
+                <div class="relicRunCardName">${escapeHtml(def.title)}</div>
+                <div class="relicRunCardEmoji">${escapeHtml(def.emoji)}</div>
+              </div>
+              <div class="relicRunCardBody">
+                <div class="relicRunCardDesc">${escapeHtml(def.effect)}</div>
+                <div class="relicRunCardEarn">${escapeHtml(def.earn)}</div>
+                <div class="relicRunCardMeta">
+                  <div class="relicRunCharge">Charges ${charges}</div>
+                  <button class="relicRunUseBtn" type="button" data-simple-relic-use="${escapeHtml(def.id)}" ${charges > 0 ? "" : "disabled"}>USE NOW</button>
+                </div>
               </div>
             </div>`;
           }).join("")}
@@ -30486,6 +31175,15 @@ function renderRelicsOverlay(){
   body.querySelectorAll("[data-relic-id]").forEach((el)=>{
     el.addEventListener("click", ()=>{
       relicSetSelectedId(String(el.getAttribute("data-relic-id") || ""));
+      renderRelicsOverlay();
+    });
+  });
+  body.querySelectorAll("[data-simple-relic-use]").forEach((el)=>{
+    el.addEventListener("click", (ev)=>{
+      try{ ev.stopPropagation(); }catch(_){}
+      const id = String(el.getAttribute("data-simple-relic-use") || "");
+      if(!id) return;
+      relicUseSimpleRelic(id);
       renderRelicsOverlay();
     });
   });
@@ -33642,6 +34340,20 @@ function compactConnectControlsLayout(panelConnect){
   const apGrid = panelConnect.querySelector(".apSettingsGrid");
   const connectRow = document.getElementById("apConnectBtn")?.closest(".cRow");
   if(connectRow) connectRow.classList.add("connectActionRow");
+  let versionCodeNote = document.getElementById("overlayVersionCodeNote");
+  if(!versionCodeNote){
+    versionCodeNote = document.createElement("div");
+    versionCodeNote.id = "overlayVersionCodeNote";
+    versionCodeNote.className = "cNote overlayVersionCodeNote";
+  }
+  versionCodeNote.innerHTML = `Version Code; <span class="code">${escapeHtml(String(FLPR_OVERLAY_VERSION_CODE || "unknown"))}</span>`;
+  let changelogNote = document.getElementById("overlayChangelogNote");
+  if(!changelogNote){
+    changelogNote = document.createElement("div");
+    changelogNote.id = "overlayChangelogNote";
+    changelogNote.className = "cNote overlayChangelogNote";
+  }
+  changelogNote.innerHTML = `<span class="label">Recent Changes;</span> ${escapeHtml(String(FLPR_OVERLAY_CHANGELOG || "No changelog entered for this build."))}`;
 
   const hintTitle = findControlsSectionTitle(panelConnect, "HINT SPOILER SOURCE");
   const hintNote = hintTitle?.nextElementSibling;
@@ -33699,7 +34411,7 @@ function compactConnectControlsLayout(panelConnect){
     return sec;
   };
 
-  makeSection(left, "AP Connection", [archLabel, apGrid, connectRow], { accent:"green", mini:"server / player / auth" });
+  makeSection(left, "AP Connection", [archLabel, apGrid, connectRow, versionCodeNote, changelogNote], { accent:"green", mini:"server / player / auth" });
   makeSection(left, "Hint Spoiler Source", [hintTitle, hintNote, hintCtlRow, hintLast, hintAutoRow, trackerRow], { accent:"gold", mini:"zip / txt / tracker mode" });
   makeSection(left, "Counters + Reconcile", [itemTitle, easyBlock, easyNote, medBlock, medNote, fragBlock, countTitle, countGrid], { accent:"blue", mini:"items / checks / delta" });
   makeSection(left, "Episode Tracking", [episodeTitle, episodeRow, episodeState], { accent:"green", mini:"records / FLPRP / achievements" });
@@ -34712,29 +35424,162 @@ function renderTower() {
   try { renderWorlds(); } catch (e) { try { renderAll(); } catch (_) {} }
 }
 
+const FLPR_OVERLAY_FAILURE_LOG_LS_KEY = "flpr_overlay_failure_log_v1";
+const FLPR_OVERLAY_FAILURE_CODES = Object.freeze({
+  blankAchievementsCursor: "blank-overlay|achievements-tab|cursor-missing"
+});
+function getActiveCursorOverrideClass(){
+  try{
+    const arr = Array.isArray(ACH_CURSOR_CLASSNAMES) ? ACH_CURSOR_CLASSNAMES : [];
+    for(const cls of arr){
+      if(cls && document.body.classList.contains(cls)) return cls;
+    }
+  }catch(_){}
+  return "";
+}
+function catalogOverlayFailure(code, extra){
+  try{
+    const raw = localStorage.getItem(FLPR_OVERLAY_FAILURE_LOG_LS_KEY);
+    const parsed = JSON.parse(raw || "[]");
+    const list = Array.isArray(parsed) ? parsed : [];
+    list.push({
+      code: String(code || "unknown"),
+      at: new Date().toISOString(),
+      selected: String(state?.selected || ""),
+      controlsTab: String(document.querySelector(".controlsTabBtn.active")?.dataset?.ctrlTab || ""),
+      cursorClass: getActiveCursorOverrideClass(),
+      extra: (extra && typeof extra === "object") ? extra : {}
+    });
+    while(list.length > 12) list.shift();
+    localStorage.setItem(FLPR_OVERLAY_FAILURE_LOG_LS_KEY, JSON.stringify(list));
+  }catch(_){}
+}
+function getOverlayStartupFailureSignature(){
+  try{
+    const worldsCount = document.querySelectorAll("#worlds [data-world]").length;
+    const selectedCount = document.querySelectorAll("#selectedBody .pentagonWrap, #selectedBody .bigBoss, #selectedBody .tableRow, #selectedBody .subtle").length;
+    const activeControlsTab = String(document.querySelector(".controlsTabBtn.active")?.dataset?.ctrlTab || "");
+    const activeCursorClass = getActiveCursorOverrideClass();
+    const cursorReady = document.body.classList.contains("flprCursorFollowerReady");
+    const follower = document.getElementById("flprCursorFollower");
+    const followerActive = !!window.__flprCursorFollowerState?.active;
+    const looksBlank = worldsCount === 0 && selectedCount === 0;
+    const cursorMissing = !!activeCursorClass && (!cursorReady || !follower || !followerActive);
+    if(!looksBlank) return null;
+    return {
+      code: FLPR_OVERLAY_FAILURE_CODES.blankAchievementsCursor,
+      worldsCount,
+      selectedCount,
+      activeControlsTab,
+      activeCursorClass,
+      cursorMissing,
+      looksLikeKnownCase: activeControlsTab === "achievements" || cursorMissing
+    };
+  }catch(_){}
+  return null;
+}
+function recoverOverlayStartupFailure(origin){
+  const sig = getOverlayStartupFailureSignature();
+  if(!sig) return false;
+  catalogOverlayFailure(sig.code, { origin: String(origin || "startup-check"), ...sig });
+  try{ console.warn("Overlay startup recovery engaged", sig); }catch(_){}
+  try{ syncNowPlayingIndexesToUnlockedTables({ render:false, save:false }); }catch(_){}
+  try{
+    if(!state?.worlds?.[state.selected]){
+      state.selected = getFirstPlayableWorldKey(state);
+    }
+  }catch(_){}
+  try{
+    if(!["connect","visuals","testing","achievements"].includes(String(localStorage.getItem(CONTROLS_TAB_LS) || ""))){
+      localStorage.setItem(CONTROLS_TAB_LS, "connect");
+    }
+    if(sig.looksLikeKnownCase) localStorage.setItem(CONTROLS_TAB_LS, "connect");
+  }catch(_){}
+  try{
+    document.body.classList.remove(...(Array.isArray(ACH_CURSOR_CLASSNAMES) ? ACH_CURSOR_CLASSNAMES : []));
+    document.body.classList.remove("flprCursorFollowerReady");
+  }catch(_){}
+  try{ achSyncCursorFollower(null); }catch(_){}
+  try{ renderAll(); }catch(_){}
+  try{ initControlsTabsLayout(); }catch(_){}
+  try{ wireControls(); }catch(_){}
+  try{ setControlsTab("connect"); }catch(_){}
+  try{
+    activeView = "tower";
+    setTabUI();
+  }catch(_){}
+  try{ achRestoreEquippedCursorOverride(); }catch(_){}
+  try{ renderAchievementsControlsPanel(); }catch(_){}
+  try{ achRenderControlsNoticeOverlay(); }catch(_){}
+  return true;
+}
+function scheduleOverlayStartupRecoveryCheck(origin, delayMs){
+  setTimeout(()=>{
+    try{ recoverOverlayStartupFailure(origin); }catch(_){}
+  }, Math.max(0, Math.round(Number(delayMs || 0) || 0)));
+}
+function flprRecordBootIssue(step, err){
+  try{
+    const raw = localStorage.getItem("flpr_overlay_boot_log_v1");
+    const parsed = JSON.parse(raw || "[]");
+    const list = Array.isArray(parsed) ? parsed : [];
+    list.push({
+      at: new Date().toISOString(),
+      step: String(step || "unknown"),
+      message: String(err?.message || err || "unknown"),
+      stack: String(err?.stack || "").split("\n").slice(0, 6).join("\n")
+    });
+    while(list.length > 20) list.shift();
+    localStorage.setItem("flpr_overlay_boot_log_v1", JSON.stringify(list));
+  }catch(_){}
+}
+function flprSafeBoot(step, fn, opts){
+  try{
+    return (typeof fn === "function") ? fn() : undefined;
+  }catch(err){
+    flprRecordBootIssue(step, err);
+    try{ console.error(`boot-step failed: ${step}`, err); }catch(_){}
+    if(opts?.onError){
+      try{ opts.onError(err); }catch(_){}
+    }
+  }
+  return undefined;
+}
+try{
+  window.addEventListener("error", (ev)=>{
+    try{ flprRecordBootIssue(`window-error:${String(ev?.filename || "inline")}:${Number(ev?.lineno || 0)}`, ev?.error || ev?.message || "window-error"); }catch(_){}
+  });
+  window.addEventListener("unhandledrejection", (ev)=>{
+    try{ flprRecordBootIssue("unhandledrejection", ev?.reason || "promise-rejection"); }catch(_){}
+  });
+}catch(_){}
+
 
 /* Init */
-saveState();
-scrubDeadBlobSessionMarkup(document);
-renderAll();
-bindOverlayUniversalClickFx();
-initDesignerInfoOverlay();
-initRelicsOverlay();
-initHintsTab();
-buildTileBannerControls();
-initControlsTabsLayout();
-wireControls();
-try{ setControlsTab("connect"); }catch(_){}
-try{
+flprSafeBoot("saveState", ()=> saveState());
+flprSafeBoot("scrubDeadBlobSessionMarkup", ()=> scrubDeadBlobSessionMarkup(document));
+flprSafeBoot("renderAll", ()=> renderAll());
+flprSafeBoot("bindOverlayUniversalClickFx", ()=> bindOverlayUniversalClickFx());
+flprSafeBoot("initDesignerInfoOverlay", ()=> initDesignerInfoOverlay());
+flprSafeBoot("initRelicsOverlay", ()=> initRelicsOverlay());
+flprSafeBoot("initHintsTab", ()=> initHintsTab());
+flprSafeBoot("buildTileBannerControls", ()=> buildTileBannerControls());
+flprSafeBoot("initControlsTabsLayout", ()=> initControlsTabsLayout());
+flprSafeBoot("wireControls", ()=> wireControls());
+flprSafeBoot("setControlsTab-connect", ()=> setControlsTab("connect"));
+flprSafeBoot("setTabUI-init", ()=>{
   activeView = "tower";
   setTabUI();
-}catch(_){}
-wireApControls();
-try{ renderAchievementsControlsPanel(); }catch(_){}
-try{ achRenderControlsNoticeOverlay(); }catch(_){}
-try{ renderHeaderTitleBadge(); }catch(_){}
-wireOpeningRandomizerIntro();
-bindSwapInteractionReset();
+});
+flprSafeBoot("wireApControls", ()=> wireApControls());
+flprSafeBoot("renderAchievementsControlsPanel", ()=> renderAchievementsControlsPanel());
+flprSafeBoot("achRenderControlsNoticeOverlay", ()=> achRenderControlsNoticeOverlay());
+flprSafeBoot("renderHeaderTitleBadge", ()=> renderHeaderTitleBadge());
+scheduleOverlayStartupRecoveryCheck("boot-early", 120);
+scheduleOverlayStartupRecoveryCheck("boot-late", 900);
+flprSafeBoot("wireOpeningRandomizerIntro", ()=> wireOpeningRandomizerIntro());
+flprSafeBoot("bindSwapInteractionReset", ()=> bindSwapInteractionReset());
+try{ if(window.__flprBootDiag) window.__flprBootDiag.bootDone = true; }catch(_){}
 setTimeout(()=>{
   try{ syncFlprBotCurrentTable(true); }catch(_){}
   try{ syncFlprBotBossKeys(true); }catch(_){}
