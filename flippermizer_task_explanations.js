@@ -167,8 +167,80 @@
       desc: "Shoot the Whirlpool when a mode is ready so one Whirlpool mode begins."
     },
     {
+      re: /^start any ([a-z0-9' ]+) mode$/,
+      desc: function(match){
+        const label = String(match[1] || "").trim();
+        return "Advance the table until a " + label + " mode can be started, then shoot the lit start shot to begin it.";
+      }
+    },
+    {
+      re: /^complete any ([a-z0-9' ]+) mode$/,
+      desc: function(match){
+        const label = String(match[1] || "").trim();
+        return "Start a " + label + " mode, then finish its required lit shots or objectives before the mode ends.";
+      }
+    },
+    {
+      re: /^complete (\d+) ([a-z0-9' ]+) modes? in one game$/,
+      desc: function(match){
+        const count = String(match[1] || "").trim();
+        const label = String(match[2] || "").trim();
+        return "Start and fully finish " + count + " " + label + " mode" + (count === "1" ? "" : "s") + " during the same game.";
+      }
+    },
+    {
+      re: /^start ([a-z0-9' ]+) multiball$/,
+      desc: function(match){
+        const label = String(match[1] || "").trim();
+        return "Qualify " + label + " Multiball by completing its lock or feature requirements, then shoot the lit start shot.";
+      }
+    },
+    {
+      re: /^qualify ([a-z0-9' ]+) multiball$/,
+      desc: function(match){
+        const label = String(match[1] || "").trim();
+        return "Advance the required features until " + label + " Multiball is lit and ready to start.";
+      }
+    },
+    {
       re: /^lock 1 ball at the juggler$/,
       desc: "Light the Juggler lock and shoot it once to lock a ball."
+    },
+    {
+      re: /^complete one ([a-z0-9' ]+) target bank$/,
+      desc: function(match){
+        const label = String(match[1] || "").trim();
+        return "Hit every target in the " + label + " bank once until the full bank is completed.";
+      }
+    },
+    {
+      re: /^complete one standup target bank$/,
+      desc: "Hit every lit standup target in that bank once to finish a full completion."
+    },
+    {
+      re: /^collect a ([a-z0-9' ]+) award$/,
+      desc: function(match){
+        const label = String(match[1] || "").trim();
+        return "Light the " + label + " award through that table's feature progression, then shoot the lit collect shot before it times out.";
+      }
+    },
+    {
+      re: /^collect a mystery award$/,
+      desc: "Light Mystery through the table's normal qualifying path, then shoot the lit Mystery scoop/lane to collect one award."
+    },
+    {
+      re: /^shoot the ([a-z0-9' ]+) shot 3 times$/,
+      desc: function(match){
+        const label = String(match[1] || "").trim();
+        return "Make the " + label + " shot three clean times. Consecutive shots are not usually required unless the table specifies it.";
+      }
+    },
+    {
+      re: /^shoot the ([a-z0-9' ]+) ramp 3 times$/,
+      desc: function(match){
+        const label = String(match[1] || "").trim();
+        return "Shoot the " + label + " ramp three times cleanly to finish the check.";
+      }
     },
     {
       re: /^complete the ducks targets$/,
@@ -459,12 +531,12 @@
     }
   ];
 
-  function resolveTaskExplanation(taskName){
+  function resolveTaskExplanationMeta(taskName){
     const rawTask = String(taskName || "").trim();
-    if(!rawTask) return "";
+    if(!rawTask) return { text:"", kind:"none", rawTask:"", key:"" };
     const key = normalizeTaskKey(rawTask);
 
-    if(EXACT[key]) return makeHowTo(EXACT[key]);
+    if(EXACT[key]) return { text: makeHowTo(EXACT[key]), kind:"exact", rawTask, key };
 
     const rawScoreMatch = rawTask.match(/^(easy|medium|hard)\s+score\s*\(([^)]+)\)\s*$/i);
     if(rawScoreMatch){
@@ -475,7 +547,7 @@
         : (tier === "medium"
           ? "Blend safe feeds with mode progress and controlled risk."
           : "Stack multipliers, modes, and multiball scoring before cashing out.");
-      return makeHowTo("Reach at least " + target + " points in a valid game on that table. " + tierHint);
+      return { text: makeHowTo("Reach at least " + target + " points in a valid game on that table. " + tierHint), kind:"score", rawTask, key };
     }
 
     for(let i = 0; i < RULES.length; i++){
@@ -485,43 +557,49 @@
       const out = (typeof rule.desc === "function")
         ? rule.desc(match, rawTask, key)
         : rule.desc;
-      if(out) return makeHowTo(out);
+      if(out) return { text: makeHowTo(out), kind:"rule", rawTask, key };
     }
 
     if(key.startsWith("complete ")){
-      return makeHowTo("Finish this objective once by completing all currently required lit shots/targets for it.");
+      return { text: makeHowTo("Finish this objective once by completing all currently required lit shots/targets for it."), kind:"prefix", rawTask, key };
     }
     if(key.startsWith("start ")){
-      return makeHowTo("Qualify this feature, then shoot the lit start shot once to begin it.");
+      return { text: makeHowTo("Qualify this feature, then shoot the lit start shot once to begin it."), kind:"prefix", rawTask, key };
     }
     if(key.startsWith("collect ")){
-      return makeHowTo("Play until this collect is lit, then shoot the collect shot while it is active.");
+      return { text: makeHowTo("Play until this collect is lit, then shoot the collect shot while it is active."), kind:"prefix", rawTask, key };
     }
     if(key.startsWith("shoot ")){
-      return makeHowTo("Make the named shot cleanly and confirm it registers on the table display.");
+      return { text: makeHowTo("Make the named shot cleanly and confirm it registers on the table display."), kind:"prefix", rawTask, key };
     }
     if(key.startsWith("hit ")){
-      return makeHowTo("Hit the named feature enough times for one valid completion.");
+      return { text: makeHowTo("Hit the named feature enough times for one valid completion."), kind:"prefix", rawTask, key };
     }
     if(key.startsWith("lock ")){
-      return makeHowTo("Shoot the currently lit lock shot and confirm the lock is counted.");
+      return { text: makeHowTo("Shoot the currently lit lock shot and confirm the lock is counted."), kind:"prefix", rawTask, key };
     }
     if(key.startsWith("light ")){
-      return makeHowTo("Complete prerequisite shots to light this feature, then collect/confirm it while lit.");
+      return { text: makeHowTo("Complete prerequisite shots to light this feature, then collect/confirm it while lit."), kind:"prefix", rawTask, key };
     }
     if(key.startsWith("make ")){
-      return makeHowTo("Execute the required shot sequence cleanly within the timing window.");
+      return { text: makeHowTo("Execute the required shot sequence cleanly within the timing window."), kind:"prefix", rawTask, key };
     }
     if(key.startsWith("reach ") || key.startsWith("raise ")){
-      return makeHowTo("Build progression on the relevant table feature until this threshold is met.");
+      return { text: makeHowTo("Build progression on the relevant table feature until this threshold is met."), kind:"prefix", rawTask, key };
     }
 
-    return makeHowTo("Complete this objective exactly as written one time on the table.");
+    return { text: makeHowTo("Complete this objective exactly as written one time on the table."), kind:"fallback", rawTask, key };
+  }
+
+  function resolveTaskExplanation(taskName){
+    return String(resolveTaskExplanationMeta(taskName).text || "");
   }
 
   root.FLPR_TASK_EXPLANATIONS = Object.freeze({
     normalizeTaskKey: normalizeTaskKey,
-    resolveTaskExplanation: resolveTaskExplanation
+    resolveTaskExplanation: resolveTaskExplanation,
+    resolveTaskExplanationMeta: resolveTaskExplanationMeta
   });
   root.flprGetTaskExplanation = resolveTaskExplanation;
+  root.flprGetTaskExplanationMeta = resolveTaskExplanationMeta;
 })(window);
