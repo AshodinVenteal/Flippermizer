@@ -56,8 +56,8 @@
       key: 'boss',
       label: 'World 6; Boss',
       lockedDefault: true,
-      emoji: '\u{1F451}',
-      overviewEmoji: ''
+      emoji: '\u{1F480}',
+      overviewEmoji: '\u{1F480}'
     }
   };
 
@@ -66,7 +66,7 @@
     { code:'AFM', slug:'attack_from_mars', name:'Attack from Mars', aliases:['AFM'] },
     { code:'WCS', slug:'world_cup_soccer', name:'World Cup Soccer', aliases:['Dog Soccer','WCS94'] },
     { code:'GET', slug:'the_getaway', name:'The Getaway', aliases:['Getaway'] },
-    { code:'ST13', slug:'star_trek_stern_2013', name:'Star Trek (Stern 2013)', aliases:['Star Trek Stern 2013','Star Trek Stern','Star Trek (Stern)'] },
+    { code:'ST13', slug:'star_trek_stern_2013', name:'Star Trek', aliases:['Star Trek Stern 2013','Star Trek Stern','Star Trek (Stern)','Star Trek (Stern 2013)'] },
 
     { code:'TOTAN', slug:'tales_of_the_arabian_nights', name:'Tales of the Arabian Nights', aliases:['TOTAN'] },
     { code:'FATH', slug:'fathom', name:'Fathom', aliases:[] },
@@ -156,7 +156,7 @@
     AFM:{ displayName:'Attack from Mars (Bally 1995)', manufacturer:'Bally', year:1995 },
     WCS:{ displayName:'World Cup Soccer (Bally 1994)', manufacturer:'Bally', year:1994 },
     GET:{ displayName:'The Getaway: High Speed II (Williams 1992)', manufacturer:'Williams', year:1992 },
-    ST13:{ displayName:'Star Trek (Stern 2013)', manufacturer:'Stern', year:2013 },
+    ST13:{ displayName:'Star Trek', manufacturer:'Stern', year:2013 },
     TOTAN:{ displayName:'Tales of the Arabian Nights (Williams 1996)', manufacturer:'Williams', year:1996 },
     FATH:{ displayName:'Fathom (Bally 1981)', manufacturer:'Bally', year:1981 },
     HOOK:{ displayName:'Hook (Data East 1992)', manufacturer:'Data East', year:1992 },
@@ -236,7 +236,7 @@
   };
 
   var TABLE_BANNER_REFS = {
-    MM: 'WorldsBanners/MedievalMadnessCover.png',
+    MM: 'WorldsBanners/BestiaryFlyers/MM.jpg',
     AFM: 'WorldsBanners/BestiaryFlyers/AFM.png',
     WCS: 'WorldsBanners/BestiaryFlyers/WCS.jpg',
     GET: 'WorldsBanners/BestiaryFlyers/GET.jpg',
@@ -303,11 +303,11 @@
     GOT: 'WorldsBanners/BestiaryFlyers/GOT.jpg',
     STRANG: 'WorldsBanners/BestiaryFlyers/STRANG.jpg',
     MANDO: 'WorldsBanners/BestiaryFlyers/MANDO.jpg',
-    TWD: 'WorldsBanners/BestiaryFlyers/TWD.jpg',
+    TWD: 'WorldsBanners/BestiaryFlyers/TWD.png',
     CORV: 'WorldsBanners/BestiaryFlyers/CORV.jpg',
     DHARRY: 'WorldsBanners/BestiaryFlyers/DHARRY.jpg',
     JDREDD: 'WorldsBanners/BestiaryFlyers/JDREDD.jpg',
-    DEADP: 'WorldsBanners/BestiaryFlyers/DEADP.jpg',
+    DEADP: 'WorldsBanners/BestiaryFlyers/DEADP.png',
     GHOST: 'WorldsBanners/BestiaryFlyers/GHOST.jpg',
     RBULL: 'WorldsBanners/BestiaryFlyers/RBULL.jpg',
     HUR: 'WorldsBanners/BestiaryFlyers/HUR.jpg',
@@ -350,7 +350,7 @@
     HGT: ['Spinner Sparring'],
     DP: ['Spinner Sparring'],
     PARA: ['Spinner Sparring'],
-    ROBO: ['Spinner Sparring','Badge, Bullets, and Chases'],
+    ROBO: ['Spinner Sparring','Badges and Chases'],
 
     GLIZ: ['Featured Designer - Python Anghelo'],
     JOK: ['Featured Designer - Python Anghelo'],
@@ -367,7 +367,7 @@
     HSPD: ['Featured Designer - Steve Ritchie'],
     NFEAR: ['Featured Designer - Steve Ritchie'],
     SMVE: ['Featured Designer - Steve Ritchie','Comic Book Collision'],
-    IMVE: ['Featured Designer - Steve Ritchie'],
+    IMVE: ['Featured Designer - Steve Ritchie','Modern Stern Spotlight'],
     ACDC: ['Featured Designer - Steve Ritchie','Rock Legends'],
 
     PARTY: ['Featured Designer - Dennis Nordman - Party Monsters'],
@@ -405,14 +405,17 @@
     TFTC: ['Monster Bash Deluxe'],
 
     GOT: ['Modern Stern Spotlight'],
-    STRANG: ['Modern Stern Spotlight'],
     MANDO: ['Modern Stern Spotlight'],
     TWD: ['Modern Stern Spotlight'],
 
-    CORV: ['Badge, Bullets, and Chases'],
-    DHARRY: ['Badge, Bullets, and Chases'],
-    JDREDD: ['Badge, Bullets, and Chases'],
-    PFOR: ['Midnight Classics','Badge, Bullets, and Chases'],
+    BK2K: ['Midnight Classics'],
+    BROSE: ['Midnight Classics'],
+    CORV: ['Badges and Chases'],
+    DHARRY: ['Badges and Chases'],
+    FH: ['Midnight Classics'],
+    FT: ['Midnight Classics'],
+    JDREDD: ['Badges and Chases'],
+    PFOR: ['Midnight Classics','Badges and Chases'],
 
     DEADP: ['Comic Book Collision'],
     GHOST: ['Comic Book Collision'],
@@ -792,3 +795,4 @@
 
   global.FLPR_TABLE_REPO = repo;
 })(typeof window !== 'undefined' ? window : this);
+

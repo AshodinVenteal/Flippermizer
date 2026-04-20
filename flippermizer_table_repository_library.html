@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -930,6 +930,16 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
     dennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
     featureddesignerdennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
     dennis_nordman_party_monsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
+    ninetiesmoviemayhem: "WorldsBanners/90sMovieMayhem.jpg",
+    "90smoviemayhem": "WorldsBanners/90sMovieMayhem.jpg",
+    scifisignal: "WorldsBanners/SciFiSignal.png",
+    rocklegends: "WorldsBanners/RockLegends.jpg",
+    monsterbashdeluxe: "WorldsBanners/MonsterBashDeluxe.jpg",
+    modernsternspotlight: "WorldsBanners/ModernSternSpotlight.png",
+    midnightclassics: "WorldsBanners/BestiaryFlyers/PFOR.jpg",
+    midnight_classics: "WorldsBanners/BestiaryFlyers/PFOR.jpg",
+    badgesandchases: "WorldsBanners/BadgesAndChases.png",
+    comicbookcollision: "WorldsBanners/ComicBookCollision.png",
     theshowmustgoon: "WorldsBanners/TheShowMustGoOn.png",
     the_show_must_go_on: "WorldsBanners/TheShowMustGoOn.png"
   });
@@ -1654,7 +1664,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
               const active = idx === currentIndex ? " active" : "";
               return `<button type="button" class="worldCarouselRosterItem${active}" data-carousel-index="${idx}">${esc(table.name)} <span style="color:#8ec6d8;">[${esc(table.code)}]</span></button>`;
             }).join("");
-            pageSpecial.innerHTML = `<div class="pageSpecialHd">WORLD GROUPS</div><div class="pageSpecialSub">Browse the current randomizer world families as a grid. This page reflects repository-backed group assignments, not just the currently loaded seed.</div><div class="worldDetail"><div class="worldDetailTop"><button type="button" class="worldDetailBack" id="worldDetailBack">BACK TO GRID</button><div class="worldDetailMeta"><div class="worldDetailHd">${esc(group.name)}</div><div class="worldDetailSub">${group.tables.length} tables in this group. Use the banner header to keep this world’s shared art synced with the overlay, then use the carousel below to update per-table flyers.</div></div></div><div class="worldDetailHero"><div class="worldDetailBannerStrip">${worldBannerHero}</div><div class="worldDetailStats">${statBlock}</div></div><div class="worldDetailMeta"><div class="worldCardListHd">TABLE CAROUSEL</div><div class="worldCardMeta">Click a flyer to replace it. Use the side arrows or roster buttons to move through this world’s table set.</div></div><div class="worldDetailCarousel"><button type="button" class="worldCarouselNav" id="worldCarouselPrev">PREV</button><div class="worldCarouselViewport"><div class="worldCarouselTop"><div><div class="worldCarouselTitle">${esc(currentTable?.name || "")}</div><div class="worldCarouselCode">Code; ${esc(currentTable?.code || "")}${currentEntry ? ` | Viewed ${Number(currentEntry.stats?.viewed || 0)}x | Cleared ${Number(currentEntry.stats?.cleared || 0)} | Balls ${Number(currentEntry.stats?.balls || 0)}` : ""}</div></div><div class="worldCarouselPos">TABLE ${currentIndex + 1} / ${tableCount}</div></div><div class="worldCarouselStage"><div class="worldCarouselFlyerWrap"><button type="button" class="worldCarouselFlyer${currentBannerRef ? "" : " empty"}" id="worldCarouselFlyer" data-table-code="${esc(currentTable?.code || "")}"${currentBannerRef ? ` style="background-image:url('${esc(currentBannerRef)}')"` : ""}></button><div class="worldCarouselFlyerNote">Shared flyer override path. Updating this flyer will carry through to the overlay and other Bestiary views.</div></div><div class="worldCarouselPanel"><div class="worldCardStats">${currentEntry ? [
+            pageSpecial.innerHTML = `<div class="pageSpecialHd">WORLD GROUPS</div><div class="pageSpecialSub">Browse the current randomizer world families as a grid. This page reflects repository-backed group assignments, not just the currently loaded seed.</div><div class="worldDetail"><div class="worldDetailTop"><button type="button" class="worldDetailBack" id="worldDetailBack">BACK TO GRID</button><div class="worldDetailMeta"><div class="worldDetailHd">${esc(group.name)}</div><div class="worldDetailSub">${group.tables.length} tables in this group. Use the banner header to keep this world�s shared art synced with the overlay, then use the carousel below to update per-table flyers.</div></div></div><div class="worldDetailHero"><div class="worldDetailBannerStrip">${worldBannerHero}</div><div class="worldDetailStats">${statBlock}</div></div><div class="worldDetailMeta"><div class="worldCardListHd">TABLE CAROUSEL</div><div class="worldCardMeta">Click a flyer to replace it. Use the side arrows or roster buttons to move through this world�s table set.</div></div><div class="worldDetailCarousel"><button type="button" class="worldCarouselNav" id="worldCarouselPrev">PREV</button><div class="worldCarouselViewport"><div class="worldCarouselTop"><div><div class="worldCarouselTitle">${esc(currentTable?.name || "")}</div><div class="worldCarouselCode">Code; ${esc(currentTable?.code || "")}${currentEntry ? ` | Viewed ${Number(currentEntry.stats?.viewed || 0)}x | Cleared ${Number(currentEntry.stats?.cleared || 0)} | Balls ${Number(currentEntry.stats?.balls || 0)}` : ""}</div></div><div class="worldCarouselPos">TABLE ${currentIndex + 1} / ${tableCount}</div></div><div class="worldCarouselStage"><div class="worldCarouselFlyerWrap"><button type="button" class="worldCarouselFlyer${currentBannerRef ? "" : " empty"}" id="worldCarouselFlyer" data-table-code="${esc(currentTable?.code || "")}"${currentBannerRef ? ` style="background-image:url('${esc(currentBannerRef)}')"` : ""}></button><div class="worldCarouselFlyerNote">Shared flyer override path. Updating this flyer will carry through to the overlay and other Bestiary views.</div></div><div class="worldCarouselPanel"><div class="worldCardStats">${currentEntry ? [
               statTile("Viewed", String(Number(currentEntry.stats?.viewed || 0))),
               statTile("Checks Cleared", String(Number(currentEntry.stats?.cleared || 0))),
               statTile("Checks Left", String(Number(currentEntry.stats?.left || 0))),
@@ -1770,7 +1780,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
         ? rel.map((r)=>{
             const t = tableByCode[r.code];
             const role = r.role ? ` | ${esc(r.role)}` : "";
-            return `<div class="achItem unlocked"><span class="n">🕹 ${esc(r.name)}${role}</span><span class="d">Viewed ${Number(t?.stats?.viewed || 0)}x | Cleared ${Number(t?.stats?.cleared || 0)} | Balls ${Number(t?.stats?.balls || 0)}</span></div>`;
+            return `<div class="achItem unlocked"><span class="n">?? ${esc(r.name)}${role}</span><span class="d">Viewed ${Number(t?.stats?.viewed || 0)}x | Cleared ${Number(t?.stats?.cleared || 0)} | Balls ${Number(t?.stats?.balls || 0)}</span></div>`;
           }).join("")
         : `<div class="achItem">No linked tables found for this designer in repository data.</div>`;
       const src = Array.isArray(e.sources) ? e.sources : [];
@@ -1810,7 +1820,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
             const nm = String(d?.title || id || "Achievement");
             const desc = achDescFor(achStore, d);
             const editBtn = achEditMode ? `<div class="editRow"><button class="miniEdit" data-ach-edit="${esc(id)}" type="button">EDIT DESC</button></div>` : "";
-            return `<div class="${cls}"><span class="n">${u ? "🏆" : "⬚"} ${esc(nm)}</span>${desc ? `<span class="d">${esc(desc)}</span>` : ""}${editBtn}</div>`;
+            return `<div class="${cls}"><span class="n">${u ? "??" : "?"} ${esc(nm)}</span>${desc ? `<span class="d">${esc(desc)}</span>` : ""}${editBtn}</div>`;
           }).join("")
         : `<div class="achItem">No table trophies cataloged yet. Connect overlay to AP and load checks first.</div>`;
       achRandomizerList.innerHTML = randomDefs.length
@@ -1821,7 +1831,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
             const nm = String(d?.title || id || "Achievement");
             const desc = achDescFor(achStore, d);
             const editBtn = achEditMode ? `<div class="editRow"><button class="miniEdit" data-ach-edit="${esc(id)}" type="button">EDIT DESC</button></div>` : "";
-            return `<div class="${cls}"><span class="n">${u ? "🏆" : "⬚"} ${esc(nm)}</span>${desc ? `<span class="d">${esc(desc)}</span>` : ""}${editBtn}</div>`;
+            return `<div class="${cls}"><span class="n">${u ? "??" : "?"} ${esc(nm)}</span>${desc ? `<span class="d">${esc(desc)}</span>` : ""}${editBtn}</div>`;
           }).join("")
         : `<div class="achItem">No randomizer trophies cataloged yet.</div>`;
       if(achEditMode){
@@ -1917,3 +1927,4 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
 </script>
 </body>
 </html>
+
