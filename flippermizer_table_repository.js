@@ -139,7 +139,7 @@
     { code:'TFTC', slug:'tales_from_the_crypt', name:'Tales from the Crypt', aliases:[] },
     { code:'GOT', slug:'game_of_thrones', name:'Game of Thrones', aliases:[] },
     { code:'STRANG', slug:'stranger_things', name:'Stranger Things', aliases:[] },
-    { code:'MANDO', slug:'the_mandalorian', name:'The Mandalorian', aliases:['Mandalorian'] },
+    { code:'LOTR', slug:'lord_of_the_rings', name:'Lord of the Rings', aliases:['The Lord of the Rings','LOTR'] },
     { code:'TWD', slug:'the_walking_dead', name:'The Walking Dead', aliases:['Walking Dead'] },
     { code:'CORV', slug:'corvette', name:'Corvette', aliases:[] },
     { code:'DHARRY', slug:'dirty_harry', name:'Dirty Harry', aliases:[] },
@@ -224,7 +224,7 @@
     TFTC:{ displayName:'Tales from the Crypt (Data East 1993)', manufacturer:'Data East', year:1993 },
     GOT:{ displayName:'Game of Thrones (Stern 2015)', manufacturer:'Stern', year:2015 },
     STRANG:{ displayName:'Stranger Things (Stern 2019)', manufacturer:'Stern', year:2019 },
-    MANDO:{ displayName:'The Mandalorian (Stern 2021)', manufacturer:'Stern', year:2021 },
+    LOTR:{ displayName:'Lord of the Rings (Stern 2003)', manufacturer:'Stern', year:2003 },
     TWD:{ displayName:'The Walking Dead (Stern 2014)', manufacturer:'Stern', year:2014 },
     CORV:{ displayName:'Corvette (Midway 1994)', manufacturer:'Midway', year:1994 },
     DHARRY:{ displayName:'Dirty Harry (Williams 1995)', manufacturer:'Williams', year:1995 },
@@ -302,7 +302,6 @@
     TFTC: 'WorldsBanners/BestiaryFlyers/TFTC.jpg',
     GOT: 'WorldsBanners/BestiaryFlyers/GOT.jpg',
     STRANG: 'WorldsBanners/BestiaryFlyers/STRANG.jpg',
-    MANDO: 'WorldsBanners/BestiaryFlyers/MANDO.jpg',
     TWD: 'WorldsBanners/BestiaryFlyers/TWD.png',
     CORV: 'WorldsBanners/BestiaryFlyers/CORV.jpg',
     DHARRY: 'WorldsBanners/BestiaryFlyers/DHARRY.jpg',
@@ -341,7 +340,7 @@
     MCAST: ['Malt Desniy World'],
 
     ATEAM: ['Vintage Television'],
-    BAT66: ['Retired - PUP Pack Required'],
+    BAT66: ['Vintage Television','Comic Book Collision'],
     HHEAT: ['Vintage Television'],
     BAYW: ['Vintage Television'],
     STTNG: ['Vintage Television'],
@@ -393,8 +392,8 @@
     ID4: ['Sci-Fi Signal'],
     XFILES: ['Sci-Fi Signal'],
 
-    AERO: ['Retired - PUP Pack Required'],
-    BEAT: ['Retired - PUP Pack Required'],
+    AERO: ['Rock Legends'],
+    BEAT: ['Rock Legends'],
     ELVIS: ['Rock Legends'],
     RSTON: ['Rock Legends'],
 
@@ -405,7 +404,7 @@
     TFTC: ['Monster Bash Deluxe'],
 
     GOT: ['Modern Stern Spotlight'],
-    MANDO: ['Modern Stern Spotlight'],
+    LOTR: ['Modern Stern Spotlight'],
     TWD: ['Modern Stern Spotlight'],
 
     BK2K: ['Midnight Classics'],
