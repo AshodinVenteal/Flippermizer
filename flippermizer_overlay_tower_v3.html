@@ -1226,6 +1226,205 @@ body.bonusPinballDim .capture{
   opacity: .95;
   animation-duration: 4200ms;
 }
+.hintReveal.hangman{
+  border-color: rgba(255,210,96,.70);
+  background:
+    radial-gradient(circle at 78% 12%, rgba(255,210,96,.18), rgba(0,0,0,0) 44%),
+    linear-gradient(132deg, rgba(255,210,96,.12), rgba(0,0,0,0) 34%),
+    linear-gradient(312deg, rgba(0,186,255,.10), rgba(0,0,0,0) 42%),
+    linear-gradient(180deg, rgba(16,12,4,.96), rgba(0,18,30,.94));
+  box-shadow:
+    0 0 0 2px rgba(8,10,14,.82) inset,
+    0 0 0 6px rgba(62,48,20,.58) inset,
+    0 10px 26px rgba(0,0,0,.46),
+    0 0 28px rgba(255,210,96,.20),
+    0 0 24px rgba(0,217,255,.14);
+}
+.hintHangmanCard{
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+.hintHangmanKicker{
+  font-size: clamp(8px, .9vw, 11px);
+  color: rgba(255,226,142,.94);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(255,210,96,.22);
+}
+.hintHangmanClue{
+  font-size: clamp(12px, 1.25vw, 16px);
+  line-height: 1.4;
+  color: rgba(228,246,255,.92);
+}
+.hintHangmanWord{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 7px;
+  align-items: center;
+  justify-content: center;
+  min-height: 68px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.30);
+  border: 1px solid rgba(255,226,142,.26);
+}
+.hintHangmanLetter{
+  min-width: 24px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 3px solid rgba(255,226,142,.78);
+  color: rgba(255,246,216,.98);
+  font-size: clamp(18px, 2vw, 28px);
+  text-shadow: 0 0 12px rgba(255,210,96,.24);
+}
+.hintHangmanLetter.space{
+  min-width: 16px;
+  border-bottom-color: transparent;
+}
+.hintHangmanLetter.punct{
+  min-width: 14px;
+  border-bottom-color: transparent;
+}
+.hintHangmanStatus{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: clamp(8px, .9vw, 11px);
+  color: rgba(214,238,246,.86);
+}
+.hintHangmanBadge{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.28);
+  border: 1px solid rgba(255,226,142,.30);
+}
+.hintHangmanBadge.warn{
+  color: rgba(255,188,204,.96);
+  border-color: rgba(255,108,144,.42);
+}
+.hintHangmanCooldowns{
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 9px 11px 10px;
+  border-radius: 16px;
+  border: 2px solid rgba(0,217,255,.30);
+  background:
+    radial-gradient(circle at 12% 20%, rgba(0,217,255,.18), transparent 28%),
+    linear-gradient(135deg, rgba(7,21,31,.82), rgba(2,8,14,.66));
+  box-shadow:
+    0 0 18px rgba(0,217,255,.12),
+    inset 0 0 18px rgba(0,0,0,.24);
+}
+.hintHangmanCooldownTitle{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(11px, 1.15vw, 15px);
+  color: rgba(255,232,158,.94);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px rgba(255,226,142,.18);
+}
+.hintHangmanCooldownTitle::before{
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(34,255,136,.92);
+  box-shadow: 0 0 12px rgba(34,255,136,.42);
+}
+.hintHangmanCooldownList{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+}
+.hintHangmanCooldownItem{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 11px;
+  min-width: 128px;
+  padding: 8px 10px 8px 12px;
+  border-radius: 14px;
+  border: 2px solid rgba(0,217,255,.34);
+  background:
+    linear-gradient(180deg, rgba(14,46,62,.86), rgba(5,16,24,.80)),
+    rgba(0,0,0,.26);
+  color: rgba(224,249,255,.94);
+  font-size: clamp(12px, 1.22vw, 17px);
+  box-shadow:
+    0 0 12px rgba(0,217,255,.10),
+    inset 0 0 12px rgba(0,0,0,.22);
+}
+.hintHangmanCooldownItem:not(:last-child)::after{
+  content: ">";
+  position: absolute;
+  right: -13px;
+  top: 50%;
+  transform: translateY(-52%);
+  color: rgba(255,226,142,.84);
+  font-size: 16px;
+  font-weight: 900;
+  text-shadow: 0 0 8px rgba(255,226,142,.35);
+}
+.hintHangmanCooldownItem strong{
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255,232,158,.98);
+  letter-spacing: .03em;
+}
+.hintHangmanCooldownItem span{
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.34);
+  color: rgba(139,240,255,.98);
+  font-size: 1.10em;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: inset 0 0 8px rgba(0,0,0,.22);
+}
+.hintHangmanCooldownItem.ready{
+  color: rgba(182,255,206,.96);
+  border-color: rgba(34,255,136,.62);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(34,255,136,.24), transparent 55%),
+    linear-gradient(180deg, rgba(20,70,42,.88), rgba(4,22,14,.82));
+  box-shadow:
+    0 0 18px rgba(34,255,136,.24),
+    inset 0 0 14px rgba(34,255,136,.10);
+  animation: hintHangmanReadyPulse 900ms ease-in-out infinite;
+}
+.hintHangmanCooldownItem.ready span{
+  color: rgba(202,255,218,.98);
+  background: rgba(34,255,136,.18);
+}
+@keyframes hintHangmanReadyPulse{
+  0%,100%{ transform: translateY(0) scale(1); }
+  50%{ transform: translateY(-1px) scale(1.035); }
+}
+.hintHangmanChat{
+  font-size: clamp(19px, 2.16vw, 24px);
+  line-height: 1.22;
+  color: rgba(216,244,252,.92);
+}
+.hintHangmanChat strong{
+  color: rgba(255,226,142,.98);
+}
 .hintPrelude{
   font-size: clamp(10px, 1.05vw, 12px);
   line-height: 1.35;
@@ -2488,6 +2687,60 @@ body.bonusPinballDim .capture{
   z-index: 4;
   pointer-events:none;
 }
+.tile.checksCompleteOverview{
+  border-color: rgba(34,255,136,.92);
+  box-shadow:
+    0 0 0 2px rgba(34,255,136,.30),
+    0 0 24px rgba(34,255,136,.24),
+    inset 0 0 0 1px rgba(190,255,216,.20);
+}
+.tile.checksCompleteOverview .tileBanner{
+  filter: saturate(1.12) contrast(1.04) brightness(.82);
+}
+.checksCompleteOverlay{
+  position:absolute;
+  inset:8px;
+  z-index:7;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px;
+  border-radius:16px;
+  border:2px solid rgba(34,255,136,.78);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(190,255,216,.24), transparent 42%),
+    linear-gradient(180deg, rgba(4,58,30,.84), rgba(2,18,12,.86));
+  color:rgba(218,255,229,.98);
+  text-align:center;
+  font-size:clamp(8px, .86vw, 12px);
+  line-height:1.24;
+  letter-spacing:.10em;
+  text-transform:uppercase;
+  text-shadow:0 0 12px rgba(34,255,136,.34);
+  box-shadow:
+    0 0 22px rgba(34,255,136,.24),
+    inset 0 0 18px rgba(34,255,136,.10);
+  pointer-events:none;
+  opacity:.94;
+}
+.checksCompleteOverlay::before,
+.checksCompleteOverlay::after{
+  content:"✓";
+  position:absolute;
+  top:8px;
+  color:rgba(182,255,206,.90);
+  font-size:14px;
+  text-shadow:0 0 10px rgba(34,255,136,.42);
+}
+.checksCompleteOverlay::before{ left:10px; }
+.checksCompleteOverlay::after{ right:10px; }
+.checksCompleteOverlay .checksCompleteOverlayText{
+  position:relative;
+  z-index:1;
+}
+.checksCompleteOverview .checksLeft{
+  display:none;
+}
 .tile.bossTableOverview{
   overflow: visible;
   isolation: isolate;
@@ -3538,6 +3791,16 @@ body.bonusPinballDim .capture{
     inset 0 0 0 1px rgba(220,255,228,.08),
     0 0 24px rgba(34,255,136,.18);
 }
+.checksCompleteBadgeText{
+  position:relative;
+  z-index:2;
+  color: rgba(244,255,248,.99);
+  filter: brightness(1.16) saturate(1.08);
+  text-shadow:
+    0 0 8px rgba(226,255,236,.78),
+    0 0 24px rgba(34,255,136,.62),
+    0 3px 0 rgba(0,20,8,.70);
+}
 #viewChecks .tableHead .tableName .checksCompleteBadge{
   position:absolute;
   inset:0;
@@ -3993,7 +4256,7 @@ body.bonusPinballDim .capture{
   display:flex;
   flex-direction:column;
   gap:10px;
-  z-index: 100120;
+  z-index: 2147483000;
   pointer-events:none;
 }
 .toast{
@@ -4018,6 +4281,39 @@ body.bonusPinballDim .capture{
 .toast.bad{ border-color: rgba(255,77,109,0.95); background:
     radial-gradient(120% 140% at 25% 0%, rgba(255,77,109,0.16), rgba(0,0,0,0) 60%),
     linear-gradient(180deg, rgba(44,10,18,0.82), rgba(2,8,16,0.72));
+}
+.toast.besiegedToast{
+  position:fixed;
+  top:calc(16px + (var(--captureH) * .30));
+  left:calc(16px + (var(--captureW) * .50));
+  width:min(720px, calc(var(--captureW) - 72px));
+  transform:translateX(-50%) translateY(-18px) scale(.96);
+  z-index:2147483200;
+  border-width:3px;
+  border-color:rgba(255,202,118,.94);
+  background:
+    radial-gradient(160% 180% at 50% 0%, rgba(255,198,92,.28), transparent 48%),
+    radial-gradient(140% 180% at 50% 100%, rgba(255,52,88,.24), transparent 58%),
+    linear-gradient(180deg, rgba(72,16,10,.98), rgba(18,4,8,.98));
+  box-shadow:
+    0 18px 42px rgba(0,0,0,.52),
+    0 0 34px rgba(255,72,98,.34),
+    inset 0 0 0 1px rgba(255,255,255,.12);
+  text-align:center;
+  animation: besiegedToastIn 320ms cubic-bezier(.2,.9,.2,1) forwards;
+}
+.toast.besiegedToast .k{
+  color:rgba(255,232,184,.94);
+  font-size:10px;
+  letter-spacing:1.5px;
+}
+.toast.besiegedToast .v{
+  color:rgba(255,246,232,.98);
+  font-size:11px;
+  line-height:1.48;
+}
+@keyframes besiegedToastIn{
+  to{ transform:translateX(-50%) translateY(0) scale(1); opacity:1; }
 }
 .achievementStack{
   position:absolute;
@@ -5914,27 +6210,59 @@ body.chromaBlue .bossKeyCard::before{
 }
 .pentaCard.besiegedTarget{
   overflow: visible;
+  width:min(390px, 74vw);
+  height:390px;
   border-color: rgba(255,86,118,.92);
   background:
-    linear-gradient(180deg, rgba(34,10,14,.98), rgba(10,3,6,.98));
+    radial-gradient(170px 115px at 72% 12%, rgba(173,207,255,.22), transparent 66%),
+    radial-gradient(15px 15px at 17% 18%, rgba(255,255,235,.86), rgba(213,230,255,.24) 42%, transparent 70%),
+    linear-gradient(180deg, rgba(5,12,38,.98) 0%, rgba(14,11,36,.98) 46%, rgba(34,10,14,.98) 100%);
   box-shadow:
     0 0 0 1px rgba(255,132,156,.22) inset,
     0 0 26px rgba(255,54,98,.26),
     0 0 58px rgba(157,6,40,.22);
   animation: besiegedTargetPulseKF 1500ms ease-in-out infinite;
 }
+.pentaCard.besiegedTarget .pentaTitle{
+  z-index:9;
+  background:linear-gradient(180deg, rgba(4,12,34,.88), rgba(12,4,18,.72));
+  border-radius:14px;
+  padding:9px 10px;
+  box-shadow:0 10px 24px rgba(0,0,0,.24);
+}
+.pentaCard .besiegedCastleAura{
+  content:"";
+  position:absolute;
+  inset:-34px -30px -58px;
+  z-index:5;
+  pointer-events:none;
+  border-radius:34px;
+  background:
+    radial-gradient(62px 62px at 77% 13%, rgba(226,238,255,.88), rgba(154,184,255,.22) 42%, transparent 68%),
+    radial-gradient(1.8px 1.8px at 12% 15%, rgba(255,255,255,.9), transparent 72%),
+    radial-gradient(1.5px 1.5px at 31% 26%, rgba(255,255,255,.72), transparent 72%),
+    radial-gradient(1.8px 1.8px at 55% 19%, rgba(255,255,255,.78), transparent 72%),
+    radial-gradient(1.3px 1.3px at 90% 31%, rgba(255,255,255,.66), transparent 72%),
+    linear-gradient(180deg, rgba(3,9,32,.94), rgba(13,13,44,.74) 52%, rgba(36,14,24,.38)),
+    radial-gradient(68px 44px at 16% 86%, rgba(255,160,74,.34), transparent 70%),
+    radial-gradient(78px 50px at 82% 75%, rgba(255,70,48,.28), transparent 72%),
+    radial-gradient(160px 70px at 50% 112%, rgba(16,16,28,.78), transparent 70%);
+  filter:drop-shadow(0 0 18px rgba(255,64,86,.18));
+  animation: besiegedCastleSettleKF 780ms cubic-bezier(.2,.9,.2,1) both;
+}
 .pentaCard.besiegedTarget .tableBannerOverlay{
   background:
-    linear-gradient(180deg, rgba(18,5,8,.24), rgba(8,0,4,.74)),
-    linear-gradient(90deg, rgba(88,84,84,.30), transparent 22%, transparent 78%, rgba(88,84,84,.30)),
+    linear-gradient(180deg, rgba(4,10,34,.46), rgba(8,0,4,.76)),
+    radial-gradient(190px 120px at 72% 10%, rgba(185,210,255,.22), transparent 68%),
+    linear-gradient(90deg, rgba(20,42,78,.34), transparent 22%, transparent 78%, rgba(42,18,46,.34)),
     repeating-linear-gradient(90deg, rgba(178,190,188,.16) 0 12px, rgba(42,34,36,.20) 12px 24px),
     radial-gradient(240px 160px at 50% 50%, rgba(255,84,112,.24), transparent 72%);
 }
 .pentaCard .besiegedCastleCrown{
   position:absolute;
-  left:18px;
-  right:18px;
-  top:-16px;
+  left:38px;
+  right:38px;
+  top:66px;
   height:28px;
   z-index:6;
   pointer-events:none;
@@ -5953,10 +6281,10 @@ body.chromaBlue .bossKeyCard::before{
 .pentaCard .besiegedCastleGate{
   position:absolute;
   left:50%;
-  bottom:3px;
+  bottom:70px;
   z-index:6;
-  width:54px;
-  height:42px;
+  width:80px;
+  height:70px;
   transform:translateX(-50%);
   pointer-events:none;
   border:1px solid rgba(255,202,142,.24);
@@ -5970,9 +6298,69 @@ body.chromaBlue .bossKeyCard::before{
     0 -8px 18px rgba(255,48,86,.10);
   opacity:.72;
 }
+.pentaCard .besiegedCastleTower{
+  position:absolute;
+  top:86px;
+  z-index:6;
+  width:54px;
+  height:150px;
+  pointer-events:none;
+  border:1px solid rgba(255,194,142,.28);
+  border-radius:10px 10px 5px 5px;
+  background:
+    linear-gradient(180deg, rgba(126,105,88,.88), rgba(45,30,28,.94)),
+    repeating-linear-gradient(180deg, rgba(255,245,205,.10) 0 8px, rgba(14,8,8,.18) 8px 16px);
+  box-shadow:inset 0 0 16px rgba(0,0,0,.34), 0 0 18px rgba(255,70,96,.12);
+}
+.pentaCard .besiegedCastleTower.left{ left:18px; }
+.pentaCard .besiegedCastleTower.right{ right:18px; }
+.pentaCard .besiegedCastleTower::before{
+  content:"";
+  position:absolute;
+  left:-3px;
+  right:-3px;
+  top:-12px;
+  height:18px;
+  border-radius:8px 8px 2px 2px;
+  background:
+    linear-gradient(180deg, rgba(146,126,102,.96), rgba(55,35,31,.96));
+  clip-path: polygon(0 100%, 0 30%, 22% 30%, 22% 0, 42% 0, 42% 30%, 58% 30%, 58% 0, 78% 0, 78% 30%, 100% 30%, 100% 100%);
+}
+.pentaCard .besiegedCastleFlag{
+  position:absolute;
+  top:26px;
+  left:50%;
+  z-index:7;
+  width:48px;
+  height:28px;
+  transform:translateX(-50%);
+  pointer-events:none;
+}
+.pentaCard .besiegedCastleFlag::before{
+  content:"";
+  position:absolute;
+  left:8px;
+  top:0;
+  bottom:-18px;
+  width:2px;
+  background:rgba(255,230,170,.78);
+  box-shadow:0 0 8px rgba(255,214,120,.30);
+}
+.pentaCard .besiegedCastleFlag::after{
+  content:"";
+  position:absolute;
+  left:10px;
+  top:2px;
+  width:34px;
+  height:18px;
+  background:linear-gradient(90deg, rgba(255,68,94,.96), rgba(255,174,82,.90));
+  clip-path:polygon(0 0, 100% 12%, 72% 50%, 100% 88%, 0 100%);
+  filter:drop-shadow(0 0 8px rgba(255,88,100,.32));
+  animation: besiegedFlagKF 720ms ease-in-out infinite;
+}
 .pentaCard .besiegedArmyBadge{
   position:absolute;
-  top:12px;
+  top:54px;
   right:12px;
   z-index:8;
   display:flex;
@@ -5991,9 +6379,9 @@ body.chromaBlue .bossKeyCard::before{
 .pentaCard .besiegedStory{
   position:absolute;
   left:50%;
-  bottom:calc(100% + 20px);
+  bottom:calc(100% + 50px);
   z-index:12;
-  width:min(330px, 136%);
+  width:min(430px, 148%);
   transform:translateX(-50%);
   padding:11px 13px;
   border-radius: 15px;
@@ -6026,14 +6414,26 @@ body.chromaBlue .bossKeyCard::before{
 }
 .pentaCard .besiegedArmyField{
   position:absolute;
-  left:-22px;
-  right:-22px;
-  top:calc(100% + 4px);
-  height:66px;
+  left:12px;
+  right:12px;
+  top:calc(100% - 88px);
+  height:96px;
   z-index:7;
   pointer-events:none;
   overflow:hidden;
   filter: drop-shadow(0 0 6px rgba(255,94,120,.24));
+}
+.pentaCard .besiegedArmyField.armyGoblins{
+  filter: drop-shadow(0 0 7px rgba(95,255,142,.22));
+}
+.pentaCard .besiegedArmyField.armyKnights{
+  filter: drop-shadow(0 0 7px rgba(210,230,255,.24));
+}
+.pentaCard .besiegedArmyField.armyGhosts{
+  filter: drop-shadow(0 0 9px rgba(160,218,255,.32));
+}
+.pentaCard .besiegedArmyField.armyMachines{
+  filter: drop-shadow(0 0 8px rgba(255,182,72,.28));
 }
 .pentaCard .besiegedArmyField::before{
   content:"";
@@ -6069,12 +6469,47 @@ body.chromaBlue .bossKeyCard::before{
   text-shadow:0 0 8px rgba(255,172,92,.44);
   animation-name: besiegedArrowVolleyKF;
 }
+.pentaCard .besiegedSiegeFx{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% - 162px);
+  height:160px;
+  z-index:8;
+  pointer-events:none;
+  overflow:visible;
+}
+.pentaCard .besiegedProjectile,
+.pentaCard .besiegedExplosion{
+  position:absolute;
+  line-height:1;
+  pointer-events:none;
+}
+.pentaCard .besiegedProjectile{
+  bottom:8px;
+  font-size:20px;
+  filter:drop-shadow(0 0 8px rgba(255,190,92,.52));
+  animation: besiegedProjectileKF 1320ms ease-in infinite;
+}
+.pentaCard .besiegedProjectile.shot1{ left:8%; animation-delay:-80ms; }
+.pentaCard .besiegedProjectile.shot2{ right:11%; animation-delay:-680ms; animation-duration:1540ms; }
+.pentaCard .besiegedProjectile.shot3{ left:44%; animation-delay:-1040ms; animation-duration:1760ms; }
+.pentaCard .besiegedExplosion{
+  top:4px;
+  font-size:24px;
+  opacity:0;
+  filter:drop-shadow(0 0 12px rgba(255,112,74,.58));
+  animation: besiegedExplosionKF 1420ms steps(2, end) infinite;
+}
+.pentaCard .besiegedExplosion.boom1{ left:12%; animation-delay:-260ms; }
+.pentaCard .besiegedExplosion.boom2{ right:15%; animation-delay:-860ms; font-size:28px; }
+.pentaCard .besiegedExplosion.boom3{ left:49%; animation-delay:-1180ms; font-size:22px; }
 .pentaCard .besiegedTargetBtn{
   position:absolute;
   left:50%;
-  bottom:14px;
+  bottom:18px;
   z-index:10;
-  min-width: min(96%, 252px);
+  min-width: min(94%, 328px);
   transform: translateX(-50%);
   display:flex;
   flex-direction:column;
@@ -6108,14 +6543,14 @@ body.chromaBlue .bossKeyCard::before{
   letter-spacing:1.1px;
 }
 .pentaCard .besiegedTargetScore{
-  font-size:13px;
+  font-size:16px;
   color:rgba(255,255,246,.98);
   text-shadow:
     0 0 12px rgba(255,236,160,.40),
     0 2px 0 rgba(42,0,8,.38);
 }
 .pentaCard .besiegedTargetHint{
-  font-size:6px;
+  font-size:7px;
   color:rgba(255,212,220,.78);
   letter-spacing:.7px;
 }
@@ -6145,6 +6580,25 @@ body.chromaBlue .bossKeyCard::before{
     transform: translate3d(18px, -33px, 0) rotate(-24deg) scale(1.04);
     opacity:0;
   }
+}
+@keyframes besiegedCastleSettleKF{
+  0%{ opacity:0; transform:translate3d(0, -34px, 0) scale(.94); }
+  66%{ opacity:1; transform:translate3d(0, 8px, 0) scale(1.02); }
+  100%{ opacity:1; transform:translate3d(0, 0, 0) scale(1); }
+}
+@keyframes besiegedFlagKF{
+  0%,100%{ transform:skewY(-4deg) translateX(0); }
+  50%{ transform:skewY(5deg) translateX(2px); }
+}
+@keyframes besiegedProjectileKF{
+  0%{ opacity:0; transform:translate3d(0, 14px, 0) rotate(-18deg) scale(.76); }
+  14%{ opacity:1; }
+  72%{ opacity:1; }
+  100%{ opacity:0; transform:translate3d(var(--shotX, 34px), -82px, 0) rotate(18deg) scale(1.08); }
+}
+@keyframes besiegedExplosionKF{
+  0%, 58%, 100%{ opacity:0; transform:scale(.62) rotate(0deg); }
+  66%, 78%{ opacity:1; transform:scale(1.18) rotate(8deg); }
 }
 @keyframes besiegedTargetPulseKF{
   0%, 100%{
@@ -6406,6 +6860,22 @@ body.chromaBlue .bossKeyCard::before{
 }
 .pentaCard.isNowPlaying{ filter:brightness(1.08) saturate(1.06); }
 .pentaCard.isDim{ opacity:.72; filter:brightness(.86) saturate(.9); }
+.pentaCard.checksCompleteTower{
+  border-color: rgba(34,255,136,.84);
+  box-shadow:
+    0 0 0 2px rgba(34,255,136,.28),
+    0 0 24px rgba(34,255,136,.24),
+    0 10px 24px rgba(0,0,0,.35);
+}
+.pentaCard.checksCompleteTower .tableBanner{
+  filter: saturate(1.12) contrast(1.04) brightness(.78);
+}
+.pentaCard.checksCompleteTower .checksCompleteOverlay{
+  inset:10px;
+  border-radius:15px;
+  font-size:8px;
+  z-index:8;
+}
 .pentaCard .tableBanner{
   position:absolute;
   inset:2px;
@@ -7909,12 +8379,12 @@ body.chromaBlue .bossKeyCard::before{
   font-size:8px;
 }
 .relicCenterNotice{
-  position:fixed;
+  position:absolute;
   left:50%;
   top:47%;
   transform:translate(-50%, -50%) scale(.86);
   z-index:99998;
-  width:min(620px, calc(100vw - 48px));
+  width:min(620px, calc(100% - 48px));
   opacity:0;
   pointer-events:none;
   transition:opacity .26s ease, transform .26s ease;
@@ -14206,6 +14676,77 @@ body.flprShopBorderGhost #captureShopBorder::after{
     radial-gradient(circle at 82% 18%, rgba(225,222,255,.12), transparent 18%);
   opacity:.72;
 }
+body.flprShopBorderNeonLattice #captureShopBorder::before{
+  border-color: rgba(80,255,214,.90);
+  box-shadow:
+    0 0 0 2px rgba(80,255,214,.88),
+    0 0 0 8px rgba(255,62,220,.20),
+    0 0 26px rgba(80,255,214,.30);
+}
+body.flprShopBorderNeonLattice #captureShopBorder::after{
+  background:
+    repeating-linear-gradient(45deg, rgba(80,255,214,.14) 0 3px, transparent 3px 14px),
+    repeating-linear-gradient(-45deg, rgba(255,62,220,.12) 0 3px, transparent 3px 16px);
+  opacity:.64;
+}
+body.flprShopBorderCosmicRift #captureShopBorder::before{
+  border-color: rgba(180,130,255,.92);
+  box-shadow:
+    0 0 0 2px rgba(180,130,255,.90),
+    0 0 0 9px rgba(54,198,255,.18),
+    0 0 30px rgba(180,130,255,.34);
+}
+body.flprShopBorderCosmicRift #captureShopBorder::after{
+  background:
+    radial-gradient(circle at 16% 20%, rgba(255,255,255,.88) 0 1px, transparent 3px),
+    radial-gradient(circle at 70% 80%, rgba(54,198,255,.70) 0 1px, transparent 4px),
+    radial-gradient(ellipse at 50% 50%, rgba(180,130,255,.22), transparent 42%),
+    linear-gradient(135deg, rgba(54,198,255,.10), transparent 48%, rgba(255,90,214,.12));
+  opacity:.82;
+}
+body.flprShopBorderCircuit #captureShopBorder::before{
+  border-color: rgba(110,255,148,.88);
+  box-shadow:
+    0 0 0 2px rgba(110,255,148,.86),
+    0 0 0 8px rgba(0,217,255,.20),
+    0 0 24px rgba(110,255,148,.24);
+}
+body.flprShopBorderCircuit #captureShopBorder::after{
+  background:
+    linear-gradient(90deg, rgba(110,255,148,.10) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(0,217,255,.10) 1px, transparent 1px);
+  background-size: 34px 34px;
+  opacity:.66;
+}
+body.flprShopBorderBestiary #captureShopBorder::before{
+  border-color: rgba(255,214,126,.88);
+  box-shadow:
+    0 0 0 2px rgba(255,214,126,.86),
+    0 0 0 8px rgba(83,255,172,.18),
+    0 0 24px rgba(255,214,126,.28);
+}
+body.flprShopBorderBestiary #captureShopBorder::after{
+  background:
+    radial-gradient(circle at 13% 30%, rgba(83,255,172,.28), transparent 18%),
+    radial-gradient(circle at 88% 72%, rgba(255,214,126,.24), transparent 18%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.06) 0 2px, transparent 2px 18px);
+  opacity:.78;
+}
+body.flprShopBorderVictoryLap #captureShopBorder::before{
+  border-color: rgba(255,246,180,.94);
+  box-shadow:
+    0 0 0 2px rgba(255,246,180,.92),
+    0 0 0 7px rgba(34,255,136,.24),
+    0 0 0 12px rgba(0,217,255,.20),
+    0 0 30px rgba(255,246,180,.32);
+}
+body.flprShopBorderVictoryLap #captureShopBorder::after{
+  background:
+    linear-gradient(90deg, rgba(255,246,180,.16), transparent 30%, rgba(34,255,136,.12) 70%, rgba(0,217,255,.14)),
+    radial-gradient(circle at 50% 8%, rgba(255,255,255,.70) 0 1px, transparent 4px),
+    radial-gradient(circle at 50% 92%, rgba(255,255,255,.70) 0 1px, transparent 4px);
+  opacity:.86;
+}
 body.flprShopCursorStarter,
 body.flprShopCursorStarter *,
 body.flprShopCursorSpark,
@@ -14217,7 +14758,15 @@ body.flprShopCursorCat *,
 body.flprShopCursorPig,
 body.flprShopCursorPig *,
 body.flprShopCursorFinger,
-body.flprShopCursorFinger *{
+body.flprShopCursorFinger *,
+body.flprShopCursorKnight,
+body.flprShopCursorKnight *,
+body.flprShopCursorAlien,
+body.flprShopCursorAlien *,
+body.flprShopCursorSkull,
+body.flprShopCursorSkull *,
+body.flprShopCursorPinball,
+body.flprShopCursorPinball *{
   cursor:none !important;
 }
 .flprCursorFollower{
@@ -14334,6 +14883,60 @@ body.flprShopSparksCat{
   --sparkGlow2: rgba(255,157,192,.20);
   --ringColor: rgba(255,215,157,.88);
   --ringGlow: rgba(255,157,192,.22);
+}
+body.flprShopSparksConfetti{
+  --sparkA:#ffe16a;
+  --sparkB:#ff5fad;
+  --sparkGlow1: rgba(255,225,106,.44);
+  --sparkGlow2: rgba(89,210,255,.24);
+  --ringColor: rgba(255,225,106,.92);
+  --ringGlow: rgba(255,95,173,.28);
+}
+body.flprShopSparksConfetti .spark:nth-child(3n){
+  --sparkA:#59d2ff;
+  --sparkB:#9dff88;
+}
+body.flprShopSparksSkulls{
+  --sparkA:#f0f4ff;
+  --sparkB:#79ffb7;
+  --sparkGlow1: rgba(240,244,255,.38);
+  --sparkGlow2: rgba(121,255,183,.22);
+  --ringColor: rgba(240,244,255,.88);
+  --ringGlow: rgba(121,255,183,.24);
+}
+body.flprShopSparksSkulls .spark.textual{
+  color:#eff7ff;
+}
+body.flprShopSparksRoyal{
+  --sparkA:#ffd56f;
+  --sparkB:#8f7dff;
+  --sparkGlow1: rgba(255,213,111,.44);
+  --sparkGlow2: rgba(143,125,255,.26);
+  --ringColor: rgba(255,213,111,.92);
+  --ringGlow: rgba(143,125,255,.26);
+}
+body.flprShopSparksRetro{
+  --sparkA:#ff7a3d;
+  --sparkB:#27f5d2;
+  --sparkGlow1: rgba(255,122,61,.42);
+  --sparkGlow2: rgba(39,245,210,.24);
+  --ringColor: rgba(39,245,210,.90);
+  --ringGlow: rgba(255,122,61,.22);
+}
+body.flprShopSparksRetro .spark{
+  height:4px;
+  border-radius:0;
+}
+body.flprShopSparksSlime{
+  --sparkA:#c3ff3f;
+  --sparkB:#22ff88;
+  --sparkGlow1: rgba(195,255,63,.40);
+  --sparkGlow2: rgba(34,255,136,.24);
+  --ringColor: rgba(195,255,63,.90);
+  --ringGlow: rgba(34,255,136,.26);
+}
+body.flprShopSparksSlime .spark{
+  border-radius:999px 999px 999px 2px;
 }
 
 #viewChecks #checksCountersDock{
@@ -14932,6 +15535,7 @@ body.flprShopSparksCat{
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .checksCompleteBadge::before{
   content:"";
   position:absolute;
+  z-index:0;
   left:50%;
   top:50%;
   transform:translate(-50%, -50%);
@@ -14947,6 +15551,16 @@ body.flprShopSparksCat{
     inset 0 -2px 10px rgba(120,255,170,.08),
     inset 0 0 0 1px rgba(232,255,238,.08),
     0 0 18px rgba(0,0,0,.22);
+  pointer-events:none;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .checksCompleteBadgeText{
+  z-index:2;
+  color: rgba(250,255,252,.99);
+  filter: brightness(1.28) saturate(1.12);
+  text-shadow:
+    0 0 10px rgba(242,255,247,.86),
+    0 0 28px rgba(34,255,136,.72),
+    0 4px 0 rgba(0,18,8,.80);
 }
 #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks .tableHead .tableName .tableNameText{
   animation: checksTitleHoverSoft 2400ms ease-in-out infinite !important;
@@ -16022,6 +16636,7 @@ body.flprShopSparksCat{
         <button class="cBtn testPrimary" id="testBallPopupBtn" data-testtag="Ball">TEST BALL</button>
         <button class="cBtn testFlow" id="testHintBallPopupBtn" data-testtag="Hint Ball">TEST HINT BALL</button>
         <button class="cBtn testFlow" id="testHintBossPopupBtn" data-testtag="Hint Key">TEST HINT KEY</button>
+        <button class="cBtn testFlow" id="testHangmanBtn" data-testtag="Hangman">TEST HANGMAN</button>
         <button class="cBtn" id="testAchievementPopupBtn">TEST ACHIEVEMENT</button>
         <button class="cBtn danger testDanger" id="testBossDamageCheckBtn" data-testtag="Boss">TEST BOSS HIT</button>
         <button class="cBtn danger testDanger" id="testForceBossVictoryBtn" data-testtag="Boss Win">UNLOCK BOSS VICTORY NODE</button>
@@ -16463,7 +17078,33 @@ window.__manualDisconnect = false;
     CVOL: "WorldsBanners/BestiaryFlyers/CVOL.jpg",
     AGBW: "WorldsBanners/BestiaryFlyers/AGBW.jpg",
     CIRC80: "WorldsBanners/BestiaryFlyers/CIRC80.jpg",
-    POTO: "WorldsBanners/BestiaryFlyers/POTO.jpg"
+    POTO: "WorldsBanners/BestiaryFlyers/POTO.jpg",
+    BFOR: "WorldsBanners/BestiaryFlyers/BFOR.jpg",
+    DMAN: "WorldsBanners/BestiaryFlyers/DMAN.jpg",
+    GEYE: "WorldsBanners/BestiaryFlyers/GEYE.jpg",
+    JPARK: "WorldsBanners/BestiaryFlyers/JPARK.jpg",
+    LAH: "WorldsBanners/BestiaryFlyers/LAH.jpg",
+    STARG: "WorldsBanners/BestiaryFlyers/STARG.jpg",
+    STROP: "WorldsBanners/BestiaryFlyers/STROP.jpg",
+    ID4: "WorldsBanners/BestiaryFlyers/ID4.jpg",
+    XFILES: "WorldsBanners/BestiaryFlyers/XFILES.jpg",
+    AERO: "WorldsBanners/BestiaryFlyers/AERO.jpg",
+    BEAT: "WorldsBanners/BestiaryFlyers/BEAT.jpg",
+    ELVIS: "WorldsBanners/BestiaryFlyers/ELVIS.jpg",
+    RSTON: "WorldsBanners/BestiaryFlyers/RSTON.jpg",
+    FREDDY: "WorldsBanners/BestiaryFlyers/FREDDY.jpg",
+    MBASH: "WorldsBanners/BestiaryFlyers/MBASH.jpg",
+    TFTC: "WorldsBanners/BestiaryFlyers/TFTC.jpg",
+    GOT: "WorldsBanners/BestiaryFlyers/GOT.jpg",
+    STRANG: "WorldsBanners/BestiaryFlyers/STRANG.jpg",
+    MANDO: "WorldsBanners/BestiaryFlyers/MANDO.jpg",
+    TWD: "WorldsBanners/BestiaryFlyers/TWD.png",
+    CORV: "WorldsBanners/BestiaryFlyers/CORV.jpg",
+    DHARRY: "WorldsBanners/BestiaryFlyers/DHARRY.jpg",
+    JDREDD: "WorldsBanners/BestiaryFlyers/JDREDD.jpg",
+    DEADP: "WorldsBanners/BestiaryFlyers/DEADP.png",
+    GHOST: "WorldsBanners/BestiaryFlyers/GHOST.jpg",
+    RBULL: "WorldsBanners/BestiaryFlyers/RBULL.jpg"
   });
   const DEFAULT_TABLE_BANNER_REF_SET = new Set(
     Object.values(DEFAULT_TABLE_BANNER_REFS_BY_CODE || {}).map((v)=>String(v || "").trim()).filter(Boolean)
@@ -16531,6 +17172,15 @@ window.__manualDisconnect = false;
       if(code && DEFAULT_TABLE_BANNER_REFS_BY_CODE[code]){
         return String(DEFAULT_TABLE_BANNER_REFS_BY_CODE[code] || "");
       }
+    }catch(_){}
+    return "";
+  }
+  function getBestiaryFlyerUrlForTable(tableName){
+    try{
+      const ref = String(getDefaultTableBannerRef(tableName) || "").trim();
+      if(!ref) return "";
+      if(typeof resolveBannerRef === "function") return String(resolveBannerRef(ref) || ref).trim();
+      return ref;
     }catch(_){}
     return "";
   }
@@ -16641,7 +17291,7 @@ window.__manualDisconnect = false;
     return {
       w1:{label:"World 1; Ramps Rumpus", locked:false, banner:getDefaultWorldBannerRef("w1"), tables:["Medieval Madness","Attack from Mars","World Cup Soccer","The Getaway","Star Trek"]},
       w2:{label:"World 2; Malt Desniy World", locked:true,  banner:getDefaultWorldBannerRef("w2"), tables:["Tales of the Arabian Nights","Fathom","Hook","Congo","Mystery Castle"]},
-      w3:{label:"World 3; Vintage Television", locked:true, banner:getDefaultWorldBannerRef("w3"), tables:["The A-Team","Batman 66","Hollywood Heat","Baywatch","Star Trek The Next Generation"]},
+      w3:{label:"World 3; Vintage Television", locked:true, banner:getDefaultWorldBannerRef("w3"), tables:["The A-Team","Batman Forever","Hollywood Heat","Baywatch","Star Trek The Next Generation"]},
       w4:{label:"World 4; Spinner Sparring", locked:true,  banner:getDefaultWorldBannerRef("w4"), tables:["Meteor","Harlem Globetrotters","Dolly Parton","Paragon","Robocop"]},
       w5:{label:"World 5; Featured Designer; Python Anghelo", locked:true,  banner:getDefaultWorldBannerRef("w5"), tables:["Grand Lizard","Jokerz!","Bad Cats","Taxi","Bride of Pinbot"]},
       boss:{label:"World 6; Boss", locked:true, banner:getDefaultWorldBannerRef("boss"), tables:["(Boss Table)"]}
@@ -17219,7 +17869,7 @@ function getChecksWorldOrder(srcState){
   const out = getVisibleNonBossWorldOrder(s).filter((wk)=> !!(s?.worlds?.[wk]));
   const bossKey = resolveBossWorldKeyFromState(s);
   if(out.includes(bossKey)) return out;
-  if(s?.worlds?.[bossKey] && shouldShowBossWorldOnPage(s?.worldPage, s, ap?.slotData)) out.push(bossKey);
+  if(s?.worlds?.[bossKey] && shouldShowBossWorldOnPage(s?.worldPage, s, ap?.slotData)) out.push("boss");
   return out;
 }
 function getOverviewWorldOrder(srcState){
@@ -17510,7 +18160,10 @@ function buildDefaultBesiegedState(){
     tableName:"",
     targetScore:0,
     targetLabel:"",
-    activatedAt:0
+    activatedAt:0,
+    armyType:"",
+    armyLabel:"",
+    bossUnlockedAtStart:false
   };
 }
 function normalizeBesiegedState(raw){
@@ -17521,6 +18174,9 @@ function normalizeBesiegedState(raw){
   const tableName = String(src.tableName || "").trim();
   const targetScore = Math.max(0, Math.round(Number(src.targetScore || 0) || 0));
   const targetLabel = String(src.targetLabel || (targetScore > 0 ? `${targetScore.toLocaleString("en-US")}+` : "") || "").trim();
+  const armyType = String(src.armyType || "").trim();
+  const armyLabel = String(src.armyLabel || "").trim();
+  const bossUnlockedAtStart = !!src.bossUnlockedAtStart;
   const active = !!src.active && !!tableKey && !!worldKey;
   return {
     active,
@@ -17529,7 +18185,10 @@ function normalizeBesiegedState(raw){
     tableName: active ? tableName : "",
     targetScore: active ? targetScore : 0,
     targetLabel: active ? targetLabel : "",
-    activatedAt: Math.max(0, Number(src.activatedAt || 0) || 0)
+    activatedAt: Math.max(0, Number(src.activatedAt || 0) || 0),
+    armyType: active ? armyType : "",
+    armyLabel: active ? armyLabel : "",
+    bossUnlockedAtStart: active ? bossUnlockedAtStart : false
   };
 }
 
@@ -18126,6 +18785,7 @@ function saveState(){
     localStorage.setItem(LS_KEY, nextRaw);
     // Keep FLPR-Bot table tracking aligned with overlay worldstate writes.
     try{ syncFlprBotCurrentTable(false); }catch(_){ }
+    try{ syncFlprBotBossStatus(false); }catch(_){ }
   }catch(e){
     try{ persistMusicStateSnapshot(state); }catch(_){}
     try{ writeBossHpLiveSnapshotToLocalStorage(String(state?.bossTableSeed || ""), state?.bossHpLive || null); }catch(_){}
@@ -18800,6 +19460,14 @@ function flprStatsRenderEndRunOverlay(runInput){
 function flprStatsShowEndRunOverlay(run){
   const wrap = document.getElementById("endRunOverlay");
   if(!wrap) return;
+  try{
+    const remaining = bossVictoryRemainingMs();
+    if((state?.bossVictorySent || state?.bossVictoryFinalizing) && remaining > 0){
+      try{ bossFocusVictoryChecksView({ render:true, showView:true }); }catch(_){}
+      try{ flprStatsQueueVictorySummary(remaining + BOSS_VICTORY_STATS_CLEAR_MS); }catch(_){}
+      return;
+    }
+  }catch(_){}
   if(!flprStatsRenderEndRunOverlay(run)) return;
   try{
     if(run) run.summaryShown = true;
@@ -19044,6 +19712,29 @@ function bossClearNonVictoryNotifications(){
     if(powerStack) powerStack.innerHTML = "";
   }catch(_){}
 }
+function bossFocusVictoryChecksView(opts){
+  opts = opts || {};
+  try{
+    const bossWorldKey = (typeof getBossWorldKey === "function") ? String(getBossWorldKey() || "boss") : "boss";
+    if(state?.worlds?.[bossWorldKey]){
+      state.lastSelected = state.selected;
+      state.selected = bossWorldKey;
+      state.worldPage = getWorldPageForWorldKey(bossWorldKey, state, ap?.slotData);
+    }
+    ap.currentWorld = "boss";
+    if(opts.showView !== false && typeof showView === "function") showView("checks");
+    if(opts.render !== false){
+      try{ renderChecksWorldTabs(); }catch(_){}
+      try{ renderChecks(); }catch(_){}
+      try{ setHeader(); }catch(_){}
+      try{ renderWorldButtons(); }catch(_){}
+      try{ renderSelected(); }catch(_){}
+    }
+    try{ saveState(); }catch(_){}
+    return true;
+  }catch(_){}
+  return false;
+}
 function bossHandleVictoryValidated(){
   try{
     if(state){
@@ -19055,6 +19746,7 @@ function bossHandleVictoryValidated(){
   }catch(_){}
   try{ episodeMarkBossComplete(); }catch(_){}
   bossClearNonVictoryNotifications();
+  try{ bossFocusVictoryChecksView({ render:true, showView:true }); }catch(_){}
   try{
     const fx = (window.__bossVictoryFx ||= { confettiTimer:null, beatTimer:null, endTimer:null });
     if(!fx.endTimer) bossTriggerVictoryCelebration();
@@ -19338,7 +20030,7 @@ function loadFlprBotSyncCfg(){
   }
 }
 const flprBotSyncCfg = loadFlprBotSyncCfg();
-const flprBotSyncMemo = { tableSig:"", bossSig:"", lastErr:"", lastErrAt:0 };
+const flprBotSyncMemo = { tableSig:"", bossSig:"", bossStatusSig:"", lastErr:"", lastErrAt:0 };
 function flprBotSyncEnabled(){
   if(typeof window.FLPR_BOT_SYNC_ENABLED === "boolean") return window.FLPR_BOT_SYNC_ENABLED;
   return flprBotSyncCfg.enabled !== false;
@@ -19385,6 +20077,26 @@ async function postFlprBotSync(path, payload){
   }catch(err){
     flprBotSyncReportError(err);
     return false;
+  }
+}
+async function getFlprBotSync(path, opts){
+  opts = opts || {};
+  try{
+    if(!flprBotSyncEnabled()) return null;
+    const base = flprBotSyncBaseUrl();
+    if(!base) return null;
+    const headers = {};
+    const token = flprBotSyncToken();
+    if(token) headers["x-flpr-token"] = token;
+    const res = await fetch(`${base}${path}`, { headers, cache:"no-store" });
+    if(!res.ok){
+      if(!opts.silent) throw new Error(`${path} HTTP ${res.status}`);
+      return null;
+    }
+    return await res.json();
+  }catch(err){
+    if(!opts.silent) flprBotSyncReportError(err);
+    return null;
   }
 }
 function syncFlprBotTableFromNowPlaying(worldKey, idx, force){
@@ -19464,10 +20176,12 @@ function syncFlprBotCurrentTable(force){
 }
 function syncFlprBotBossKeys(force){
   try{
-    const total = Number(BOSS_KEYS_COUNT || 3);
-    const acquired = Array.isArray(bossKeysState)
+    const total = Math.max(1, Number((typeof getBossKeysRequiredForOpen === "function" ? getBossKeysRequiredForOpen() : BOSS_KEYS_COUNT) || BOSS_KEYS_COUNT || 3));
+    const acquired = Math.max(0, Math.min(total, Math.round(Number(
+      (typeof getBossKeyRedeemedCount === "function" ? getBossKeyRedeemedCount() : NaN)
+    ) || (Array.isArray(bossKeysState)
       ? bossKeysState.reduce((n, key)=> n + ((key && key.acquired) ? 1 : 0), 0)
-      : 0;
+      : 0))));
     const left = Math.max(0, total - acquired);
     const sig = `${acquired}/${total}`;
     if(!force && flprBotSyncMemo.bossSig === sig) return;
@@ -19475,6 +20189,86 @@ function syncFlprBotBossKeys(force){
     postFlprBotSync("/state/bosskeys", { acquired, left, total, source:"overlay_ap_state" });
   }catch(_){}
 }
+function getFlprBotBossStatusSnapshot(){
+  try{
+    const bossName = String(getUnifiedBossTableName?.({ includePlaceholder:false }) || state?.bossHpLive?.name || "Boss Table").trim() || "Boss Table";
+    const checksKey = String((typeof getChecksNowPlayingTableKey === "function" && getChecksNowPlayingTableKey()) || "");
+    const overviewKey = String((typeof getOverviewNowPlayingTableKey === "function" && getOverviewNowPlayingTableKey()) || "");
+    const currentKey = checksKey || overviewKey;
+    const bossWorldKey = String((typeof getBossWorldKey === "function" ? getBossWorldKey() : "boss") || "boss");
+    const currentWorld = String(ap?.currentWorld || state?.currentWorld || "");
+    const selectedWorld = String(state?.selected || "");
+    const bossRevealReady = !!(typeof isBossTableRevealReady === "function" ? isBossTableRevealReady() : false);
+    const forceTestBossCard = !!(state?.bossHpTest && state.bossHpTest.forceShowCard);
+    const inherentBossSeed = !!(ap?.inherentSeedActive || String(ap?.seedName || state?.bossTableSeed || "") === "FLPR_INHERENT_TEST_SEED");
+    const bossSelected = !!(
+      selectedWorld === "boss" ||
+      selectedWorld === bossWorldKey ||
+      currentWorld === "boss" ||
+      currentWorld === bossWorldKey ||
+      currentKey.startsWith("boss|")
+    );
+    const bossActive = !!(typeof relicIsBossEncounterActive === "function"
+      ? (relicIsBossEncounterActive() || (bossSelected && String(activeView || "") === "checks"))
+      : (bossSelected && String(activeView || "") === "checks"));
+    const hpCur = Number(state?.bossHpLive?.cur);
+    const hpMax = Number(state?.bossHpLive?.max);
+    const testHpCur = Number(state?.bossHpTest?.cur);
+    const testHpMax = Number(state?.bossHpTest?.max);
+    const hpVisible = !!(
+      (Number.isFinite(hpCur) && Number.isFinite(hpMax) && hpMax > 0 && state?.bossHpLive?.inited) ||
+      (Number.isFinite(testHpCur) && Number.isFinite(testHpMax) && testHpMax > 0 && (forceTestBossCard || bossSelected))
+    );
+    const bossOpen = !!(
+      (typeof isBossUnlocked === "function" ? isBossUnlocked() : (state?.bossOpen || false)) ||
+      bossRevealReady ||
+      forceTestBossCard ||
+      (inherentBossSeed && (bossSelected || hpVisible))
+    );
+    const defeated = !!(Number.isFinite(hpCur) && Number.isFinite(hpMax) && hpMax > 0 && hpCur <= 0);
+    const readyForBonusPinball = !!(bossOpen && bossActive && bossSelected && !defeated);
+    return {
+      tableName: bossName,
+      open: bossOpen,
+      active: bossActive,
+      selected: bossSelected,
+      readyForBonusPinball,
+      hpCur: Number.isFinite(hpCur) ? Math.max(0, hpCur) : null,
+      hpMax: Number.isFinite(hpMax) ? Math.max(1, hpMax) : null,
+      defeated,
+      currentView: String(activeView || ""),
+      currentWorld,
+      selectedWorld,
+      tableKey: currentKey,
+      source:"overlay_boss_status"
+    };
+  }catch(_){}
+  return null;
+}
+function syncFlprBotBossStatus(force){
+  try{
+    const snapshot = getFlprBotBossStatusSnapshot();
+    if(!snapshot) return;
+    const sig = [
+      snapshot.tableName,
+      snapshot.open ? 1 : 0,
+      snapshot.active ? 1 : 0,
+      snapshot.selected ? 1 : 0,
+      snapshot.readyForBonusPinball ? 1 : 0,
+      snapshot.defeated ? 1 : 0,
+      snapshot.hpCur,
+      snapshot.hpMax,
+      snapshot.currentView,
+      snapshot.currentWorld,
+      snapshot.selectedWorld,
+      snapshot.tableKey
+    ].join("|");
+    if(!force && flprBotSyncMemo.bossStatusSig === sig) return;
+    flprBotSyncMemo.bossStatusSig = sig;
+    postFlprBotSync("/state/boss", snapshot);
+  }catch(_){}
+}
+setInterval(()=>{ try{ syncFlprBotBossStatus(false); }catch(_){} }, 1500);
 
 const ap = {
   pendingQueue: [],
@@ -19946,7 +20740,12 @@ function toast(kind, title, value, ms=3200){
   d.className = "toast " + (kind||"");
   d.innerHTML = `<div class="k">${title}</div><div class="v">${value}</div>`;
   wrap.appendChild(d);
-  setTimeout(()=>{ d.style.opacity="0"; d.style.transform="translateX(14px)"; }, Math.max(200, ms-220));
+  setTimeout(()=>{
+    d.style.opacity="0";
+    d.style.transform = d.classList.contains("besiegedToast")
+      ? "translateX(-50%) translateY(-14px) scale(.98)"
+      : "translateX(14px)";
+  }, Math.max(200, ms-220));
   setTimeout(()=>{ try{ wrap.removeChild(d);}catch(_){} }, ms+50);
 }
 const FLPR_ACH_LS_KEY = "flpr_achievements_v1";
@@ -20403,6 +21202,12 @@ function relicGetSimpleRunState(){
 function relicGetSimpleDef(id){
   return SIMPLE_RELIC_DEF_BY_ID[String(id || "").trim()] || null;
 }
+function relicCanTrackCurrentRun(){
+  try{ if(ap?.inherentSeedActive) return true; }catch(_){}
+  try{ if(String(ap?.seedName || "") === "FLPR_INHERENT_TEST_SEED") return true; }catch(_){}
+  try{ return !!episodeCanTrack(); }catch(_){}
+  return false;
+}
 function relicGetSimpleChargeCount(id){
   const def = relicGetSimpleDef(id);
   if(!def) return 0;
@@ -20411,7 +21216,7 @@ function relicGetSimpleChargeCount(id){
 }
 function relicAwardSimpleRelic(id, reason, amount){
   const def = relicGetSimpleDef(id);
-  if(!def || !episodeCanTrack()) return false;
+  if(!def || !relicCanTrackCurrentRun()) return false;
   if(!relicIsEquipped(def.id)) return false;
   const add = Math.max(1, Math.round(Number(amount || 1) || 1));
   const runSimple = relicGetSimpleRunState();
@@ -20598,6 +21403,22 @@ function relicCanAutoUseSimpleRelic(id){
   if(key === "pocket_ace") return true;
   return false;
 }
+const relicSimpleAutoUseMemo = { byId:{} };
+function relicSimpleAutoUseCooldownMs(id){
+  const key = String(id || "").trim();
+  if(key === "pocket_ace") return 1200;
+  return 6200;
+}
+function relicSimpleAutoUseReady(id){
+  const key = String(id || "").trim();
+  const prev = Number(relicSimpleAutoUseMemo.byId[key] || 0);
+  const cd = relicSimpleAutoUseCooldownMs(key);
+  return !prev || (Date.now() - prev) >= cd;
+}
+function relicMarkSimpleAutoUse(id){
+  const key = String(id || "").trim();
+  if(key) relicSimpleAutoUseMemo.byId[key] = Date.now();
+}
 function relicDescribeSimpleAutoState(id){
   const key = String(id || "").trim();
   const charges = relicGetSimpleChargeCount(key);
@@ -20675,18 +21496,13 @@ function relicMaybeFirePocketAceQueue(reason){
 function relicAutoResolveSimpleCharges(reason){
   const order = ["pocket_ace", "route_echo", "scout_ping"];
   let usedAny = false;
-  let guard = 0;
-  while(guard < 8){
-    let usedThisPass = false;
-    for(const id of order){
-      if(!relicCanAutoUseSimpleRelic(id)) continue;
-      if(relicUseSimpleRelic(id, { auto:true, reason })){
-        usedAny = true;
-        usedThisPass = true;
-      }
+  for(const id of order){
+    if(!relicCanAutoUseSimpleRelic(id)) continue;
+    if(!relicSimpleAutoUseReady(id)) continue;
+    if(relicUseSimpleRelic(id, { auto:true, reason })){
+      relicMarkSimpleAutoUse(id);
+      usedAny = true;
     }
-    if(!usedThisPass) break;
-    guard += 1;
   }
   return usedAny;
 }
@@ -20823,25 +21639,35 @@ function relicUseSimpleRelic(id, opts){
   }
   if(def.id === "pocket_ace"){
     runSimple.charges[def.id] = Math.max(0, charges - 1);
-    runSimple.pocketAceQueuedKnights = Math.max(0, Math.round(Number(runSimple.pocketAceQueuedKnights || 0))) + 1;
+    const prevQueued = Math.max(0, Math.round(Number(runSimple.pocketAceQueuedKnights || 0)));
+    runSimple.pocketAceQueuedKnights = prevQueued + 1;
     relicSaveProgressState();
     if(relicMaybeFirePocketAceQueue(opts.auto ? "auto-queue" : "manual-queue")) return true;
-    showRelicCenterNotice({
-      kind:"auto-used",
-      tag:opts.auto ? "POCKET ACE QUEUED" : "POCKET ACE",
-      big:`\u265E ${def.title}`,
-      sub:"A Pinball Knight is waiting to strike the boss table.",
-      meta:`Queued Knights ${runSimple.pocketAceQueuedKnights} | ${relicDescribeSimpleAutoState(def.id)}`,
-      holdMs:3200
-    });
+    if(runSimple.pocketAceQueuedKnights > 1){
+      showRelicCenterNotice({
+        kind:"auto-used",
+        tag:opts.auto ? "POCKET ACE QUEUED" : "POCKET ACE",
+        big:`\u265E ${def.title}`,
+        sub:"A Pinball Knight is waiting to strike the boss table.",
+        meta:`Queued Knights ${runSimple.pocketAceQueuedKnights} | ${relicDescribeSimpleAutoState(def.id)}`,
+        holdMs:3200
+      });
+    }
     return true;
   }
   return false;
 }
 let relicCenterNoticeTimer = 0;
+const relicCenterNoticeMemo = { lastKey:"", lastAt:0, byKey:{} };
 function ensureRelicCenterNotice(){
   let wrap = document.getElementById("relicCenterNotice");
-  if(wrap) return wrap;
+  const mount = document.querySelector(".capture") || document.body;
+  if(wrap){
+    if(wrap.parentElement !== mount){
+      try{ mount.appendChild(wrap); }catch(_){}
+    }
+    return wrap;
+  }
   wrap = document.createElement("div");
   wrap.id = "relicCenterNotice";
   wrap.className = "relicCenterNotice";
@@ -20855,11 +21681,33 @@ function ensureRelicCenterNotice(){
       <div class="relicCenterMeta" id="relicCenterMeta">TRACKED ACROSS RUNS</div>
     </div>
   `;
-  document.body.appendChild(wrap);
+  mount.appendChild(wrap);
   return wrap;
 }
 function showRelicCenterNotice(opts){
   opts = opts || {};
+  const noticeKey = String(opts.dedupeKey || [
+    opts.kind || "",
+    opts.tag || "",
+    opts.big || "",
+    opts.sub || "",
+    opts.meta || ""
+  ].join("|")).replace(/\s+/g, " ").trim();
+  const now = Date.now();
+  const dedupeMs = Math.max(1200, Number(opts.dedupeMs || 8500));
+  if(noticeKey){
+    const prevAt = Number(relicCenterNoticeMemo.byKey[noticeKey] || 0);
+    if(prevAt && (now - prevAt) < dedupeMs) return false;
+    if(relicCenterNoticeMemo.lastKey === noticeKey && (now - Number(relicCenterNoticeMemo.lastAt || 0)) < dedupeMs) return false;
+    relicCenterNoticeMemo.byKey[noticeKey] = now;
+    relicCenterNoticeMemo.lastKey = noticeKey;
+    relicCenterNoticeMemo.lastAt = now;
+    try{
+      Object.keys(relicCenterNoticeMemo.byKey).forEach((key)=>{
+        if(now - Number(relicCenterNoticeMemo.byKey[key] || 0) > 60000) delete relicCenterNoticeMemo.byKey[key];
+      });
+    }catch(_){}
+  }
   const wrap = ensureRelicCenterNotice();
   const tagEl = document.getElementById("relicCenterTag");
   const bigEl = document.getElementById("relicCenterBig");
@@ -20884,6 +21732,7 @@ function showRelicCenterNotice(opts){
     wrap.classList.remove("show");
     wrap.setAttribute("aria-hidden", "true");
   }, Math.max(2600, Number(opts.holdMs || 3600)));
+  return true;
 }
 const ACH_ACTION_META = Object.freeze({
   multiball: { suffix:"Ball Brawl", desc:"Clear a multiball objective." },
@@ -20918,6 +21767,11 @@ const ACH_SHOP_ITEMS = Object.freeze([
   { id:"shop:border_magma", type:"border", name:"Magma Border", cost:210, desc:"Hot orange-red trim with molten flare.", className:"flprShopBorderMagma" },
   { id:"shop:border_sparkly", type:"border", name:"Sparkly Border", cost:190, desc:"Glitter-heavy border with bright cosmetic twinkles.", className:"flprShopBorderSparkly" },
   { id:"shop:border_ghost", type:"border", name:"Ghost Border", cost:145, desc:"Pale spectral trim with soft haunted bloom.", className:"flprShopBorderGhost" },
+  { id:"shop:border_neon_lattice", type:"border", name:"Neon Lattice Border", cost:220, desc:"Crosshatched cyber-neon frame with teal and magenta energy.", className:"flprShopBorderNeonLattice" },
+  { id:"shop:border_cosmic_rift", type:"border", name:"Cosmic Rift Border", cost:235, desc:"Purple-blue starfield trim with a soft galactic tear.", className:"flprShopBorderCosmicRift" },
+  { id:"shop:border_circuit", type:"border", name:"Circuit Board Border", cost:205, desc:"Green-blue gridwork for the control room goblin inside us all.", className:"flprShopBorderCircuit" },
+  { id:"shop:border_bestiary", type:"border", name:"Bestiary Border", cost:215, desc:"Warm trophy-page framing with monster-catalog shimmer.", className:"flprShopBorderBestiary" },
+  { id:"shop:border_victory_lap", type:"border", name:"Victory Lap Border", cost:260, desc:"Bright celebratory trim for endgame swagger.", className:"flprShopBorderVictoryLap" },
   { id:"shop:spark_starter", type:"sparks", name:"Starter Sparks", cost:0, desc:"Free test spark palette for click effects.", className:"flprShopSparksStarter" },
   { id:"shop:spark_prism", type:"sparks", name:"Prism Sparks", cost:95, desc:"Clicks emit rainbow-prism sparks.", className:"flprShopSparksPrism" },
   { id:"shop:spark_sparkle", type:"sparks", name:"Sparkle Sparks", cost:105, desc:"Round glitter pops with pink-gold sparkle glow.", className:"flprShopSparksSparkle" },
@@ -20927,12 +21781,21 @@ const ACH_SHOP_ITEMS = Object.freeze([
   { id:"shop:spark_giraffe", type:"sparks", name:"Giraffe Sparks", cost:98, desc:"Warm amber-brown sparks with safari energy.", className:"flprShopSparksGiraffe" },
   { id:"shop:spark_dog", type:"sparks", name:"Dog Sparks", cost:98, desc:"Warm playful click sparks with kennel palette.", className:"flprShopSparksDog" },
   { id:"shop:spark_cat", type:"sparks", name:"Cat Sparks", cost:98, desc:"Soft peach-pink sparks with feline bite.", className:"flprShopSparksCat" },
+  { id:"shop:spark_confetti", type:"sparks", name:"Confetti Sparks", cost:125, desc:"Bright party bursts with rotating carnival color.", className:"flprShopSparksConfetti" },
+  { id:"shop:spark_skulls", type:"sparks", name:"Skull Sparks", cost:150, desc:"Spooky pale-green impact flashes for boss-table menace.", className:"flprShopSparksSkulls" },
+  { id:"shop:spark_royal", type:"sparks", name:"Royal Sparks", cost:145, desc:"Gold and violet strike effects fit for a pinball monarch.", className:"flprShopSparksRoyal" },
+  { id:"shop:spark_retro", type:"sparks", name:"Retro Sparks", cost:135, desc:"Orange-teal arcade bars with sharp old-school snap.", className:"flprShopSparksRetro" },
+  { id:"shop:spark_slime", type:"sparks", name:"Slime Sparks", cost:140, desc:"Green blob sparks with a gooey little pop.", className:"flprShopSparksSlime" },
   { id:"shop:cursor_starter", type:"cursor", name:"Starter Cursor", cost:0, desc:"Free test cursor style for immediate equip checks.", className:"flprShopCursorStarter" },
   { id:"shop:cursor_spark", type:"cursor", name:"Spark Cursor", cost:140, desc:"Alternative precision cursor for stream flair.", className:"flprShopCursorSpark" },
   { id:"shop:cursor_dog", type:"cursor", name:"Dog Cursor", cost:125, desc:"A dog trails the cursor while the pointer becomes a bone.", className:"flprShopCursorDog" },
   { id:"shop:cursor_cat", type:"cursor", name:"Cat Cursor", cost:125, desc:"A cat trails the cursor while the pointer becomes a fish.", className:"flprShopCursorCat" },
   { id:"shop:cursor_pig", type:"cursor", name:"Pig Cursor", cost:125, desc:"A pig trails the cursor while the pointer becomes a piece of meat.", className:"flprShopCursorPig" },
   { id:"shop:cursor_finger", type:"cursor", name:"Left Pointing Finger Cursor", cost:70, desc:"The cursor becomes a bold left-pointing finger.", className:"flprShopCursorFinger" },
+  { id:"shop:cursor_knight", type:"cursor", name:"Knight Cursor", cost:155, desc:"A brave knight follows a sword pointer into battle.", className:"flprShopCursorKnight" },
+  { id:"shop:cursor_alien", type:"cursor", name:"Alien Cursor", cost:150, desc:"A tiny invader trails a saucer pointer.", className:"flprShopCursorAlien" },
+  { id:"shop:cursor_skull", type:"cursor", name:"Skull Cursor", cost:155, desc:"A skull drifts behind a bone-white target pointer.", className:"flprShopCursorSkull" },
+  { id:"shop:cursor_pinball", type:"cursor", name:"Silver Ball Cursor", cost:160, desc:"A chrome ball trails a tiny flipper pointer.", className:"flprShopCursorPinball" },
   { id:"shop:title_starter", type:"title", name:"Starter Title", cost:0, desc:"Free test title badge for the header.", titleText:"ROOKIE" },
   { id:"shop:title_arcade", type:"title", name:"Arcade Legend", cost:260, desc:"Header title badge; earned through FLPRP spend.", titleText:"ARCADE LEGEND" },
   { id:"shop:title_glimmer", type:"title", name:"Glimmer Hero", cost:420, desc:"Sparkling high-tier title badge.", titleText:"GLIMMER HERO", shiny:true },
@@ -20955,7 +21818,15 @@ const ACH_SHOP_ITEMS = Object.freeze([
   { id:"shop:title_stern_standoff", type:"title", name:"Stern Standoff", cost:164, desc:"For players who stare down the modern era and win.", titleText:"STERN STANDOFF" },
   { id:"shop:title_bally_believer", type:"title", name:"Bally Believer", cost:168, desc:"A cabinet-era salute for the faithful.", titleText:"BALLY BELIEVER" },
   { id:"shop:title_wizard_mode", type:"title", name:"Wizard Mode", cost:176, desc:"The classic endgame flex, turned into a badge.", titleText:"WIZARD MODE" },
-  { id:"shop:title_extra_balladeer", type:"title", name:"Extra Balladeer", cost:182, desc:"For players who keep finding one more chance.", titleText:"EXTRA BALLADEER" }
+  { id:"shop:title_extra_balladeer", type:"title", name:"Extra Balladeer", cost:182, desc:"For players who keep finding one more chance.", titleText:"EXTRA BALLADEER" },
+  { id:"shop:title_boss_key_baron", type:"title", name:"Boss Key Baron", cost:188, desc:"For players who hear a lock click before anyone else.", titleText:"BOSS KEY BARON" },
+  { id:"shop:title_drain_escape_artist", type:"title", name:"Drain Escape Artist", cost:192, desc:"A title for late saves and suspiciously calm nudges.", titleText:"DRAIN ESCAPE ARTIST" },
+  { id:"shop:title_plunger_prophet", type:"title", name:"Plunger Prophet", cost:196, desc:"For bold launches that somehow become routes.", titleText:"PLUNGER PROPHET" },
+  { id:"shop:title_backglass_bard", type:"title", name:"Backglass Bard", cost:202, desc:"For turning every table into a little legend.", titleText:"BACKGLASS BARD" },
+  { id:"shop:title_table_tamer", type:"title", name:"Table Tamer", cost:208, desc:"For keeping brutal rule sheets on a short leash.", titleText:"TABLE TAMER" },
+  { id:"shop:title_coin_door_oracle", type:"title", name:"Coin Door Oracle", cost:214, desc:"Knows what the cabinet wants before the cabinet does.", titleText:"COIN DOOR ORACLE" },
+  { id:"shop:title_relic_runner", type:"title", name:"Relic Runner", cost:220, desc:"For routes powered by strange little treasures.", titleText:"RELIC RUNNER" },
+  { id:"shop:title_bestiary_keeper", type:"title", name:"Bestiary Keeper", cost:226, desc:"For players cataloging the monsters one table at a time.", titleText:"BESTIARY KEEPER" }
 ]);
 const ACH_SHOP_CLASSNAMES = Object.freeze(ACH_SHOP_ITEMS.map(item => item.className).filter(Boolean));
 const ACH_CURSOR_CLASSNAMES = Object.freeze(ACH_SHOP_ITEMS.filter(item => String(item?.type || "") === "cursor").map(item => item.className).filter(Boolean));
@@ -20994,9 +21865,13 @@ const ACH_CURSOR_FOLLOWER_META = Object.freeze({
   flprShopCursorDog: { leader:"\u{1F415}", pointer:"\u{1F9B4}", pointerDx: -12, pointerDy: -12, leaderDx: 14, leaderDy: 8, pointerScaleX:-1 },
   flprShopCursorCat: { leader:"\u{1F408}", pointer:"\u{1F41F}", pointerDx: 10, pointerDy: 10, leaderDx:-20, leaderDy:20 },
   flprShopCursorPig: { leader:"\u{1F416}", pointer:"\u{1F356}", pointerDx: 10, pointerDy: 10, leaderDx:-20, leaderDy:20 },
-  flprShopCursorFinger: { leader:"", pointer:"\u{1F448}", pointerDx: 2, pointerDy: 0, leaderDx:0, leaderDy:0 }
+  flprShopCursorFinger: { leader:"", pointer:"\u{1F448}", pointerDx: 2, pointerDy: 0, leaderDx:0, leaderDy:0 },
+  flprShopCursorKnight: { leader:"\u{1F9DD}", pointer:"\u{2694}\uFE0F", pointerDx: 4, pointerDy: -8, leaderDx:-18, leaderDy:18, pointerRotate:-18, pointerSize:25, leaderSize:25 },
+  flprShopCursorAlien: { leader:"\u{1F47D}", pointer:"\u{1F6F8}", pointerDx: 7, pointerDy: -6, leaderDx:-20, leaderDy:18, pointerRotate:16, pointerSize:25, leaderSize:25 },
+  flprShopCursorSkull: { leader:"\u{1F480}", pointer:"\u{25CE}", pointerDx: 4, pointerDy: -2, leaderDx:-18, leaderDy:20, pointerSize:26, leaderSize:25 },
+  flprShopCursorPinball: { leader:"\u26AA", pointer:"\u{1FA99}", pointerDx: 7, pointerDy: -4, leaderDx:-18, leaderDy:18, pointerRotate:-24, pointerSize:23, leaderSize:24 }
 });
-const ACH_CLICK_SEQUENCE_CODES = Object.freeze(["TAXI","BAYW","BAT66"]);
+const ACH_CLICK_SEQUENCE_CODES = Object.freeze(["TAXI","BAYW","BFOR"]);
 
 function episodeFreshState(){
   return {
@@ -21858,6 +22733,40 @@ function achEnsureRandomizerCatalog(){
   if(!achStore.catalog.tables || typeof achStore.catalog.tables !== "object") achStore.catalog.tables = {};
   achStore.catalog.randomizer = ACH_RANDOMIZER_DEFS.map(x=>({ ...x }));
 }
+function achBuildRepoTableAchievementCatalog(){
+  const out = {};
+  try{
+    const repo = getTableRepo();
+    const tables = (repo && typeof repo.getAllTables === "function") ? (repo.getAllTables() || []) : [];
+    tables.forEach((entry)=>{
+      const code = String(entry?.code || getRepoCanonicalTableCode(entry?.name) || "").trim();
+      if(!code || code === "BOSS_TABLE") return;
+      const tableName = String(entry?.name || getRepoCanonicalTableName(code) || code).trim();
+      if(!tableName || /^\(boss table\)$/i.test(tableName)) return;
+      out[code] = [
+        {
+          id: `tbl:${code}:first_check`,
+          type: "table_action",
+          tableCode: code,
+          tableName,
+          category: "first_check",
+          title: `${tableName} First Clear`,
+          desc: `Clear any check on ${tableName}.`
+        },
+        {
+          id: `tbl:${code}:complete`,
+          type: "table_complete",
+          tableCode: code,
+          tableName,
+          category: "complete",
+          title: `${tableName} Hero`,
+          desc: `Complete all checks on ${tableName}.`
+        }
+      ];
+    });
+  }catch(_){}
+  return out;
+}
 function achBuildTableCatalogFromAp(){
   if(!ap?.locsByTableKey || !(ap.locsByTableKey instanceof Map)) return;
   achEnsureRandomizerCatalog();
@@ -22043,6 +22952,16 @@ function achHandleCheckCleared(locId){
   const tableCode = String(ctx.tableCode || "").trim();
   const tableName = achResolveTableName(ctx.tableName, tableCode);
   if(tableCode && category){
+    achUnlock(`tbl:${tableCode}:first_check`, {
+      type: "table_action",
+      title: `${tableName} First Clear`,
+      desc: `Clear any check on ${tableName}.`,
+      tableCode,
+      tableName,
+      category: "first_check",
+      checkName: ctx.taskName || ctx.short || "",
+      locId: Number(ctx.locId || 0)
+    });
     achUnlock(`tbl:${tableCode}:${category}`, {
       type: "table_action",
       title: achTableTitle(tableName, category),
@@ -22139,15 +23058,25 @@ function achDefProgress(def){
     const cur = Math.max(0, Math.min(total, checks));
     return { cur, goal: total, pct: cur / total };
   }
+  if(id.startsWith("tbl:") && id.endsWith(":first_check")){
+    const code = String(def?.tableCode || "").trim();
+    const cur = Math.max(0, Math.min(1, Number(achStore?.progress?.tableChecks?.[code] || 0)));
+    return { cur, goal:1, pct: cur };
+  }
   return { cur:0, goal:1, pct:0 };
 }
 function achBuildAllDefs(){
   achEnsureRandomizerCatalog();
   achEnsureExtendedStore();
-  const tableDefs = [];
-  Object.values(achStore?.catalog?.tables || {}).forEach((arr)=>{
-    (arr || []).forEach((d)=> tableDefs.push({ ...(d || {}), bucket:"table" }));
+  const tableDefMap = new Map();
+  const repoTables = achBuildRepoTableAchievementCatalog();
+  Object.values(repoTables || {}).forEach((arr)=>{
+    (arr || []).forEach((d)=> tableDefMap.set(String(d?.id || ""), { ...(d || {}), bucket:"table" }));
   });
+  Object.values(achStore?.catalog?.tables || {}).forEach((arr)=>{
+    (arr || []).forEach((d)=> tableDefMap.set(String(d?.id || ""), { ...(d || {}), bucket:"table" }));
+  });
+  const tableDefs = Array.from(tableDefMap.values()).filter((d)=> String(d?.id || "").trim());
   const randomDefs = (achStore?.catalog?.randomizer || []).map(d=>({ ...(d || {}), bucket:"randomizer" }));
   return { tableDefs, randomDefs };
 }
@@ -23439,7 +24368,11 @@ window.__flprMusic = window.__flprMusic || {
   lockedUntil:0,
   completedOnceKey:"",
   pendingBossPhase2:false,
-  phase2NoticeShown:false
+  phase2NoticeShown:false,
+  crossfadeTimer:0,
+  crossfadeToken:0,
+  crossfadeAudio:null,
+  crossfadeTarget:""
 };
 function musicEnsureManager(){
   const mgr = (window.__flprMusic ||= { audio:null, current:"", currentUrl:"", preview:"", lockedUntil:0, completedOnceKey:"", pendingBossPhase2:false, phase2NoticeShown:false });
@@ -23448,6 +24381,10 @@ function musicEnsureManager(){
   if(!Number.isFinite(Number(mgr.previewToken))) mgr.previewToken = 0;
   if(typeof mgr.pendingBossPhase2 !== "boolean") mgr.pendingBossPhase2 = false;
   if(typeof mgr.phase2NoticeShown !== "boolean") mgr.phase2NoticeShown = false;
+  if(!Number.isFinite(Number(mgr.crossfadeTimer))) mgr.crossfadeTimer = 0;
+  if(!Number.isFinite(Number(mgr.crossfadeToken))) mgr.crossfadeToken = 0;
+  if(!("crossfadeAudio" in mgr)) mgr.crossfadeAudio = null;
+  if(typeof mgr.crossfadeTarget !== "string") mgr.crossfadeTarget = "";
   return mgr;
 }
 function musicClearPreviewTimer(){
@@ -23535,6 +24472,9 @@ function musicSetScenarioVolume(name, volume){
   if(mgr.current === name && mgr.audio){
     try{ mgr.audio.volume = musicGetEffectiveVolume(name); }catch(_){}
   }
+  if(mgr.crossfadeTarget === name && mgr.crossfadeAudio){
+    try{ mgr.crossfadeAudio.volume = musicGetEffectiveVolume(name); }catch(_){}
+  }
   saveState();
   renderMusicScenarioCard();
 }
@@ -23582,6 +24522,9 @@ function musicResolveScenarioInfo(name){
 }
 function musicHasScenarioTrack(name){
   return !!musicResolveScenarioInfo(name).ref;
+}
+function musicHasExactScenarioTrack(name){
+  return !!musicGetRawScenarioRef(name);
 }
 window.__flprMusicToastState = window.__flprMusicToastState || { token:0, timer:0, clearTimer:0, lastSig:"" };
 function musicGetDisplayFileName(info){
@@ -23636,6 +24579,14 @@ function musicShowNowPlayingToast(name, info){
   }catch(_){}
 }
 function musicGetBossBattlePct(){
+  try{
+    const preferTestHp = !!state?.bossHpTest?.forceShowCard && (!ap?.connected || !state?.bossHpLive?.inited);
+    if(preferTestHp){
+      const testMax = Math.max(1, Number(state?.bossHpTest?.max || 100));
+      const testCur = Math.max(0, Math.min(testMax, Number(state?.bossHpTest?.cur ?? testMax)));
+      return Math.max(0, Math.min(100, Math.round((testCur / testMax) * 100)));
+    }
+  }catch(_){}
   const max = Math.max(1, Number(state?.bossHpLive?.max || 100));
   const cur = Math.max(0, Math.min(max, Number(state?.bossHpLive?.cur ?? max)));
   if(Number.isFinite(cur) && Number.isFinite(max) && max > 0){
@@ -23659,7 +24610,7 @@ function musicDisarmBossPhase2Transition(){
 }
 function musicArmBossPhase2Transition(){
   const mgr = musicEnsureManager();
-  if(!musicHasScenarioTrack("boss_battle_phase2")) return false;
+  if(!musicHasExactScenarioTrack("boss_battle_phase2")) return false;
   mgr.pendingBossPhase2 = true;
   try{
     const audio = mgr.audio;
@@ -23798,6 +24749,45 @@ function ensureMusicScenarioControls(){
     row.insertBefore(wrap, acts || null);
   });
 }
+function musicHandleAudioEnded(a){
+  const liveMgr = musicEnsureManager();
+  if(a !== liveMgr.audio) return;
+  const previewEnded = String(liveMgr.preview || "") && String(liveMgr.preview || "") === String(liveMgr.current || "");
+  if(!a.loop && liveMgr.current && liveMgr.currentUrl){
+    liveMgr.completedOnceKey = `${liveMgr.current}|${liveMgr.currentUrl}`;
+  }
+  const shouldAdvanceBossPhase2 = !previewEnded
+    && String(liveMgr.current || "") === "boss_battle_beginning"
+    && musicGetBossBattleScenario() === "boss_battle_phase2"
+    && musicHasExactScenarioTrack("boss_battle_phase2");
+  liveMgr.preview = "";
+  if(shouldAdvanceBossPhase2){
+    liveMgr.pendingBossPhase2 = false;
+    liveMgr.completedOnceKey = "";
+    setTimeout(()=>{
+      try{ musicPlayScenario("boss_battle_phase2", { force:true, forceStopIfMissing:true }); }catch(_){}
+      try{ renderMusicScenarioCard(); }catch(_){}
+    }, 0);
+    return;
+  }
+  if(previewEnded){
+    liveMgr.lockedUntil = 0;
+    setTimeout(()=>{
+      try{ musicRefreshScenario(); }catch(_){}
+      try{ renderMusicScenarioCard(); }catch(_){}
+    }, 0);
+    return;
+  }
+  try{ renderMusicScenarioCard(); }catch(_){}
+}
+function musicBindAudioEnded(a){
+  if(!a || a.__flprEndedBound) return a;
+  try{
+    a.__flprEndedBound = true;
+    a.addEventListener("ended", ()=>musicHandleAudioEnded(a));
+  }catch(_){}
+  return a;
+}
 function musicEnsureAudio(){
   const mgr = musicEnsureManager();
   if(!mgr.audio){
@@ -23805,43 +24795,104 @@ function musicEnsureAudio(){
     a.preload = "auto";
     a.loop = true;
     a.volume = musicGetBaseVolume();
-    a.addEventListener("ended", ()=>{
-      const liveMgr = musicEnsureManager();
-      const previewEnded = String(liveMgr.preview || "") && String(liveMgr.preview || "") === String(liveMgr.current || "");
-      if(!a.loop && liveMgr.current && liveMgr.currentUrl){
-        liveMgr.completedOnceKey = `${liveMgr.current}|${liveMgr.currentUrl}`;
-      }
-      const shouldAdvanceBossPhase2 = !previewEnded
-        && String(liveMgr.current || "") === "boss_battle_beginning"
-        && musicGetBossBattleScenario() === "boss_battle_phase2"
-        && musicHasScenarioTrack("boss_battle_phase2");
-      liveMgr.preview = "";
-      if(shouldAdvanceBossPhase2){
-        liveMgr.pendingBossPhase2 = false;
-        liveMgr.completedOnceKey = "";
-        setTimeout(()=>{
-          try{ musicPlayScenario("boss_battle_phase2", { force:true, forceStopIfMissing:true }); }catch(_){}
-          try{ renderMusicScenarioCard(); }catch(_){}
-        }, 0);
-        return;
-      }
-      if(previewEnded){
-        liveMgr.lockedUntil = 0;
-        setTimeout(()=>{
-          try{ musicRefreshScenario(); }catch(_){}
-          try{ renderMusicScenarioCard(); }catch(_){}
-        }, 0);
-        return;
-      }
-      try{ renderMusicScenarioCard(); }catch(_){}
-    });
-    mgr.audio = a;
+    mgr.audio = musicBindAudioEnded(a);
   }
   mgr.audio.volume = musicGetEffectiveVolume(String(mgr.current || ""));
   return mgr.audio;
 }
+function musicCancelCrossfade(){
+  const mgr = musicEnsureManager();
+  if(mgr.crossfadeTimer){
+    try{ clearInterval(mgr.crossfadeTimer); }catch(_){}
+  }
+  mgr.crossfadeTimer = 0;
+  mgr.crossfadeToken = Number(mgr.crossfadeToken || 0) + 1;
+  const fadeAudio = mgr.crossfadeAudio;
+  mgr.crossfadeAudio = null;
+  mgr.crossfadeTarget = "";
+  if(fadeAudio && fadeAudio !== mgr.audio){
+    try{ fadeAudio.pause(); }catch(_){}
+    try{ fadeAudio.removeAttribute("src"); fadeAudio.load(); }catch(_){}
+  }
+}
+function musicCrossfadeToScenario(name, opts){
+  opts = opts || {};
+  const mgr = musicEnsureManager();
+  if(Date.now() < Number(mgr.lockedUntil || 0) && !opts.force) return false;
+  const info = musicResolveScenarioInfo(name);
+  const ref = String(info.ref || "").trim();
+  if(!ref){
+    if(opts.forceStopIfMissing) musicStop();
+    return false;
+  }
+  const url = resolveAudioRef(ref);
+  if(!url) return false;
+  if(mgr.crossfadeTarget === name && mgr.crossfadeAudio) return true;
+  const fromAudio = mgr.audio;
+  const fromName = String(mgr.current || "");
+  if(!fromAudio || fromAudio.paused || (fromName === String(name || "") && mgr.currentUrl === url)){
+    return musicPlayScenario(name, { ...opts, force:true });
+  }
+  musicCancelCrossfade();
+  const toAudio = musicBindAudioEnded(new Audio());
+  const loop = (opts.loop != null) ? !!opts.loop : musicGetScenarioLoop(name);
+  const toVolume = musicGetEffectiveVolume(name);
+  const fromVolume = Math.max(0, Math.min(1, Number(fromAudio.volume) || musicGetEffectiveVolume(fromName)));
+  const durationMs = Math.max(600, Number(opts.durationMs) || 3200);
+  const token = Number(mgr.crossfadeToken || 0) + 1;
+  mgr.crossfadeToken = token;
+  mgr.crossfadeAudio = toAudio;
+  mgr.crossfadeTarget = String(name || "");
+  mgr.pendingBossPhase2 = false;
+  toAudio.preload = "auto";
+  toAudio.loop = !!loop;
+  toAudio.volume = 0;
+  toAudio.src = url;
+  try{ toAudio.currentTime = 0; }catch(_){}
+  const p = toAudio.play();
+  if(p && p.catch){
+    p.catch(()=>{
+      const liveMgr = musicEnsureManager();
+      if(Number(liveMgr.crossfadeToken || 0) !== token) return;
+      musicCancelCrossfade();
+      musicPlayScenario(name, { ...opts, force:true });
+    });
+  }
+  if(!opts.preview){
+    try{ musicShowNowPlayingToast(name, info); }catch(_){}
+    if(String(name || "") === "boss_battle_phase2"){
+      try{ musicShowBossPhase2Notice(); }catch(_){}
+    }
+  }
+  const startedAt = Date.now();
+  mgr.crossfadeTimer = setInterval(()=>{
+    const liveMgr = musicEnsureManager();
+    if(Number(liveMgr.crossfadeToken || 0) !== token) return;
+    const raw = Math.max(0, Math.min(1, (Date.now() - startedAt) / durationMs));
+    const eased = raw * raw * (3 - (2 * raw));
+    try{ fromAudio.volume = Math.max(0, fromVolume * (1 - eased)); }catch(_){}
+    try{ toAudio.volume = Math.max(0, Math.min(1, toVolume * eased)); }catch(_){}
+    if(raw < 1) return;
+    try{ clearInterval(liveMgr.crossfadeTimer); }catch(_){}
+    liveMgr.crossfadeTimer = 0;
+    try{ fromAudio.pause(); }catch(_){}
+    liveMgr.audio = toAudio;
+    liveMgr.current = String(name || "");
+    liveMgr.currentUrl = url;
+    liveMgr.preview = opts.preview ? String(name || "") : "";
+    liveMgr.completedOnceKey = "";
+    liveMgr.pendingBossPhase2 = false;
+    liveMgr.crossfadeAudio = null;
+    liveMgr.crossfadeTarget = "";
+    try{ toAudio.volume = toVolume; }catch(_){}
+    try{ renderMusicScenarioCard(); }catch(_){}
+  }, 40);
+  try{ renderMusicScenarioCard(); }catch(_){}
+  return true;
+}
 function musicStop(opts){
   const mgr = musicEnsureManager();
+  musicCancelCrossfade();
   const audio = mgr.audio;
   if(audio){
     try{ audio.pause(); }catch(_){}
@@ -23859,6 +24910,7 @@ function musicStop(opts){
 function musicPlayScenario(name, opts){
   opts = opts || {};
   const mgr = musicEnsureManager();
+  musicCancelCrossfade();
   const info = musicResolveScenarioInfo(name);
   const ref = String(info.ref || "").trim();
   if(!ref){
@@ -23928,10 +24980,12 @@ function musicRefreshScenario(){
     if(musicIsBossContextActive() || (Number.isFinite(bossPct) && bossPct > 0 && bossPct < 100)){
       const want = musicGetBossBattleScenario();
       if(want === "boss_battle_phase2"){
+        if(mgr.crossfadeTarget === "boss_battle_phase2" && mgr.crossfadeAudio) return;
         if(String(mgr.current || "") === "boss_battle_beginning" && mgr.audio && !mgr.audio.paused){
-          if(!musicArmBossPhase2Transition()) return void musicPlayScenario("boss_battle_beginning", { forceStopIfMissing:true });
-          return;
+          if(!musicHasExactScenarioTrack("boss_battle_phase2")) return void musicPlayScenario("boss_battle_beginning", { forceStopIfMissing:true });
+          return void musicCrossfadeToScenario("boss_battle_phase2", { force:true, forceStopIfMissing:true, durationMs:3200 });
         }
+        if(!musicHasExactScenarioTrack("boss_battle_phase2")) return void musicPlayScenario("boss_battle_beginning", { forceStopIfMissing:true });
         return void musicPlayScenario("boss_battle_phase2", { forceStopIfMissing:true });
       }
       musicDisarmBossPhase2Transition();
@@ -25052,7 +26106,7 @@ function bossTriggerVictoryCelebration(){
   try{ flprStatsQueueVictorySummary(durationMs + BOSS_VICTORY_STATS_CLEAR_MS); }catch(_){}
   fx.endTimer = setTimeout(()=>{
     bossStopVictoryCelebration();
-    try{ flprStatsEnsureVictorySummaryVisible(); }catch(_){}
+    try{ flprStatsQueueVictorySummary(BOSS_VICTORY_STATS_CLEAR_MS); }catch(_){}
   }, durationMs + 250);
 }
 
@@ -25801,6 +26855,106 @@ function bossGetRetaliationState(){
   state.bossRetaliation = normalizeBossRetaliationState(state?.bossRetaliation);
   return state.bossRetaliation;
 }
+function besiegedArmyConfigs(){
+  return {
+    skeletons:{
+      label:"Skeleton Host",
+      badge:"\u{1F480} SKELETON HOST",
+      className:"armySkeletons",
+      troops:["\u{1F480}", "\u{1F9B4}", "\u{1F480}", "\u{2694}\u{FE0F}", "\u{1F480}", "\u{1F9B4}", "\u{1F480}", "\u{27B6}", "\u{1F480}", "\u{27B6}"],
+      projectiles:["\u{1F525}", "\u{1F4A3}", "\u{26AB}"]
+    },
+    goblins:{
+      label:"Goblin Sappers",
+      badge:"\u{1F47A} GOBLIN SAPPERS",
+      className:"armyGoblins",
+      troops:["\u{1F47A}", "\u{1F4A3}", "\u{1F47A}", "\u{1FA93}", "\u{1F47A}", "\u{1F4A3}", "\u{1F47A}", "\u{27B6}", "\u{1F47A}", "\u{1F525}"],
+      projectiles:["\u{1F4A3}", "\u{1F525}", "\u{26AB}"]
+    },
+    knights:{
+      label:"Fallen Knights",
+      badge:"\u{2694}\u{FE0F} FALLEN KNIGHTS",
+      className:"armyKnights",
+      troops:["\u{1F6E1}\u{FE0F}", "\u{2694}\u{FE0F}", "\u{1F3F9}", "\u{1F6E1}\u{FE0F}", "\u{2694}\u{FE0F}", "\u{1F3F9}", "\u{1F6E1}\u{FE0F}", "\u{27B6}", "\u{2694}\u{FE0F}", "\u{1F3F9}"],
+      projectiles:["\u{27B6}", "\u{1F525}", "\u{26AB}"]
+    },
+    ghosts:{
+      label:"Ghost Legion",
+      badge:"\u{1F47B} GHOST LEGION",
+      className:"armyGhosts",
+      troops:["\u{1F47B}", "\u{1F47B}", "\u{1F300}", "\u{1F47B}", "\u{1F32B}\u{FE0F}", "\u{1F47B}", "\u{1F300}", "\u{27B6}", "\u{1F47B}", "\u{1F32B}\u{FE0F}"],
+      projectiles:["\u{1F300}", "\u{1F525}", "\u{2728}"]
+    },
+    machines:{
+      label:"Siege Engines",
+      badge:"\u{1F4A5} SIEGE ENGINES",
+      className:"armyMachines",
+      troops:["\u{1F52B}", "\u{1F4A3}", "\u{1F69C}", "\u{1F52B}", "\u{1F4A3}", "\u{2699}\u{FE0F}", "\u{1F69C}", "\u{1F525}", "\u{1F52B}", "\u{1F4A3}"],
+      projectiles:["\u{26AB}", "\u{1F4A3}", "\u{1F525}"]
+    }
+  };
+}
+function besiegedGetArmyConfig(type){
+  const configs = besiegedArmyConfigs();
+  const key = String(type || "").trim();
+  return configs[key] || configs.skeletons;
+}
+function besiegedChooseArmyConfig(){
+  const configs = besiegedArmyConfigs();
+  const keys = Object.keys(configs);
+  const key = keys[Math.floor(Math.random() * keys.length)] || "skeletons";
+  return { key, ...configs[key] };
+}
+window.__besiegedBattleFx = window.__besiegedBattleFx || { active:false, timer:null, type:"", lastImpactAt:0 };
+function besiegedPlayBattleTick(type){
+  try{
+    if(!sfx?.enabled) return;
+    const cfg = besiegedGetArmyConfig(type);
+    playTone({ freq:72 + Math.random()*28, dur:0.42, type:"sawtooth", gain:0.028, sweepTo:50 + Math.random()*22, sweepDur:0.38 });
+    setTimeout(()=>playTone({ freq:118 + Math.random()*44, dur:0.22, type:"triangle", gain:0.022, sweepTo:82 + Math.random()*30, sweepDur:0.20 }), 130);
+    const now = Date.now();
+    if((now - Number(window.__besiegedBattleFx.lastImpactAt || 0)) > 850 && Math.random() < 0.52){
+      window.__besiegedBattleFx.lastImpactAt = now;
+      const cannonish = cfg.className === "armyMachines" || Math.random() < 0.5;
+      if(cannonish){
+        playTone({ freq:62, dur:0.18, type:"sawtooth", gain:0.065, sweepTo:38, sweepDur:0.16 });
+        setTimeout(()=>playTone({ freq:1540, dur:0.035, type:"square", gain:0.025, sweepTo:840, sweepDur:0.035 }), 52);
+      }else{
+        playTone({ freq:220, dur:0.08, type:"square", gain:0.036, sweepTo:126, sweepDur:0.08 });
+        setTimeout(()=>playTone({ freq:92, dur:0.18, type:"triangle", gain:0.042, sweepTo:58, sweepDur:0.16 }), 74);
+      }
+    }
+  }catch(_){}
+}
+function besiegedStartBattleAudio(type){
+  try{
+    const fx = (window.__besiegedBattleFx ||= { active:false, timer:null, type:"", lastImpactAt:0 });
+    const nextType = String(type || "skeletons");
+    if(fx.active && fx.type === nextType) return;
+    besiegedStopBattleAudio();
+    if(!sfx?.enabled) return;
+    fx.active = true;
+    fx.type = nextType;
+    besiegedPlayBattleTick(nextType);
+    fx.timer = setInterval(()=>{ besiegedPlayBattleTick(nextType); }, 920);
+  }catch(_){}
+}
+function besiegedStopBattleAudio(){
+  try{
+    const fx = (window.__besiegedBattleFx ||= { active:false, timer:null, type:"", lastImpactAt:0 });
+    if(fx.timer) clearInterval(fx.timer);
+    fx.timer = null;
+    fx.active = false;
+    fx.type = "";
+  }catch(_){}
+}
+function besiegedSyncBattleAudio(){
+  try{
+    const live = besiegedGetState();
+    if(live.active) besiegedStartBattleAudio(live.armyType || "skeletons");
+    else besiegedStopBattleAudio();
+  }catch(_){}
+}
 function besiegedGetState(){
   state.besiegedEvent = normalizeBesiegedState(state?.besiegedEvent);
   return state.besiegedEvent;
@@ -25823,7 +26977,7 @@ function besiegedParseScoreValue(text){
   return Number.isFinite(value) && value > 0 ? Math.round(value) : 0;
 }
 function besiegedResolveTargetScore(tableKey, tableName){
-  const fallbackBase = 8000000;
+  const fallbackBase = 6400000;
   try{
     const tableNodes = (typeof relicGetNodesForTable === "function") ? relicGetNodesForTable(tableKey) : [];
     const nodes = Array.isArray(tableNodes) ? tableNodes : [];
@@ -25852,14 +27006,15 @@ function besiegedResolveTargetScore(tableKey, tableName){
     }else if(easyScore > 0){
       target = Math.round(easyScore * (1.18 + (Math.random() * 0.16)));
     }
-    if(!(target > 0)) target = fallbackBase + Math.round(Math.random() * 2200000);
+    if(target > 0) target = Math.max(100000, Math.round(target * 0.8));
+    if(!(target > 0)) target = fallbackBase + Math.round(Math.random() * 1760000);
     return {
       score: target,
       label: `${target.toLocaleString("en-US")}+`,
       tableName: String(tableName || "").trim()
     };
   }catch(_){}
-  const fallback = fallbackBase + Math.round(Math.random() * 2200000);
+  const fallback = fallbackBase + Math.round(Math.random() * 1760000);
   return {
     score: fallback,
     label: `${fallback.toLocaleString("en-US")}+`,
@@ -25917,11 +27072,51 @@ function besiegedSyncContext(opts){
   }
   return changed;
 }
+function besiegedBossUnlockedByStateOnly(){
+  try{
+    const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
+    return !!(
+      isTowerWorldUnlockedByState(bossWorldKey) ||
+      isTowerWorldUnlockedByState("boss") ||
+      state?.bossOpen ||
+      Number(window.__bossTestUnlockUntil || 0) > Date.now()
+    );
+  }catch(_){}
+  return false;
+}
+function besiegedRelockBossIfNeeded(live){
+  try{
+    const wasOpen = (typeof live?.bossUnlockedAtStart === "boolean")
+      ? !!live.bossUnlockedAtStart
+      : besiegedBossUnlockedByStateOnly();
+    if(wasOpen) return false;
+    const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
+    if(state && state.worlds){
+      if(state.worlds[bossWorldKey]) state.worlds[bossWorldKey].locked = true;
+      if(bossWorldKey !== "boss" && state.worlds.boss) state.worlds.boss.locked = true;
+    }
+    if(state) state.bossOpen = false;
+    window.__bossTestUnlockUntil = 0;
+    window.__bossThreatDelayUntil = 0;
+    try{
+      const els = (typeof getBossTowerWorldElements === "function") ? getBossTowerWorldElements() : [];
+      (els || []).forEach((el)=>{
+        if(!el) return;
+        el.classList.add("locked");
+        el.classList.remove("bossThreatPulse", "bossThreatPulseFadeIn", "unlocking");
+      });
+    }catch(_){}
+    return true;
+  }catch(_){}
+  return false;
+}
 function besiegedClear(reason){
   const live = besiegedGetState();
   if(!live.active) return false;
   const tableName = String(live.tableName || "Besieged table").trim();
   state.besiegedEvent = buildDefaultBesiegedState();
+  besiegedStopBattleAudio();
+  besiegedRelockBossIfNeeded(live);
   try{ saveState(); }catch(_){}
   try{ playSfx("redeem"); }catch(_){}
   try{ toast("good", "SIEGE BROKEN", `${tableName} is free; the tower unlocks again.`, 3400); }catch(_){}
@@ -25937,7 +27132,7 @@ function besiegedClear(reason){
 function besiegedActivate(opts){
   opts = opts || {};
   if(besiegedIsActive()) return false;
-  if(!opts.force && (!isBossUnlocked() || isBossDefeated())) return false;
+  if(!opts.force && isBossDefeated()) return false;
   const target = opts.target || besiegedChooseTargetTable(opts);
   if(!target || !target.tableKey || !target.worldKey) return false;
   if(opts.force && Number(getBallLevelByTableKey(target.tableKey) || 0) <= 0){
@@ -25945,6 +27140,7 @@ function besiegedActivate(opts){
     state.balls[`${target.tableKey}|1`] = true;
   }
   const targetScore = besiegedResolveTargetScore(target.tableKey, target.tableName);
+  const army = besiegedChooseArmyConfig();
   state.besiegedEvent = normalizeBesiegedState({
     active:true,
     worldKey: String(target.worldKey || ""),
@@ -25952,16 +27148,23 @@ function besiegedActivate(opts){
     tableName: String(target.tableName || ""),
     targetScore: Number(targetScore?.score || 0),
     targetLabel: String(targetScore?.label || ""),
-    activatedAt: Date.now()
+    activatedAt: Date.now(),
+    armyType: String(army.key || "skeletons"),
+    armyLabel: String(army.label || "Skeleton Host"),
+    bossUnlockedAtStart: !!(
+      (typeof isBossUnlocked === "function" && isBossUnlocked()) ||
+      besiegedBossUnlockedByStateOnly()
+    )
   });
   besiegedSyncContext({ save:false });
   try{ saveState(); }catch(_){}
   try{ playSfx("trap"); }catch(_){}
+  try{ besiegedStartBattleAudio(army.key); }catch(_){}
   try{
     toast(
-      "bad",
+      "bad besiegedToast",
       "BESIEGED TABLE",
-      `${String(target.tableName || "A table")} is under assault. Reach ${String(targetScore?.label || "the posted score")} there to break the siege.`,
+      `${String(target.tableName || "A table")} is under assault by ${String(army.label || "the boss army")}. Reach ${String(targetScore?.label || "the posted score")} there to break the siege. Three balls are allowed.`,
       5200
     );
   }catch(_){}
@@ -25973,7 +27176,7 @@ function bossMaybeTriggerBesiegedEvent(opts){
   opts = opts || {};
   try{
     if(besiegedIsActive()) return false;
-    if(!isBossUnlocked() || isBossDefeated()) return false;
+    if(isBossDefeated()) return false;
     if(isTrapCheckLockActive()) return false;
     if(opts.awardAchievements === false) return false;
     const ids = Array.isArray(opts.list) ? opts.list : [];
@@ -27820,7 +29023,9 @@ function processReceivedItem(it, itemIndex, locId, opts){
     }
   }catch(_){}
 // If we receive a Boss Key item, light up the next key in the Boss Keys dock.
-  if(isBossKeyItemName(effectiveName)){ try{ bossKeysGrantOne(); }catch(e){} }
+  if(isBossKeyItemName(effectiveName)){
+    try{ bossKeysGrantOne(effectiveName, { isSnapshot:!!opts.isSnapshot, isFlush:!!opts.isFlush, itemIndex, locId }); }catch(e){}
+  }
 
   if(!name){
     // DataPackage may arrive after ReceivedItems; defer until mappings exist.
@@ -29378,6 +30583,7 @@ for(const r of (received || [])){
           }
         }
       }
+      bossKeysSyncLegacyMirror(Number(window.__apBossKeyCount || 0));
       if(bossKeysChanged) bossKeysSave();
       // Always re-render to keep dock state in sync with AP after connect/sync.
       bossKeysRender();
@@ -30477,6 +31683,7 @@ function runProgressiveBallFlow(table, opts){
       playSfx("ball");
       showProgressiveBallCard(tableName, targetEnd, keyBefore, {
         startLevel: lvlBefore,
+        forceUnlockedVisual: shouldPreUnlockFx,
         mockOnly: !!opts.mockOnly,
         durationMs: 3500,
         onSocket: ()=>{
@@ -30820,11 +32027,52 @@ function applyBossKeysCount(count){
     for(let i=0;i<BOSS_KEYS_COUNT;i++){
       if(bossKeysState && bossKeysState[i]) bossKeysState[i].acquired = (i < c);
     }
+    bossKeysSyncLegacyMirror(c);
+    window.__apBossKeyCount = c;
     bossKeysSave();
     bossKeysRender();
     updateBossThreatIndicators();
   }catch(_){}
   try{ relicHandleBossKeysCountChanged(prev, c); }catch(_){}
+}
+
+function bossKeysSyncLegacyMirror(count){
+  try{
+    const c = Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(count) || 0));
+    window.bossKeysState = bossKeysState;
+    state.bossKeys = Array.from({ length:BOSS_KEYS_COUNT }, (_, i)=>i < c);
+  }catch(_){}
+}
+
+function bossKeysApplyAcquiredCount(count, opts){
+  opts = opts || {};
+  const prev = getBossKeyRedeemedCount();
+  const c = Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(count) || 0));
+  try{
+    for(let i=0;i<BOSS_KEYS_COUNT;i++){
+      if(bossKeysState && bossKeysState[i]) bossKeysState[i].acquired = (i < c);
+    }
+    bossKeysSyncLegacyMirror(c);
+    if(opts.updateApCount !== false) window.__apBossKeyCount = c;
+    bossKeysSave();
+    bossKeysRender();
+    if(opts.animate !== false && c > prev){
+      bossKeysRunRedeemSequence(prev, c, { force: opts.forceAnimation !== false, dedupeMs: 320 });
+    }
+    try{ relicHandleBossKeysCountChanged(prev, c); }catch(_){}
+    const requiredCount = getBossKeysRequiredForOpen();
+    if(prev < requiredCount && c >= requiredCount){
+      try{ forceBossWorldUnlocked(opts.source || "boss-key-receipt"); }catch(_){}
+      try{
+        const bossPick = ensureBossTableSelectionForUnlock({ forceRoll:false, render:true, selectInTower:true });
+        if(bossPick?.ok) apLog(`Boss table auto-selected; ${bossPick.tableName}`);
+      }catch(_){}
+      try{ startBossIncomingAlert(5200); }catch(_){}
+    }else{
+      try{ updateBossThreatIndicators(); }catch(_){}
+    }
+  }catch(_){}
+  return c;
 }
 
 function runBossKeySingleTest(){
@@ -30853,6 +32101,7 @@ function runBossKeySingleTest(){
 
     if(!bossKeysState[missingIdx]) return;
     bossKeysState[missingIdx].acquired = true;
+    bossKeysSyncLegacyMirror(getBossKeysAcquiredCount());
     bossKeysSave();
     bossKeysRender();
     bossKeysAnimate(missingIdx, true);
@@ -30959,6 +32208,7 @@ function runBossKeysToThreeTest(){
         try{
           if(!bossKeysState[idx]) return;
           bossKeysState[idx].acquired = true;
+          bossKeysSyncLegacyMirror(getBossKeysAcquiredCount());
           bossKeysSave();
           bossKeysRender();
           bossKeysAnimate(idx, true);
@@ -31527,7 +32777,9 @@ function renderChecks(){
       wk = firstPlayableWorldKey;
     }
   }
-  const w = state.worlds?.[wk];
+  const w = (wk === "boss" && !state.worlds?.[wk])
+    ? state.worlds?.[getBossWorldKey()]
+    : state.worlds?.[wk];
   const checksWrap = document.querySelector("#viewChecks .checksWrap");
   if(checksWrap && wk !== "boss"){
     checksWrap.classList.remove("bossBannerMode");
@@ -31843,7 +33095,10 @@ function renderTableBlock(parent, tableName, nodes, opts){
   if(tableComplete){
     doneBadge = document.createElement("span");
     doneBadge.className = "checksCompleteBadge";
-    doneBadge.textContent = "CHECKS COMPLETE!";
+    const doneBadgeText = document.createElement("span");
+    doneBadgeText.className = "checksCompleteBadgeText";
+    doneBadgeText.textContent = "CHECKS COMPLETE!";
+    doneBadge.appendChild(doneBadgeText);
   }
   const meta = document.createElement("div");
   meta.className = "tableMeta";
@@ -32758,8 +34013,9 @@ function initDesignerFlyerSusan(items, opts){
     const overrideRef = getDesignerFlyerOverrideRef(g?.gameKey || "");
     if(overrideRef === "__none__") return [];
     const overrideHref = overrideRef ? resolveBannerRef(overrideRef) : "";
+    const bestiaryHref = g?.tableName ? String(getBestiaryFlyerUrlForTable(g.tableName) || "").trim() : "";
     const tableBannerHref = g?.tableName ? String(getTableBannerUrl(opts.worldKey || "", g.tableName) || "").trim() : "";
-    return dedupeFlyerUrls([overrideHref, tableBannerHref]);
+    return dedupeFlyerUrls([overrideHref, bestiaryHref, tableBannerHref]);
   }
   function computeFlyerHrefForGame(g){
     const list = computeFlyerCandidatesForGame(g);
@@ -33255,8 +34511,9 @@ function openDesignerInfoOverlay(designerName, opts){
       const gameKey = `${designerKey}|${designerNormKey(gameKeyRaw) || `game_${gi + 1}`}`;
       const overrideRef = getDesignerFlyerOverrideRef(gameKey);
       const overrideHref = (overrideRef && overrideRef !== "__none__") ? resolveBannerRef(overrideRef) : "";
+      const bestiaryHref = mappedTableName ? String(getBestiaryFlyerUrlForTable(mappedTableName) || "").trim() : "";
       const tableBannerHref = mappedTableName ? String(getTableBannerUrl(activeWorldForFlyers, mappedTableName) || "").trim() : "";
-      const flyerHref = String(overrideHref || tableBannerHref || "").trim();
+      const flyerHref = String(overrideHref || bestiaryHref || tableBannerHref || "").trim();
       return {
         title,
         tableName: mappedTableName,
@@ -33547,7 +34804,7 @@ function relicGetSelectedId(){
   return RELIC_DEFS[0]?.id || "";
 }
 function relicCheckUnlockById(id, reason){
-  if(!episodeCanTrack()) return false;
+  if(!relicCanTrackCurrentRun()) return false;
   const def = relicGetDef(id);
   if(!def || relicIsUnlocked(def.id)) return false;
   const pr = relicGetUnlockProgress(def.id);
@@ -33587,7 +34844,7 @@ function relicSetEquipped(slot, id, opts){
   relicRebuildOpeningMarks();
   try{ renderAll(); }catch(_){}
   try{ renderRelicsOverlay(); }catch(_){}
-  if(episodeCanTrack() && relicGetEquippedCount() >= 3){
+  if(relicCanTrackCurrentRun() && relicGetEquippedCount() >= 3){
     try{ achUnlock("rz:relic-loadout", { ...(RELIC_ACH_DEF_BY_ID["rz:relic-loadout"] || {}), type:"randomizer" }); }catch(_){}
   }
   if(!opts.silent){
@@ -33754,7 +35011,7 @@ function relicMaybeFinalizeFirstBlood(tableKey){
   }
 }
 function relicHandleTableSwitch(prevKey, nextKey){
-  if(!episodeCanTrack()) return;
+  if(!relicCanTrackCurrentRun()) return;
   const run = relicGetRunState();
   const prev = String(prevKey || "");
   const next = String(nextKey || "");
@@ -33804,7 +35061,7 @@ function relicHandleTableSwitch(prevKey, nextKey){
   relicSaveProgressState();
 }
 function relicHandleCheckCleared(locId, opts){
-  if(!episodeCanTrack()) return;
+  if(!relicCanTrackCurrentRun()) return;
   const tableKey = relicGetTableKeyFromLocId(locId);
   if(!tableKey) return;
   const wk = String(tableKey.split("|")[0] || "");
@@ -33856,7 +35113,7 @@ function relicHandleCheckCleared(locId, opts){
   relicSaveProgressState();
 }
 function relicHandleRewardReceipt(itemName, tableKey, opts){
-  if(!episodeCanTrack()) return;
+  if(!relicCanTrackCurrentRun()) return;
   const key = String(tableKey || "");
   if(!key) return;
   const run = relicGetRunState();
@@ -33908,7 +35165,7 @@ function relicHandleRewardReceipt(itemName, tableKey, opts){
   relicSaveProgressState();
 }
 function relicHandleBossKeysCountChanged(prevCount, nextCount){
-  if(!episodeCanTrack()) return;
+  if(!relicCanTrackCurrentRun()) return;
   const run = relicGetRunState();
   const prev = Math.max(0, Number(prevCount || 0));
   const next = Math.max(0, Number(nextCount || 0));
@@ -34329,6 +35586,7 @@ state.selected = id;
       }
       renderAll();
       syncFlprBotCurrentTable(false);
+      try{ syncFlprBotBossStatus(false); }catch(_){}
       try{ musicRefreshScenario(); }catch(_){}
     };
 
@@ -34607,6 +35865,7 @@ function syncNowPlayingIndexesToUnlockedTables(opts){
       try{ applyOverviewNowPlayingHighlight(); }catch(_){}
       try{ flprStatsRefreshNowPlayingTracker(); }catch(_){}
       try{ syncFlprBotCurrentTable(true); }catch(_){}
+      try{ syncFlprBotBossStatus(true); }catch(_){}
     }
   }catch(_){}
   return changed;
@@ -34896,16 +36155,17 @@ function renderTowerPentagon(container, worldObj, worldKey){
     const tableTargets = liveTargets.filter(t => String(t?.tableKey || "") === tableKey);
     const isHintTargetTable = tableTargets.length > 0;
     const hintBossKeyOnCard = tableTargets.some(t => hintIsBossTypeLabel(t?.typeLabel));
+    const siegeDropY = besiegedTarget ? 24 : 0;
 
     // Move into slot; suppress tween during AP sync
     if(suppressTween){
       card.style.transitionDuration = "0ms";
-      const scale = (idx===now ? 1.5 : 0.75);
-      card.style.transform = `translate(-50%,-50%) translate(${x}px, ${y}px) scale(${scale})`;
+      const scale = besiegedTarget ? (idx===now ? 1 : 0.88) : (idx===now ? 1.5 : 0.75);
+      card.style.transform = `translate(-50%,-50%) translate(${x}px, ${y + siegeDropY}px) scale(${scale})`;
     }else{
       card.style.transitionDuration = "";
-      const scale = rotatePhase ? 1 : (idx===now ? 1.5 : 0.75);
-      card.style.transform = `translate(-50%,-50%) translate(${x}px, ${y}px) scale(${scale})`;
+      const scale = besiegedTarget ? (rotatePhase ? 0.96 : (idx===now ? 1 : 0.88)) : (rotatePhase ? 1 : (idx===now ? 1.5 : 0.75));
+      card.style.transform = `translate(-50%,-50%) translate(${x}px, ${y + siegeDropY}px) scale(${scale})`;
     }
 
     // Banner
@@ -34916,11 +36176,13 @@ function renderTowerPentagon(container, worldObj, worldKey){
     // Name + emoji
     const revealed = isRevealed(worldKey, idx);
     const lockedByBall = !revealed;
+    const checksComplete = isTableChecksCompleteVisual(tName, tableKey, { unlocked: revealed, revealed });
     // Classes
     card.className = "pentaCard"
       + (idx===now ? " isNowPlaying" : " isDim")
       + (slot===0 ? " isTopSlot" : "")
       + (lockedByBall ? " isLockedTable" : "")
+      + (checksComplete ? " checksCompleteTower" : "")
       + (relicFinalLocked ? " relicFinalLock" : "")
       + (besiegedTarget ? " besiegedTarget" : "")
       + (besiegedLockedOut ? " besiegedLockedOut" : "")
@@ -35004,13 +36266,35 @@ function renderTowerPentagon(container, worldObj, worldKey){
     }else if(wm){
       wm.remove();
     }
+    let completeOverlay = card.querySelector(".checksCompleteOverlay");
+    if(checksComplete){
+      if(!completeOverlay){
+        const wrap = document.createElement("div");
+        wrap.innerHTML = checksCompleteOverlayHtml();
+        completeOverlay = wrap.firstElementChild;
+        card.appendChild(completeOverlay);
+      }
+    }else if(completeOverlay){
+      completeOverlay.remove();
+    }
     let siegeBadge = card.querySelector(".besiegedArmyBadge");
     let siegeStory = card.querySelector(".besiegedStory");
     let siegeBtn = card.querySelector(".besiegedTargetBtn");
+    let siegeAura = card.querySelector(".besiegedCastleAura");
     let siegeCrown = card.querySelector(".besiegedCastleCrown");
     let siegeGate = card.querySelector(".besiegedCastleGate");
     let siegeArmy = card.querySelector(".besiegedArmyField");
+    let siegeFx = card.querySelector(".besiegedSiegeFx");
+    let siegeTowerLeft = card.querySelector(".besiegedCastleTower.left");
+    let siegeTowerRight = card.querySelector(".besiegedCastleTower.right");
+    let siegeFlag = card.querySelector(".besiegedCastleFlag");
     if(besiegedTarget){
+      const armyConfig = besiegedGetArmyConfig(besiegedLive.armyType);
+      if(!siegeAura){
+        siegeAura = document.createElement("div");
+        siegeAura.className = "besiegedCastleAura";
+        card.appendChild(siegeAura);
+      }
       if(!siegeCrown){
         siegeCrown = document.createElement("div");
         siegeCrown.className = "besiegedCastleCrown";
@@ -35021,11 +36305,27 @@ function renderTowerPentagon(container, worldObj, worldKey){
         siegeGate.className = "besiegedCastleGate";
         card.appendChild(siegeGate);
       }
-      if(!siegeArmy){
+      if(!siegeTowerLeft){
+        siegeTowerLeft = document.createElement("div");
+        siegeTowerLeft.className = "besiegedCastleTower left";
+        card.appendChild(siegeTowerLeft);
+      }
+      if(!siegeTowerRight){
+        siegeTowerRight = document.createElement("div");
+        siegeTowerRight.className = "besiegedCastleTower right";
+        card.appendChild(siegeTowerRight);
+      }
+      if(!siegeFlag){
+        siegeFlag = document.createElement("div");
+        siegeFlag.className = "besiegedCastleFlag";
+        card.appendChild(siegeFlag);
+      }
+      if(!siegeArmy || String(siegeArmy.dataset.armyType || "") !== String(besiegedLive.armyType || "skeletons")){
+        if(siegeArmy) siegeArmy.remove();
         siegeArmy = document.createElement("div");
-        siegeArmy.className = "besiegedArmyField";
-        const troops = ["\u{1F480}", "\u{1F9B4}", "\u{1F480}", "\u{2694}\u{FE0F}", "\u{1F480}", "\u{1F9B4}", "\u{1F480}", "\u{27B6}", "\u{1F480}", "\u{27B6}"];
-        troops.forEach((troop, ti)=>{
+        siegeArmy.className = "besiegedArmyField " + String(armyConfig.className || "armySkeletons");
+        siegeArmy.dataset.armyType = String(besiegedLive.armyType || "skeletons");
+        (armyConfig.troops || []).forEach((troop, ti)=>{
           const span = document.createElement("span");
           span.className = "besiegedArmyTroop troop" + (ti + 1) + (troop === "\u{27B6}" ? " troopArrow" : "");
           span.textContent = troop;
@@ -35033,18 +36333,41 @@ function renderTowerPentagon(container, worldObj, worldKey){
         });
         card.appendChild(siegeArmy);
       }
+      if(!siegeFx || String(siegeFx.dataset.armyType || "") !== String(besiegedLive.armyType || "skeletons")){
+        if(siegeFx) siegeFx.remove();
+        siegeFx = document.createElement("div");
+        siegeFx.className = "besiegedSiegeFx";
+        siegeFx.dataset.armyType = String(besiegedLive.armyType || "skeletons");
+        const shots = armyConfig.projectiles || ["\u{26AB}", "\u{1F4A3}", "\u{1F525}"];
+        [0, 1, 2].forEach((si)=>{
+          const shot = document.createElement("span");
+          shot.className = "besiegedProjectile shot" + (si + 1);
+          shot.textContent = shots[si % shots.length] || "\u{26AB}";
+          shot.style.setProperty("--shotX", si === 1 ? "-42px" : (si === 2 ? "8px" : "42px"));
+          siegeFx.appendChild(shot);
+        });
+        [0, 1, 2].forEach((bi)=>{
+          const boom = document.createElement("span");
+          boom.className = "besiegedExplosion boom" + (bi + 1);
+          boom.textContent = "\u{1F4A5}";
+          siegeFx.appendChild(boom);
+        });
+        card.appendChild(siegeFx);
+      }
       if(!siegeBadge){
         siegeBadge = document.createElement("div");
         siegeBadge.className = "besiegedArmyBadge";
         card.appendChild(siegeBadge);
       }
-      siegeBadge.textContent = "\u{1F480} SKELETON HOST";
+      siegeBadge.textContent = String(armyConfig.badge || "\u{1F480} SKELETON HOST");
       if(!siegeStory){
         siegeStory = document.createElement("div");
         siegeStory.className = "besiegedStory";
         card.appendChild(siegeStory);
       }
-      siegeStory.textContent = "A minion army from the boss table is storming this castle-table. Hit the posted score to break the siege and unlock the tower.";
+      const armyLabel = String(armyConfig.label || "The boss army");
+      const armyVerb = /s$/i.test(armyLabel.trim()) ? "are" : "is";
+      siegeStory.textContent = `${armyLabel} ${armyVerb} attacking the castle-table. Hit the posted score to break the siege and unlock the tower. Three balls are allowed.`;
       if(!siegeBtn){
         siegeBtn = document.createElement("button");
         siegeBtn.type = "button";
@@ -35065,15 +36388,20 @@ function renderTowerPentagon(container, worldObj, worldKey){
       targetScore.textContent = siegeLabel;
       const targetHint = document.createElement("span");
       targetHint.className = "besiegedTargetHint";
-      targetHint.textContent = "CLICK WHEN CLEARED";
+      targetHint.textContent = "THREE BALLS ALLOWED";
       siegeBtn.textContent = "";
       siegeBtn.appendChild(targetLabel);
       siegeBtn.appendChild(targetScore);
       siegeBtn.appendChild(targetHint);
     }else{
+      if(siegeAura) siegeAura.remove();
       if(siegeCrown) siegeCrown.remove();
       if(siegeGate) siegeGate.remove();
+      if(siegeTowerLeft) siegeTowerLeft.remove();
+      if(siegeTowerRight) siegeTowerRight.remove();
+      if(siegeFlag) siegeFlag.remove();
       if(siegeArmy) siegeArmy.remove();
+      if(siegeFx) siegeFx.remove();
       if(siegeBadge) siegeBadge.remove();
       if(siegeStory) siegeStory.remove();
       if(siegeBtn) siegeBtn.remove();
@@ -35122,7 +36450,10 @@ function simpleTableRow(worldKey, worldObj, t, idx){
   const row = document.createElement("div");
   row.className = "tableRow";
   const revealed = isRevealed(worldKey, idx);
+  const tableKey = `${worldKey}|${idx}`;
+  const checksComplete = isTableChecksCompleteVisual(t, tableKey, { unlocked: revealed, revealed });
   if(!revealed) row.classList.add("isLockedTable");
+  if(checksComplete) row.classList.add("checksCompleteTower");
   const name = revealed ? getRepoDisplayTableParts(t).title : "????";
   const bannerUrl = getTableBannerUrl(worldKey, t);
   row.innerHTML = `
@@ -35139,8 +36470,59 @@ function simpleTableRow(worldKey, worldObj, t, idx){
     if(bannerEl) bannerEl.style.backgroundImage = bannerUrl ? `url('${bannerUrl}')` : "none";
     const nameEl = row.querySelector(".tableName .name");
     if(nameEl) setTableLabelWithBadge(nameEl, t, { locked: !revealed });
+    if(checksComplete){
+      const wrap = document.createElement("div");
+      wrap.innerHTML = checksCompleteOverlayHtml();
+      row.appendChild(wrap.firstElementChild);
+    }
   }catch(_){}
   return row;
+}
+
+function getTableCheckNodesForVisualComplete(tableName, tableKey){
+  const candidates = [];
+  const pushCandidate = (value)=>{
+    const v = String(value || "").trim();
+    if(v) candidates.push(v);
+  };
+  pushCandidate(tableName);
+  try{ pushCandidate(getRepoCanonicalTableName(tableName)); }catch(_){}
+  try{
+    const key = String(tableKey || "").trim();
+    const parts = key.split("|");
+    const wk = parts[0];
+    const idx = Number(parts[1]);
+    const slotName = (wk && Number.isFinite(idx)) ? state?.worlds?.[wk]?.tables?.[idx] : "";
+    pushCandidate(slotName);
+    pushCandidate(getRepoCanonicalTableName(slotName));
+  }catch(_){}
+  try{
+    const seen = new Set();
+    for(const raw of candidates){
+      const key = normKey(raw);
+      if(!key || seen.has(key)) continue;
+      seen.add(key);
+      const direct = ap?.locsByTableKey?.get?.(key);
+      if(Array.isArray(direct) && direct.length) return direct;
+    }
+  }catch(_){}
+  return [];
+}
+function isTableChecksCompleteVisual(tableName, tableKey, opts){
+  opts = opts || {};
+  if(opts.unlocked === false || opts.revealed === false) return false;
+  const nodes = getTableCheckNodesForVisualComplete(tableName, tableKey);
+  const ids = [];
+  try{
+    (nodes || []).forEach((node)=>{
+      const id = Number(node?.id);
+      if(Number.isFinite(id) && id > 0 && !ids.includes(id)) ids.push(id);
+    });
+  }catch(_){}
+  return !!(ids.length && ids.every((id)=> !!ap?.checked?.has?.(id)));
+}
+function checksCompleteOverlayHtml(){
+  return `<div class="checksCompleteOverlay"><span class="checksCompleteOverlayText">Checks Complete</span></div>`;
 }
 
 function getChecksLeftMarkup(tableName, hintTargets){
@@ -35201,11 +36583,13 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
   const hintTargets = relicGetCombinedHintTargetsForTable(tableKey);
   const hintOnThisTable = hintTargets.length > 0;
   const hintBossKeyOnThisTable = hintTargets.some((h)=>hintIsBossTypeLabel(h?.typeLabel));
+  const checksComplete = isTableChecksCompleteVisual(name, tableKey, { unlocked: !!(b1 || b2 || b3), revealed });
   t.className = "tile";
   t.setAttribute("data-tablekey", tableKey);
   if(locked || relicFinalLocked || besiegedLockedOut) t.classList.add("inactive");
   if(b1 || b2 || b3) t.classList.add("activeAny");
   if(revealed) t.classList.add("revealed");
+  if(checksComplete) t.classList.add("checksCompleteOverview");
   if(hintOnThisTable) t.classList.add("hintTargetOverview");
   if(hintBossKeyOnThisTable) t.classList.add("hintTargetOverviewBoss");
   if(isBossTable) t.classList.add("bossTableOverview");
@@ -35241,6 +36625,11 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
     ${checksMarkup}
   `;
   t.appendChild(content);
+  if(checksComplete){
+    const wrap = document.createElement("div");
+    wrap.innerHTML = checksCompleteOverlayHtml();
+    t.appendChild(wrap.firstElementChild);
+  }
   try{
     const nameWrap = content.querySelector(".nameAlways");
     if(nameWrap){
@@ -35639,6 +37028,14 @@ function bindSwapInteractionReset(){
 }
 
 /* Hints tab */
+const HINT_HANGMAN_CHANCE = 0.10;
+const HINT_HANGMAN_MAX_MISSES = 6;
+const HINT_HANGMAN_CHAT_COOLDOWN_MS = 10000;
+const HINT_HANGMAN_READY_FLASH_MS = 1400;
+const HINT_HANGMAN_CHAT_LS_KEY = "flpr_bot_chat_message_v1";
+const HINT_HANGMAN_TABLE_CLUES = Object.freeze({
+  medievalmadness: "Knights and Cannons"
+});
 const hintState = {
   all: [],
   pools: { ball1: [], ball2: [], ball3: [], ballProgressive: [], boss: [] },
@@ -35652,7 +37049,9 @@ const hintState = {
   history: [],
   hintopediaOpen: false,
   lastGreetingIndex: -1,
-  activeTarget: null
+  activeTarget: null,
+  hangman: null,
+  hangmanCooldownTimer: 0
 };
 
 const HINT_GREETING_BANK = [
@@ -36009,6 +37408,10 @@ function hintSubmitTableGuess(){
     try{ playSfx("trap"); }catch(_){}
     return false;
   }
+  if(hintState.hangman && hintTargetSignature(hintState.hangman.target) === hintTargetSignature(target)){
+    if(input) input.value = "";
+    return hintCompleteHangman("solved");
+  }
 
   target.solved = true;
   target.tableKey = target.tableKey || getTableKeyForName(target.tableName) || "";
@@ -36346,12 +37749,28 @@ function hintCandidatesForPool(poolName){
 }
 function hintGetBossKeyHintedTableKeys(){
   const out = new Set();
+  const rememberTable = (tableName)=>{
+    try{
+      const name = String(tableName || "").trim();
+      if(!name) return;
+      const tableKey = getTableKeyForName(name) || "";
+      if(tableKey && hintIsSourceTableOpen({ tableName:name })) out.add(tableKey);
+    }catch(_){}
+  };
+  try{
+    (hintState?.pools?.boss || []).forEach((entry)=>{
+      rememberTable(entry?.tableName);
+    });
+  }catch(_){}
+  try{
+    (hintState?.rewardEntries || []).forEach((entry)=>{
+      rememberTable(entry?.tableName);
+    });
+  }catch(_){}
   try{
     (hintState?.history || []).forEach((entry)=>{
       if(String(entry?.type || "").trim().toLowerCase() !== "boss key") return;
-      const tableName = String(entry?.target?.tableName || "").trim();
-      const tableKey = getTableKeyForName(tableName) || "";
-      if(tableKey) out.add(tableKey);
+      rememberTable(entry?.target?.tableName);
     });
   }catch(_){}
   return out;
@@ -36603,6 +38022,426 @@ function hintStopTyping(){
     if(hintState.typing) hintState.typing.token = Number(hintState.typing.token || 0) + 1;
   }catch(_){}
 }
+function hintHangmanAnswerFromTarget(target){
+  const raw = String(target?.tableName || "").trim();
+  const cleanTitle = String(getRepoDisplayTableParts(raw)?.title || getRepoCanonicalTableName(raw) || raw).trim();
+  return String(cleanTitle || raw || "").replace(/\s+/g, " ").trim();
+}
+function hintHangmanDescriptionClueForTarget(target){
+  const tableName = String(target?.tableName || "").trim();
+  const key = normKey(tableName);
+  const custom = String(HINT_HANGMAN_TABLE_CLUES[key] || "").trim();
+  if(custom) return custom;
+  const meta = getRepoTableMeta(tableName);
+  const manufacturer = String(meta?.manufacturer || "").trim();
+  const year = Number.isFinite(Number(meta?.year)) ? String(Number(meta.year)) : "";
+  const title = String(getRepoDisplayTableParts(tableName)?.title || tableName || "Mystery table").trim();
+  if(manufacturer && year) return `${manufacturer} ${year} table theme`;
+  if(year) return `${year} table theme`;
+  return `${title} table theme`;
+}
+function hintHangmanPuzzleText(round){
+  const guessed = new Set((round?.guessed || []).map((v)=>String(v || "").toUpperCase()));
+  const answer = String(round?.answer || "");
+  return answer.split("").map((ch)=>{
+    if(/\s/.test(ch)) return " ";
+    if(!/[A-Za-z0-9]/.test(ch)) return ch;
+    return guessed.has(ch.toUpperCase()) ? ch.toUpperCase() : "_";
+  }).join("").replace(/\s+/g, " ").trim();
+}
+function hintCanStartHangman(h, opts){
+  opts = opts || {};
+  if(opts.skipHangman) return false;
+  if(opts.forceHangman) return true;
+  if(opts.record === false) return false;
+  if(hintState.hangman && hintState.hangman.active) return false;
+  if(!h?.target || !String(h?.fullText || "").trim()) return false;
+  const answer = hintHangmanAnswerFromTarget(h.target);
+  if(!/[A-Za-z]/.test(answer)) return false;
+  return Math.random() < HINT_HANGMAN_CHANCE;
+}
+function hintHangmanMaskHtml(round){
+  const guessed = new Set((round?.guessed || []).map((v)=>String(v || "").toUpperCase()));
+  const answer = String(round?.answer || "");
+  return answer.split("").map((ch)=>{
+    if(/\s/.test(ch)) return `<span class="hintHangmanLetter space">&nbsp;</span>`;
+    if(!/[A-Za-z0-9]/.test(ch)) return `<span class="hintHangmanLetter punct">${escapeHtml(ch)}</span>`;
+    const shown = guessed.has(ch.toUpperCase()) ? ch.toUpperCase() : "&nbsp;";
+    return `<span class="hintHangmanLetter">${shown}</span>`;
+  }).join("");
+}
+function hintHangmanCooldownsHtml(round){
+  try{
+    const rows = Object.entries(round?.cooldownByUser || {})
+      .map(([userKey, info])=>{
+        const until = Number((info && typeof info === "object") ? info.until : info);
+        const display = String((info && typeof info === "object" && info.display) ? info.display : userKey).trim() || "Viewer";
+        const left = Math.max(0, until - Date.now());
+        const readyUntil = Number((info && typeof info === "object") ? info.readyUntil : 0);
+        const ready = left <= 0;
+        if(ready && readyUntil > 0 && Date.now() > readyUntil) return null;
+        return {
+          display,
+          ready,
+          label: ready ? "READY!" : `${Math.ceil(left / 1000)}s`
+        };
+      })
+      .filter(Boolean);
+    if(!rows.length) return "";
+    return `
+      <div class="hintHangmanCooldowns">
+        <div class="hintHangmanCooldownTitle">LETTER COOLDOWN QUEUE</div>
+        <div class="hintHangmanCooldownList">
+          ${rows.map((row)=>`<span class="hintHangmanCooldownItem${row.ready ? " ready" : ""}"><strong>${escapeHtml(row.display)}</strong><span>${escapeHtml(row.label)}</span></span>`).join("")}
+        </div>
+      </div>
+    `;
+  }catch(_){}
+  return "";
+}
+function hintRenderHangman(statusText){
+  const round = hintState.hangman;
+  const box = hintId("hintRevealBox");
+  const preludeEl = hintId("hintPreludeText");
+  const txt = hintId("hintRevealText");
+  const meta = hintId("hintRevealMeta");
+  if(!round || !round.active || !txt) return;
+  hintStopTyping();
+  if(box){
+    box.classList.add("show","hangman");
+    box.classList.remove("typing");
+  }
+  if(preludeEl) preludeEl.innerHTML = hintStylizeGreetingHtml(round.prelude || "Hint signal intercepted. Chat must solve the table name.");
+  const guessed = (round.guessed || []).join(" ") || "None";
+  const missesLeft = Math.max(0, Number(round.maxMisses || HINT_HANGMAN_MAX_MISSES) - Number(round.misses || 0));
+  const status = String(statusText || round.lastMessage || "Twitch chat can guess one letter at a time.").trim();
+  const cooldownHtml = hintHangmanCooldownsHtml(round);
+  txt.innerHTML = `
+    <div class="hintHangmanCard">
+      <div class="hintHangmanKicker">HANGMAN OVERRIDE ; TABLE NAME LOCKED</div>
+      <div class="hintHangmanClue">${escapeHtml(round.clue || "")}</div>
+      <div class="hintHangmanWord" aria-label="Hangman answer">${hintHangmanMaskHtml(round)}</div>
+      <div class="hintHangmanStatus">
+        <span class="hintHangmanBadge">GUESSED; ${escapeHtml(guessed)}</span>
+        <span class="hintHangmanBadge warn">MISSES LEFT; ${missesLeft}</span>
+      </div>
+      ${cooldownHtml}
+      <div class="hintHangmanChat"><strong>CHAT:</strong> type <strong>!hangman [letter]</strong>. Each chatter has a 10 second letter cooldown. ${escapeHtml(status)}</div>
+    </div>
+  `;
+  if(meta) meta.textContent = String(round.meta || "");
+}
+function hintStartHangman(h, opts, preludeText){
+  opts = opts || {};
+  const target = h?.target ? { ...h.target, solved:false } : null;
+  const answer = hintHangmanAnswerFromTarget(target);
+  if(!target || !answer) return false;
+  const typeLabel = String(opts.typeLabel || target.typeLabel || "Hint");
+  target.typeLabel = typeLabel;
+  hintState.activeTarget = target;
+  const clue = String(opts.clue || h?.clue || hintHangmanDescriptionClueForTarget(target)).trim();
+  hintState.hangman = {
+    active: true,
+    answer,
+    target,
+    clue,
+    fullText: String(h?.fullText || ""),
+    meta: String(h?.meta || ""),
+    prelude: String(preludeText || "Hint signal intercepted. Chat must solve the table name."),
+    typeLabel,
+    guessed: [],
+    misses: 0,
+    maxMisses: HINT_HANGMAN_MAX_MISSES,
+    cooldownByUser: {},
+    startedAt: Date.now(),
+    lastMessage: opts.test ? "Test Hangman started. Twitch chat can solve it now." : "A 10% Hintopedia roll triggered Hangman."
+  };
+  if(opts.record !== false){
+    hintPushHistory({
+      text: String(h?.text || ""),
+      fullText: String(h?.fullText || ""),
+      meta: String(h?.meta || ""),
+      prelude: String(preludeText || ""),
+      target,
+      decrypted: false
+    }, typeLabel);
+    hintUpdateUi();
+    if(hintState.hintopediaOpen) hintRenderHintopedia();
+  }
+  hintUpdateGuessUi("Hangman active. Chat can solve it with !hangman [letter].", "bad");
+  hintRenderHangman();
+  hintPostHangmanBotState(true);
+  hintStartHangmanCooldownTimer();
+  hintStartFlprBotHangmanPoll();
+  try{ playSfx("typeKey"); }catch(_){}
+  return true;
+}
+function hintPostHangmanBotState(active){
+  try{
+    const round = hintState.hangman;
+    postFlprBotSync("/hangman/state", {
+      active: !!active,
+      puzzle: active && round ? hintHangmanPuzzleText(round) : ""
+    });
+  }catch(_){}
+}
+function hintStartHangmanCooldownTimer(){
+  if(hintState.hangmanCooldownTimer) return;
+  hintState.hangmanCooldownTimer = setInterval(()=>{
+    const round = hintState.hangman;
+    if(!round || !round.active){
+      try{ clearInterval(hintState.hangmanCooldownTimer); }catch(_){}
+      hintState.hangmanCooldownTimer = 0;
+      return;
+    }
+    let changed = false;
+    const now = Date.now();
+    Object.entries(round.cooldownByUser || {}).forEach(([key, info])=>{
+      const readyUntil = Number((info && typeof info === "object") ? info.readyUntil : 0);
+      if(readyUntil > 0 && now > readyUntil){
+        delete round.cooldownByUser[key];
+        changed = true;
+      }
+    });
+    if(changed || Object.keys(round.cooldownByUser || {}).length) hintRenderHangman();
+  }, 500);
+}
+function hintStopHangmanCooldownTimer(){
+  if(hintState.hangmanCooldownTimer){
+    try{ clearInterval(hintState.hangmanCooldownTimer); }catch(_){}
+    hintState.hangmanCooldownTimer = 0;
+  }
+}
+function hintAnnounceHangmanCorrect(user, letter, round){
+  try{
+    const name = String(user || "Viewer").trim() || "Viewer";
+    const glyph = String(letter || "").trim().toUpperCase();
+    const puzzle = hintHangmanPuzzleText(round) || "unknown";
+    const variants = [
+      "Good job",
+      "Nice work",
+      "Great guess",
+      "Sharp eye",
+      "Well played",
+      "Excellent call"
+    ];
+    const lead = variants[Math.floor(Math.random() * variants.length)] || "Good job";
+    postFlprBotSync("/chat/say", {
+      message: `${lead} ${name}! You correctly guessed ${glyph} is on the table! The Current Puzzle is ${puzzle}.`
+    });
+  }catch(_){}
+}
+function hintFirstAvailableSeedTableName(){
+  try{
+    const selected = String(state?.selected || "").trim();
+    const selectedTables = Array.isArray(state?.worlds?.[selected]?.tables) ? state.worlds[selected].tables : [];
+    const selectedIdx = Math.max(0, Math.min(selectedTables.length - 1, Number(getNowPlayingIndex(selected) || 0)));
+    if(selectedTables[selectedIdx]) return String(selectedTables[selectedIdx]).trim();
+  }catch(_){}
+  try{
+    for(const [wk, world] of Object.entries(state?.worlds || {})){
+      if(isBossWorldId(wk)) continue;
+      const tables = Array.isArray(world?.tables) ? world.tables : [];
+      const found = tables.find((name)=> String(name || "").trim());
+      if(found) return String(found).trim();
+    }
+  }catch(_){}
+  return "Medieval Madness";
+}
+function hintBuildTestHangmanPayload(){
+  let entry = null;
+  try{
+    const candidates = [
+      ...hintCandidatesForPool("ball"),
+      ...hintCandidatesForPool("boss")
+    ].filter((e)=> String(e?.tableName || "").trim());
+    if(candidates.length) entry = candidates[Math.floor(Math.random() * candidates.length)];
+  }catch(_){}
+  if(!entry){
+    const tableName = hintFirstAvailableSeedTableName();
+    entry = {
+      tableName,
+      locationName: "Test Hangman Objective",
+      locationShort: "Test Hangman Objective",
+      itemName: "Progressive Ball - Test"
+    };
+  }
+  const typeLabel = hintTypeForEntry(entry?.itemName) || "Test Hint";
+  const mystery = hintMakeMysteryHint(entry, typeLabel);
+  mystery.prelude = "TEST HANGMAN ONLINE. Twitch chat can solve this trial.";
+  mystery.meta = `${mystery.meta || `Source: ${typeLabel}`} | Test Button`;
+  return { mystery, typeLabel };
+}
+function hintStartTestHangman(){
+  try{ showTab("hints"); }catch(_){}
+  try{ playSfx("click"); }catch(_){}
+  hintSetHintopediaOpen(false);
+  hintCancelHangman();
+  hintStopTyping();
+  const payload = hintBuildTestHangmanPayload();
+  const ok = hintStartHangman(payload.mystery, {
+    typeLabel: payload.typeLabel,
+    typewrite: false,
+    record: false,
+    test: true
+  }, "TEST HANGMAN ONLINE. Twitch chat can solve this trial.");
+  if(ok){
+    hintLog("[Test] Hangman started. Use Twitch chat: !hangman <letter>.");
+    try{ toast("info", "TEST HANGMAN", "Use Twitch chat: !hangman <letter>.", 3200); }catch(_){}
+  }else{
+    hintLog("[Test] Hangman could not start; no valid table name target.");
+    try{ toast("warn", "TEST HANGMAN", "No valid table target found.", 2800); }catch(_){}
+  }
+  return !!ok;
+}
+function hintHangmanLetterFromInput(input){
+  const m = String(input || "").trim().match(/[A-Za-z]/);
+  return m ? String(m[0] || "").toUpperCase() : "";
+}
+function hintHangmanSolved(round){
+  const guessed = new Set((round?.guessed || []).map((v)=>String(v || "").toUpperCase()));
+  return String(round?.answer || "").split("").every((ch)=> !/[A-Za-z0-9]/.test(ch) || guessed.has(ch.toUpperCase()));
+}
+function hintCompleteHangman(result){
+  const round = hintState.hangman;
+  if(!round) return false;
+  const target = round.target ? { ...round.target, solved:true } : null;
+  hintState.hangman = null;
+  hintPostHangmanBotState(false);
+  hintStopHangmanCooldownTimer();
+  hintStopFlprBotHangmanPoll();
+  if(target){
+    target.tableKey = target.tableKey || getTableKeyForName(target.tableName) || "";
+    const node = hintResolveNodeForTarget(target.tableName, target.locationShort);
+    if(node && Number.isFinite(Number(node.id))) target.locId = Number(node.id);
+    hintState.activeTarget = target;
+    hintMarkHistoryDecrypted(target);
+  }
+  const won = String(result || "").toLowerCase() !== "failed";
+  const revealText = String(round.fullText || "").trim() || `TABLE; ${getRepoDisplayTableName(target?.tableName || round.answer)} // CHECK; ${target?.locationShort || ""}`;
+  const revealMeta = won
+    ? `Source: ${round.typeLabel || "Hint"} | Hangman Solved`
+    : `Source: ${round.typeLabel || "Hint"} | Hangman Missed`;
+  const prelude = won
+    ? "Hangman solved. Full hint unlocked."
+    : `Hangman missed. Answer was ${round.answer}. Full hint unlocked.`;
+  const revealMs = Number(hintShowReveal(
+    { text: revealText, meta: revealMeta, prelude },
+    { typewrite:true, record:false, typeLabel:String(round.typeLabel || "Hint"), skipHangman:true, decrypted:true }
+  )) || 0;
+  hintUpdateGuessUi(won ? "Hangman solved. Full hint unlocked." : "Hangman ended. Full hint unlocked.", won ? "ok" : "bad");
+  hintPlayAccessFx(won ? "granted" : "denied");
+  setTimeout(()=>{ hintRefreshAllHighlights(); }, Math.max(200, revealMs + 90));
+  return true;
+}
+function hintHandleHangmanGuess(input, user, source){
+  const round = hintState.hangman;
+  if(!round || !round.active) return false;
+  const letter = hintHangmanLetterFromInput(input);
+  if(!letter) return false;
+  const src = String(source || "").toLowerCase();
+  const userKey = String(user || "viewer").trim().toLowerCase() || "viewer";
+  if(src && src !== "host"){
+    const now = Date.now();
+    const prevInfo = round.cooldownByUser?.[userKey] || null;
+    const prevUntil = (prevInfo && typeof prevInfo === "object")
+      ? Number(prevInfo.until || 0)
+      : (Number(prevInfo || 0) + HINT_HANGMAN_CHAT_COOLDOWN_MS);
+    if(prevUntil > now){
+      const left = Math.ceil((prevUntil - now) / 1000);
+      round.lastMessage = `${user || "Viewer"} cooldown: ${left}s.`;
+      hintRenderHangman();
+      return false;
+    }
+    const until = now + HINT_HANGMAN_CHAT_COOLDOWN_MS;
+    round.cooldownByUser[userKey] = {
+      display: String(user || "Viewer").trim() || "Viewer",
+      until,
+      readyUntil: until + HINT_HANGMAN_READY_FLASH_MS
+    };
+    hintStartHangmanCooldownTimer();
+  }
+  if((round.guessed || []).includes(letter)){
+    round.lastMessage = `${user || "Viewer"} guessed ${letter}, but it was already used.`;
+    hintRenderHangman();
+    return false;
+  }
+  round.guessed.push(letter);
+  const hit = String(round.answer || "").toUpperCase().includes(letter);
+  if(!hit) round.misses = Math.max(0, Number(round.misses || 0) + 1);
+  round.lastMessage = `${user || "Viewer"} guessed ${letter}: ${hit ? "hit" : "miss"}.`;
+  hintRenderHangman();
+  hintPostHangmanBotState(true);
+  if(hit && src && src !== "host") hintAnnounceHangmanCorrect(user, letter, round);
+  try{ playSfx(hit ? "click" : "trap"); }catch(_){}
+  if(hintHangmanSolved(round)) return hintCompleteHangman("solved");
+  if(Number(round.misses || 0) >= Number(round.maxMisses || HINT_HANGMAN_MAX_MISSES)) return hintCompleteHangman("failed");
+  return true;
+}
+const hintHangmanBotPoll = { timer:0, busy:false, lastId:"", seen:new Set(), lastLocalNonce:"" };
+function hintProcessHangmanChatEvent(evt){
+  try{
+    if(!evt || typeof evt !== "object") return false;
+    const id = String(evt.id || evt.nonce || evt.ts || `${evt.user || ""}|${evt.message || evt.letter || ""}`).trim();
+    if(id && hintHangmanBotPoll.seen.has(id)) return false;
+    const msg = String(evt.message || evt.text || evt.command || "").trim();
+    const letter = String(evt.letter || (msg.match(/^!hangman\s+([a-z])\b/i) || [])[1] || "").trim();
+    if(!letter) return false;
+    if(id){
+      hintHangmanBotPoll.seen.add(id);
+      if(hintHangmanBotPoll.seen.size > 180) hintHangmanBotPoll.seen = new Set(Array.from(hintHangmanBotPoll.seen).slice(-120));
+      hintHangmanBotPoll.lastId = id;
+    }
+    return hintHandleHangmanGuess(letter, String(evt.user || evt.username || evt.displayName || "Viewer"), "flpr-bot");
+  }catch(_){}
+  return false;
+}
+function hintProcessHangmanLocalStorage(raw){
+  try{
+    const data = JSON.parse(String(raw || "{}"));
+    const nonce = String(data?.id || data?.nonce || data?.ts || "");
+    if(nonce && nonce === hintHangmanBotPoll.lastLocalNonce) return false;
+    hintHangmanBotPoll.lastLocalNonce = nonce;
+    return hintProcessHangmanChatEvent(data);
+  }catch(_){}
+  return false;
+}
+async function hintPollFlprBotHangman(){
+  if(hintHangmanBotPoll.busy) return;
+  if(!hintState.hangman || !hintState.hangman.active) return;
+  hintHangmanBotPoll.busy = true;
+  try{
+    const since = hintHangmanBotPoll.lastId ? `?since=${encodeURIComponent(hintHangmanBotPoll.lastId)}` : "";
+    const data = await getFlprBotSync(`/chat/hangman${since}`, { silent:true });
+    const events = Array.isArray(data?.events) ? data.events : (Array.isArray(data) ? data : []);
+    events.forEach(hintProcessHangmanChatEvent);
+  }catch(_){
+  }finally{
+    hintHangmanBotPoll.busy = false;
+  }
+}
+function hintStartFlprBotHangmanPoll(){
+  try{
+    hintProcessHangmanLocalStorage(localStorage.getItem(HINT_HANGMAN_CHAT_LS_KEY));
+  }catch(_){}
+  hintPollFlprBotHangman();
+  if(hintHangmanBotPoll.timer) return;
+  hintHangmanBotPoll.timer = setInterval(()=>{ hintPollFlprBotHangman(); }, 1500);
+}
+function hintStopFlprBotHangmanPoll(){
+  if(hintHangmanBotPoll.timer){
+    try{ clearInterval(hintHangmanBotPoll.timer); }catch(_){}
+    hintHangmanBotPoll.timer = 0;
+  }
+}
+function hintCancelHangman(){
+  hintState.hangman = null;
+  hintPostHangmanBotState(false);
+  hintStopHangmanCooldownTimer();
+  hintStopFlprBotHangmanPoll();
+  const box = hintId("hintRevealBox");
+  if(box) box.classList.remove("hangman");
+}
 function hintShowReveal(h, opts){
   opts = opts || {};
   const box = hintId("hintRevealBox");
@@ -36613,6 +38452,9 @@ function hintShowReveal(h, opts){
   const fullMeta = String(h?.meta || "");
   const fullRevealText = String(h?.fullText || "");
   const preludeText = String(h?.prelude || opts.prelude || hintPickGreeting()).trim() || "Flippermizer Code Assistant online. Here is your hint.";
+  if(hintCanStartHangman(h, opts)){
+    if(hintStartHangman(h, opts, preludeText)) return 0;
+  }
   if(opts.record !== false){
     hintPushHistory({
       text: fullText,
@@ -36628,7 +38470,7 @@ function hintShowReveal(h, opts){
   hintStopTyping();
   if(box){
     box.classList.add("show");
-    box.classList.remove("typing");
+    box.classList.remove("typing","hangman");
   }
   if(!opts.typewrite || !txt){
     if(preludeEl) preludeEl.innerHTML = hintStylizeGreetingHtml(preludeText);
@@ -36975,6 +38817,7 @@ async function hintReadSpoilerCacheText(){
 }
 function hintPrepareFreshSeedLoad(){
   hintStopTyping();
+  hintCancelHangman();
   hintClearLog();
   hintState.used.clear();
   hintState.history = [];
@@ -37147,6 +38990,7 @@ function hintResetAll(){
   const fileInput = hintId("hintFileInput");
   if(fileInput) fileInput.value = "";
   hintStopTyping();
+  hintCancelHangman();
   hintState.used.clear();
   hintState.loaded = false;
   hintState.loadedMeta = null;
@@ -37279,10 +39123,12 @@ function buildInherentTestSeedFixture(){
       spoilerLines.push(`${locationName}: ${itemName}`);
     });
   });
+  const bossDamageChecks = Array.from({ length:10 }, (_, i)=>[
+    `Boss Table - Boss Damage 10% Strike ${i + 1}`,
+    "Boss Segment Damage 10%"
+  ]);
   [
-    ["Boss Table - Boss Damage 10%", "Boss Segment Damage 10%"],
-    ["Boss Table - Boss Damage 15%", "Boss Segment Damage 15%"],
-    ["Boss Table - Boss Damage 20%", "Boss Segment Damage 20%"],
+    ...bossDamageChecks,
     ["Boss Table - Boss Victory", "Victory"]
   ].forEach(([locationName, itemName])=>{
     const locId = nextLocId++;
@@ -37414,6 +39260,7 @@ async function loadInherentTestSeed(){
   try{ bossKeysConfigureCount(3, { persist:false, inputs:true, render:false }); }catch(_){}
   try{
     if(Array.isArray(bossKeysState)) bossKeysState.forEach((key)=>{ if(key) key.acquired = false; });
+    bossKeysSyncLegacyMirror(0);
     window.__apBossKeyCount = 0;
     window.__prevApBossKeyCount = 0;
     bossKeysSave();
@@ -37421,6 +39268,7 @@ async function loadInherentTestSeed(){
   try{ setGenericCheckPayload(fixture.slotData); }catch(_){ ap.slotData = fixture.slotData; }
   inherentSeedPopulateLocationMaps(fixture);
   ap.inherentLocationItems = new Map(Object.entries(fixture.locationItemByLocId || {}).map(([locId, reward])=>[Number(locId), reward]));
+  try{ relicBeginRun(INHERENT_TEST_SEED_NAME, "inherent-test"); }catch(_){}
   try{ syncTableBannerCodeMapFromSlots(state); hydrateTableBannerSlotsFromCodeMap(state, { overwrite:true }); }catch(_){}
   try{ saveState(); }catch(_){}
   setApIndicator("green", "INHERENT TEST SEED");
@@ -37439,6 +39287,7 @@ async function loadInherentTestSeed(){
 }
 function hintLoadDemo(){
   hintStopTyping();
+  hintCancelHangman();
   hintClearLog();
   hintState.used.clear();
   hintState.history = [];
@@ -37472,6 +39321,8 @@ function initHintsTab(){
   const bLoc = hintId("hintBallLocationBtn");
   const bk = hintId("hintBossKeyBtn");
   const hp = hintId("hintopediaBtn");
+  const testHangmanBtn = hintId("hintTestHangmanBtn");
+  const testHangmanControlsBtn = hintId("testHangmanBtn");
   const hpClose = hintId("hintopediaClose");
   const guessInput = hintId("hintGuessInput");
   const guessBtn = hintId("hintGuessBtn");
@@ -37504,6 +39355,8 @@ function initHintsTab(){
     hintRedeemPendingToken("boss", "Boss Key", { typewrite:true, focusHintsTab:true });
   });
   if(hp) hp.addEventListener("click", hintToggleHintopedia);
+  if(testHangmanBtn) testHangmanBtn.addEventListener("click", hintStartTestHangman);
+  if(testHangmanControlsBtn) testHangmanControlsBtn.addEventListener("click", hintStartTestHangman);
   if(hpClose) hpClose.addEventListener("click", ()=>hintSetHintopediaOpen(false));
   if(guessBtn) guessBtn.addEventListener("click", ()=>{ hintSubmitTableGuess(); });
   if(guessInput){
@@ -38065,7 +39918,7 @@ function compactVisualsControlsLayout(panelVisuals){
   const bossMusicGroup = buildMusicScenarioGroup([
     "boss_battle_beginning",
     "boss_battle_phase2"
-  ], "Upload the two-phase boss soundtrack here. Beginning stays live until its current pass ends, then Phase 2 takes over at half health.");
+  ], "Upload the two-phase boss soundtrack here. Boss Music 1 smoothly crossfades into Boss Music 2 when boss HP passes 50%.");
   const runMusicGroup = buildMusicScenarioGroup([
     "bonus_pinball",
     "randomizer_open",
@@ -38140,6 +39993,7 @@ function compactTestingControlsLayout(panelTesting){
   const hintFlowGrid = buildTestingButtonGrid([
     "testHintBallPopupBtn",
     "testHintBossPopupBtn",
+    "testHangmanBtn",
     "testOpeningRandomizerBtn",
     "testVictoryStatsPageBtn"
   ]);
@@ -38188,6 +40042,7 @@ function decorateTestingButtons(){
     { id:"testBallPopupBtn", tag:"Ball", cls:"testPrimary" },
     { id:"testHintBallPopupBtn", tag:"Hint Ball", cls:"testFlow" },
     { id:"testHintBossPopupBtn", tag:"Hint Key", cls:"testFlow" },
+    { id:"testHangmanBtn", tag:"Hangman", cls:"testFlow" },
     { id:"testBossDamageCheckBtn", tag:"Boss", cls:"testDanger" },
     { id:"testForceBossVictoryBtn", tag:"Boss Win", cls:"testDanger" },
     { id:"testBesiegedTableBtn", tag:"Besieged", cls:"testDanger" },
@@ -38912,6 +40767,7 @@ function renderAll(){
       activeView = "tower";
       besiegedSyncContext({ save:false });
     }
+    besiegedSyncBattleAudio();
   }catch(_){}
   try{ syncBossTableAuthority({ includePlaceholder:true, syncWorldSlots:true }); }catch(_){}
   try{ syncWorldPageToActiveContext(); }catch(_){}
@@ -39103,10 +40959,12 @@ try{ if(window.__flprBootDiag) window.__flprBootDiag.bootDone = true; }catch(_){
 setTimeout(()=>{
   try{ syncFlprBotCurrentTable(true); }catch(_){}
   try{ syncFlprBotBossKeys(true); }catch(_){}
+  try{ syncFlprBotBossStatus(true); }catch(_){}
 }, 1200);
 setInterval(()=>{
   try{ syncFlprBotCurrentTable(false); }catch(_){}
   try{ syncFlprBotBossKeys(false); }catch(_){}
+  try{ syncFlprBotBossStatus(false); }catch(_){}
 }, 2500);
 setTimeout(()=>{ try{ applyBonusPinballOverlayDim(); }catch(_){ } }, 220);
 setInterval(()=>{ try{ applyBonusPinballOverlayDim(); }catch(_){ } }, 700);
@@ -39123,6 +40981,13 @@ window.addEventListener("storage", (ev)=>{
     if(!ev) return;
     if(String(ev.key || "") !== BONUS_PINBALL_BOSS_ASSIST_KEY) return;
     pollBonusPinballBossAssist();
+  }catch(_){}
+});
+window.addEventListener("storage", (ev)=>{
+  try{
+    if(!ev) return;
+    if(String(ev.key || "") !== HINT_HANGMAN_CHAT_LS_KEY) return;
+    hintProcessHangmanLocalStorage(ev.newValue || "");
   }catch(_){}
 });
 window.addEventListener("storage", (ev)=>{
@@ -39603,9 +41468,10 @@ const BOSS_KEYS_COUNT_DEFAULT = 3;
 let BOSS_KEYS_COUNT = BOSS_KEYS_COUNT_DEFAULT;
 const BOSS_KEYS_STATE_LS = "flpr_overlay_boss_keys_v1_state";
 const BOSS_KEY_IDLE_OPACITY = 0.10;
-const BOSS_KEY_REVEAL_MS = 2640;
-const BOSS_KEY_REDEEM_STEP_MS = 520;
-const BOSS_KEY_REDEEM_FADE_MS = 2800;
+const BOSS_KEY_REVEAL_MS = 1320;
+const BOSS_KEY_COLLECTED_FADE_MS = 2640;
+const BOSS_KEY_REDEEM_STEP_MS = 260;
+const BOSS_KEY_REDEEM_FADE_MS = 5600;
 
 let bossKeysState = Array.from({length:BOSS_KEYS_COUNT}, ()=>({acquired:false, img:null}));
 let bossKeyRevealUntil = Array.from({length:BOSS_KEYS_COUNT}, ()=>0);
@@ -39656,6 +41522,7 @@ function bossKeysNormalizeState(nextCount){
     acquired: !!prevState[i]?.acquired,
     img: prevState[i]?.img || null
   }));
+  bossKeysSyncLegacyMirror(bossKeysState.reduce((n, k)=>n + ((k && k.acquired) ? 1 : 0), 0));
   bossKeyRevealUntil = Array.from({ length:count }, (_, i)=>Number(prevReveal[i] || 0));
   bossKeyRevealTimers = Array.from({ length:count }, (_, i)=>prevTimers[i] || null);
   return count;
@@ -39764,7 +41631,7 @@ function bossKeysRunRedeemSequence(fromCount, toCount, opts){
       }, step * BOSS_KEY_REDEEM_STEP_MS);
     }
 
-    const holdMs = ((to - from - 1) * BOSS_KEY_REDEEM_STEP_MS) + BOSS_KEY_REVEAL_MS + 260;
+    const holdMs = ((to - from - 1) * BOSS_KEY_REDEEM_STEP_MS) + 420;
     if(dock){
       bossKeyRedeemFadeTimer = setTimeout(()=>{
         try{
@@ -39951,15 +41818,31 @@ function bossKeysRender(){
   }
   updateBossThreatIndicators();
   syncFlprBotBossKeys(false);
+  try{ syncFlprBotBossStatus(false); }catch(_){}
 }
-function bossKeysGrantOne(){ /* v111: disabled; boss keys come from AP WorldState */ }
+function bossKeysGrantOne(itemName, opts){
+  opts = opts || {};
+  try{
+    if(opts.isSnapshot || opts.isFlush) return getBossKeyRedeemedCount();
+    const prev = getBossKeyRedeemedCount();
+    const localPrev = getBossKeysAcquiredCount();
+    const next = Math.max(prev, localPrev) + 1;
+    return bossKeysApplyAcquiredCount(next, {
+      animate:true,
+      forceAnimation:true,
+      updateApCount:true,
+      source:"boss-key-receipt"
+    });
+  }catch(_){}
+  return getBossKeyRedeemedCount();
+}
 
 function bossKeysAnimate(idx, force){
   try{
     if(window.__suppressBossKeyFx && !force) return;
 
     const cards = document.querySelectorAll(".bossKeyCard");
-    const revealMs = BOSS_KEY_REVEAL_MS;
+    const revealMs = BOSS_KEY_COLLECTED_FADE_MS;
     const targets = [];
     for(let i=0;i<BOSS_KEYS_COUNT;i++){
       const isAcquired = !!(bossKeysState && bossKeysState[i] && bossKeysState[i].acquired);
@@ -40045,6 +41928,7 @@ window.__suppressBossKeyFx = true;
   bossKeysBindDockHover();
   bossKeysRender();
   syncFlprBotBossKeys(true);
+  try{ syncFlprBotBossStatus(true); }catch(_){}
 })();
 
 
@@ -40174,6 +42058,7 @@ function showProgressiveBallCard(tableName, filledCount, tableKey, opts){
   const endLevel = Math.max(1, Math.min(3, Number(filledCount)||1));
   const durationMs = Math.max(3200, Number(opts.durationMs) || 4000);
   const forceMock = !!opts.mockOnly;
+  const forceUnlockedVisual = !!opts.forceUnlockedVisual;
   const resolvedTableKey = tableKey || getTableKeyForName(String(tableName || "").trim());
   let settledEndLevel = endLevel;
   let settledTableKey = resolvedTableKey;
@@ -40214,6 +42099,18 @@ function showProgressiveBallCard(tableName, filledCount, tableKey, opts){
     }catch(_){}
     return null;
   };
+  const scrubLockedVisual = (el)=>{
+    if(!el) return;
+    try{
+      el.classList.remove("inactive", "isLockedTable", "lockedTable");
+      el.querySelectorAll(".lockChainsOverlay, .lockBadgeOverlay").forEach((node)=>{
+        try{
+          node.classList.remove("active", "lockRise");
+          node.classList.add("unlockDrop");
+        }catch(_){}
+      });
+    }catch(_){}
+  };
 
   const wrap = document.createElement("div");
   wrap.id = "pballCenterAnim";
@@ -40235,6 +42132,7 @@ function showProgressiveBallCard(tableName, filledCount, tableKey, opts){
       sourceTile = findSourceTile();
     }catch(_){}
   }
+  if(forceUnlockedVisual && sourceTile) scrubLockedVisual(sourceTile);
   const srcRect = sourceTile ? sourceTile.getBoundingClientRect() : null;
   const sourceRectGlobal = (srcRect && srcRect.width > 8 && srcRect.height > 8) ? srcRect : null;
   const sourceRect = toLocalRect(sourceRectGlobal);
@@ -40343,6 +42241,7 @@ function showProgressiveBallCard(tableName, filledCount, tableKey, opts){
   if(sourceTile){
     const clone = sourceTile.cloneNode(true);
     clone.classList.add("pballClone");
+    if(forceUnlockedVisual) scrubLockedVisual(clone);
     cloneWrap.appendChild(clone);
     sourceTile.dataset.pballHidden = "1";
     sourceTile.classList.add("pballSourcePrime");
@@ -40656,6 +42555,7 @@ function bossHpBump(frac){
   b.cur = Math.max(0, Math.min(b.max, b.cur + Math.round(b.max * frac)));
   bossHpTestSave();
   window.__suppressBossHpFx = false;
+  try{ musicRefreshScenario(); }catch(_){}
   if(!bossRefreshUiOnly()){
     renderChecks();
     if(frac < 0 && (Number(b.cur)||0) < prev && !document.getElementById("bossRaidMount")) bossPlayHitSoundOnly();
@@ -40801,6 +42701,7 @@ const BOSS_MONSTER_META = Object.freeze({
   MCAST:{ aura:"\u{1F56F}\uFE0F", body:"\u{1F47B}", left:"\u{1F5DD}\uFE0F", right:"\u{1F987}", alt:"\u{1F3F0}", color:"#dfc9ff" },
   ATEAM:{ aura:"\u{1FA96}", body:"\u{1F4A5}", left:"\u{1F690}", right:"\u{1F527}", alt:"\u{1F4A3}", color:"#ffc18a" },
   BAT66:{ aura:"\u{1F987}", body:"\u{1F921}", left:"\u{1F0CF}", right:"\u{1F4A3}", alt:"\u{1F306}", color:"#79d6ff" },
+  BFOR:{ aura:"\u{1F987}", body:"\u{1F3AD}", left:"\u{1F4A3}", right:"\u{1F4A0}", alt:"\u{1F306}", color:"#78d7ff" },
   HHEAT:{ aura:"\u{1F3AC}", body:"\u{1F525}", left:"\u{1F3B0}", right:"\u{1F387}", alt:"\u2B50", color:"#ffbb7e" },
   BAYW:{ aura:"\u{1F30A}", body:"\u{1F988}", left:"\u{1F6A4}", right:"\u{1F6DF}", alt:"\u{1F3D6}\uFE0F", color:"#8fe4ff" },
   STTNG:{ aura:"\u{1F596}", body:"\u{1F441}\uFE0F", left:"\u{1FA90}", right:"\u2699\uFE0F", alt:"\u{1F680}", color:"#9be7ff" },
@@ -41218,7 +43119,7 @@ function getBossKeyRedeemedCount(){
   let best = 0;
   try{
     const apCount = Number(window.__apBossKeyCount);
-    if(Number.isFinite(apCount)) best = Math.max(best, Math.max(0, Math.min(BOSS_KEYS_COUNT, apCount)));
+    if(Number.isFinite(apCount)) return Math.max(0, Math.min(BOSS_KEYS_COUNT, apCount));
   }catch(_){}
   try{
     if(Array.isArray(bossKeysState)){
@@ -41334,8 +43235,12 @@ function isBossUnlocked(){
     const testUnlockUntil = Number(window.__bossTestUnlockUntil || 0);
     const requiredCount = getBossKeysRequiredForOpen();
     if(testUnlockUntil > Date.now()) return true;
-    if((window.__apBossKeyCount ?? 0) >= requiredCount) return true;
-    if(window.bossKeysState && Array.isArray(bossKeysState) && bossKeysState.filter(x=>x && x.acquired).length >= requiredCount) return true;
+    const apCount = Number(window.__apBossKeyCount);
+    if(Number.isFinite(apCount)){
+      if(apCount >= requiredCount) return true;
+    }else if(window.bossKeysState && Array.isArray(bossKeysState) && bossKeysState.filter(x=>x && x.acquired).length >= requiredCount){
+      return true;
+    }
     if(state && state.worlds && state.worlds[bossWorldKey] && state.worlds[bossWorldKey].locked === false) return true;
     if(state && state.bossOpen) return true;
   }catch(_){}
@@ -41809,6 +43714,7 @@ function bossTrySendVictoryCheck(reason){
   state.bossVictoryManualUnlock = false;
   try{ markPending(loc.id, pend); }catch(_){}
   try{ saveState(); }catch(_){}
+  try{ bossFocusVictoryChecksView({ render:false, showView:true }); }catch(_){}
   apLog(`Boss victory check sent; id ${loc.id}; reason ${reason || "0% HP"}`);
   apSend({ cmd:"LocationChecks", locations:[loc.id] });
   try{ episodeMarkBossComplete(); }catch(_){}

@@ -321,7 +321,7 @@
   var DEFAULT_WORLD_TABLE_CODES = {
     w1: ['MM','AFM','WCS','GET','ST13'],
     w2: ['TOTAN','FATH','HOOK','CONGO','MCAST'],
-    w3: ['ATEAM','BAT66','HHEAT','BAYW','STTNG'],
+    w3: ['ATEAM','BFOR','HHEAT','BAYW','STTNG'],
     w4: ['MET','HGT','DP','PARA','ROBO'],
     w5: ['GLIZ','JOK','BCAT','TAXI','BOP'],
     boss: ['BOSS_TABLE']
@@ -341,7 +341,7 @@
     MCAST: ['Malt Desniy World'],
 
     ATEAM: ['Vintage Television'],
-    BAT66: ['Vintage Television','Comic Book Collision'],
+    BAT66: ['Retired - PUP Pack Required'],
     HHEAT: ['Vintage Television'],
     BAYW: ['Vintage Television'],
     STTNG: ['Vintage Television'],
@@ -373,16 +373,16 @@
     PARTY: ['Featured Designer - Dennis Nordman - Party Monsters'],
     EATPM: ['Featured Designer - Dennis Nordman - Party Monsters'],
     DRDUDE: ['Featured Designer - Dennis Nordman - Party Monsters'],
-    PZONE: ['Featured Designer - Dennis Nordman - Party Monsters'],
+    PZONE: ['Featured Designer - Dennis Nordman - Party Monsters','Rock Legends'],
     SSTIFF: ['Featured Designer - Dennis Nordman - Party Monsters'],
 
     CVOL: ['The Show Must Go On'],
-    AGBW: ['The Show Must Go On'],
+    AGBW: ['The Show Must Go On','Rock Legends'],
     CIRC80: ['The Show Must Go On'],
     POTO: ['The Show Must Go On'],
     TOM: ['The Show Must Go On'],
 
-    BFOR: ['90s Movie Mayhem'],
+    BFOR: ['Vintage Television','90s Movie Mayhem','Comic Book Collision'],
     DMAN: ['90s Movie Mayhem'],
     GEYE: ['90s Movie Mayhem'],
     JPARK: ['90s Movie Mayhem'],
@@ -393,8 +393,8 @@
     ID4: ['Sci-Fi Signal'],
     XFILES: ['Sci-Fi Signal'],
 
-    AERO: ['Rock Legends'],
-    BEAT: ['Rock Legends'],
+    AERO: ['Retired - PUP Pack Required'],
+    BEAT: ['Retired - PUP Pack Required'],
     ELVIS: ['Rock Legends'],
     RSTON: ['Rock Legends'],
 
