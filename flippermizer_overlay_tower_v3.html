@@ -12696,6 +12696,109 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   border-color: rgba(0,217,255,.20);
   background: rgba(0,0,0,.22);
 }
+.controlsTabPanel[data-ctrl-panel="connect"] .connectPanelSection .twitchChatPanel{
+  min-height: 0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.twitchVideoShell{
+  min-height: 150px;
+  height: clamp(150px, 22vh, 240px);
+  border:1px solid rgba(145,70,255,.46);
+  border-radius: 12px;
+  overflow:hidden;
+  background: rgba(4,2,10,.86);
+  box-shadow: 0 0 0 1px rgba(145,70,255,.14) inset;
+}
+.twitchVideoFallback{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  padding:14px;
+  text-align:center;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(145,70,255,.18), transparent 54%),
+    linear-gradient(180deg, rgba(16,8,34,.94), rgba(4,2,10,.96));
+}
+.twitchVideoFallback .t{
+  font-size:9px;
+  color: rgba(238,230,255,.96);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.twitchVideoFallback .d{
+  max-width:520px;
+  font-size:8px;
+  line-height:1.45;
+  color: rgba(218,229,255,.68);
+}
+.twitchChatNativeShell{
+  min-height: 260px;
+  height: clamp(260px, 38vh, 440px);
+  border:1px solid rgba(145,70,255,.42);
+  border-radius: 12px;
+  overflow:hidden;
+  background: rgba(10,4,24,.72);
+  box-shadow: 0 0 0 1px rgba(145,70,255,.12) inset;
+}
+.twitchChatMessages{
+  height:100%;
+  overflow:auto;
+  padding:10px 12px;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  font-size:11px;
+  line-height:1.42;
+  color: rgba(235,242,255,.92);
+  background:
+    linear-gradient(180deg, rgba(14,14,16,.94), rgba(8,7,14,.96)),
+    radial-gradient(circle at 100% 0%, rgba(145,70,255,.10), transparent 46%);
+}
+.twitchChatLine{
+  margin-bottom:7px;
+  word-break:break-word;
+}
+.twitchChatLine.system{
+  color: rgba(188,220,255,.72);
+  font-family:'Press Start 2P', monospace;
+  font-size:7px;
+  line-height:1.55;
+  text-transform: uppercase;
+}
+.twitchChatName{
+  color:#bf94ff;
+  font-weight:800;
+}
+.twitchChatConnectGrid,
+.twitchChatComposer{
+  display:grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr) auto;
+  gap:8px;
+  align-items:center;
+}
+.twitchChatComposer{
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.twitchChatConnectGrid .cInput,
+.twitchChatComposer .cInput{
+  min-width:0;
+}
+.twitchChatActions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+.twitchChatStatus{
+  min-height:14px;
+  font-size:7px;
+  line-height:1.35;
+  color: rgba(210,232,255,.66);
+  text-transform: uppercase;
+  letter-spacing:.06em;
+}
 .controlsTabPanel[data-ctrl-panel="connect"] .connectPanelSection .recvWrap{
   border-color: rgba(0,217,255,.18);
   background: rgba(0,0,0,.22);
@@ -20029,7 +20132,7 @@ function loadFlprBotSyncCfg(){
   }
 }
 const flprBotSyncCfg = loadFlprBotSyncCfg();
-const flprBotSyncMemo = { tableSig:"", bossSig:"", bossStatusSig:"", lastErr:"", lastErrAt:0 };
+const flprBotSyncMemo = { tableSig:"", bossSig:"", bossStatusSig:"", episodeSig:"", lastErr:"", lastErrAt:0 };
 function flprBotSyncEnabled(){
   if(typeof window.FLPR_BOT_SYNC_ENABLED === "boolean") return window.FLPR_BOT_SYNC_ENABLED;
   return flprBotSyncCfg.enabled !== false;
@@ -20268,6 +20371,48 @@ function syncFlprBotBossStatus(force){
   }catch(_){}
 }
 setInterval(()=>{ try{ syncFlprBotBossStatus(false); }catch(_){} }, 1500);
+
+function getFlprBotEpisodeSnapshot(){
+  try{
+    const st = episodeState || {};
+    const active = !!(typeof episodeCanTrack === "function" ? episodeCanTrack() : String(st?.status || "") === "active");
+    return {
+      status: String(st?.status || "idle"),
+      active,
+      canTrack: active,
+      canTalk: active,
+      startedAt: Number(st?.startedAt || 0) || 0,
+      endedAt: Number(st?.endedAt || 0) || 0,
+      pausedAt: Number(st?.pausedAt || 0) || 0,
+      seedName: String(ap?.seedName || st?.seedName || ""),
+      reason: String(st?.reason || ""),
+      runId: String(st?.runId || ""),
+      source: "overlay_episode_state"
+    };
+  }catch(_){}
+  return null;
+}
+function syncFlprBotEpisodeState(force){
+  try{
+    const snapshot = getFlprBotEpisodeSnapshot();
+    if(!snapshot) return;
+    const sig = [
+      snapshot.status,
+      snapshot.active ? 1 : 0,
+      snapshot.canTalk ? 1 : 0,
+      snapshot.startedAt,
+      snapshot.endedAt,
+      snapshot.pausedAt,
+      snapshot.seedName,
+      snapshot.reason,
+      snapshot.runId
+    ].join("|");
+    if(!force && flprBotSyncMemo.episodeSig === sig) return;
+    flprBotSyncMemo.episodeSig = sig;
+    postFlprBotSync("/state/episode", snapshot);
+  }catch(_){}
+}
+setInterval(()=>{ try{ syncFlprBotEpisodeState(false); }catch(_){} }, 1500);
 
 const ap = {
   pendingQueue: [],
@@ -23127,6 +23272,7 @@ function episodeSetStatus(next, reason){
     episodeState = episodeFreshState();
   }
   episodeSaveState();
+  try{ syncFlprBotEpisodeState(true); }catch(_){}
   try{ updateEpisodeControlsUi(); }catch(_){}
   try{ renderAchievementsControlsPanel(); }catch(_){}
 }
@@ -39630,6 +39776,235 @@ function findControlsSectionTitle(root, token){
   return Array.from(root.querySelectorAll(".cSectionTitle")).find(el => String(el.textContent||"").toUpperCase().includes(want));
 }
 
+const FLPR_TWITCH_CHAT_CHANNEL = "ashodin";
+const FLPR_TWITCH_CHAT_CFG_LS = "flpr_twitch_chat_cfg_v1";
+const flprTwitchChat = { ws:null, connected:false, connecting:false, username:"", token:"" };
+function getTwitchEmbedParents(){
+  const parents = [];
+  const add = (v)=>{
+    const host = String(v || "").trim().toLowerCase().replace(/:\d+$/g, "");
+    if(!host || parents.includes(host)) return;
+    parents.push(host);
+  };
+  try{ add(window.location.hostname); }catch(_){}
+  add("localhost");
+  add("127.0.0.1");
+  return parents;
+}
+function canEmbedTwitchVideo(){
+  try{ return /^https?:$/i.test(String(window.location.protocol || "")) && !!window.location.hostname; }catch(_){}
+  return false;
+}
+function buildTwitchVideoEmbedSrc(){
+  const parentQs = getTwitchEmbedParents().map(parent => `parent=${encodeURIComponent(parent)}`).join("&");
+  return `https://player.twitch.tv/?channel=${encodeURIComponent(FLPR_TWITCH_CHAT_CHANNEL)}&${parentQs}&muted=true&autoplay=false`;
+}
+function buildTwitchVideoMarkup(){
+  if(canEmbedTwitchVideo()){
+    return `<iframe id="twitchVideoFrame" title="Twitch video for Ashodin" src="${escapeHtml(buildTwitchVideoEmbedSrc())}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+  }
+  return `
+    <div class="twitchVideoFallback">
+      <div class="t">Twitch Stream Viewer</div>
+      <div class="d">Twitch blocks embedded video from direct file opens. Launch the overlay through the Flippermizer Launcher so it runs from localhost.</div>
+      <a class="cBtn" href="https://www.twitch.tv/ashodin" target="_blank" rel="noopener">OPEN STREAM</a>
+    </div>
+  `;
+}
+function loadTwitchChatCfg(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(FLPR_TWITCH_CHAT_CFG_LS) || "{}");
+    return {
+      username: String(raw?.username || "").trim(),
+      token: String(raw?.token || "").trim()
+    };
+  }catch(_){ return { username:"", token:"" }; }
+}
+function saveTwitchChatCfg(){
+  try{
+    localStorage.setItem(FLPR_TWITCH_CHAT_CFG_LS, JSON.stringify({
+      username: String(flprTwitchChat.username || "").trim(),
+      token: String(flprTwitchChat.token || "").trim()
+    }));
+  }catch(_){}
+}
+function twitchChatStatusText(text){
+  const el = document.getElementById("twitchChatStatus");
+  if(el) el.textContent = String(text || "");
+}
+function twitchChatAppendSystem(text){
+  twitchChatAppendLine({ system:true, message:String(text || "") });
+}
+function twitchChatAppendLine(entry){
+  try{
+    const host = document.getElementById("twitchChatMessages");
+    if(!host) return;
+    const div = document.createElement("div");
+    div.className = "twitchChatLine" + (entry?.system ? " system" : "");
+    if(entry?.system){
+      div.textContent = String(entry?.message || "");
+    }else{
+      const name = document.createElement("span");
+      name.className = "twitchChatName";
+      name.textContent = String(entry?.user || "chat") + ": ";
+      div.appendChild(name);
+      div.appendChild(document.createTextNode(String(entry?.message || "")));
+    }
+    host.appendChild(div);
+    while(host.children.length > 140) host.removeChild(host.firstChild);
+    host.scrollTop = host.scrollHeight;
+  }catch(_){}
+}
+function normalizeTwitchOauthToken(token){
+  const raw = String(token || "").trim();
+  if(!raw) return "";
+  return /^oauth:/i.test(raw) ? raw : `oauth:${raw}`;
+}
+function parseTwitchIrcTags(rawTags){
+  const tags = {};
+  String(rawTags || "").split(";").forEach((part)=>{
+    const idx = part.indexOf("=");
+    if(idx < 0) return;
+    tags[part.slice(0, idx)] = part.slice(idx + 1);
+  });
+  return tags;
+}
+function parseTwitchIrcLine(line){
+  const raw = String(line || "");
+  let rest = raw;
+  let tags = {};
+  if(rest.startsWith("@")){
+    const idx = rest.indexOf(" ");
+    tags = parseTwitchIrcTags(rest.slice(1, idx));
+    rest = rest.slice(idx + 1);
+  }
+  const m = rest.match(/^:([^! ]+)!.* PRIVMSG #[^ ]+ :([\s\S]*)$/);
+  if(!m) return null;
+  return {
+    user: String(tags["display-name"] || m[1] || "chat").trim() || "chat",
+    message: String(m[2] || "")
+  };
+}
+function twitchChatDisconnect(){
+  try{
+    if(flprTwitchChat.ws){
+      flprTwitchChat.ws.onopen = null;
+      flprTwitchChat.ws.onmessage = null;
+      flprTwitchChat.ws.onerror = null;
+      flprTwitchChat.ws.onclose = null;
+      flprTwitchChat.ws.close();
+    }
+  }catch(_){}
+  flprTwitchChat.ws = null;
+  flprTwitchChat.connected = false;
+  flprTwitchChat.connecting = false;
+  twitchChatStatusText("Disconnected from twitch.tv/ashodin");
+}
+function twitchChatConnect(){
+  const userEl = document.getElementById("twitchChatUser");
+  const tokenEl = document.getElementById("twitchChatToken");
+  const username = String(userEl?.value || "").trim().toLowerCase();
+  const token = normalizeTwitchOauthToken(tokenEl?.value || "");
+  if(!username || !token){
+    twitchChatStatusText("Twitch username and OAuth token required.");
+    return;
+  }
+  twitchChatDisconnect();
+  flprTwitchChat.username = username;
+  flprTwitchChat.token = token;
+  saveTwitchChatCfg();
+  flprTwitchChat.connecting = true;
+  twitchChatStatusText("Connecting to twitch.tv/ashodin...");
+  twitchChatAppendSystem("Connecting to Twitch chat.");
+  const ws = new WebSocket("wss://irc-ws.chat.twitch.tv:443");
+  flprTwitchChat.ws = ws;
+  ws.onopen = ()=>{
+    if(ws !== flprTwitchChat.ws) return;
+    ws.send("CAP REQ :twitch.tv/tags twitch.tv/commands");
+    ws.send(`PASS ${token}`);
+    ws.send(`NICK ${username}`);
+    ws.send(`JOIN #${FLPR_TWITCH_CHAT_CHANNEL}`);
+  };
+  ws.onmessage = (ev)=>{
+    const lines = String(ev?.data || "").split(/\r?\n/).filter(Boolean);
+    lines.forEach((line)=>{
+      if(line.startsWith("PING")){
+        try{ ws.send(line.replace(/^PING/i, "PONG")); }catch(_){}
+        return;
+      }
+      if(/\s001\s/.test(line) || line.includes(" JOIN #")){
+        flprTwitchChat.connected = true;
+        flprTwitchChat.connecting = false;
+        twitchChatStatusText(`Connected as ${username}; channel twitch.tv/ashodin`);
+        return;
+      }
+      if(line.includes("Login authentication failed")){
+        twitchChatStatusText("Twitch authentication failed.");
+        twitchChatAppendSystem("Authentication failed. Check username/token.");
+        twitchChatDisconnect();
+        return;
+      }
+      const msg = parseTwitchIrcLine(line);
+      if(msg) twitchChatAppendLine(msg);
+    });
+  };
+  ws.onerror = ()=>{
+    twitchChatStatusText("Twitch chat socket error.");
+    twitchChatAppendSystem("Twitch chat socket error.");
+  };
+  ws.onclose = ()=>{
+    if(ws !== flprTwitchChat.ws) return;
+    flprTwitchChat.ws = null;
+    flprTwitchChat.connected = false;
+    flprTwitchChat.connecting = false;
+    twitchChatStatusText("Disconnected from twitch.tv/ashodin");
+  };
+}
+function twitchChatSendCurrent(){
+  const input = document.getElementById("twitchChatMessage");
+  const msg = String(input?.value || "").trim().replace(/\s+/g, " ").slice(0, 450);
+  if(!msg) return;
+  const ws = flprTwitchChat.ws;
+  if(!ws || ws.readyState !== WebSocket.OPEN || !flprTwitchChat.connected){
+    twitchChatStatusText("Connect to Twitch before sending.");
+    return;
+  }
+  ws.send(`PRIVMSG #${FLPR_TWITCH_CHAT_CHANNEL} :${msg}`);
+  twitchChatAppendLine({ user: flprTwitchChat.username || "me", message: msg });
+  input.value = "";
+}
+function ensureTwitchChatPanel(){
+  let panel = document.getElementById("twitchChatPanel");
+  if(!panel){
+    panel = document.createElement("div");
+    panel.id = "twitchChatPanel";
+    panel.className = "twitchChatPanel";
+    panel.innerHTML = `
+      <div class="twitchVideoShell">
+        ${buildTwitchVideoMarkup()}
+      </div>
+      <div class="twitchChatConnectGrid">
+        <input class="cInput" id="twitchChatUser" placeholder="Twitch username">
+        <input class="cInput" id="twitchChatToken" type="password" placeholder="OAuth token">
+        <button class="cBtn" id="twitchChatConnectBtn" type="button">CONNECT</button>
+      </div>
+      <div class="twitchChatNativeShell">
+        <div class="twitchChatMessages" id="twitchChatMessages"></div>
+      </div>
+      <div class="twitchChatComposer">
+        <input class="cInput" id="twitchChatMessage" maxlength="450" placeholder="Message #ashodin">
+        <button class="cBtn" id="twitchChatSendBtn" type="button">SEND</button>
+      </div>
+      <div class="twitchChatActions">
+        <button class="cBtn danger" id="twitchChatDisconnectBtn" type="button">DISCONNECT</button>
+        <a class="cBtn" id="twitchChatOpenBtn" href="https://www.twitch.tv/popout/ashodin/chat?popout=" target="_blank" rel="noopener">OPEN TWITCH</a>
+      </div>
+      <div class="twitchChatStatus" id="twitchChatStatus">Disconnected; channel twitch.tv/ashodin</div>
+    `;
+  }
+  return panel;
+}
+
 function compactConnectControlsLayout(panelConnect){
   if(!panelConnect) return;
   if(panelConnect.dataset.connectCompact === "1" && panelConnect.querySelector(".connectPanelSection")) return;
@@ -39712,6 +40087,7 @@ function compactConnectControlsLayout(panelConnect){
   const recvRow = document.getElementById("apSyncReceivedBtn")?.closest(".cRow");
   const recvWrap = panelConnect.querySelector(".recvWrap");
   const apLogWrap = panelConnect.querySelector(".apConnLog");
+  const twitchChatPanel = ensureTwitchChatPanel();
 
   unique([
     archLabel, apGrid, connectRow,
@@ -39722,7 +40098,7 @@ function compactConnectControlsLayout(panelConnect){
     repoTitle, repoNote, repoRow
   ]).forEach((node)=>moveTo(left, node));
 
-  unique([recvTitle, recvRow, recvWrap, apLogWrap]).forEach((node)=>moveTo(right, node));
+  unique([recvTitle, recvRow, recvWrap, twitchChatPanel, apLogWrap]).forEach((node)=>moveTo(right, node));
 
   const makeSection = (parent, title, nodes, opts)=>{
     const list = unique(nodes);
@@ -39746,6 +40122,7 @@ function compactConnectControlsLayout(panelConnect){
   makeSection(left, "Episode Tracking", [episodeTitle, episodeRow, episodeState], { accent:"green", mini:"records / FLPRP / achievements" });
   makeSection(left, "Run Utilities", [progTitle, progRow, bonusPinballUtilityNote, bonusPinballUtilityRow, repoTitle, repoNote, repoRow], { accent:"red", mini:"wipe / bonus / bestiary" });
   makeSection(right, "Received Items", [recvTitle, recvRow, recvWrap], { accent:"gold", mini:"latest checks + rewards" });
+  makeSection(right, "Twitch Chat", [twitchChatPanel], { accent:"blue", mini:"twitch.tv/ashodin" });
   makeSection(right, "Connection Log", [apLogWrap], { accent:"blue", mini:"status / info / errors", grow:true });
 
   // Any remaining connect-only nodes stay visible in a fallback section.
@@ -40545,6 +40922,39 @@ if(saveBtn){
   };
 }
 
+function wireTwitchChatControls(){
+  try{
+    const cfg = loadTwitchChatCfg();
+    const user = document.getElementById("twitchChatUser");
+    const token = document.getElementById("twitchChatToken");
+    const connect = document.getElementById("twitchChatConnectBtn");
+    const disconnect = document.getElementById("twitchChatDisconnectBtn");
+    const msg = document.getElementById("twitchChatMessage");
+    const send = document.getElementById("twitchChatSendBtn");
+    if(user && !user.value) user.value = cfg.username || "";
+    if(token && !token.value) token.value = cfg.token || "";
+    if(connect && !connect.__flprTwitchBound){
+      connect.__flprTwitchBound = true;
+      connect.onclick = ()=>{ playSfx("click"); twitchChatConnect(); };
+    }
+    if(disconnect && !disconnect.__flprTwitchBound){
+      disconnect.__flprTwitchBound = true;
+      disconnect.onclick = ()=>{ playSfx("click"); twitchChatDisconnect(); };
+    }
+    if(send && !send.__flprTwitchBound){
+      send.__flprTwitchBound = true;
+      send.onclick = ()=>{ twitchChatSendCurrent(); };
+    }
+    if(msg && !msg.__flprTwitchBound){
+      msg.__flprTwitchBound = true;
+      msg.addEventListener("keydown", (ev)=>{
+        if(ev.key !== "Enter" || ev.shiftKey) return;
+        ev.preventDefault();
+        twitchChatSendCurrent();
+      });
+    }
+  }catch(_){}
+}
 
 function wireApControls(){
   const s = document.getElementById("apServer");
@@ -40636,6 +41046,7 @@ clearReceivedFeedHistory();
     toast("good","LOG CLEARED", `${tabLabel.toUpperCase()} tab cleared`, 1500);
   };
   renderApLogTab();
+  wireTwitchChatControls();
 
   if(s) s.onchange = ()=>{ ap.cfg.server = s.value.trim(); saveApCfg(ap.cfg); };
   if(p) p.onchange = ()=>{ ap.cfg.player = p.value.trim(); saveApCfg(ap.cfg); };
