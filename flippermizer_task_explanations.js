@@ -531,6 +531,284 @@
     }
   ];
 
+  const COUNTER_EXCLUDES = [
+    /^easy score \(/,
+    /^medium score \(/,
+    /^hard score \(/,
+    /^complete 1 2 3 top lanes$/,
+    /^complete the 1986 top lanes$/,
+    /^complete reflex 1 2 3$/,
+    /^complete a 5 way combo$/,
+    /^light the 1 000 000 comet ramp shot$/,
+    /^collect a 1 000 000 right ramp shot$/,
+    /^collect 1 000 000 at the center ramp$/,
+    /^advance warp factor to \d+$/,
+    /^reach class \d+ river$/,
+    /^reach mark \d+(?: to light jericho)?$/,
+    /^complete any level \d+ villain mode$/,
+    /^start (?:lah )?\d+ ball multiball$/,
+    /^start \d+ ball multiball$/,
+    /^collect all \d+ last action hero words$/
+  ];
+
+  function clampCounterTarget(value){
+    const num = Math.max(0, Math.round(Number(value) || 0));
+    return num > 0 ? num : 0;
+  }
+
+  function normalizeCounterLabel(value){
+    return String(value || "")
+      .replace(/\s+/g, " ")
+      .replace(/\bmultiball jackpots\b/gi, "multiball jackpots")
+      .replace(/\bjackpots in multiball\b/gi, "jackpots in multiball")
+      .trim();
+  }
+  function formatCounterShotLabel(value){
+    const clean = normalizeCounterLabel(value);
+    if(/\bshots?$/i.test(clean)) return clean;
+    return clean ? (clean + " shots") : "shots";
+  }
+
+  function createCounterMeta(rawTask, key, target, label, opts){
+    const cleanTarget = clampCounterTarget(target);
+    if(!cleanTarget) return null;
+    const cleanLabel = normalizeCounterLabel(label);
+    const qualifier = String(opts?.qualifier || "").trim();
+    const hint = String(opts?.hint || "").trim();
+    const autoLabel = cleanLabel || "steps";
+    return {
+      rawTask,
+      key,
+      target: cleanTarget,
+      label: cleanLabel,
+      qualifier,
+      hint: hint || ("Track your progress until you reach " + cleanTarget + " " + autoLabel + (qualifier ? " " + qualifier : "") + "."),
+      autoComplete: true
+    };
+  }
+
+  const COUNTER_RULES = [
+    {
+      re: /^complete the catapult (\d+) hits$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "catapult hits", {
+        hint: "Shoot the catapult repeatedly until all required catapult hits are registered."
+      })
+    },
+    {
+      re: /^win (\d+) (.+?)$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        hint: "Finish that objective successfully the required number of times."
+      })
+    },
+    {
+      re: /^rescue (\d+) (.+?)$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        hint: "Rescue the required target the listed number of times."
+      })
+    },
+    {
+      re: /^hit (\d+) martians$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "Martian hits", {
+        hint: "Reveal and hit Martians until the required total is reached."
+      })
+    },
+    {
+      re: /^beat (\d+) trolls$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "trolls defeated", {
+        hint: "Raise the trolls through normal table progression and defeat the required number of them."
+      })
+    },
+    {
+      re: /^destroy (\d+) saucers?$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "saucers destroyed", {
+        hint: "Finish full saucer attack waves until the required number of saucers have been destroyed."
+      })
+    },
+    {
+      re: /^score (\d+) goals?$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "goals", {
+        hint: "Shoot the goal cleanly each time it is available until you score the required number of goals."
+      })
+    },
+    {
+      re: /^collect spinner value (\d+) times$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "spinner value collects", {
+        hint: "Light spinner value and collect it the required number of times."
+      })
+    },
+    {
+      re: /^make (\d+) spinner rips$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "spinner rips", {
+        hint: "Shoot the spinner with enough speed to score a clean rip each time until you reach the target."
+      })
+    },
+    {
+      re: /^rip the spinner (\d+) times while lit$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "lit spinner rips", {
+        hint: "Light the spinner first, then rip it the required number of times while the feature stays lit."
+      })
+    },
+    {
+      re: /^complete (\d+) supercharger cycles?$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "Supercharger cycles", {
+        hint: "Keep feeding the Supercharger loop until the required number of full cycles are completed."
+      })
+    },
+    {
+      re: /^light (\d+) locks? in one game$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "locks lit", {
+        qualifier: "in one game",
+        hint: "Advance multiball progress and light the required number of locks before the game ends."
+      })
+    },
+    {
+      re: /^light and lock (\d+) balls?(?: .*?)$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "balls lit and locked", {
+        hint: "Light the lock first, then shoot the correct lock shot until the required number of locked balls are secured."
+      })
+    },
+    {
+      re: /^lock (\d+) balls?(?: .*?)$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "balls locked", {
+        hint: "Light the correct lock shot and secure the required number of locks for this objective."
+      })
+    },
+    {
+      re: /^lock (\d+) ball$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "balls locked", {
+        hint: "Shoot the lit lock shot and register the required number of locks."
+      })
+    },
+    {
+      re: /^shoot(?: the)? (.+?) (\d+) times(?: (in one game|in one multiball|on one ball))?$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[2], formatCounterShotLabel(match[1]), {
+        qualifier: String(match[3] || "").trim(),
+        hint: "Make that named shot cleanly each time until the required count is reached" + (match[3] ? " " + String(match[3]).trim() : "") + "."
+      })
+    },
+    {
+      re: /^hit(?: the)? (.+?) (\d+) times$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[2], normalizeCounterLabel(match[1]) + " hits", {
+        hint: "Keep hitting that feature until the required number of valid hits are registered."
+      })
+    },
+    {
+      re: /^hit (\d+) (.+?)$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        hint: "Keep hitting that feature until the required total has been reached."
+      })
+    },
+    {
+      re: /^make (\d+) (.+?)(?: (in one game|on one ball))?$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        qualifier: String(match[3] || "").trim(),
+        hint: "Repeat that objective until you have recorded the required number of completions" + (match[3] ? " " + String(match[3]).trim() : "") + "."
+      })
+    },
+    {
+      re: /^pick up (\d+) passengers?$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "passengers picked up", {
+        hint: "Shoot the lit passenger shots until the required number of passengers have been collected."
+      })
+    },
+    {
+      re: /^advance (\d+) (map destinations?|metamorphosis steps|rafts?)$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        hint: "Advance that feature one step at a time until the target total is reached."
+      })
+    },
+    {
+      re: /^complete (\d+) (.+?) in one game$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        qualifier: "in one game",
+        hint: "Finish that objective the required number of times during a single game."
+      })
+    },
+    {
+      re: /^complete (\d+) (.+?)$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        hint: "Repeat that objective until it has been completed the required number of times."
+      })
+    },
+    {
+      re: /^start any (\d+) multiballs in one game$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "multiballs started", {
+        qualifier: "in one game",
+        hint: "Qualify and start the required number of multiballs before the game ends."
+      })
+    },
+    {
+      re: /^start (\d+) (different missions|features|multiballs) in one game$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        qualifier: "in one game",
+        hint: "Start the required number of unique objectives during the same game."
+      })
+    },
+    {
+      re: /^start (\d+) different missions$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "different missions started", {
+        hint: "Start distinct missions until you have begun the required number of them."
+      })
+    },
+    {
+      re: /^collect (\d+) (.+?) in one multiball$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        qualifier: "in one multiball",
+        hint: "Start a single multiball and collect the required number of those awards before it ends."
+      })
+    },
+    {
+      re: /^collect (\d+) (.+?) in one game$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        qualifier: "in one game",
+        hint: "Collect the required number of those awards before the game ends."
+      })
+    },
+    {
+      re: /^collect (\d+) (.+?)$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], normalizeCounterLabel(match[2]), {
+        hint: "Collect that award the required number of times."
+      })
+    },
+    {
+      re: /^invite (\d+) party members? at the cosmic cottage$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "party members invited", {
+        hint: "Shoot the Cosmic Cottage when lit until the required number of party members have been invited."
+      })
+    },
+    {
+      re: /^jail all (\d+) criminals in one ball$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "criminals jailed", {
+        qualifier: "on one ball",
+        hint: "Catch and jail all required criminals before that ball drains."
+      })
+    },
+    {
+      re: /^reach (\d+) total bug kills$/,
+      build: (match, rawTask, key)=> createCounterMeta(rawTask, key, match[1], "bug kills", {
+        hint: "Keep defeating bugs across qualifying modes until the cumulative kill total reaches the target."
+      })
+    }
+  ];
+
+  function resolveTaskCounterMeta(taskName){
+    const rawTask = String(taskName || "").trim();
+    if(!rawTask) return null;
+    const key = normalizeTaskKey(rawTask);
+    if(!key) return null;
+    for(let i = 0; i < COUNTER_EXCLUDES.length; i++){
+      if(COUNTER_EXCLUDES[i].test(key)) return null;
+    }
+    for(let i = 0; i < COUNTER_RULES.length; i++){
+      const rule = COUNTER_RULES[i];
+      const match = key.match(rule.re);
+      if(!match) continue;
+      const meta = rule.build(match, rawTask, key);
+      if(meta && Number(meta.target) > 0) return meta;
+    }
+    return null;
+  }
+
   function resolveTaskExplanationMeta(taskName){
     const rawTask = String(taskName || "").trim();
     if(!rawTask) return { text:"", kind:"none", rawTask:"", key:"" };
@@ -558,6 +836,17 @@
         ? rule.desc(match, rawTask, key)
         : rule.desc;
       if(out) return { text: makeHowTo(out), kind:"rule", rawTask, key };
+    }
+
+    const counterMeta = resolveTaskCounterMeta(rawTask);
+    if(counterMeta){
+      return {
+        text: makeHowTo(counterMeta.hint),
+        kind: "counter",
+        rawTask,
+        key,
+        counterMeta
+      };
     }
 
     if(key.startsWith("complete ")){
@@ -598,8 +887,10 @@
   root.FLPR_TASK_EXPLANATIONS = Object.freeze({
     normalizeTaskKey: normalizeTaskKey,
     resolveTaskExplanation: resolveTaskExplanation,
-    resolveTaskExplanationMeta: resolveTaskExplanationMeta
+    resolveTaskExplanationMeta: resolveTaskExplanationMeta,
+    resolveTaskCounterMeta: resolveTaskCounterMeta
   });
   root.flprGetTaskExplanation = resolveTaskExplanation;
   root.flprGetTaskExplanationMeta = resolveTaskExplanationMeta;
+  root.flprGetTaskCounterMeta = resolveTaskCounterMeta;
 })(window);
