@@ -75,15 +75,19 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
 .worldCardHero{
   position:relative;
   z-index:1;
-  display:block;
-  min-height:134px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  height:auto;
+  min-height:0;
   margin:-2px -2px 14px;
 }
 .worldCardHeroTile{
   border:1px solid rgba(255,255,255,.08);
   border-radius:10px;
   background:#071a2d center/cover no-repeat;
-  min-height:134px;
+  height:168px;
+  min-height:168px;
   overflow:hidden;
   position:relative;
   appearance:none;
@@ -100,8 +104,48 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
 .worldCardWorldBanner::after,
 .worldDetailWorldBanner::after{
   background:
-    linear-gradient(180deg, rgba(3,9,18,.18), rgba(3,9,18,.78)),
-    linear-gradient(90deg, rgba(2,8,18,.78), rgba(2,8,18,.16) 42%, rgba(2,8,18,.52));
+    radial-gradient(circle at 50% 50%, rgba(3,9,18,.04), rgba(3,9,18,.24) 58%, rgba(3,9,18,.48)),
+    linear-gradient(180deg, rgba(3,9,18,.08), rgba(3,9,18,.42));
+}
+.worldCardWorldBanner,
+.worldDetailWorldBanner{
+  background-size:cover;
+  background-position:center center;
+  background-color:#050d18;
+}
+.worldCardWorldBanner .worldCardHeroCopy,
+.worldDetailWorldBanner .worldCardHeroCopy{
+  inset:auto 16px 12px 16px;
+  align-items:center;
+  text-align:center;
+}
+.worldCardWorldBanner .worldCardHeroKicker,
+.worldCardWorldBanner .worldCardHeroHint,
+.worldDetailWorldBanner .worldCardHeroKicker,
+.worldDetailWorldBanner .worldCardHeroHint{
+  opacity:.72;
+}
+.worldCardBannerCaption{
+  position:relative;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:7px;
+  min-height:60px;
+  padding:0 10px 2px;
+  text-align:center;
+}
+.worldCardBannerCaption .worldCardHeroHint{
+  align-self:center;
+}
+.worldCardHero.hasWorldBanner .worldCardBannerCaption,
+.worldDetailBannerStrip.hasWorldBanner .worldCardBannerCaption{
+  display:none;
+}
+.worldCardHero.missingWorldBanner .worldCardBannerCaption,
+.worldDetailBannerStrip.missingWorldBanner .worldCardBannerCaption{
+  display:flex;
 }
 .worldCardHeroCopy{
   position:absolute;
@@ -624,6 +668,8 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
 .pageSpecial .worldGrid{
   padding:0;
   flex:1 1 auto;
+  align-content:start;
+  grid-auto-rows:minmax(250px, auto);
 }
 .bookPage.flippingOut{ animation: bookFlipOut 340ms ease-in forwards; }
 .bookPage.flippingIn{ animation: bookFlipIn 360ms ease-out both; }
@@ -753,8 +799,9 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
   .worldCardHd{ font-size:10px; }
   .worldCardMeta,
   .worldCardItem{ font-size:8px; }
-  .worldCardHero{ min-height:92px; }
-  .worldCardHeroTile{ min-height:92px; }
+  .worldCardHero{ height:auto; min-height:0; }
+  .worldCardHeroTile{ height:112px; min-height:112px; }
+  .worldCardBannerCaption{ min-height:50px; gap:5px; }
   .worldCardHeroTitle{ font-size:10px; }
   .worldDetailWorldBanner{ min-height:150px; }
   .worldCardStats{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
@@ -902,6 +949,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
   let __idbPromise = null;
   const bannerUrlCache = new Map();
   const bannerLoadInFlight = new Map();
+  const missingIdbBannerKeys = new Set();
   let __pageRenderQueued = false;
   const flyerPickerInput = document.createElement("input");
   flyerPickerInput.type = "file";
@@ -930,16 +978,20 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
     dennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
     featureddesignerdennisnordmanpartymonsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
     dennis_nordman_party_monsters: "WorldsBanners/DennisNordmanPartyMonsters.png",
-    ninetiesmoviemayhem: "WorldsBanners/90sMovieMayhem.jpg",
-    "90smoviemayhem": "WorldsBanners/90sMovieMayhem.jpg",
+    ninetiesmoviemayhem: "WorldsBanners/90sMovieMayhem.png",
+    "90smoviemayhem": "WorldsBanners/90sMovieMayhem.png",
     scifisignal: "WorldsBanners/SciFiSignal.png",
-    rocklegends: "WorldsBanners/RockLegends.jpg",
-    monsterbashdeluxe: "WorldsBanners/MonsterBashDeluxe.jpg",
+    rocklegends: "WorldsBanners/RockLegends.png",
+    legendarywilliams: "WorldsBanners/LegendaryWilliams.png",
+    legendary_williams: "WorldsBanners/LegendaryWilliams.png",
+    monsterbashdeluxe: "WorldsBanners/MonsterBashDeluxe.png",
     modernsternspotlight: "WorldsBanners/ModernSternSpotlight.png",
-    midnightclassics: "WorldsBanners/BestiaryFlyers/PFOR.jpg",
-    midnight_classics: "WorldsBanners/BestiaryFlyers/PFOR.jpg",
+    midnightclassics: "WorldsBanners/MidnightClassics.png",
+    midnight_classics: "WorldsBanners/MidnightClassics.png",
     badgesandchases: "WorldsBanners/BadgesAndChases.png",
     comicbookcollision: "WorldsBanners/ComicBookCollision.png",
+    insideoutlanes: "WorldsBanners/InsideOutLanes.png",
+    inside_out_lanes: "WorldsBanners/InsideOutLanes.png",
     theshowmustgoon: "WorldsBanners/TheShowMustGoOn.png",
     the_show_must_go_on: "WorldsBanners/TheShowMustGoOn.png"
   });
@@ -1171,11 +1223,12 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
     }
   }
   function resolveBannerRef(ref){
-    const raw = String(ref || "").trim();
+    const raw = normalizeKnownBundledBannerRef(ref);
     if(!raw) return "";
     if(raw.startsWith("data:") || raw.startsWith("http") || raw.startsWith("/") || raw.startsWith("./") || raw.startsWith("../")) return raw;
     if(raw.startsWith("idb:")){
       const idbKey = raw.slice(4);
+      if(missingIdbBannerKeys.has(idbKey)) return "";
       if(bannerUrlCache.has(idbKey)) return bannerUrlCache.get(idbKey);
       if(!bannerLoadInFlight.has(idbKey)){
         const p = idbGet(idbKey)
@@ -1183,9 +1236,14 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
             if(blob){
               const url = URL.createObjectURL(blob);
               bannerUrlCache.set(idbKey, url);
+              missingIdbBannerKeys.delete(idbKey);
+            }else{
+              missingIdbBannerKeys.add(idbKey);
             }
           })
-          .catch(()=>{})
+          .catch(()=>{
+            missingIdbBannerKeys.add(idbKey);
+          })
           .finally(()=>{
             bannerLoadInFlight.delete(idbKey);
             queueRenderPage();
@@ -1195,6 +1253,19 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
       return "";
     }
     return raw;
+  }
+  function normalizeKnownBundledBannerRef(ref){
+    const raw = String(ref || "").trim();
+    const fixes = {
+      "WorldsBanners/90sMovieMayhem.jpg": "WorldsBanners/90sMovieMayhem.png",
+      "WorldsBanners/RockLegends.jpg": "WorldsBanners/RockLegends.png",
+      "WorldsBanners/MonsterBashDeluxe.jpg": "WorldsBanners/MonsterBashDeluxe.png"
+    };
+    return fixes[raw] || raw;
+  }
+  function isMissingIdbBannerRef(ref){
+    const raw = String(ref || "").trim();
+    return raw.startsWith("idb:") && missingIdbBannerKeys.has(raw.slice(4));
   }
   function buildFlyerStorageKey(code){
     return `table-code:${String(code || "").trim()}`;
@@ -1275,7 +1346,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
       if(shared && typeof shared === "object"){
         for(const key of keys){
           const ref = String(shared[key] || "").trim();
-          if(ref) return ref;
+          if(ref && !isMissingIdbBannerRef(ref)) return ref;
         }
       }
       const worlds = overlayState && overlayState.worlds;
@@ -1284,7 +1355,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
           const worldKeys = buildWorldGroupLookupKeys(wk).concat(buildWorldGroupLookupKeys(world && world.label || ""));
           if(worldKeys.some((key)=> keys.includes(key))){
             const ref = String(world && world.banner || "").trim();
-            if(ref) return ref;
+            if(ref && !isMissingIdbBannerRef(ref)) return ref;
           }
         }
       }
@@ -1651,7 +1722,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
             const currentEntry = currentTable ? tableByCode[String(currentTable.code || "").trim()] : null;
             const currentBannerRef = resolveBannerRef(currentTable && currentTable.banner || "");
             const worldBannerRef = resolveBannerRef(group.banner || resolveWorldBannerRefForGroup(group.name));
-            const worldBannerHero = `<button type="button" class="worldCardHeroTile worldDetailWorldBanner worldCardWorldBanner${worldBannerRef ? "" : " empty"}" id="worldGroupBannerBtn"${worldBannerRef ? ` style="background-image:url('${esc(worldBannerRef)}')"` : ""}><div class="worldCardHeroCopy"><div class="worldCardHeroKicker">WORLD BANNER</div><div class="worldCardHeroTitle">${esc(group.name)}</div><div class="worldCardHeroHint">CLICK TO UPDATE BANNER</div></div></button>`;
+            const worldBannerHero = `<button type="button" class="worldCardHeroTile worldDetailWorldBanner worldCardWorldBanner${worldBannerRef ? "" : " empty"}" id="worldGroupBannerBtn"${worldBannerRef ? ` style="background-image:url('${esc(worldBannerRef)}')"` : ""}></button><div class="worldCardBannerCaption"><div class="worldCardHeroKicker">WORLD BANNER</div><div class="worldCardHeroTitle">${esc(group.name)}</div><div class="worldCardHeroHint">CLICK TO UPDATE BANNER</div></div>`;
             const statBlock = [
               statTile("Viewed", String(Number(stats.viewed || 0))),
               statTile("Checks Cleared", String(Number(stats.cleared || 0))),
@@ -1664,7 +1735,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
               const active = idx === currentIndex ? " active" : "";
               return `<button type="button" class="worldCarouselRosterItem${active}" data-carousel-index="${idx}">${esc(table.name)} <span style="color:#8ec6d8;">[${esc(table.code)}]</span></button>`;
             }).join("");
-            pageSpecial.innerHTML = `<div class="pageSpecialHd">WORLD GROUPS</div><div class="pageSpecialSub">Browse the current randomizer world families as a grid. This page reflects repository-backed group assignments, not just the currently loaded seed.</div><div class="worldDetail"><div class="worldDetailTop"><button type="button" class="worldDetailBack" id="worldDetailBack">BACK TO GRID</button><div class="worldDetailMeta"><div class="worldDetailHd">${esc(group.name)}</div><div class="worldDetailSub">${group.tables.length} tables in this group. Use the banner header to keep this world�s shared art synced with the overlay, then use the carousel below to update per-table flyers.</div></div></div><div class="worldDetailHero"><div class="worldDetailBannerStrip">${worldBannerHero}</div><div class="worldDetailStats">${statBlock}</div></div><div class="worldDetailMeta"><div class="worldCardListHd">TABLE CAROUSEL</div><div class="worldCardMeta">Click a flyer to replace it. Use the side arrows or roster buttons to move through this world�s table set.</div></div><div class="worldDetailCarousel"><button type="button" class="worldCarouselNav" id="worldCarouselPrev">PREV</button><div class="worldCarouselViewport"><div class="worldCarouselTop"><div><div class="worldCarouselTitle">${esc(currentTable?.name || "")}</div><div class="worldCarouselCode">Code; ${esc(currentTable?.code || "")}${currentEntry ? ` | Viewed ${Number(currentEntry.stats?.viewed || 0)}x | Cleared ${Number(currentEntry.stats?.cleared || 0)} | Balls ${Number(currentEntry.stats?.balls || 0)}` : ""}</div></div><div class="worldCarouselPos">TABLE ${currentIndex + 1} / ${tableCount}</div></div><div class="worldCarouselStage"><div class="worldCarouselFlyerWrap"><button type="button" class="worldCarouselFlyer${currentBannerRef ? "" : " empty"}" id="worldCarouselFlyer" data-table-code="${esc(currentTable?.code || "")}"${currentBannerRef ? ` style="background-image:url('${esc(currentBannerRef)}')"` : ""}></button><div class="worldCarouselFlyerNote">Shared flyer override path. Updating this flyer will carry through to the overlay and other Bestiary views.</div></div><div class="worldCarouselPanel"><div class="worldCardStats">${currentEntry ? [
+            pageSpecial.innerHTML = `<div class="pageSpecialHd">WORLD GROUPS</div><div class="pageSpecialSub">Browse the current randomizer world families as a grid. This page reflects repository-backed group assignments, not just the currently loaded seed.</div><div class="worldDetail"><div class="worldDetailTop"><button type="button" class="worldDetailBack" id="worldDetailBack">BACK TO GRID</button><div class="worldDetailMeta"><div class="worldDetailHd">${esc(group.name)}</div><div class="worldDetailSub">${group.tables.length} tables in this group. Use the banner header to keep this world�s shared art synced with the overlay, then use the carousel below to update per-table flyers.</div></div></div><div class="worldDetailHero"><div class="worldDetailBannerStrip ${worldBannerRef ? "hasWorldBanner" : "missingWorldBanner"}">${worldBannerHero}</div><div class="worldDetailStats">${statBlock}</div></div><div class="worldDetailMeta"><div class="worldCardListHd">TABLE CAROUSEL</div><div class="worldCardMeta">Click a flyer to replace it. Use the side arrows or roster buttons to move through this world�s table set.</div></div><div class="worldDetailCarousel"><button type="button" class="worldCarouselNav" id="worldCarouselPrev">PREV</button><div class="worldCarouselViewport"><div class="worldCarouselTop"><div><div class="worldCarouselTitle">${esc(currentTable?.name || "")}</div><div class="worldCarouselCode">Code; ${esc(currentTable?.code || "")}${currentEntry ? ` | Viewed ${Number(currentEntry.stats?.viewed || 0)}x | Cleared ${Number(currentEntry.stats?.cleared || 0)} | Balls ${Number(currentEntry.stats?.balls || 0)}` : ""}</div></div><div class="worldCarouselPos">TABLE ${currentIndex + 1} / ${tableCount}</div></div><div class="worldCarouselStage"><div class="worldCarouselFlyerWrap"><button type="button" class="worldCarouselFlyer${currentBannerRef ? "" : " empty"}" id="worldCarouselFlyer" data-table-code="${esc(currentTable?.code || "")}"${currentBannerRef ? ` style="background-image:url('${esc(currentBannerRef)}')"` : ""}></button><div class="worldCarouselFlyerNote">Shared flyer override path. Updating this flyer will carry through to the overlay and other Bestiary views.</div></div><div class="worldCarouselPanel"><div class="worldCardStats">${currentEntry ? [
               statTile("Viewed", String(Number(currentEntry.stats?.viewed || 0))),
               statTile("Checks Cleared", String(Number(currentEntry.stats?.cleared || 0))),
               statTile("Checks Left", String(Number(currentEntry.stats?.left || 0))),
@@ -1714,7 +1785,7 @@ body{ padding:10px; min-height:100vh; display:flex; justify-content:center; alig
                 compactStat("Cleared", String(Number(stats.cleared || 0))),
                 compactStat("Time", fmtDur(Number(stats.timeMs || 0)))
               ].join("");
-              return `<div class="worldCard" data-world-group="${esc(group.name)}"><div class="worldCardHero"><div class="worldCardHeroTile worldCardWorldBanner${worldBannerRef ? "" : " empty"}"${worldBannerRef ? ` style="background-image:url('${esc(worldBannerRef)}')"` : ""}><div class="worldCardHeroCopy"><div class="worldCardHeroKicker">WORLD GROUP</div><div class="worldCardHeroTitle">${esc(group.name)}</div><div class="worldCardHeroHint">OPEN WORLD</div></div></div></div><div class="worldCardBody"><div class="worldCardTop"><div><div class="worldCardHd">${esc(group.name)}</div><div class="worldCardMeta">${group.tables.length} tables in this group</div></div><div class="worldCardExpandHint">OPEN WORLD</div></div><div class="worldCardCompactStats">${compactStats}</div></div></div>`;
+              return `<div class="worldCard" data-world-group="${esc(group.name)}"><div class="worldCardHero ${worldBannerRef ? "hasWorldBanner" : "missingWorldBanner"}"><div class="worldCardHeroTile worldCardWorldBanner${worldBannerRef ? "" : " empty"}"${worldBannerRef ? ` style="background-image:url('${esc(worldBannerRef)}')"` : ""}></div><div class="worldCardBannerCaption"><div class="worldCardHeroKicker">WORLD GROUP</div><div class="worldCardHeroTitle">${esc(group.name)}</div><div class="worldCardHeroHint">OPEN WORLD</div></div></div><div class="worldCardBody"><div class="worldCardTop"><div><div class="worldCardHd">${esc(group.name)}</div><div class="worldCardMeta">${group.tables.length} tables in this group</div></div><div class="worldCardExpandHint">OPEN WORLD</div></div><div class="worldCardCompactStats">${compactStats}</div></div></div>`;
             }).join("");
             pageSpecial.innerHTML = `<div class="pageSpecialHd">WORLD GROUPS</div><div class="pageSpecialSub">Browse the current randomizer world families as a grid. Click a world card to open its full detail panel and table carousel.</div><div class="worldGrid">${cards}</div>`;
             pageSpecial.querySelectorAll(".worldCard").forEach((card)=>{

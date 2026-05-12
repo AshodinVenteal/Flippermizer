@@ -128,13 +128,14 @@
   --captureW: 910px; /* 15% reduced */
   --captureH: 1450px; /* extended so Boss Keys dock is visible */ /* 15% reduced */
   --controlsW: 1280px;  /* 15% reduced */
+  --bonusLeaderboardW: 306px;
   --gutter: 16px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 
 html,body{
-  width: calc(var(--captureW) + var(--controlsW) + var(--gutter));
+  width: calc(var(--captureW) + var(--bonusLeaderboardW) + var(--controlsW) + var(--gutter) + 32px);
   height: var(--captureH);
   background:linear-gradient(180deg,var(--bg1),var(--bg2));
   font-family:'Press Start 2P', monospace;
@@ -410,6 +411,9 @@ body[class*="flprShopBorder"] .captureShopBorder{
 .controls{
   width: var(--controlsW);
   height: var(--captureH);
+  margin-left: var(--bonusLeaderboardW);
+  position:relative;
+  z-index:2147483400;
   border: 2px solid rgba(0,166,255,0.35);
   border-radius: 16px;
   background: rgba(2,8,16,0.55);
@@ -418,16 +422,205 @@ body[class*="flprShopBorder"] .captureShopBorder{
   display:flex;
   flex-direction:column;
 }
+.bonusPinballIntegratedHost{
+  position:absolute;
+  left:0;
+  top:0;
+  width: calc(var(--captureW) + var(--bonusLeaderboardW));
+  height: var(--captureH);
+  z-index:2147483300;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  overflow:visible;
+  transform:none;
+  transition: opacity 520ms ease, visibility 0s linear 520ms;
+}
+.capture{
+  overflow: visible;
+}
+body.bonusPinballIntegratedOn .bonusPinballIntegratedHost{
+  opacity:1;
+  visibility:visible;
+  pointer-events:none;
+  transform:none;
+  transition: opacity 520ms ease, visibility 0s linear 0s;
+}
+.bonusPinballIntegratedShade{
+  position:absolute;
+  left:0;
+  top:0;
+  width:var(--captureW);
+  height:var(--captureH);
+  background:rgba(0,0,0,.58);
+  opacity:0;
+  pointer-events:none;
+  z-index:0;
+  transition:opacity 420ms ease;
+}
+body.bonusPinballIntegratedOn .bonusPinballIntegratedShade,
+body.bonusPinballDim .bonusPinballIntegratedShade{
+  opacity:1;
+}
+.bonusPinballIntegratedMount{
+  position:relative;
+  z-index:1;
+  width:100%;
+  height:100%;
+  display:block;
+  border:0;
+  background:transparent;
+  color-scheme: dark;
+  opacity:0;
+  overflow:visible;
+  pointer-events:none;
+  transition:opacity 220ms ease;
+}
+body.bonusPinballPositioning .bonusPinballIntegratedMount{
+  cursor:move;
+}
+.bonusPinballGapHandle{
+  position:absolute;
+  left:calc(16px + var(--captureW) + var(--gutter) + var(--bonusLeaderboardW) - 8px);
+  top:16px;
+  width:16px;
+  height:calc(var(--captureH) - 32px);
+  z-index:2147483450;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  cursor:ew-resize;
+}
+body.bonusPinballGapAdjusting .bonusPinballGapHandle,
+body.controlsLayoutEdit .bonusPinballGapHandle{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.bonusPinballGapHandle::before{
+  content:"";
+  position:absolute;
+  left:6px;
+  top:0;
+  bottom:0;
+  width:4px;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(255,214,122,.12), rgba(255,214,122,.9), rgba(116,240,255,.72), rgba(255,214,122,.12));
+  box-shadow:0 0 14px rgba(255,214,122,.46), 0 0 24px rgba(116,240,255,.28);
+}
+body.bonusPinballGapAdjusting .controls,
+body.controlsLayoutEdit .controls{
+  outline:2px dashed rgba(255,214,122,.65);
+  outline-offset:4px;
+}
+.bonusPinballIntegratedHost.frameReady .bonusPinballIntegratedMount{
+  opacity:1;
+}
+body.bonusPinballIntegratedOn .toastWrap,
+body.bonusPinballIntegratedOn .achievementStack,
+body.bonusPinballIntegratedOn .achievementModal,
+body.bonusPinballIntegratedOn .endRunOverlay,
+body.bonusPinballIntegratedOn .ovModal,
+body.bonusPinballIntegratedOn .randomizerIntro,
+body.bonusPinballDim .toastWrap,
+body.bonusPinballDim .achievementStack,
+body.bonusPinballDim .achievementModal,
+body.bonusPinballDim .endRunOverlay,
+body.bonusPinballDim .ovModal,
+body.bonusPinballDim .randomizerIntro{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+.bonusPinballControlPanel{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-height: 342px;
+}
+.bonusPinballControlGrid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap:8px;
+}
+.bonusPinballControlGrid .cBtn{
+  width:100%;
+}
+#bonusPinballToggleBtn{
+  grid-column: 1 / -1;
+  min-height: 52px;
+}
+.bonusPinballStatusLine{
+  min-height:74px;
+  max-height:118px;
+  border:1px solid rgba(255,214,122,.20);
+  border-radius:10px;
+  padding:7px 8px;
+  background:rgba(0,0,0,.22);
+  color:rgba(255,244,212,.82);
+  font-size:7px;
+  line-height:1.45;
+  overflow:auto;
+  overflow-wrap:anywhere;
+}
+#bonusPinballSectionCard{
+  flex:0 0 auto;
+  min-height: 420px;
+}
 .controlsHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
   padding: 14px 14px 12px 14px;
   border-bottom: 1px solid rgba(0,166,255,0.35);
   color: var(--cyan);
   font-size: 10px;
 }
+.controlsHeadTitle{
+  min-width:0;
+}
+.controlsLayoutTools{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-left:auto;
+}
+.controlsLayoutTools .cBtn{
+  width:auto;
+  min-width:120px;
+  padding:7px 8px;
+  font-size:7px;
+  white-space:nowrap;
+}
 .controlsBody{
   padding: 14px;
   overflow:auto;
   height:100%;
+}
+.controls{
+  position:relative;
+}
+.flprControlsWidthHandle{
+  display:none;
+  position:absolute;
+  z-index:30;
+  top:72px;
+  right:-7px;
+  bottom:10px;
+  width:14px;
+  cursor:ew-resize;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(0,217,255,.72), rgba(34,255,136,.66));
+  box-shadow:0 0 14px rgba(0,217,255,.42);
+  opacity:.72;
+}
+body.controlsLayoutEdit .flprControlsWidthHandle{
+  display:block;
+}
+body.controlsLayoutDragging,
+body.controlsLayoutDragging *{
+  user-select:none !important;
 }
 
 /* HEADER */
@@ -988,6 +1181,10 @@ body[class*="flprShopBorder"] .captureShopBorder{
   transition: filter 220ms ease, opacity 220ms ease;
 }
 body.bonusPinballDim .capture{
+  filter:none;
+  opacity:1;
+}
+body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   filter: brightness(.42) saturate(.72);
   opacity: .46;
 }
@@ -12442,8 +12639,9 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   height: 100%;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(220px, calc((100% - 8px) * var(--flprControlsColPct, .5))) minmax(220px, 1fr);
   gap: 8px;
+  position: relative;
 }
 .controlsTabPanel[data-ctrl-panel="visuals"] .visualsCol{
   min-height: 0;
@@ -12457,8 +12655,9 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   height: 100%;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(220px, calc((100% - 8px) * var(--flprControlsColPct, .5))) minmax(220px, 1fr);
   gap: 8px;
+  position: relative;
 }
 .controlsTabPanel[data-ctrl-panel="testing"] .testingCol{
   min-height: 0;
@@ -12505,8 +12704,9 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   height: 100%;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(220px, calc((100% - 8px) * var(--flprControlsColPct, .5))) minmax(220px, 1fr);
   gap: 8px;
+  position: relative;
 }
 .controlsTabPanel[data-ctrl-panel="connect"] .connectCol{
   min-height: 0;
@@ -12534,6 +12734,57 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
     0 0 0 1px rgba(0,217,255,.10) inset,
     0 12px 24px rgba(0,0,0,.26);
   overflow: hidden;
+}
+.flprControlsColumnHandle{
+  display:none;
+  position:absolute;
+  z-index:20;
+  top:0;
+  bottom:0;
+  left:calc((100% - 8px) * var(--flprControlsColPct, .5) + 4px);
+  width:14px;
+  transform:translateX(-50%);
+  cursor:col-resize;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(0,217,255,.70), rgba(34,255,136,.58));
+  box-shadow:0 0 16px rgba(0,217,255,.34);
+  opacity:.64;
+}
+body.controlsLayoutEdit .flprControlsColumnHandle{
+  display:block;
+}
+.flprControlResizable{
+  position:relative;
+}
+body.controlsLayoutEdit .flprControlResizable{
+  outline:1px dashed rgba(0,217,255,.42);
+  outline-offset:-3px;
+}
+.flprControlResizeEdge{
+  display:none;
+  position:absolute;
+  z-index:22;
+  background:rgba(0,217,255,.20);
+  box-shadow:0 0 12px rgba(0,217,255,.20);
+}
+body.controlsLayoutEdit .flprControlResizeEdge{
+  display:block;
+}
+.flprControlResizeEdge[data-edge="bottom"]{
+  left:14px;
+  right:14px;
+  bottom:0;
+  height:8px;
+  cursor:ns-resize;
+  border-radius:999px 999px 0 0;
+}
+.flprControlResizeEdge[data-edge="right"]{
+  top:14px;
+  bottom:14px;
+  right:0;
+  width:8px;
+  cursor:ew-resize;
+  border-radius:999px 0 0 999px;
 }
 .controlsTabPanel[data-ctrl-panel="connect"] .connectPanelSection > *,
 .controlsTabPanel[data-ctrl-panel="connect"] .connectPanelSection .cRow > *,
@@ -12607,7 +12858,9 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 .controlsTabPanel[data-ctrl-panel="testing"] .connectPanelSection[data-accent="red"]::before{
   background: linear-gradient(90deg, rgba(255,108,136,0), rgba(255,108,136,.92), rgba(255,214,224,.82), rgba(255,108,136,0));
 }
-.controlsTabPanel[data-ctrl-panel="connect"] .connectPanelSection.grow{
+.controlsTabPanel[data-ctrl-panel="connect"] .connectPanelSection.grow,
+.controlsTabPanel[data-ctrl-panel="visuals"] .connectPanelSection.grow,
+.controlsTabPanel[data-ctrl-panel="testing"] .connectPanelSection.grow{
   flex: 1 1 auto;
 }
 .controlsTabPanel[data-ctrl-panel="connect"] .connectPanelSectionTitle,
@@ -12756,7 +13009,7 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   overflow:auto;
   padding:10px 12px;
   font-family: system-ui, -apple-system, Segoe UI, sans-serif;
-  font-size:11px;
+  font-size: var(--twitch-chat-font-size, 11px);
   line-height:1.42;
   color: rgba(235,242,255,.92);
   background:
@@ -12774,6 +13027,75 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   line-height:1.55;
   text-transform: uppercase;
 }
+.twitchChatLine.event{
+  display:block;
+  padding:8px 9px;
+  border:1px solid rgba(255,214,122,.28);
+  border-left:3px solid rgba(255,214,122,.86);
+  border-radius:8px;
+  background: linear-gradient(135deg, rgba(255,214,122,.13), rgba(145,70,255,.08));
+  box-shadow: 0 0 0 1px rgba(255,255,255,.04) inset;
+}
+.twitchChatLine.event.sub{
+  border-color: rgba(255,142,214,.30);
+  border-left-color: rgba(255,142,214,.90);
+  background: linear-gradient(135deg, rgba(255,142,214,.14), rgba(145,70,255,.10));
+}
+.twitchChatLine.event.raid{
+  border-color: rgba(116,240,255,.30);
+  border-left-color: rgba(116,240,255,.92);
+  background: linear-gradient(135deg, rgba(116,240,255,.14), rgba(34,255,136,.08));
+}
+.twitchChatLine.event.announce{
+  border-color: rgba(255,214,122,.34);
+  border-left-color: rgba(255,214,122,.94);
+}
+.twitchChatLine.event.follow{
+  border-color: rgba(255,142,214,.30);
+  border-left-color: rgba(255,142,214,.92);
+  background: linear-gradient(135deg, rgba(255,142,214,.13), rgba(116,240,255,.08));
+}
+.twitchChatLine.event.points{
+  border-color: rgba(177,137,255,.32);
+  border-left-color: rgba(177,137,255,.94);
+  background: linear-gradient(135deg, rgba(177,137,255,.14), rgba(255,214,122,.07));
+}
+.twitchChatLine.event.stream{
+  border-color: rgba(0,217,255,.30);
+  border-left-color: rgba(0,217,255,.92);
+  background: linear-gradient(135deg, rgba(0,217,255,.12), rgba(34,255,136,.08));
+}
+.twitchChatLine.event.bits,
+.twitchChatLine.event.charity{
+  border-color: rgba(34,255,136,.30);
+  border-left-color: rgba(34,255,136,.92);
+  background: linear-gradient(135deg, rgba(34,255,136,.13), rgba(0,217,255,.08));
+}
+.twitchChatEventTag{
+  display:inline-flex;
+  align-items:center;
+  min-height:15px;
+  margin-right:8px;
+  padding:2px 5px;
+  border-radius:5px;
+  background: rgba(255,255,255,.12);
+  color: rgba(255,248,220,.96);
+  font-family:'Press Start 2P', monospace;
+  font-size:6px;
+  line-height:1.2;
+  text-transform:uppercase;
+  vertical-align:1px;
+}
+.twitchChatEventText{
+  color: rgba(255,250,232,.96);
+  font-weight:800;
+}
+.twitchChatEventDetail{
+  margin-top:5px;
+  color: rgba(232,240,255,.76);
+  font-size: max(9px, calc(var(--twitch-chat-font-size, 11px) - 1px));
+  line-height:1.35;
+}
 .twitchChatName{
   color:#bf94ff;
   font-weight:800;
@@ -12785,10 +13107,62 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   gap:8px;
   align-items:center;
 }
+.twitchChatFontGrid{
+  display:grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap:8px;
+  align-items:center;
+}
+.twitchChatFontGrid .cLabel{
+  margin:0;
+  white-space:nowrap;
+}
+.twitchChatFontGrid input[type="range"]{
+  min-width:0;
+  width:100%;
+}
+.twitchChatFontValue{
+  min-width:34px;
+  color: rgba(232,240,255,.76);
+  font-size:7px;
+  line-height:1.2;
+  text-align:right;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.twitchEventSubGrid{
+  display:grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap:8px;
+  align-items:center;
+}
+.twitchEventSubToggle{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:32px;
+  padding:0 9px;
+  border:1px solid rgba(145,70,255,.24);
+  border-radius:8px;
+  background: rgba(10,4,24,.34);
+  color: rgba(232,240,255,.80);
+  font-size:7px;
+  line-height:1.2;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  white-space:nowrap;
+}
+.twitchEventSubToggle input{
+  width:13px;
+  height:13px;
+  margin:0;
+}
 .twitchChatComposer{
   grid-template-columns: minmax(0, 1fr) auto;
 }
 .twitchChatConnectGrid .cInput,
+.twitchChatFontGrid .cInput,
+.twitchEventSubGrid .cInput,
 .twitchChatComposer .cInput{
   min-width:0;
 }
@@ -13196,31 +13570,37 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   gap: 5px;
   font-size: 8px;
 }
-.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLog{
+.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLog,
+.controlsTabPanel[data-ctrl-panel="testing"] .testingColRight .apConnLog{
   margin-top: 0;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
 }
-.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLogHead{
+.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLogHead,
+.controlsTabPanel[data-ctrl-panel="testing"] .testingColRight .apConnLogHead{
   padding: 8px 10px 7px;
 }
-.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLogTitle{
+.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLogTitle,
+.controlsTabPanel[data-ctrl-panel="testing"] .testingColRight .apConnLogTitle{
   font-size: 8px;
 }
-.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLogTabs{
+.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLogTabs,
+.controlsTabPanel[data-ctrl-panel="testing"] .testingColRight .apConnLogTabs{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   padding: 6px 8px;
   gap: 5px;
 }
-.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apLogTab{
+.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apLogTab,
+.controlsTabPanel[data-ctrl-panel="testing"] .testingColRight .apLogTab{
   font-size: 6px;
   padding: 6px 4px 5px;
   min-width: 0;
 }
-.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLogBody{
+.controlsTabPanel[data-ctrl-panel="connect"] .connectColRight .apConnLogBody,
+.controlsTabPanel[data-ctrl-panel="testing"] .testingColRight .apConnLogBody{
   height: auto;
   min-height: 0;
   flex: 1 1 auto;
@@ -16633,7 +17013,7 @@ body.flprShopSparksSlime .spark{
         <button class="cBtn danger" id="episodeEndBtn" style="display: none;">EPISODE END</button>
       </div><div class="apHint" id="episodeStateTxt" data-episode-status="idle">EPISODE STATUS; IDLE. Achievements, records, and FLPRP are paused until START is pressed.</div><div style="height:14px"></div><div class="cSectionTitle">PROGRESS</div><div class="cRow">
         <button class="cBtn danger" id="wipeProgressBtn">WIPE PROGRESS (KEEP BANNERS)</button>
-      </div><div class="cNote" id="bonusPinballUtilityNote">Open or close the dedicated Bonus Pinball field window from the overlay.</div><div class="cRow"><button class="cBtn" id="bonusPinballToggleBtn" type="button">SHOW BONUS PINBALL</button></div><div style="height:14px"></div><div class="cSectionTitle">TABLE REPOSITORY</div><div class="cNote">Open the Bestiary-style library for all tables and lifetime randomizer stats.</div><div class="cRow">
+      </div><div class="cNote" id="bonusPinballUtilityNote">Show the embedded Bonus Pinball field over the overlay for layout editing and tests.</div><div class="cRow"><button class="cBtn" id="bonusPinballToggleBtn" type="button">SHOW BONUS PINBALL</button></div><div style="height:14px"></div><div class="cSectionTitle">TABLE REPOSITORY</div><div class="cNote">Open the Bestiary-style library for all tables and lifetime randomizer stats.</div><div class="cRow">
         <a class="cBtn" href="./flippermizer_table_repository_library.html" target="_blank" rel="noopener">OPEN TABLE BESTIARY</a>
       </div></div><div class="connectCol connectColRight"><div class="cSectionTitle" id="receivedHdr" style="margin-top:12px;">RECEIVED ITEMS (88)</div><div class="cRow" style="gap:8px;">
   <button class="cBtn" id="apSyncReceivedBtn">SYNC RECEIVED</button>
@@ -17124,12 +17504,15 @@ window.__manualDisconnect = false;
     scifisignal: "WorldsBanners/SciFiSignal.png",
     rocklegends: "WorldsBanners/RockLegends.png",
     legendarywilliams: "WorldsBanners/LegendaryWilliams.png",
+    legendary_williams: "WorldsBanners/LegendaryWilliams.png",
     monsterbashdeluxe: "WorldsBanners/MonsterBashDeluxe.png",
     modernsternspotlight: "WorldsBanners/ModernSternSpotlight.png",
     midnightclassics: "WorldsBanners/MidnightClassics.png",
     midnight_classics: "WorldsBanners/MidnightClassics.png",
     badgesandchases: "WorldsBanners/BadgesAndChases.png",
     comicbookcollision: "WorldsBanners/ComicBookCollision.png",
+    insideoutlanes: "WorldsBanners/InsideOutLanes.png",
+    inside_out_lanes: "WorldsBanners/InsideOutLanes.png",
     theshowmustgoon: "WorldsBanners/TheShowMustGoOn.png",
     the_show_must_go_on: "WorldsBanners/TheShowMustGoOn.png"
   });
@@ -17217,6 +17600,7 @@ window.__manualDisconnect = false;
   const DEFAULT_TABLE_BANNER_REF_SET = new Set(
     Object.values(DEFAULT_TABLE_BANNER_REFS_BY_CODE || {}).map((v)=>String(v || "").trim()).filter(Boolean)
   );
+  const bannerMissingCache = new Set(); // idbKey values known to have no backing blob
   let __worldBannerLookupOverrideCache = null;
   function getStoredWorldBannerRefsByLookup(){
     if(__worldBannerLookupOverrideCache && typeof __worldBannerLookupOverrideCache === "object"){
@@ -17233,8 +17617,8 @@ window.__manualDisconnect = false;
         if(map && typeof map === "object"){
           Object.keys(map).forEach((lookup)=>{
             const norm = normalizeWorldBannerLookup(lookup);
-            const ref = String(map[lookup] || "").trim();
-            if(norm && ref) out[norm] = ref;
+            const ref = normalizeKnownWorldBannerRef(map[lookup]);
+            if(norm && ref && !isMissingIdbBannerRef(ref)) out[norm] = ref;
           });
         }
       });
@@ -17245,13 +17629,27 @@ window.__manualDisconnect = false;
   function normalizeWorldBannerLookup(v){
     return String(v || "").toLowerCase().replace(/[^a-z0-9_]+/g, "");
   }
+  function normalizeKnownWorldBannerRef(ref){
+    const raw = String(ref || "").trim();
+    const fixes = {
+      "WorldsBanners/90sMovieMayhem.jpg": "WorldsBanners/90sMovieMayhem.png",
+      "WorldsBanners/RockLegends.jpg": "WorldsBanners/RockLegends.png",
+      "WorldsBanners/MonsterBashDeluxe.jpg": "WorldsBanners/MonsterBashDeluxe.png",
+      "WorldsBanners/BestiaryFlyers/PFOR.jpg": "WorldsBanners/MidnightClassics.png"
+    };
+    return fixes[raw] || raw;
+  }
+  function isMissingIdbBannerRef(ref){
+    const raw = String(ref || "").trim();
+    return /^idb:/i.test(raw) && bannerMissingCache.has(raw.slice(4));
+  }
   function resolveDefaultWorldBannerByLookup(values){
     const list = Array.isArray(values) ? values : [values];
     const custom = getStoredWorldBannerRefsByLookup();
     for(const raw of list){
       const key = normalizeWorldBannerLookup(raw);
-      if(key && custom[key]) return String(custom[key] || "");
-      if(key && DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key]) return String(DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key] || "");
+      if(key && custom[key] && !isMissingIdbBannerRef(custom[key])) return normalizeKnownWorldBannerRef(custom[key]);
+      if(key && DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key]) return normalizeKnownWorldBannerRef(DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key]);
     }
     return "";
   }
@@ -17751,7 +18149,6 @@ async function idbDel(key){
 
 const bannerUrlCache = new Map();     // idbKey -> objectURL
 const bannerLoadInFlight = new Map(); // idbKey -> Promise
-const bannerMissingCache = new Set(); // idbKey values known to have no backing blob
 function revokeBannerUrl(idbKey){
   const url = bannerUrlCache.get(idbKey);
   if(url){
@@ -19929,10 +20326,33 @@ const BONUS_PINBALL_SIGNAL_KEY = "flpr_bonus_pinball_active_v1";
 const BONUS_PINBALL_SIGNAL_MAX_AGE_MS = 3800;
 const BONUS_PINBALL_UNDIM_DELAY_MS = 720;
 const BONUS_PINBALL_BOSS_ASSIST_KEY = "flpr_bonus_pinball_boss_assist_v1";
+const BONUS_PINBALL_BROADCAST_CHANNEL = "flpr_bonus_pinball_bridge_v1";
 let bonusPinballUndimTimer = 0;
 let bonusPinballMusicSuppressUntil = 0;
 let bossAssistNonceSeen = "";
 let bonusPinballUtilityWindow = null;
+let bonusPinballLastBroadcastSignal = null;
+let bonusPinballBridgeChannel = null;
+let bonusPinballManualVisible = false;
+let bonusPinballFrameReady = false;
+let bonusPinballPendingClicks = [];
+let bonusPinballComponentDocument = null;
+let bonusPinballComponentLoadPromise = null;
+let bonusPinballPositionMode = false;
+let bonusPinballPositionDrag = null;
+let bonusPinballGapMode = false;
+let bonusPinballGapDrag = null;
+let bonusPinballToggleGuardUntil = 0;
+let bonusPinballRunAutoHideTimer = 0;
+const BONUS_PINBALL_POSITION_KEY = "flpr_bonus_pinball_integrated_position_v1";
+const BONUS_PINBALL_DEFAULT_POSITION = { x:90, y:158 };
+const BONUS_PINBALL_SCALE_KEY = "flpr_bonus_pinball_integrated_scale_v1";
+const BONUS_PINBALL_DEFAULT_SCALE = 1;
+const BONUS_PINBALL_BASE_SCALE_X = 1.218;
+const BONUS_PINBALL_BASE_SCALE_Y = 1.152;
+const BONUS_PINBALL_GAP_KEY = "flpr_bonus_pinball_controls_gap_v1";
+const BONUS_PINBALL_DEFAULT_GAP = 306;
+let bonusPinballControlsGapCurrent = BONUS_PINBALL_DEFAULT_GAP;
 function getBonusPinballUtilityUrl(){
   try{
     const path = String(window.location.pathname || "").replace(/\\/g, "/");
@@ -19942,6 +20362,14 @@ function getBonusPinballUtilityUrl(){
     return new URL(rel, window.location.href).href;
   }catch(_){}
   return "./FLPRBonusPinballField.html";
+}
+function getIntegratedBonusPinballUrl(){
+  try{
+    const url = new URL(getBonusPinballUtilityUrl(), window.location.href);
+    url.searchParams.set("flprIntegrated", "1");
+    return url.href;
+  }catch(_){}
+  return "./FLPRBonusPinballField.html?flprIntegrated=1";
 }
 function isBonusPinballUtilityOpen(){
   try{
@@ -19954,12 +20382,7 @@ function isBonusPinballUtilityOpen(){
   return !!bonusPinballUtilityWindow;
 }
 function updateBonusPinballUtilityButton(){
-  const btn = document.getElementById("bonusPinballToggleBtn");
-  if(!btn) return;
-  const open = isBonusPinballUtilityOpen();
-  btn.textContent = open ? "HIDE BONUS PINBALL" : "SHOW BONUS PINBALL";
-  btn.title = `${open ? "Close" : "Open"} ${getBonusPinballUtilityUrl().split("/").pop() || "FLPRBonusPinballField.html"}`;
-  btn.setAttribute("aria-pressed", open ? "true" : "false");
+  try{ syncIntegratedBonusPinballControls(); }catch(_){}
 }
 function bindBonusPinballUtilityWindow(win){
   if(!win) return;
@@ -20022,16 +20445,1013 @@ function toggleBonusPinballUtilityWindow(){
   }
   return "blocked";
 }
-function readBonusPinballOverlaySignal(){
+function getIntegratedBonusPinballHost(){
+  return document.getElementById("bonusPinballIntegratedHost");
+}
+function getIntegratedBonusPinballMount(){
+  return document.getElementById("bonusPinballIntegratedMount");
+}
+function getIntegratedBonusPinballDocument(){
+  return bonusPinballComponentDocument || null;
+}
+function isIntegratedBonusPinballVisible(){
+  try{ return document.body.classList.contains("bonusPinballIntegratedOn"); }catch(_){}
+  return false;
+}
+function getIntegratedBonusPinballPosition(){
   try{
-    const raw = localStorage.getItem(BONUS_PINBALL_SIGNAL_KEY);
-    if(!raw) return null;
-    const data = JSON.parse(raw);
-    const active = !!data?.active;
-    const ts = Number(data?.ts || 0);
+    const raw = JSON.parse(localStorage.getItem(BONUS_PINBALL_POSITION_KEY) || "null");
+    const x = Number(raw?.x);
+    const y = Number(raw?.y);
+    if(Number.isFinite(x) && Number.isFinite(y)) return { x, y };
+  }catch(_){}
+  return { ...BONUS_PINBALL_DEFAULT_POSITION };
+}
+function clampIntegratedBonusPinballPosition(pos){
+  const x = Number(pos?.x);
+  const y = Number(pos?.y);
+  const maxX = Math.max(-260, Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--captureW")) || 910);
+  const maxY = Math.max(-260, Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--captureH")) || 1450);
+  return {
+    x: Math.max(-260, Math.min(maxX, Number.isFinite(x) ? x : BONUS_PINBALL_DEFAULT_POSITION.x)),
+    y: Math.max(-260, Math.min(maxY, Number.isFinite(y) ? y : BONUS_PINBALL_DEFAULT_POSITION.y))
+  };
+}
+function setIntegratedBonusPinballPosition(pos, opts){
+  const next = clampIntegratedBonusPinballPosition(pos);
+  const host = getIntegratedBonusPinballHost();
+  const mount = getIntegratedBonusPinballMount();
+  [host, mount].forEach((el)=>{
+    try{
+      el?.style?.setProperty("--bonusPinballX", `${Math.round(next.x)}px`);
+      el?.style?.setProperty("--bonusPinballY", `${Math.round(next.y)}px`);
+    }catch(_){}
+  });
+  if(!opts || opts.persist !== false){
+    try{ localStorage.setItem(BONUS_PINBALL_POSITION_KEY, JSON.stringify(next)); }catch(_){}
+  }
+  return next;
+}
+function resetIntegratedBonusPinballPosition(){
+  try{ localStorage.removeItem(BONUS_PINBALL_POSITION_KEY); }catch(_){}
+  return setIntegratedBonusPinballPosition(BONUS_PINBALL_DEFAULT_POSITION);
+}
+function getIntegratedBonusPinballScale(){
+  try{
+    const saved = Number(localStorage.getItem(BONUS_PINBALL_SCALE_KEY));
+    if(Number.isFinite(saved)) return Math.max(0.55, Math.min(1.45, saved));
+  }catch(_){}
+  return BONUS_PINBALL_DEFAULT_SCALE;
+}
+function setIntegratedBonusPinballScale(scale, opts){
+  const next = Math.max(0.55, Math.min(1.45, Number(scale) || BONUS_PINBALL_DEFAULT_SCALE));
+  const host = getIntegratedBonusPinballHost();
+  const mount = getIntegratedBonusPinballMount();
+  [host, mount].forEach((el)=>{
+    try{
+      el?.style?.setProperty("--bonusPinballScaleX", `${(BONUS_PINBALL_BASE_SCALE_X * next).toFixed(4)}`);
+      el?.style?.setProperty("--bonusPinballScaleY", `${(BONUS_PINBALL_BASE_SCALE_Y * next).toFixed(4)}`);
+    }catch(_){}
+  });
+  if(!opts || opts.persist !== false){
+    try{ localStorage.setItem(BONUS_PINBALL_SCALE_KEY, String(Number(next.toFixed(3)))); }catch(_){}
+  }
+  syncIntegratedBonusPinballScaleControls(next);
+  return next;
+}
+function adjustIntegratedBonusPinballScale(delta){
+  return setIntegratedBonusPinballScale(getIntegratedBonusPinballScale() + Number(delta || 0));
+}
+function resetIntegratedBonusPinballScale(){
+  try{ localStorage.removeItem(BONUS_PINBALL_SCALE_KEY); }catch(_){}
+  return setIntegratedBonusPinballScale(BONUS_PINBALL_DEFAULT_SCALE);
+}
+function syncIntegratedBonusPinballScaleControls(scale){
+  const current = Number.isFinite(Number(scale)) ? Number(scale) : getIntegratedBonusPinballScale();
+  const label = `${Math.round(current * 100)}%`;
+  const status = document.getElementById("bonusPinballScaleStatusBtn");
+  if(status) status.textContent = `SCALE: ${label}`;
+}
+function getBonusPinballControlsGap(){
+  try{
+    if(controlLayoutLoaded && Number.isFinite(Number(controlLayoutState.bonusGap))){
+      bonusPinballControlsGapCurrent = Math.max(0, Math.min(760, Number(controlLayoutState.bonusGap)));
+      return bonusPinballControlsGapCurrent;
+    }
+    const saved = Number(localStorage.getItem(BONUS_PINBALL_GAP_KEY));
+    if(Number.isFinite(saved)){
+      bonusPinballControlsGapCurrent = Math.max(0, Math.min(760, saved));
+      return bonusPinballControlsGapCurrent;
+    }
+  }catch(_){}
+  return bonusPinballControlsGapCurrent;
+}
+function setBonusPinballControlsGap(width, opts){
+  const next = Math.max(0, Math.min(760, Number(width) || 0));
+  bonusPinballControlsGapCurrent = next;
+  try{ document.documentElement.style.setProperty("--bonusLeaderboardW", `${Math.round(next)}px`); }catch(_){}
+  if(!opts || opts.persist !== false){
+    try{ localStorage.setItem(BONUS_PINBALL_GAP_KEY, String(Math.round(next))); }catch(_){}
+    controlLayoutState.bonusGap = Math.round(next);
+    persistControlLayoutStateDebounced();
+  }
+  syncBonusPinballControlsGapMode();
+  return next;
+}
+function resetBonusPinballControlsGap(){
+  try{ localStorage.removeItem(BONUS_PINBALL_GAP_KEY); }catch(_){}
+  controlLayoutState.bonusGap = null;
+  persistControlLayoutStateDebounced();
+  return setBonusPinballControlsGap(BONUS_PINBALL_DEFAULT_GAP, { persist:false });
+}
+function ensureBonusPinballGapHandle(){
+  let handle = document.getElementById("bonusPinballGapHandle");
+  if(handle) return handle;
+  handle = document.createElement("div");
+  handle.id = "bonusPinballGapHandle";
+  handle.className = "bonusPinballGapHandle";
+  handle.title = "Drag to resize the space between the overlay and controls";
+  handle.setAttribute("aria-hidden", "true");
+  const stage = document.querySelector(".stage") || document.body;
+  stage.appendChild(handle);
+  handle.addEventListener("pointerdown", (ev)=>{
+    if((!bonusPinballGapMode && !controlLayoutState.editMode) || ev.button !== 0) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    const stageRect = (document.querySelector(".stage") || document.body).getBoundingClientRect();
+    const captureW = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--captureW")) || 910;
+    const gutter = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--gutter")) || 16;
+    bonusPinballGapDrag = {
+      id: ev.pointerId,
+      baseLeft: stageRect.left + 16 + captureW + gutter
+    };
+    try{ handle.setPointerCapture(ev.pointerId); }catch(_){}
+  }, true);
+  handle.addEventListener("pointermove", (ev)=>{
+    const drag = bonusPinballGapDrag;
+    if(!drag || drag.id !== ev.pointerId) return;
+    ev.preventDefault();
+    setBonusPinballControlsGap(ev.clientX - drag.baseLeft, { persist:false });
+  }, true);
+  const finish = (ev)=>{
+    const drag = bonusPinballGapDrag;
+    if(!drag || drag.id !== ev.pointerId) return;
+    bonusPinballGapDrag = null;
+    try{ handle.releasePointerCapture(ev.pointerId); }catch(_){}
+    setBonusPinballControlsGap(ev.clientX - drag.baseLeft);
+  };
+  handle.addEventListener("pointerup", finish, true);
+  handle.addEventListener("pointercancel", finish, true);
+  return handle;
+}
+function syncBonusPinballControlsGapMode(){
+  try{ document.body.classList.toggle("bonusPinballGapAdjusting", !!bonusPinballGapMode); }catch(_){}
+  ensureBonusPinballGapHandle();
+  const btn = document.getElementById("bonusPinballGapBtn");
+  if(btn){
+    btn.textContent = bonusPinballGapMode ? "ADJUST GAP: ON" : "ADJUST GAP: OFF";
+    btn.classList.toggle("testPrimary", !!bonusPinballGapMode);
+    btn.setAttribute("aria-pressed", bonusPinballGapMode ? "true" : "false");
+  }
+  const widthBtn = document.getElementById("bonusPinballGapStatusBtn");
+  if(widthBtn) widthBtn.textContent = `GAP: ${Math.round(bonusPinballControlsGapCurrent)}px`;
+}
+function toggleBonusPinballControlsGapMode(){
+  bonusPinballGapMode = !bonusPinballGapMode;
+  syncBonusPinballControlsGapMode();
+  return bonusPinballGapMode;
+}
+function syncIntegratedBonusPinballPositionMode(){
+  try{ document.body.classList.toggle("bonusPinballPositioning", !!bonusPinballPositionMode); }catch(_){}
+  const mount = getIntegratedBonusPinballMount();
+  try{ mount?.classList.toggle("positionMode", !!bonusPinballPositionMode); }catch(_){}
+  const btn = document.getElementById("bonusPinballMoveBtn");
+  if(btn){
+    btn.textContent = bonusPinballPositionMode ? "MOVE TABLE: ON" : "MOVE TABLE: OFF";
+    btn.classList.toggle("testPrimary", !!bonusPinballPositionMode);
+    btn.setAttribute("aria-pressed", bonusPinballPositionMode ? "true" : "false");
+  }
+}
+function toggleIntegratedBonusPinballPositionMode(){
+  bonusPinballPositionMode = !bonusPinballPositionMode;
+  if(bonusPinballPositionMode) setIntegratedBonusPinballVisible(true, { manual:true, keepVisible:true });
+  syncIntegratedBonusPinballPositionMode();
+  return bonusPinballPositionMode;
+}
+function bindIntegratedBonusPinballPositionDrag(){
+  const mount = getIntegratedBonusPinballMount();
+  if(!mount || mount.dataset.positionDragBound === "1") return;
+  mount.dataset.positionDragBound = "1";
+  mount.addEventListener("pointerdown", (ev)=>{
+    if(!bonusPinballPositionMode || ev.button !== 0) return;
+    const shadow = mount.shadowRoot;
+    const layout = shadow?.querySelector?.("#layout");
+    if(!layout) return;
+    const path = typeof ev.composedPath === "function" ? ev.composedPath() : [];
+    if(path.length && !path.includes(layout)) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    const current = getIntegratedBonusPinballPosition();
+    bonusPinballPositionDrag = {
+      id: ev.pointerId,
+      startX: ev.clientX,
+      startY: ev.clientY,
+      baseX: current.x,
+      baseY: current.y
+    };
+    try{ mount.setPointerCapture(ev.pointerId); }catch(_){}
+  }, true);
+  mount.addEventListener("pointermove", (ev)=>{
+    const drag = bonusPinballPositionDrag;
+    if(!drag || drag.id !== ev.pointerId) return;
+    ev.preventDefault();
+    setIntegratedBonusPinballPosition({
+      x: drag.baseX + (ev.clientX - drag.startX),
+      y: drag.baseY + (ev.clientY - drag.startY)
+    }, { persist:false });
+  }, true);
+  const finish = (ev)=>{
+    const drag = bonusPinballPositionDrag;
+    if(!drag || drag.id !== ev.pointerId) return;
+    bonusPinballPositionDrag = null;
+    try{ mount.releasePointerCapture(ev.pointerId); }catch(_){}
+    setIntegratedBonusPinballPosition({
+      x: drag.baseX + (ev.clientX - drag.startX),
+      y: drag.baseY + (ev.clientY - drag.startY)
+    });
+    syncIntegratedBonusPinballControls();
+  };
+  mount.addEventListener("pointerup", finish, true);
+  mount.addEventListener("pointercancel", finish, true);
+}
+function injectIntegratedBonusPinballStyles(doc){
+  if(!doc) return;
+  try{
+    const integratedStageBg = "transparent";
+    doc.documentElement.style.background = integratedStageBg;
+    doc.documentElement.style.backgroundColor = integratedStageBg;
+    doc.body.style.background = integratedStageBg;
+    doc.body.style.backgroundColor = integratedStageBg;
+    try{
+      doc.documentElement.style.setProperty("background", integratedStageBg, "important");
+      doc.documentElement.style.setProperty("background-color", integratedStageBg, "important");
+      doc.body.style.setProperty("background", integratedStageBg, "important");
+      doc.body.style.setProperty("background-color", integratedStageBg, "important");
+      doc.body.classList.remove("bg-white", "bg-black", "bg-green", "bg-blue", "bg-magenta");
+    }catch(_){}
+    doc.body.classList.add("flpr-integrated-bonus");
+    let style = doc.getElementById("flprIntegratedBonusPinballStyle");
+    if(!style){
+      style = doc.createElement("style");
+      style.id = "flprIntegratedBonusPinballStyle";
+      doc.head.appendChild(style);
+    }
+    style.textContent = `
+      html,
+      body,
+      body.bg-white,
+      body.bg-black,
+      body.bg-green,
+      body.bg-blue,
+      body.bg-magenta,
+      body.flpr-integrated-bonus.bg-white,
+      body.flpr-integrated-bonus.bg-black,
+      body.flpr-integrated-bonus.bg-green,
+      body.flpr-integrated-bonus.bg-blue,
+      body.flpr-integrated-bonus.bg-magenta{background:transparent!important;background-color:transparent!important;}
+      html,body{overflow:hidden!important;}
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;}
+      #redeemControlPanel,#audioStatus,#settingsBtn,#settingsBackdrop,#settingsPanel,#testArea{display:none!important;}
+      body.table-hidden #wrap{
+        opacity:0!important;
+        visibility:hidden!important;
+        pointer-events:none!important;
+        transform:none!important;
+      }
+      body.flpr-integrated-force-visible #wrap{
+        opacity:1!important;
+        visibility:visible!important;
+        pointer-events:auto!important;
+        transform:none!important;
+        transition:opacity .52s ease!important;
+      }
+      body.flpr-integrated-bonus #wrap{
+        inset:0!important;
+        display:block!important;
+        padding:0!important;
+        background:transparent!important;
+        overflow:visible!important;
+      }
+      body.flpr-integrated-bonus #layout{
+        position:absolute!important;
+        left:90px!important;
+        top:158px!important;
+        padding:0!important;
+        transform:scale(1.218, 1.152)!important;
+        transform-origin:0 0!important;
+      }
+      body.flpr-integrated-bonus #titleBar{
+        top:-64px!important;
+        z-index:40!important;
+      }
+      body.flpr-integrated-bonus #hud{
+        z-index:20!important;
+      }
+      body.flpr-integrated-bonus #layout::before,
+      body.flpr-integrated-bonus #layout::after{display:none!important;}
+      body.flpr-integrated-bonus #card{
+        top:0!important;
+        background:transparent!important;
+        box-shadow:none!important;
+      }
+      body.flpr-integrated-bonus #leaderboardPanel{
+        margin-left:0!important;
+      }
+      body.flpr-integrated-bonus #victory{
+        position:absolute!important;
+        inset:auto!important;
+        left:90px!important;
+        top:158px!important;
+        width:598px!important;
+        height:984px!important;
+        transform:scale(1.218, 1.152)!important;
+        transform-origin:0 0!important;
+        align-items:center!important;
+        justify-content:center!important;
+      }
+      body.flpr-integrated-bonus #bonusIntro{
+        position:absolute!important;
+        inset:auto!important;
+        left:90px!important;
+        top:158px!important;
+        width:598px!important;
+        height:984px!important;
+        transform:scale(1.218, 1.152)!important;
+        transform-origin:0 0!important;
+        align-items:center!important;
+        justify-content:center!important;
+      }
+      body.flpr-integrated-bonus #bonusIntroCard,
+      body.flpr-integrated-bonus #victoryContent{
+        max-width:calc(100% - 86px)!important;
+        min-width:0!important;
+      }
+    `;
+  }catch(_){}
+}
+function getIntegratedBonusPinballApi(){
+  try{
+    return window.FLPRBonusPinball || null;
+  }catch(_){}
+  return null;
+}
+function getIntegratedBonusPinballCommand(buttonId, nameValue){
+  const commandMap = {
+    launchRedeemBtn: "queueRedemption",
+    testRunNowBtn: "testRunNow",
+    testAutoRedeemBtn: "testAutoRedeem",
+    playfieldVariantBtn: "toggleTheme",
+    playfieldEditBtn: "toggleEdit",
+    playfieldEditSnapBtn: "toggleSnap",
+    playfieldEditResetBtn: "resetLayout",
+    lbClear: "clearLeaderboard"
+  };
+  const command = commandMap[buttonId] || "";
+  if(!command) return null;
+  return {
+    scope: "FLPRBonusPinball",
+    command,
+    name: String(nameValue || ""),
+    visible: true,
+    nonce: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  };
+}
+function postIntegratedBonusPinballCommand(buttonId, nameValue){
+  const msg = getIntegratedBonusPinballCommand(buttonId, nameValue);
+  if(!msg) return false;
+  try{
+    if(window.FLPRBonusPinball && typeof window.FLPRBonusPinball.getStatus === "function"){
+      window.dispatchEvent(new MessageEvent("message", { data: msg, origin: window.location.origin || "null", source: window }));
+    }else{
+      window.postMessage?.(msg, "*");
+    }
+    setTimeout(syncIntegratedBonusPinballControls, 80);
+    setTimeout(syncIntegratedBonusPinballControls, 420);
+    return true;
+  }catch(_){}
+  return false;
+}
+function runIntegratedBonusPinballClick(buttonId, nameValue){
+  const api = getIntegratedBonusPinballApi();
+  if(api){
+    try{
+      if(typeof nameValue === "string" && typeof api.setRedeemerName === "function"){
+        api.setRedeemerName(nameValue);
+      }
+    }catch(_){}
+    const actions = {
+      launchRedeemBtn: ()=> api.queueRedemption?.(nameValue),
+      testRunNowBtn: ()=> api.testRunNow?.(nameValue),
+      testAutoRedeemBtn: ()=> api.testAutoRedeem?.(nameValue),
+      playfieldVariantBtn: ()=> api.toggleTheme?.(),
+      playfieldEditBtn: ()=> api.toggleEdit?.(),
+      playfieldEditSnapBtn: ()=> api.toggleSnap?.(),
+      playfieldEditResetBtn: ()=> api.resetLayout?.(),
+      lbClear: ()=> api.clearLeaderboard?.()
+    };
+    const action = actions[buttonId];
+    if(action){
+      try{
+        const result = action();
+        setTimeout(syncIntegratedBonusPinballControls, 60);
+        setTimeout(syncIntegratedBonusPinballControls, 360);
+        return result !== false;
+      }catch(_){}
+    }
+  }
+  if(postIntegratedBonusPinballCommand(buttonId, nameValue)) return true;
+  const doc = getIntegratedBonusPinballDocument();
+  if(!doc) return false;
+  try{
+    const frameInput = doc.getElementById("channelRedeemerNameLive");
+    if(frameInput && typeof nameValue === "string") frameInput.value = nameValue;
+  }catch(_){}
+  try{
+    const btn = doc.getElementById(buttonId);
+    if(!btn) return false;
+    btn.click();
+    setTimeout(syncIntegratedBonusPinballControls, 60);
+    setTimeout(syncIntegratedBonusPinballControls, 360);
+    return true;
+  }catch(_){}
+  return false;
+}
+function flushIntegratedBonusPinballClicks(){
+  const pending = bonusPinballPendingClicks.splice(0);
+  pending.forEach((item)=>{
+    try{ runIntegratedBonusPinballClick(item.buttonId, item.nameValue); }catch(_){}
+  });
+}
+function syncIntegratedBonusPinballControls(){
+  try{
+    const visible = isIntegratedBonusPinballVisible();
+    const showBtn = document.getElementById("bonusPinballToggleBtn");
+    if(showBtn){
+      showBtn.textContent = visible ? "HIDE BONUS PINBALL" : "SHOW BONUS PINBALL";
+      showBtn.setAttribute("aria-pressed", visible ? "true" : "false");
+      showBtn.title = visible ? "Hide the embedded Bonus Pinball table" : "Show the embedded Bonus Pinball table";
+    }
+    syncIntegratedBonusPinballPositionMode();
+    syncIntegratedBonusPinballScaleControls();
+    syncBonusPinballControlsGapMode();
+    const doc = getIntegratedBonusPinballDocument();
+    const api = getIntegratedBonusPinballApi();
+    const apiStatus = (()=>{ try{ return api?.getStatus?.() || null; }catch(_){ return null; } })();
+    const map = [
+      ["bonusPinballThemeBtn", "playfieldVariantBtn", "variantButtonText"],
+      ["bonusPinballEditBtn", "playfieldEditBtn", "editButtonText"],
+      ["bonusPinballSnapBtn", "playfieldEditSnapBtn", "snapButtonText"]
+    ];
+    map.forEach(([targetId, sourceId, statusKey])=>{
+      const target = document.getElementById(targetId);
+      const source = doc?.getElementById(sourceId);
+      const statusText = String(apiStatus?.[statusKey] || "").trim();
+      if(target && source){
+        target.textContent = String(statusText || source.textContent || target.textContent || "").trim();
+        const apiOn = statusKey === "editButtonText" ? apiStatus?.playfieldEditMode : (statusKey === "snapButtonText" ? apiStatus?.playfieldEditSnapEnabled : null);
+        target.classList.toggle("testPrimary", apiOn == null ? !!source.classList?.contains("on") : !!apiOn);
+      }else if(target && statusText){
+        target.textContent = statusText;
+      }
+    });
+    const status = document.getElementById("bonusPinballStatusTxt");
+    const sourceStatus = doc?.getElementById("redeemQueueStatus");
+    if(status){
+      status.textContent = String(apiStatus?.queueText || sourceStatus?.textContent || "Queue: 0").trim() || "Queue: 0";
+    }
+  }catch(_){}
+}
+function applyIntegratedBonusPinballLayerVisibility(on){
+  const doc = getIntegratedBonusPinballDocument();
+  const mount = getIntegratedBonusPinballMount();
+  const shadow = mount?.shadowRoot || null;
+  if(!doc && !shadow) return;
+  try{
+    if(doc.body){
+      doc.body.classList.toggle("flpr-integrated-force-visible", !!on);
+      if(on) doc.body.classList.remove("table-hidden");
+    }
+  }catch(_){}
+  try{
+    const wrap = doc?.getElementById?.("wrap") || shadow?.querySelector?.("#wrap");
+    if(!wrap) return;
+    if(on){
+      wrap.style.setProperty("opacity", "1", "important");
+      wrap.style.setProperty("visibility", "visible", "important");
+      wrap.style.setProperty("pointer-events", "auto", "important");
+      wrap.style.setProperty("transform", "none", "important");
+      wrap.style.setProperty("transition", "none", "important");
+    }else{
+      wrap.style.removeProperty("opacity");
+      wrap.style.removeProperty("visibility");
+      wrap.style.removeProperty("pointer-events");
+      wrap.style.removeProperty("transform");
+      wrap.style.removeProperty("transition");
+    }
+  }catch(_){}
+}
+function setIntegratedBonusPinballKeepVisible(on){
+  const api = getIntegratedBonusPinballApi();
+  try{
+    if(api && typeof api.setVisible === "function"){
+      api.setVisible(!!on);
+      setTimeout(syncIntegratedBonusPinballControls, 60);
+    }
+  }catch(_){}
+  try{
+    window.dispatchEvent(new MessageEvent("message", { data: {
+      scope: "FLPRBonusPinball",
+      command: "setVisible",
+      visible: !!on,
+      nonce: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    }, origin: window.location.origin || "null", source: window }));
+  }catch(_){}
+  const doc = getIntegratedBonusPinballDocument();
+  try{ if(doc?.body) doc.body.classList.toggle("flpr-integrated-force-visible", !!on); }catch(_){}
+  applyIntegratedBonusPinballLayerVisibility(!!on || isIntegratedBonusPinballVisible());
+  try{
+    const keep = doc?.getElementById("testKeepVisible");
+    if(keep && !!keep.checked !== !!on){
+      keep.checked = !!on;
+      keep.dispatchEvent(new Event("change", { bubbles:true }));
+    }
+  }catch(_){}
+}
+function setIntegratedBonusPinballVisible(on, opts){
+  opts = opts || {};
+  if(opts.manual === true) bonusPinballManualVisible = !!on;
+  const host = ensureIntegratedBonusPinball();
+  try{ document.body.classList.toggle("bonusPinballIntegratedOn", !!on); }catch(_){}
+  try{ host?.setAttribute("aria-hidden", on ? "false" : "true"); }catch(_){}
+  if(on){
+    if(opts.keepVisible !== false) setIntegratedBonusPinballKeepVisible(true);
+    applyIntegratedBonusPinballLayerVisibility(true);
+    const mount = getIntegratedBonusPinballMount();
+    try{ mount?.focus?.(); }catch(_){}
+  }else{
+    if(opts.manual === true) clearIntegratedBonusPinballOverlaySignal();
+    bonusPinballPositionMode = false;
+    setIntegratedBonusPinballKeepVisible(false);
+    applyIntegratedBonusPinballLayerVisibility(false);
+  }
+  syncIntegratedBonusPinballPositionMode();
+  syncIntegratedBonusPinballControls();
+}
+function toggleIntegratedBonusPinball(){
+  const next = !isIntegratedBonusPinballVisible();
+  setIntegratedBonusPinballVisible(next, { manual:true, keepVisible:true });
+  return next;
+}
+function handleIntegratedBonusPinballToggleClick(){
+  const now = Date.now();
+  if(now < bonusPinballToggleGuardUntil) return isIntegratedBonusPinballVisible();
+  bonusPinballToggleGuardUntil = now + 180;
+  const btn = document.getElementById("bonusPinballToggleBtn");
+  const wantsHide = /^HIDE\b/i.test(String(btn?.textContent || ""));
+  const next = wantsHide ? false : true;
+  setIntegratedBonusPinballVisible(next, { manual:true, keepVisible:true });
+  return next;
+}
+function scheduleIntegratedBonusPinballRunAutoHide(){
+  try{ clearTimeout(bonusPinballRunAutoHideTimer); }catch(_){}
+  const startedAt = Date.now();
+  const check = ()=>{
+    bonusPinballRunAutoHideTimer = 0;
+    try{
+      if(bonusPinballManualVisible || bonusPinballPositionMode) return;
+      const api = getIntegratedBonusPinballApi();
+      const status = (()=>{ try{ return api?.getStatus?.() || null; }catch(_){ return null; } })();
+      const stillBusy = !!(
+        status?.attemptActive ||
+        status?.countdownActive ||
+        Number(status?.queueLength || 0) > 0 ||
+        Number(status?.waitingLength || 0) > 0 ||
+        isBonusPinballOverlaySignalActive() ||
+        document.body.classList.contains("bonusPinballDim")
+      );
+      if(!stillBusy){
+        setIntegratedBonusPinballVisible(false, { signal:true });
+        return;
+      }
+      if(Date.now() - startedAt < 18000){
+        bonusPinballRunAutoHideTimer = setTimeout(check, 520);
+        return;
+      }
+      setIntegratedBonusPinballVisible(false, { signal:true });
+    }catch(_){
+      if(Date.now() - startedAt < 18000) bonusPinballRunAutoHideTimer = setTimeout(check, 700);
+    }
+  };
+  bonusPinballRunAutoHideTimer = setTimeout(check, 1400);
+}
+function scheduleIntegratedBonusPinballDoneAutoHide(hideAfterMs){
+  try{ clearTimeout(bonusPinballRunAutoHideTimer); }catch(_){}
+  const delay = Math.max(400, Math.min(26000, Number(hideAfterMs) || 0));
+  bonusPinballRunAutoHideTimer = setTimeout(()=>{
+    bonusPinballRunAutoHideTimer = 0;
+    try{
+      if(bonusPinballManualVisible || bonusPinballPositionMode) return;
+      const api = getIntegratedBonusPinballApi();
+      const status = (()=>{ try{ return api?.getStatus?.() || null; }catch(_){ return null; } })();
+      const stillRunning = !!(
+        status?.attemptActive ||
+        status?.countdownActive ||
+        Number(status?.queueLength || 0) > 0 ||
+        Number(status?.waitingLength || 0) > 0
+      );
+      if(stillRunning){
+        scheduleIntegratedBonusPinballRunAutoHide();
+        return;
+      }
+      clearIntegratedBonusPinballOverlaySignal();
+      setIntegratedBonusPinballVisible(false, { signal:true });
+    }catch(_){
+      try{ setIntegratedBonusPinballVisible(false, { signal:true }); }catch(__){}
+    }
+  }, delay);
+}
+function fetchIntegratedBonusPinballHtml(){
+  const url = getIntegratedBonusPinballUrl();
+  if(bonusPinballComponentLoadPromise) return bonusPinballComponentLoadPromise;
+  bonusPinballComponentLoadPromise = (async ()=>{
+    try{
+      const res = await fetch(url, { cache:"no-store" });
+      if(res && res.ok) return await res.text();
+    }catch(_){}
+    return await new Promise((resolve, reject)=>{
+      try{
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.onload = ()=> (xhr.status === 0 || (xhr.status >= 200 && xhr.status < 300)) ? resolve(xhr.responseText || "") : reject(new Error(`Bonus Pinball load failed: ${xhr.status}`));
+        xhr.onerror = ()=> reject(new Error("Bonus Pinball load failed"));
+        xhr.send();
+      }catch(err){ reject(err); }
+    });
+  })();
+  return bonusPinballComponentLoadPromise;
+}
+function buildBonusPinballScopedDocument(shadow, bodyShim, documentElementShim){
+  const scoped = {
+    get body(){ return bodyShim; },
+    get documentElement(){ return documentElementShim; },
+    get head(){ return shadow; },
+    get hidden(){ return document.hidden; },
+    get visibilityState(){ return document.visibilityState; },
+    get readyState(){ return document.readyState; },
+    get defaultView(){ return window; },
+    get activeElement(){ return shadow.activeElement || document.activeElement; },
+    get fonts(){ return document.fonts; },
+    get currentScript(){ return document.currentScript; },
+    createElement: (...args)=> document.createElement(...args),
+    createElementNS: (...args)=> document.createElementNS(...args),
+    createTextNode: (...args)=> document.createTextNode(...args),
+    createDocumentFragment: (...args)=> document.createDocumentFragment(...args),
+    getElementById(id){
+      let found = null;
+      try{
+        if(typeof shadow.getElementById === "function") found = shadow.getElementById(String(id));
+      }catch(_){}
+      if(found) return found;
+      try{ found = bodyShim.querySelector(`#${CSS.escape(String(id))}`); }catch(_){}
+      if(found) return found;
+      try{ found = shadow.querySelector(`#${CSS.escape(String(id))}`); }catch(_){}
+      if(found) return found;
+      return null;
+    },
+    querySelector(sel){
+      try{ return bodyShim.querySelector(sel) || shadow.querySelector(sel); }catch(_){}
+      return null;
+    },
+    querySelectorAll(sel){
+      try{ return bodyShim.querySelectorAll(sel); }catch(_){}
+      return [];
+    },
+    addEventListener: (...args)=> document.addEventListener(...args),
+    removeEventListener: (...args)=> document.removeEventListener(...args),
+    dispatchEvent: (...args)=> document.dispatchEvent(...args),
+    hasFocus: ()=> document.hasFocus(),
+    contains: (node)=> bodyShim.contains(node)
+  };
+  return new Proxy(scoped, {
+    get(target, prop){
+      if(prop in target) return target[prop];
+      const value = document[prop];
+      return typeof value === "function" ? value.bind(document) : value;
+    },
+    set(target, prop, value){
+      try{ document[prop] = value; return true; }catch(_){ target[prop] = value; return true; }
+    }
+  });
+}
+function buildBonusPinballScopedWindow(loadCallbacks){
+  return new Proxy(window, {
+    get(target, prop){
+      if(prop === "addEventListener"){
+        return (type, listener, opts)=>{
+          if(String(type) === "load" && typeof listener === "function"){
+            loadCallbacks.push(listener);
+            return;
+          }
+          return target.addEventListener(type, listener, opts);
+        };
+      }
+      if(prop === "removeEventListener"){
+        return (type, listener, opts)=> target.removeEventListener(type, listener, opts);
+      }
+      if(prop === "FLPR_BONUS_INTEGRATED") return true;
+      const value = target[prop];
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+    set(target, prop, value){
+      target[prop] = value;
+      return true;
+    },
+    has(target, prop){
+      return prop in target;
+    }
+  });
+}
+async function loadIntegratedBonusPinballComponent(host, mount){
+  if(!host || !mount) return false;
+  if(mount.dataset.loaded === "1"){
+    bonusPinballFrameReady = true;
+    return true;
+  }
+  if(mount.dataset.loading === "1") return false;
+  mount.dataset.loading = "1";
+  try{
+    window.FLPR_BONUS_INTEGRATED = true;
+    const html = await fetchIntegratedBonusPinballHtml();
+    const parsed = new DOMParser().parseFromString(String(html || ""), "text/html");
+    const shadow = mount.shadowRoot || mount.attachShadow({ mode:"open" });
+    shadow.innerHTML = "";
+    const scripts = Array.from(parsed.querySelectorAll("script"));
+    scripts.forEach((script)=>{
+      try{ script.remove(); }catch(_){}
+    });
+
+    parsed.head.querySelectorAll("style").forEach((node)=>{
+      try{ shadow.appendChild(node.cloneNode(true)); }catch(_){}
+    });
+
+    const documentElementShim = document.createElement("div");
+    documentElementShim.className = "flpr-integrated-bonus-root";
+    const bodyShim = document.createElement("div");
+    bodyShim.id = "bonusPinballComponentBody";
+    bodyShim.className = `${parsed.body?.className || ""} flpr-integrated-bonus`.trim();
+    bodyShim.classList.remove("bg-white", "bg-black", "bg-green", "bg-blue", "bg-magenta");
+    bodyShim.style.setProperty("background", "transparent", "important");
+    bodyShim.style.setProperty("background-color", "transparent", "important");
+    while(parsed.body && parsed.body.firstChild){
+      bodyShim.appendChild(parsed.body.firstChild);
+    }
+    shadow.appendChild(bodyShim);
+
+    const scopedStyle = document.createElement("style");
+    scopedStyle.textContent = `
+      :host{display:block;position:absolute;inset:0;background:transparent!important;overflow:visible!important;font-family:'Press Start 2P',monospace;color-scheme:dark;}
+      #bonusPinballComponentBody{position:absolute;inset:0;background:transparent!important;overflow:visible!important;}
+      #bonusPinballComponentBody{--title-hud-gap:18px;--score-y-offset:50px;}
+      #bonusPinballComponentBody.bg-white,
+      #bonusPinballComponentBody.bg-black,
+      #bonusPinballComponentBody.bg-green,
+      #bonusPinballComponentBody.bg-blue,
+      #bonusPinballComponentBody.bg-magenta{background:transparent!important;background-color:transparent!important;}
+      #redeemControlPanel,#audioStatus,#settingsBtn,#settingsBackdrop,#settingsPanel,#testArea{display:none!important;}
+      #bonusPinballComponentBody.table-hidden #wrap{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transform:none!important;}
+      #bonusPinballComponentBody.flpr-integrated-force-visible #wrap{opacity:1!important;visibility:visible!important;pointer-events:auto!important;transform:none!important;transition:opacity .52s ease!important;}
+      #wrap{inset:0!important;display:block!important;padding:0!important;background:transparent!important;overflow:visible!important;}
+      #layout{position:absolute!important;left:var(--bonusPinballX, 90px)!important;top:var(--bonusPinballY, 158px)!important;padding:0!important;transform:scale(var(--bonusPinballScaleX, 1.218), var(--bonusPinballScaleY, 1.152))!important;transform-origin:0 0!important;pointer-events:auto!important;}
+      :host(.positionMode) #layout{outline:2px dashed rgba(255,214,122,.94)!important;outline-offset:8px!important;cursor:move!important;filter:drop-shadow(0 0 18px rgba(255,214,122,.44));}
+      #layout::before,#layout::after{display:none!important;}
+      #titleBar{top:-64px!important;z-index:40!important;}
+      #hud{z-index:20!important;}
+      #card{top:0!important;background:transparent!important;box-shadow:none!important;}
+      #leaderboardPanel{margin-left:0!important;}
+      #victory,#bonusIntro{
+        position:absolute!important;
+        inset:auto!important;
+        left:var(--bonusPinballX, 90px)!important;
+        top:var(--bonusPinballY, 158px)!important;
+        width:598px!important;
+        height:984px!important;
+        transform:scale(var(--bonusPinballScaleX, 1.218), var(--bonusPinballScaleY, 1.152))!important;
+        transform-origin:0 0!important;
+        align-items:center!important;
+        justify-content:center!important;
+      }
+      #bonusIntroCard,#victoryContent{
+        max-width:calc(100% - 86px)!important;
+        min-width:0!important;
+      }
+    `;
+    shadow.appendChild(scopedStyle);
+
+    const scopedDocument = buildBonusPinballScopedDocument(shadow, bodyShim, documentElementShim);
+    const loadCallbacks = [];
+    const scopedWindow = buildBonusPinballScopedWindow(loadCallbacks);
+    bonusPinballComponentDocument = scopedDocument;
+    for(const script of scripts){
+      const code = String(script.textContent || "").trim();
+      if(!code) continue;
+      try{
+        const fn = new Function("window", "document", `${code}\n//# sourceURL=FLPRBonusPinballField.mounted.js`);
+        fn(scopedWindow, scopedDocument);
+      }catch(err){
+        console.error("Bonus Pinball mounted script error", err);
+        throw err;
+      }
+    }
+    loadCallbacks.forEach((cb)=>{
+      try{ cb.call(scopedWindow, new Event("load")); }catch(err){ console.warn("Bonus Pinball mounted load handler error", err); }
+    });
+    bodyShim.classList.add("flpr-integrated-bonus");
+    bodyShim.classList.remove("bg-white", "bg-black", "bg-green", "bg-blue", "bg-magenta");
+    mount.dataset.loaded = "1";
+    bonusPinballFrameReady = true;
+    try{ host.classList.add("frameReady"); }catch(_){}
+    setIntegratedBonusPinballKeepVisible(isIntegratedBonusPinballVisible());
+    applyIntegratedBonusPinballLayerVisibility(isIntegratedBonusPinballVisible());
+    syncIntegratedBonusPinballControls();
+    flushIntegratedBonusPinballClicks();
+    return true;
+  }catch(err){
+    console.error("Could not mount Bonus Pinball component", err);
+    mount.dataset.error = String(err && err.message ? err.message : err);
+    return false;
+  }finally{
+    mount.dataset.loading = "0";
+  }
+}
+function ensureIntegratedBonusPinball(){
+  let host = getIntegratedBonusPinballHost();
+  let mount = getIntegratedBonusPinballMount();
+  if(host && mount){
+    setIntegratedBonusPinballPosition(getIntegratedBonusPinballPosition(), { persist:false });
+    setIntegratedBonusPinballScale(getIntegratedBonusPinballScale(), { persist:false });
+    setBonusPinballControlsGap(getBonusPinballControlsGap(), { persist:false });
+    bindIntegratedBonusPinballPositionDrag();
+    syncIntegratedBonusPinballPositionMode();
+    syncBonusPinballControlsGapMode();
+    if(mount.dataset.loaded !== "1") loadIntegratedBonusPinballComponent(host, mount);
+    return host;
+  }
+  host = document.createElement("div");
+  host.id = "bonusPinballIntegratedHost";
+  host.className = "bonusPinballIntegratedHost";
+  host.setAttribute("aria-hidden", "true");
+  mount = document.createElement("div");
+  mount.id = "bonusPinballIntegratedMount";
+  mount.className = "bonusPinballIntegratedMount";
+  mount.tabIndex = -1;
+  setIntegratedBonusPinballPosition(getIntegratedBonusPinballPosition(), { persist:false });
+  setIntegratedBonusPinballScale(getIntegratedBonusPinballScale(), { persist:false });
+  setBonusPinballControlsGap(getBonusPinballControlsGap(), { persist:false });
+  const shade = document.createElement("div");
+  shade.className = "bonusPinballIntegratedShade";
+  host.appendChild(shade);
+  host.appendChild(mount);
+  const capture = document.querySelector(".capture") || document.body;
+  capture.appendChild(host);
+  setIntegratedBonusPinballPosition(getIntegratedBonusPinballPosition(), { persist:false });
+  setIntegratedBonusPinballScale(getIntegratedBonusPinballScale(), { persist:false });
+  setBonusPinballControlsGap(getBonusPinballControlsGap(), { persist:false });
+  bindIntegratedBonusPinballPositionDrag();
+  syncIntegratedBonusPinballPositionMode();
+  syncBonusPinballControlsGapMode();
+  loadIntegratedBonusPinballComponent(host, mount);
+  try{
+    if(!window.__flprBonusIntegratedSyncTimer){
+      window.__flprBonusIntegratedSyncTimer = setInterval(()=>{ try{ syncIntegratedBonusPinballControls(); }catch(_){} }, 1000);
+    }
+  }catch(_){}
+  return host;
+}
+function clickIntegratedBonusPinballButton(buttonId, opts){
+  opts = opts || {};
+  const runCommand = buttonId === "launchRedeemBtn" || buttonId === "testRunNowBtn" || buttonId === "testAutoRedeemBtn";
+  const keepVisible = opts.keepVisible != null ? !!opts.keepVisible : !runCommand;
+  if(runCommand){
+    bonusPinballManualVisible = false;
+    bonusPinballPositionMode = false;
+    try{ setIntegratedBonusPinballKeepVisible(false); }catch(_){}
+    try{ syncIntegratedBonusPinballPositionMode(); }catch(_){}
+  }
+  if(opts.show !== false) setIntegratedBonusPinballVisible(true, { manual:!runCommand, keepVisible });
+  const nameValue = String(document.getElementById("bonusPinballRedeemerName")?.value || "").trim();
+  ensureIntegratedBonusPinball();
+  if(!bonusPinballFrameReady || !runIntegratedBonusPinballClick(buttonId, nameValue)){
+    bonusPinballPendingClicks.push({ buttonId, nameValue });
+    if(runCommand) scheduleIntegratedBonusPinballRunAutoHide();
+    return "queued";
+  }
+  if(runCommand) scheduleIntegratedBonusPinballRunAutoHide();
+  return true;
+}
+function ensureBonusPinballControlsPanel(){
+  let panel = document.getElementById("bonusPinballControlsPanel");
+  if(panel) return panel;
+  panel = document.createElement("div");
+  panel.id = "bonusPinballControlsPanel";
+  panel.className = "bonusPinballControlPanel";
+  const note = document.getElementById("bonusPinballUtilityNote") || buildControlsNote("Embedded Bonus Pinball lives over the main Flippermizer panel for layout editing and stream tests.");
+  if(note){
+    note.id = "bonusPinballUtilityNote";
+    note.textContent = "Embedded Bonus Pinball lives over the main Flippermizer panel for layout editing and stream tests.";
+    panel.appendChild(note);
+  }
+  const name = document.createElement("input");
+  name.id = "bonusPinballRedeemerName";
+  name.className = "cInput";
+  name.maxLength = 32;
+  name.placeholder = "Redeemer name";
+  panel.appendChild(name);
+  const status = document.createElement("div");
+  status.id = "bonusPinballStatusTxt";
+  status.className = "bonusPinballStatusLine";
+  status.textContent = "Queue: 0";
+  panel.appendChild(status);
+  const grid = document.createElement("div");
+  grid.className = "bonusPinballControlGrid";
+  const appendBtn = (id, text, cls)=>{
+    let btn = document.getElementById(id);
+    if(!btn){
+      btn = document.createElement("button");
+      btn.id = id;
+      btn.type = "button";
+    }
+    btn.className = `cBtn ${cls || ""}`.trim();
+    btn.textContent = text;
+    grid.appendChild(btn);
+    return btn;
+  };
+  appendBtn("bonusPinballToggleBtn", "SHOW BONUS PINBALL", "testPrimary");
+  appendBtn("bonusPinballMoveBtn", "MOVE TABLE: OFF");
+  appendBtn("bonusPinballResetPositionBtn", "RESET TABLE POSITION");
+  appendBtn("bonusPinballScaleDownBtn", "SCALE -");
+  appendBtn("bonusPinballScaleUpBtn", "SCALE +");
+  appendBtn("bonusPinballScaleStatusBtn", "SCALE: 100%");
+  appendBtn("bonusPinballScaleResetBtn", "RESET SCALE");
+  appendBtn("bonusPinballGapBtn", "ADJUST GAP: OFF");
+  appendBtn("bonusPinballGapStatusBtn", "GAP: 306px");
+  appendBtn("bonusPinballGapResetBtn", "RESET GAP");
+  appendBtn("bonusPinballQueueBtn", "QUEUE REDEMPTION");
+  appendBtn("bonusPinballTestRunBtn", "TEST RUN NOW");
+  appendBtn("bonusPinballAutoRedeemBtn", "TEST AUTO REDEEM");
+  appendBtn("bonusPinballThemeBtn", "THEME: CLASSIC");
+  appendBtn("bonusPinballEditBtn", "EDIT PLAYFIELD: OFF");
+  appendBtn("bonusPinballSnapBtn", "SNAP-TO GRID: ON");
+  appendBtn("bonusPinballResetBtn", "RESET LAYOUT", "danger");
+  appendBtn("bonusPinballClearLeaderboardBtn", "CLEAR LEADERBOARD", "danger");
+  panel.appendChild(grid);
+  return panel;
+}
+function normalizeBonusPinballOverlaySignalPayload(payload){
+  try{
+    const data = (payload && typeof payload === "object") ? payload : null;
+    if(!data) return null;
+    const active = !!data.active;
+    const ts = Number(data.ts || 0);
     if(!active) return null;
     if(!(Number.isFinite(ts) && (Date.now() - ts) <= BONUS_PINBALL_SIGNAL_MAX_AGE_MS)) return null;
     return data;
+  }catch(_){}
+  return null;
+}
+function rememberBonusPinballOverlaySignal(payload){
+  const data = normalizeBonusPinballOverlaySignalPayload(payload);
+  bonusPinballLastBroadcastSignal = data;
+  if(data || payload?.active === false){
+    try{ applyBonusPinballOverlayDim(); }catch(_){}
+  }
+}
+function clearIntegratedBonusPinballOverlaySignal(){
+  bonusPinballLastBroadcastSignal = null;
+  try{ localStorage.removeItem(BONUS_PINBALL_SIGNAL_KEY); }catch(_){}
+  try{ document.body.classList.remove("bonusPinballDim"); }catch(_){}
+  if(bonusPinballUndimTimer){
+    try{ clearTimeout(bonusPinballUndimTimer); }catch(_){}
+    bonusPinballUndimTimer = 0;
+  }
+}
+function readBonusPinballOverlaySignal(){
+  const bridged = normalizeBonusPinballOverlaySignalPayload(bonusPinballLastBroadcastSignal);
+  if(bridged) return bridged;
+  try{
+    const raw = localStorage.getItem(BONUS_PINBALL_SIGNAL_KEY);
+    if(!raw) return null;
+    return normalizeBonusPinballOverlaySignalPayload(JSON.parse(raw));
   }catch(_){}
   return null;
 }
@@ -20063,6 +21483,7 @@ function applyBonusPinballOverlayDim(){
         clearTimeout(bonusPinballUndimTimer);
         bonusPinballUndimTimer = 0;
       }
+      try{ setIntegratedBonusPinballVisible(true, { signal:true, keepVisible:false }); }catch(_){}
       document.body.classList.add("bonusPinballDim");
       try{
         if(!musicAllowed) suppressBonusPinballMusic(BONUS_PINBALL_UNDIM_DELAY_MS + 280);
@@ -20082,17 +21503,15 @@ function applyBonusPinballOverlayDim(){
       try{
         if(!isBonusPinballOverlaySignalActive()){
           document.body.classList.remove("bonusPinballDim");
+          if(!bonusPinballManualVisible) setIntegratedBonusPinballVisible(false, { signal:true });
           try{ musicRefreshScenario(); }catch(_){}
         }
       }catch(_){}
     }, BONUS_PINBALL_UNDIM_DELAY_MS);
   }catch(_){}
 }
-function pollBonusPinballBossAssist(){
+function processBonusPinballBossAssist(data){
   try{
-    const raw = localStorage.getItem(BONUS_PINBALL_BOSS_ASSIST_KEY);
-    if(!raw) return;
-    const data = JSON.parse(raw);
     const nonce = String(data?.nonce || data?.ts || "");
     if(!nonce || nonce === bossAssistNonceSeen) return;
     bossAssistNonceSeen = nonce;
@@ -20114,6 +21533,38 @@ function pollBonusPinballBossAssist(){
     });
   }catch(_){}
 }
+function pollBonusPinballBossAssist(){
+  try{
+    const raw = localStorage.getItem(BONUS_PINBALL_BOSS_ASSIST_KEY);
+    if(!raw) return;
+    processBonusPinballBossAssist(JSON.parse(raw));
+  }catch(_){}
+}
+function initBonusPinballBridgeChannel(){
+  if(bonusPinballBridgeChannel || typeof BroadcastChannel === "undefined") return;
+  try{
+    bonusPinballBridgeChannel = new BroadcastChannel(BONUS_PINBALL_BROADCAST_CHANNEL);
+    bonusPinballBridgeChannel.onmessage = (ev)=>{
+      try{
+        const msg = ev?.data || {};
+        if(msg.type === "bonus_signal"){
+          rememberBonusPinballOverlaySignal(msg.payload || {});
+          return;
+        }
+        if(msg.type === "bonus_done"){
+          scheduleIntegratedBonusPinballDoneAutoHide(msg.payload?.hideAfterMs);
+          return;
+        }
+        if(msg.type === "boss_assist"){
+          processBonusPinballBossAssist(msg.payload || {});
+        }
+      }catch(_){}
+    };
+  }catch(_){
+    bonusPinballBridgeChannel = null;
+  }
+}
+initBonusPinballBridgeChannel();
 setInterval(pollBonusPinballBossAssist, 900);
 
 // Optional FLPR-Bot sync (overlay -> bot local sync server).
@@ -20767,6 +22218,318 @@ async function loadSettingsAsync(){
     const val = await new Promise((res,rej)=>{ req.onsuccess=()=>res(req.result); req.onerror=()=>rej(req.error); });
     return val || {};
   }catch(_){ return {}; }
+}
+
+const OVERLAY_CONTROL_LAYOUT_KEY = "overlayControlLayout";
+const CONTROL_LAYOUT_MIN_PANEL_H = 72;
+const CONTROL_LAYOUT_MAX_PANEL_H = 940;
+const CONTROL_LAYOUT_MIN_CONTROLS_W = 760;
+const CONTROL_LAYOUT_MAX_CONTROLS_W = 1900;
+let controlLayoutState = { version: 1, editMode: false, controlsW: null, bonusGap: null, columns: {}, panels: {} };
+let controlLayoutLoaded = false;
+let controlLayoutLoadPromise = null;
+let controlLayoutDrag = null;
+let controlLayoutSaveTimer = 0;
+
+function mergeControlLayoutState(next){
+  const src = (next && typeof next === "object") ? next : {};
+  return {
+    version: 1,
+    editMode: !!src.editMode,
+    controlsW: Number.isFinite(Number(src.controlsW)) ? Number(src.controlsW) : null,
+    bonusGap: Number.isFinite(Number(src.bonusGap)) ? Number(src.bonusGap) : null,
+    columns: (src.columns && typeof src.columns === "object") ? { ...src.columns } : {},
+    panels: (src.panels && typeof src.panels === "object") ? { ...src.panels } : {}
+  };
+}
+function readLocalControlLayoutState(){
+  try{
+    const local = loadSettings() || {};
+    return mergeControlLayoutState(local[OVERLAY_CONTROL_LAYOUT_KEY] || local.controlPanelLayout || {});
+  }catch(_){}
+  return mergeControlLayoutState({});
+}
+async function loadControlLayoutState(){
+  if(controlLayoutLoaded) return controlLayoutState;
+  if(controlLayoutLoadPromise) return controlLayoutLoadPromise;
+  controlLayoutLoadPromise = (async()=>{
+    let next = readLocalControlLayoutState();
+    try{
+      const api = window.flprLauncher;
+      if(api && typeof api.getSettings === "function"){
+        const launcherSettings = await api.getSettings();
+        const fromLauncher = launcherSettings?.[OVERLAY_CONTROL_LAYOUT_KEY] || launcherSettings?.controlPanelLayout;
+        if(fromLauncher && typeof fromLauncher === "object") next = mergeControlLayoutState(fromLauncher);
+      }
+    }catch(_){}
+    controlLayoutState = next;
+    controlLayoutLoaded = true;
+    return controlLayoutState;
+  })();
+  return controlLayoutLoadPromise;
+}
+function persistControlLayoutStateDebounced(){
+  clearTimeout(controlLayoutSaveTimer);
+  controlLayoutSaveTimer = setTimeout(()=>persistControlLayoutState(), 180);
+}
+function persistControlLayoutState(){
+  const payload = { [OVERLAY_CONTROL_LAYOUT_KEY]: controlLayoutState };
+  try{ saveSettings(payload); }catch(_){}
+  try{
+    const api = window.flprLauncher;
+    if(api && typeof api.saveSettings === "function") api.saveSettings(payload).catch(()=>{});
+  }catch(_){}
+}
+function getControlsWidth(){
+  const saved = Number(controlLayoutState.controlsW);
+  if(Number.isFinite(saved) && saved > 0) return saved;
+  const css = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--controlsW"));
+  return Number.isFinite(css) ? css : 1280;
+}
+function applyControlsWidth(width, opts){
+  const next = Math.max(CONTROL_LAYOUT_MIN_CONTROLS_W, Math.min(CONTROL_LAYOUT_MAX_CONTROLS_W, Number(width) || getControlsWidth()));
+  try{ document.documentElement.style.setProperty("--controlsW", `${Math.round(next)}px`); }catch(_){}
+  controlLayoutState.controlsW = Math.round(next);
+  if(!opts || opts.persist !== false) persistControlLayoutStateDebounced();
+  return next;
+}
+function getControlLayoutKeyForNode(node){
+  const el = node?.closest?.(".connectPanelSection");
+  if(!el) return "";
+  const tab = el.closest(".controlsTabPanel")?.dataset?.ctrlPanel || "controls";
+  const col = el.closest(".connectColLeft,.visualsColLeft,.testingColLeft") ? "left"
+    : el.closest(".connectColRight,.visualsColRight,.testingColRight") ? "right"
+    : "main";
+  const title = String(el.querySelector(":scope > .connectPanelSectionTitle > span")?.textContent || el.id || "").trim();
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const siblings = Array.from(el.parentElement?.querySelectorAll(":scope > .connectPanelSection") || []);
+  const index = Math.max(0, siblings.indexOf(el));
+  return `${tab}:${col}:${slug || index}`;
+}
+function getControlsLayoutKey(layout){
+  if(layout?.classList?.contains("connectCompactLayout")) return "connect";
+  if(layout?.classList?.contains("visualsCompactLayout")) return "visuals";
+  if(layout?.classList?.contains("testingCompactLayout")) return "testing";
+  return String(layout?.closest?.(".controlsTabPanel")?.dataset?.ctrlPanel || "controls");
+}
+function applyControlColumnPct(layout, pct, opts){
+  if(!layout) return 0.5;
+  const key = getControlsLayoutKey(layout);
+  const next = Math.max(0.24, Math.min(0.76, Number(pct) || 0.5));
+  layout.style.setProperty("--flprControlsColPct", String(Number(next.toFixed(4))));
+  controlLayoutState.columns[key] = { pct: Number(next.toFixed(4)) };
+  const handle = layout.querySelector(":scope > .flprControlsColumnHandle");
+  if(handle) handle.setAttribute("aria-valuenow", String(Math.round(next * 100)));
+  if(!opts || opts.persist !== false) persistControlLayoutStateDebounced();
+  return next;
+}
+function findControlColumnLayout(node){
+  return node?.closest?.(".connectCompactLayout,.visualsCompactLayout,.testingCompactLayout") || null;
+}
+function controlColumnPctFromPointer(layout, clientX){
+  const rect = layout?.getBoundingClientRect?.();
+  if(!rect || rect.width <= 0) return 0.5;
+  return (Number(clientX) - rect.left) / rect.width;
+}
+function applyControlPanelHeight(panel, height, opts){
+  if(!panel) return 0;
+  const next = Math.max(CONTROL_LAYOUT_MIN_PANEL_H, Math.min(CONTROL_LAYOUT_MAX_PANEL_H, Number(height) || panel.getBoundingClientRect().height || CONTROL_LAYOUT_MIN_PANEL_H));
+  panel.style.flex = `0 0 ${Math.round(next)}px`;
+  panel.style.height = `${Math.round(next)}px`;
+  panel.style.minHeight = `${Math.min(Math.round(next), CONTROL_LAYOUT_MIN_PANEL_H)}px`;
+  const key = getControlLayoutKeyForNode(panel);
+  if(key){
+    controlLayoutState.panels[key] = { ...(controlLayoutState.panels[key] || {}), h: Math.round(next) };
+    if(!opts || opts.persist !== false) persistControlLayoutStateDebounced();
+  }
+  return next;
+}
+function applySavedControlLayout(){
+  try{
+    document.body.classList.toggle("controlsLayoutEdit", !!controlLayoutState.editMode);
+    const editBtn = document.getElementById("controlsLayoutEditBtn");
+    if(editBtn){
+      editBtn.textContent = controlLayoutState.editMode ? "PANEL LAYOUT: ON" : "PANEL LAYOUT: OFF";
+      editBtn.classList.toggle("testPrimary", !!controlLayoutState.editMode);
+      editBtn.setAttribute("aria-pressed", controlLayoutState.editMode ? "true" : "false");
+    }
+  }catch(_){}
+  if(Number.isFinite(Number(controlLayoutState.controlsW))){
+    applyControlsWidth(controlLayoutState.controlsW, { persist:false });
+  }
+  if(Number.isFinite(Number(controlLayoutState.bonusGap))){
+    try{ setBonusPinballControlsGap(controlLayoutState.bonusGap, { persist:false }); }catch(_){}
+  }
+  document.querySelectorAll(".connectCompactLayout,.visualsCompactLayout,.testingCompactLayout").forEach((layout)=>{
+    const key = getControlsLayoutKey(layout);
+    const saved = Number(controlLayoutState.columns?.[key]?.pct);
+    applyControlColumnPct(layout, Number.isFinite(saved) ? saved : 0.5, { persist:false });
+  });
+  document.querySelectorAll(".controlsPanels .connectPanelSection").forEach((panel)=>{
+    const key = getControlLayoutKeyForNode(panel);
+    const saved = Number(controlLayoutState.panels?.[key]?.h);
+    if(Number.isFinite(saved) && saved > 0) applyControlPanelHeight(panel, saved, { persist:false });
+  });
+}
+function resetControlPanelLayout(){
+  controlLayoutState = { version: 1, editMode: controlLayoutState.editMode, controlsW: null, bonusGap: null, columns: {}, panels: {} };
+  try{ document.documentElement.style.removeProperty("--controlsW"); }catch(_){}
+  document.querySelectorAll(".connectCompactLayout,.visualsCompactLayout,.testingCompactLayout").forEach((layout)=>{
+    layout.style.removeProperty("--flprControlsColPct");
+  });
+  document.querySelectorAll(".controlsPanels .connectPanelSection").forEach((panel)=>{
+    panel.style.flex = "";
+    panel.style.height = "";
+    panel.style.minHeight = "";
+  });
+  persistControlLayoutState();
+  applySavedControlLayout();
+}
+function ensureControlLayoutToolbar(){
+  const head = document.querySelector(".controlsHead");
+  if(!head || head.dataset.layoutTools === "1") return;
+  head.dataset.layoutTools = "1";
+  if(!head.querySelector(":scope > .controlsHeadTitle")){
+    const wrap = document.createElement("div");
+    wrap.className = "controlsHeadTitle";
+    while(head.firstChild) wrap.appendChild(head.firstChild);
+    head.appendChild(wrap);
+  }
+  const tools = document.createElement("div");
+  tools.className = "controlsLayoutTools";
+  tools.innerHTML = `
+    <button class="cBtn" id="controlsLayoutEditBtn" type="button" aria-pressed="false">PANEL LAYOUT: OFF</button>
+    <button class="cBtn" id="controlsLayoutResetBtn" type="button">RESET PANELS</button>
+  `;
+  head.appendChild(tools);
+  const editBtn = tools.querySelector("#controlsLayoutEditBtn");
+  const resetBtn = tools.querySelector("#controlsLayoutResetBtn");
+  editBtn?.addEventListener("click", ()=>{
+    controlLayoutState.editMode = !controlLayoutState.editMode;
+    persistControlLayoutState();
+    applySavedControlLayout();
+  });
+  resetBtn?.addEventListener("click", ()=> resetControlPanelLayout());
+}
+function ensureControlsWidthHandle(){
+  const controls = document.querySelector(".controls");
+  if(!controls || controls.querySelector(":scope > .flprControlsWidthHandle")) return;
+  const handle = document.createElement("div");
+  handle.className = "flprControlsWidthHandle";
+  handle.title = "Drag to resize the controls panel width";
+  controls.appendChild(handle);
+  handle.addEventListener("pointerdown", (ev)=>{
+    if(!controlLayoutState.editMode || ev.button !== 0) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    controlLayoutDrag = {
+      type: "controls-width",
+      id: ev.pointerId,
+      startX: ev.clientX,
+      startW: getControlsWidth()
+    };
+    try{ handle.setPointerCapture(ev.pointerId); }catch(_){}
+    document.body.classList.add("controlsLayoutDragging");
+  }, true);
+}
+function ensureControlColumnHandle(layout){
+  if(!layout || layout.querySelector(":scope > .flprControlsColumnHandle")) return;
+  const handle = document.createElement("div");
+  handle.className = "flprControlsColumnHandle";
+  handle.title = "Drag to resize these two columns";
+  handle.setAttribute("role", "separator");
+  handle.setAttribute("aria-orientation", "vertical");
+  layout.appendChild(handle);
+  handle.addEventListener("pointerdown", (ev)=>{
+    if(!controlLayoutState.editMode || ev.button !== 0) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    controlLayoutDrag = {
+      type: "column",
+      id: ev.pointerId,
+      layout
+    };
+    try{ handle.setPointerCapture(ev.pointerId); }catch(_){}
+    document.body.classList.add("controlsLayoutDragging");
+  }, true);
+}
+function ensureControlPanelHandles(panel){
+  if(!panel || panel.dataset.layoutHandles === "1") return;
+  panel.dataset.layoutHandles = "1";
+  panel.classList.add("flprControlResizable");
+  ["right", "bottom"].forEach((edge)=>{
+    const handle = document.createElement("div");
+    handle.className = "flprControlResizeEdge";
+    handle.dataset.edge = edge;
+    handle.title = edge === "bottom" ? "Drag to resize this panel height" : "Drag to resize this panel or column width";
+    panel.appendChild(handle);
+    handle.addEventListener("pointerdown", (ev)=>{
+      if(!controlLayoutState.editMode || ev.button !== 0) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const layout = findControlColumnLayout(panel);
+      controlLayoutDrag = {
+        type: edge === "bottom" ? "panel-height" : "panel-width",
+        id: ev.pointerId,
+        panel,
+        layout,
+        startX: ev.clientX,
+        startY: ev.clientY,
+        startW: getControlsWidth(),
+        startH: panel.getBoundingClientRect().height
+      };
+      try{ handle.setPointerCapture(ev.pointerId); }catch(_){}
+      document.body.classList.add("controlsLayoutDragging");
+    }, true);
+  });
+}
+function bindControlLayoutDragEvents(){
+  if(window.__flprControlLayoutDragBound) return;
+  window.__flprControlLayoutDragBound = true;
+  window.addEventListener("pointermove", (ev)=>{
+    const drag = controlLayoutDrag;
+    if(!drag || drag.id !== ev.pointerId) return;
+    ev.preventDefault();
+    if(drag.type === "column"){
+      applyControlColumnPct(drag.layout, controlColumnPctFromPointer(drag.layout, ev.clientX), { persist:false });
+      return;
+    }
+    if(drag.type === "panel-height"){
+      applyControlPanelHeight(drag.panel, drag.startH + (ev.clientY - drag.startY), { persist:false });
+      return;
+    }
+    if(drag.type === "panel-width"){
+      const inLeftCol = !!drag.panel?.closest?.(".connectColLeft,.visualsColLeft,.testingColLeft");
+      if(inLeftCol && drag.layout){
+        applyControlColumnPct(drag.layout, controlColumnPctFromPointer(drag.layout, ev.clientX), { persist:false });
+      }else{
+        applyControlsWidth(drag.startW + (ev.clientX - drag.startX), { persist:false });
+      }
+      return;
+    }
+    if(drag.type === "controls-width"){
+      applyControlsWidth(drag.startW + (ev.clientX - drag.startX), { persist:false });
+    }
+  }, true);
+  const finish = (ev)=>{
+    const drag = controlLayoutDrag;
+    if(!drag || (ev && drag.id !== ev.pointerId)) return;
+    controlLayoutDrag = null;
+    document.body.classList.remove("controlsLayoutDragging");
+    persistControlLayoutState();
+    try{ ev?.target?.releasePointerCapture?.(drag.id); }catch(_){}
+  };
+  window.addEventListener("pointerup", finish, true);
+  window.addEventListener("pointercancel", finish, true);
+}
+function refreshControlPanelLayoutHandles(){
+  ensureControlLayoutToolbar();
+  ensureControlsWidthHandle();
+  try{ ensureBonusPinballGapHandle(); }catch(_){}
+  document.querySelectorAll(".connectCompactLayout,.visualsCompactLayout,.testingCompactLayout").forEach(ensureControlColumnHandle);
+  document.querySelectorAll(".controlsPanels .connectPanelSection").forEach(ensureControlPanelHandles);
+  bindControlLayoutDragEvents();
+  loadControlLayoutState().then(()=>applySavedControlLayout()).catch(()=>applySavedControlLayout());
 }
 
 
@@ -28229,6 +29992,11 @@ function normKey(s){
   return t;
 }
 
+function canonicalTableMapKey(tableName){
+  const raw = String(tableName || "").trim();
+  const canonical = String(getRepoCanonicalTableName(raw) || raw).trim();
+  return normKey(canonical || raw);
+}
 
 function tableNameFromLocation(locText, fallback){
   const s = String(locText||"");
@@ -28381,6 +30149,25 @@ function extractGenericSlotMeta(locationName){
   }
   return null;
 }
+function getGenericSlotLookupKey(entry, locationName){
+  const locMeta = extractGenericSlotMeta(locationName);
+  const tableName = String(entry?.target_table || entry?.table || locMeta?.table || splitLocName(locationName).table || "").trim();
+  const difficultyKey = String(entry?.difficulty || locMeta?.difficulty || "").trim().toLowerCase();
+  const kindKey = String(entry?.kind || entry?.task_type || entry?.type || locMeta?.kind || "").trim().toLowerCase();
+  const tableKey = canonicalTableMapKey(tableName);
+  if(!tableKey || !difficultyKey || !kindKey) return "";
+  return `${tableKey}|${difficultyKey}|${kindKey}`;
+}
+function getLocationSlotLookupKey(entry, locationName){
+  const locMeta = extractGenericSlotMeta(locationName);
+  if(!locMeta) return "";
+  return getGenericSlotLookupKey({
+    ...(entry || {}),
+    table: entry?.target_table || entry?.table || locMeta.table,
+    difficulty: entry?.difficulty || locMeta.difficulty,
+    kind: locMeta.kind
+  }, locationName);
+}
 function getGenericCheckEntryForLocationName(locationName){
   const key = String(locationName || "").trim();
   if(!key) return null;
@@ -28389,9 +30176,8 @@ function getGenericCheckEntryForLocationName(locationName){
       || ap?.genericChecks?.byLocationNormalized?.get?.(normalizeGenericLocationLookupName(key))
       || null;
     if(exact) return exact;
-    const meta = extractGenericSlotMeta(key);
-    if(!meta) return null;
-    const fallbackKey = `${normKey(meta.table)}|${meta.difficulty}|${meta.kind}`;
+    const fallbackKey = getGenericSlotLookupKey({}, key);
+    if(!fallbackKey) return null;
     return ap?.genericChecks?.bySlot?.get?.(fallbackKey) || null;
   }catch(_){}
   return null;
@@ -28400,9 +30186,13 @@ function getTaskShuffleEntryForLocationName(locationName){
   const key = String(locationName || "").trim();
   if(!key) return null;
   try{
-    return ap?.taskShuffle?.byLocation?.get?.(key)
+    const exact = ap?.taskShuffle?.byLocation?.get?.(key)
       || ap?.taskShuffle?.byLocationNormalized?.get?.(normalizeGenericLocationLookupName(key))
       || null;
+    if(exact) return exact;
+    const fallbackKey = getGenericSlotLookupKey({}, key);
+    if(!fallbackKey) return null;
+    return ap?.taskShuffle?.bySlot?.get?.(fallbackKey) || null;
   }catch(_){}
   return null;
 }
@@ -28477,6 +30267,7 @@ function setGenericCheckPayload(slotData){
     enabled: !!taskPayload?.enabled,
     byLocation: new Map(),
     byLocationNormalized: new Map(),
+    bySlot: new Map(),
     entries: asArrayish(taskPayload?.entries).filter((entry)=> isSeedScopedGenericEntry(entry, String(entry?.location || "")))
   };
   try{
@@ -28487,11 +30278,9 @@ function setGenericCheckPayload(slotData){
       if(!isSeedScopedGenericEntry(copy, String(locationName))) return;
       ap.genericChecks.byLocation.set(String(locationName), copy);
       ap.genericChecks.byLocationNormalized.set(normalizeGenericLocationLookupName(locationName), copy);
-      const tableKey = normKey(String(copy.table || splitLocName(locationName).table || ""));
-      const difficultyKey = String(copy.difficulty || "").trim().toLowerCase();
-      const kindKey = String(copy.kind || copy.task_type || copy.type || "").trim().toLowerCase();
-      if(tableKey && difficultyKey && kindKey){
-        ap.genericChecks.bySlot.set(`${tableKey}|${difficultyKey}|${kindKey}`, copy);
+      const slotKey = getGenericSlotLookupKey(copy, locationName);
+      if(slotKey){
+        ap.genericChecks.bySlot.set(slotKey, copy);
       }
     });
   }catch(_){}
@@ -28509,14 +30298,9 @@ function setGenericCheckPayload(slotData){
           ap.genericChecks.byLocationNormalized.set(normalized, copy);
         }
       }
-      const tableKey = normKey(String(copy.table || splitLocName(locationName).table || ""));
-      const difficultyKey = String(copy.difficulty || "").trim().toLowerCase();
-      const kindKey = String(copy.kind || copy.task_type || copy.type || "").trim().toLowerCase();
-      if(tableKey && difficultyKey && kindKey){
-        const slotKey = `${tableKey}|${difficultyKey}|${kindKey}`;
-        if(!ap.genericChecks.bySlot.has(slotKey)){
-          ap.genericChecks.bySlot.set(slotKey, copy);
-        }
+      const slotKey = getGenericSlotLookupKey(copy, locationName);
+      if(slotKey && !ap.genericChecks.bySlot.has(slotKey)){
+        ap.genericChecks.bySlot.set(slotKey, copy);
       }
     }
   }catch(_){}
@@ -28525,9 +30309,38 @@ function setGenericCheckPayload(slotData){
     Object.entries(byLoc).forEach(([locationName, entry])=>{
       if(!locationName || !entry || typeof entry !== "object") return;
       if(!isSeedScopedGenericEntry(entry, String(locationName))) return;
-      ap.taskShuffle.byLocation.set(String(locationName), { ...entry });
-      ap.taskShuffle.byLocationNormalized.set(normalizeGenericLocationLookupName(locationName), { ...entry });
+      const copy = { ...entry };
+      ap.taskShuffle.byLocation.set(String(locationName), copy);
+      ap.taskShuffle.byLocationNormalized.set(normalizeGenericLocationLookupName(locationName), copy);
+      const slotKey = getGenericSlotLookupKey(copy, locationName);
+      if(slotKey) ap.taskShuffle.bySlot.set(slotKey, copy);
+      const locationSlotKey = getLocationSlotLookupKey(copy, locationName);
+      if(locationSlotKey) ap.taskShuffle.bySlot.set(locationSlotKey, copy);
     });
+  }catch(_){}
+  try{
+    for(const rawEntry of (ap.taskShuffle.entries || [])){
+      if(!rawEntry || typeof rawEntry !== "object") continue;
+      const copy = { ...rawEntry };
+      const locationName = String(copy.location || "").trim();
+      if(locationName){
+        if(!ap.taskShuffle.byLocation.has(locationName)){
+          ap.taskShuffle.byLocation.set(locationName, copy);
+        }
+        const normalized = normalizeGenericLocationLookupName(locationName);
+        if(normalized && !ap.taskShuffle.byLocationNormalized.has(normalized)){
+          ap.taskShuffle.byLocationNormalized.set(normalized, copy);
+        }
+      }
+      const slotKey = getGenericSlotLookupKey(copy, locationName);
+      if(slotKey && !ap.taskShuffle.bySlot.has(slotKey)){
+        ap.taskShuffle.bySlot.set(slotKey, copy);
+      }
+      const locationSlotKey = getLocationSlotLookupKey(copy, locationName);
+      if(locationSlotKey && !ap.taskShuffle.bySlot.has(locationSlotKey)){
+        ap.taskShuffle.bySlot.set(locationSlotKey, copy);
+      }
+    }
   }catch(_){}
   try{
     apLog(`Generic task payload; enabled=${ap.genericChecks.enabled ? "yes" : "no"}; entries=${Number(ap.genericChecks.entries?.length || 0)}; matchedKeys=${Number(ap.genericChecks.bySlot?.size || 0)}`);
@@ -29937,7 +31750,7 @@ function apConnect(){
             const {table, rest} = splitLocName(name);
             const tableName = achResolveTableName(table, "");
             const tableCode = achResolveTableCode(tableName);
-            const tKey = normKey(table);
+            const tKey = canonicalTableMapKey(tableName || table);
             if(!ap.locsByTableKey.has(tKey)) ap.locsByTableKey.set(tKey, []);
             const node = {
               id: locId,
@@ -33106,7 +34919,7 @@ function renderChecks(){
   }
 
   tables.forEach((tName, idx)=>{
-    const tKey = normKey(tName);
+    const tKey = canonicalTableMapKey(tName);
     // try direct match; if none, fuzzy match against available loc tables
     let nodes = ap.locsByTableKey.get(tKey);
     if(!nodes){
@@ -36677,7 +38490,7 @@ function checksCompleteOverlayHtml(){
 }
 
 function getChecksLeftMarkup(tableName, hintTargets){
-  const tKey = normKey(tableName);
+  const tKey = canonicalTableMapKey(tableName);
   const nodes = (ap && ap.locsByTableKey && ap.locsByTableKey.get(tKey)) ? ap.locsByTableKey.get(tKey) : [];
   if(!Array.isArray(nodes) || !nodes.length){
     return `<div class="checksLeft"><div class="hdr">CHECKS LEFT</div><div class="row"><span class="chkIcon hh todo">--</span></div></div>`;
@@ -37360,7 +39173,7 @@ function hintStylizeGreetingHtml(phrase){
 }
 
 function hintNormalizeName(s){
-  return normKey(String(s || ""));
+  return canonicalTableMapKey(String(s || ""));
 }
 function hintNormalizeLoose(s){
   return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
@@ -39323,7 +41136,7 @@ function inherentSeedPopulateLocationMaps(fixture){
     const { table, rest } = splitLocName(name);
     const tableName = achResolveTableName(table, "");
     const tableCode = achResolveTableCode(tableName);
-    const tKey = normKey(table);
+    const tKey = canonicalTableMapKey(tableName || table);
     if(!ap.locsByTableKey.has(tKey)) ap.locsByTableKey.set(tKey, []);
     const node = { id:locId, full:name, short:rest || name, tableName, tableCode, tableKey:tKey };
     applyGenericCheckEntryToNode(node);
@@ -39652,7 +41465,7 @@ function buildTileBannerControls(){
       name.textContent = tableName;
 
       const source = document.createElement("div");
-      const rawRef = state.tableBanners?.[bKey] || (tableCode ? state.tableBannersByCode?.[tableCode] : "") || "";
+      const rawRef = (tableCode ? state.tableBannersByCode?.[tableCode] : "") || state.tableBanners?.[bKey] || "";
       const isCustom = !!String(rawRef || "").trim() && isCustomTableBannerRef(rawRef, tableName);
       source.className = "tableBannerSource" + (isCustom ? " custom" : "");
       source.textContent = isCustom ? "Custom Banner" : "Default Banner";
@@ -39677,9 +41490,16 @@ function buildTileBannerControls(){
         const file = input.files && input.files[0];
         if(!file) return;
         const idbKey = `table:${bKey}`;
+        const codeIdbKey = tableCode ? `table-code:${tableCode}` : "";
         try{
           await idbPut(idbKey, file);
           revokeBannerUrl(idbKey);
+          if(codeIdbKey){
+            await idbPut(codeIdbKey, file);
+            revokeBannerUrl(codeIdbKey);
+            state.tableBannersByCode = state.tableBannersByCode || {};
+            state.tableBannersByCode[tableCode] = `idb:${codeIdbKey}`;
+          }
           state.tableBanners[bKey] = `idb:${idbKey}`;
           saveState();
           buildTileBannerControls();
@@ -39690,7 +41510,12 @@ function buildTileBannerControls(){
           console.warn("idbPut table banner failed; falling back", e);
           const reader = new FileReader();
           reader.onload = () => {
-            state.tableBanners[bKey] = String(reader.result || "");
+            const dataUrl = String(reader.result || "");
+            if(tableCode){
+              state.tableBannersByCode = state.tableBannersByCode || {};
+              state.tableBannersByCode[tableCode] = dataUrl;
+            }
+            state.tableBanners[bKey] = dataUrl;
             saveState();
             buildTileBannerControls();
             renderOverviewGrid();
@@ -39710,6 +41535,15 @@ function buildTileBannerControls(){
           const k = ref.slice(4);
           await idbDel(k).catch(()=>{});
           revokeBannerUrl(k);
+        }
+        if(tableCode){
+          const codeRef = state.tableBannersByCode?.[tableCode];
+          if(typeof codeRef === "string" && codeRef.startsWith("idb:")){
+            const k = codeRef.slice(4);
+            await idbDel(k).catch(()=>{});
+            revokeBannerUrl(k);
+          }
+          if(state.tableBannersByCode) delete state.tableBannersByCode[tableCode];
         }
         delete state.tableBanners[bKey];
         saveState();
@@ -39784,7 +41618,39 @@ function findControlsSectionTitle(root, token){
 
 const FLPR_TWITCH_CHAT_CHANNEL = "ashodin";
 const FLPR_TWITCH_CHAT_CFG_LS = "flpr_twitch_chat_cfg_v1";
-const flprTwitchChat = { ws:null, connected:false, connecting:false, username:"", token:"" };
+const flprTwitchChat = {
+  ws:null,
+  connected:false,
+  connecting:false,
+  username:"",
+  token:"",
+  clientId:"",
+  fontSize:11,
+  eventSubEnabled:true,
+  eventWs:null,
+  eventConnected:false,
+  eventConnecting:false,
+  eventSessionId:"",
+  eventBearerToken:"",
+  broadcasterId:"",
+  moderatorId:"",
+  eventSubCount:0,
+  eventSubTotal:0,
+  eventSubFailures:[],
+  eventKeepaliveTimer:0,
+  eventReconnectTimer:0,
+  eventReconnectAttempts:0,
+  eventSeenIds:[]
+};
+const FLPR_TWITCH_EVENTSUB_TYPES = Object.freeze([
+  { type:"channel.follow", version:"2", label:"FOLLOW", className:"follow", condition:(ctx)=>({ broadcaster_user_id:ctx.broadcasterId, moderator_user_id:ctx.moderatorId }) },
+  { type:"channel.cheer", version:"1", label:"BITS", className:"bits", condition:(ctx)=>({ broadcaster_user_id:ctx.broadcasterId }) },
+  { type:"channel.channel_points_custom_reward_redemption.add", version:"1", label:"POINTS", className:"points", condition:(ctx)=>({ broadcaster_user_id:ctx.broadcasterId }) },
+  { type:"channel.raid", version:"1", label:"RAID", className:"raid", condition:(ctx)=>({ to_broadcaster_user_id:ctx.broadcasterId }) },
+  { type:"stream.online", version:"1", label:"STREAM", className:"stream", condition:(ctx)=>({ broadcaster_user_id:ctx.broadcasterId }) },
+  { type:"stream.offline", version:"1", label:"STREAM", className:"stream", condition:(ctx)=>({ broadcaster_user_id:ctx.broadcasterId }) },
+  { type:"channel.update", version:"2", label:"CHANNEL", className:"announce", condition:(ctx)=>({ broadcaster_user_id:ctx.broadcasterId }) }
+]);
 function getTwitchEmbedParents(){
   const parents = [];
   const add = (v)=>{
@@ -39822,15 +41688,21 @@ function loadTwitchChatCfg(){
     const raw = JSON.parse(localStorage.getItem(FLPR_TWITCH_CHAT_CFG_LS) || "{}");
     return {
       username: String(raw?.username || "").trim(),
-      token: String(raw?.token || "").trim()
+      token: String(raw?.token || "").trim(),
+      clientId: String(raw?.clientId || "").trim(),
+      fontSize: Math.max(9, Math.min(18, Number(raw?.fontSize || 11) || 11)),
+      eventSubEnabled: raw?.eventSubEnabled !== false
     };
-  }catch(_){ return { username:"", token:"" }; }
+  }catch(_){ return { username:"", token:"", clientId:"", fontSize:11, eventSubEnabled:true }; }
 }
 function saveTwitchChatCfg(){
   try{
     localStorage.setItem(FLPR_TWITCH_CHAT_CFG_LS, JSON.stringify({
       username: String(flprTwitchChat.username || "").trim(),
-      token: String(flprTwitchChat.token || "").trim()
+      token: String(flprTwitchChat.token || "").trim(),
+      clientId: String(flprTwitchChat.clientId || "").trim(),
+      fontSize: Math.max(9, Math.min(18, Number(flprTwitchChat.fontSize || 11) || 11)),
+      eventSubEnabled: flprTwitchChat.eventSubEnabled !== false
     }));
   }catch(_){}
 }
@@ -39838,17 +41710,63 @@ function twitchChatStatusText(text){
   const el = document.getElementById("twitchChatStatus");
   if(el) el.textContent = String(text || "");
 }
+function twitchChatRefreshStatus(){
+  const chat = flprTwitchChat.connected
+    ? `Chat connected as ${flprTwitchChat.username || "viewer"}`
+    : (flprTwitchChat.connecting ? "Chat connecting" : "Chat disconnected");
+  let eventSub = "";
+  if(flprTwitchChat.eventSubEnabled === false){
+    eventSub = "EventSub off";
+  }else if(flprTwitchChat.eventConnected){
+    eventSub = `EventSub ${flprTwitchChat.eventSubCount}/${flprTwitchChat.eventSubTotal || FLPR_TWITCH_EVENTSUB_TYPES.length}`;
+  }else if(flprTwitchChat.eventConnecting){
+    eventSub = "EventSub connecting";
+  }else{
+    eventSub = "EventSub disconnected";
+  }
+  twitchChatStatusText(`${chat}; ${eventSub}; channel twitch.tv/${FLPR_TWITCH_CHAT_CHANNEL}`);
+}
 function twitchChatAppendSystem(text){
   twitchChatAppendLine({ system:true, message:String(text || "") });
+}
+function applyTwitchChatFontSize(size){
+  const val = Math.max(9, Math.min(18, Number(size || 11) || 11));
+  flprTwitchChat.fontSize = val;
+  const panel = document.getElementById("twitchChatPanel");
+  const messages = document.getElementById("twitchChatMessages");
+  try{ panel?.style?.setProperty("--twitch-chat-font-size", `${val}px`); }catch(_){}
+  try{ messages?.style?.setProperty("--twitch-chat-font-size", `${val}px`); }catch(_){}
+  const slider = document.getElementById("twitchChatFontSize");
+  const out = document.getElementById("twitchChatFontSizeValue");
+  if(slider && String(slider.value) !== String(val)) slider.value = String(val);
+  if(out) out.textContent = `${val}px`;
 }
 function twitchChatAppendLine(entry){
   try{
     const host = document.getElementById("twitchChatMessages");
     if(!host) return;
     const div = document.createElement("div");
-    div.className = "twitchChatLine" + (entry?.system ? " system" : "");
+    div.className = "twitchChatLine"
+      + (entry?.system ? " system" : "")
+      + (entry?.event ? " event" : "")
+      + (entry?.eventClass ? ` ${String(entry.eventClass).replace(/[^\w-]/g, "")}` : "");
     if(entry?.system){
       div.textContent = String(entry?.message || "");
+    }else if(entry?.event){
+      const tag = document.createElement("span");
+      tag.className = "twitchChatEventTag";
+      tag.textContent = String(entry?.eventLabel || "EVENT");
+      div.appendChild(tag);
+      const text = document.createElement("span");
+      text.className = "twitchChatEventText";
+      text.textContent = String(entry?.message || "");
+      div.appendChild(text);
+      if(entry?.detail){
+        const detail = document.createElement("div");
+        detail.className = "twitchChatEventDetail";
+        detail.textContent = String(entry.detail || "");
+        div.appendChild(detail);
+      }
     }else{
       const name = document.createElement("span");
       name.className = "twitchChatName";
@@ -39866,14 +41784,48 @@ function normalizeTwitchOauthToken(token){
   if(!raw) return "";
   return /^oauth:/i.test(raw) ? raw : `oauth:${raw}`;
 }
+function decodeTwitchIrcTagValue(value){
+  return String(value || "").replace(/\\([snr:\\])/g, (_, ch)=>{
+    if(ch === "s") return " ";
+    if(ch === "n") return "\n";
+    if(ch === "r") return "\r";
+    return ch;
+  });
+}
 function parseTwitchIrcTags(rawTags){
   const tags = {};
   String(rawTags || "").split(";").forEach((part)=>{
     const idx = part.indexOf("=");
     if(idx < 0) return;
-    tags[part.slice(0, idx)] = part.slice(idx + 1);
+    tags[part.slice(0, idx)] = decodeTwitchIrcTagValue(part.slice(idx + 1));
   });
   return tags;
+}
+function twitchNoticeMeta(msgId){
+  const id = String(msgId || "").toLowerCase();
+  if(["sub", "resub", "subgift", "submysterygift", "giftpaidupgrade", "anongiftpaidupgrade", "primepaidupgrade"].includes(id)){
+    return { label:"SUB", className:"sub" };
+  }
+  if(id === "raid" || id === "unraid") return { label:"RAID", className:"raid" };
+  if(id === "announcement") return { label:"ANNOUNCE", className:"announce" };
+  if(id === "bitsbadgetier") return { label:"BITS", className:"bits" };
+  if(id === "charitydonation") return { label:"CHARITY", className:"charity" };
+  if(id === "ritual") return { label:"RITUAL", className:"ritual" };
+  return { label:"EVENT", className:"misc" };
+}
+function formatTwitchNoticeFallback(tags, body){
+  const id = String(tags["msg-id"] || "").toLowerCase();
+  const user = String(tags["display-name"] || tags["login"] || "Someone").trim() || "Someone";
+  if(id === "sub") return `${user} subscribed.`;
+  if(id === "resub") return `${user} resubscribed.`;
+  if(id === "subgift") return `${user} gifted a subscription.`;
+  if(id === "submysterygift") return `${user} gifted subscriptions to the community.`;
+  if(id === "raid"){
+    const viewers = String(tags["msg-param-viewerCount"] || "").trim();
+    return `${user} raided${viewers ? ` with ${viewers} viewers` : ""}.`;
+  }
+  if(id === "announcement") return `Announcement from ${user}.`;
+  return String(body || `${user} triggered a Twitch event.`);
 }
 function parseTwitchIrcLine(line){
   const raw = String(line || "");
@@ -39881,8 +41833,25 @@ function parseTwitchIrcLine(line){
   let tags = {};
   if(rest.startsWith("@")){
     const idx = rest.indexOf(" ");
+    if(idx < 0) return null;
     tags = parseTwitchIrcTags(rest.slice(1, idx));
     rest = rest.slice(idx + 1);
+  }
+  const notice = rest.match(/^:[^ ]+\s+USERNOTICE\s+#[^ ]+(?:\s+:([\s\S]*))?$/);
+  if(notice){
+    const msgId = String(tags["msg-id"] || "").toLowerCase();
+    const meta = twitchNoticeMeta(msgId);
+    const body = String(notice[1] || "").trim();
+    const systemMessage = String(tags["system-msg"] || "").trim();
+    return {
+      event:true,
+      eventType: msgId,
+      eventLabel: meta.label,
+      eventClass: meta.className,
+      user: String(tags["display-name"] || tags["login"] || "twitch").trim() || "twitch",
+      message: systemMessage || formatTwitchNoticeFallback(tags, body),
+      detail: body
+    };
   }
   const m = rest.match(/^:([^! ]+)!.* PRIVMSG #[^ ]+ :([\s\S]*)$/);
   if(!m) return null;
@@ -39891,7 +41860,294 @@ function parseTwitchIrcLine(line){
     message: String(m[2] || "")
   };
 }
+function twitchBearerToken(token){
+  return String(token || "").trim().replace(/^oauth:/i, "");
+}
+function twitchEventSubRememberMessage(id){
+  const key = String(id || "").trim();
+  if(!key) return true;
+  if(flprTwitchChat.eventSeenIds.includes(key)) return false;
+  flprTwitchChat.eventSeenIds.push(key);
+  while(flprTwitchChat.eventSeenIds.length > 90) flprTwitchChat.eventSeenIds.shift();
+  return true;
+}
+async function twitchHelixFetch(pathSuffix, opts = {}){
+  const clientId = String(flprTwitchChat.clientId || "").trim();
+  const token = twitchBearerToken(flprTwitchChat.eventBearerToken || flprTwitchChat.token || "");
+  if(!clientId || !token) throw new Error("Missing Twitch Client ID or OAuth token.");
+  const res = await fetch(`https://api.twitch.tv/helix/${String(pathSuffix || "").replace(/^\/+/, "")}`, {
+    ...opts,
+    headers:{
+      "Client-Id": clientId,
+      "Authorization": `Bearer ${token}`,
+      ...(opts.body ? { "Content-Type":"application/json" } : {}),
+      ...(opts.headers || {})
+    }
+  });
+  let data = null;
+  try{ data = await res.json(); }catch(_){}
+  if(!res.ok){
+    const msg = String(data?.message || data?.error || res.statusText || "Twitch API error");
+    throw new Error(`${res.status} ${msg}`);
+  }
+  return data || {};
+}
+async function twitchEventSubResolveUsers(username){
+  const logins = Array.from(new Set([
+    String(FLPR_TWITCH_CHAT_CHANNEL || "").trim().toLowerCase(),
+    String(username || "").trim().toLowerCase()
+  ].filter(Boolean)));
+  const query = logins.map((login)=>`login=${encodeURIComponent(login)}`).join("&");
+  const data = await twitchHelixFetch(`users?${query}`);
+  const rows = Array.isArray(data?.data) ? data.data : [];
+  const byLogin = new Map(rows.map((row)=>[String(row?.login || "").toLowerCase(), row]));
+  const broadcaster = byLogin.get(String(FLPR_TWITCH_CHAT_CHANNEL || "").toLowerCase());
+  const moderator = byLogin.get(String(username || "").toLowerCase()) || broadcaster;
+  if(!broadcaster?.id) throw new Error(`Could not resolve twitch.tv/${FLPR_TWITCH_CHAT_CHANNEL}.`);
+  if(!moderator?.id) throw new Error(`Could not resolve EventSub moderator user ${username}.`);
+  flprTwitchChat.broadcasterId = String(broadcaster.id);
+  flprTwitchChat.moderatorId = String(moderator.id);
+  return { broadcasterId:String(broadcaster.id), moderatorId:String(moderator.id) };
+}
+async function twitchEventSubCreateSubscription(def, sessionId, ctx){
+  const condition = typeof def.condition === "function" ? def.condition(ctx || {}) : {};
+  const body = {
+    type:def.type,
+    version:def.version,
+    condition,
+    transport:{
+      method:"websocket",
+      session_id:sessionId
+    }
+  };
+  return twitchHelixFetch("eventsub/subscriptions", {
+    method:"POST",
+    body:JSON.stringify(body)
+  });
+}
+function twitchEventSubClearKeepalive(){
+  try{ clearTimeout(flprTwitchChat.eventKeepaliveTimer); }catch(_){}
+  flprTwitchChat.eventKeepaliveTimer = 0;
+}
+function twitchEventSubScheduleKeepalive(seconds){
+  twitchEventSubClearKeepalive();
+  const wait = Math.max(15, Number(seconds || 30) + 7) * 1000;
+  flprTwitchChat.eventKeepaliveTimer = setTimeout(()=>{
+    twitchChatAppendSystem("EventSub keepalive timed out. Reconnecting.");
+    twitchEventSubReconnectSoon();
+  }, wait);
+}
+function twitchEventSubReconnectSoon(){
+  if(flprTwitchChat.eventSubEnabled === false) return;
+  try{ clearTimeout(flprTwitchChat.eventReconnectTimer); }catch(_){}
+  const wait = Math.min(20000, 1200 + (flprTwitchChat.eventReconnectAttempts * 2500));
+  flprTwitchChat.eventReconnectAttempts += 1;
+  flprTwitchChat.eventReconnectTimer = setTimeout(()=>{
+    twitchEventSubConnect({
+      username:flprTwitchChat.username,
+      token:flprTwitchChat.token,
+      clientId:flprTwitchChat.clientId,
+      quiet:true
+    });
+  }, wait);
+}
+function twitchEventSubDisconnect(opts = {}){
+  try{ clearTimeout(flprTwitchChat.eventReconnectTimer); }catch(_){}
+  twitchEventSubClearKeepalive();
+  try{
+    if(flprTwitchChat.eventWs){
+      flprTwitchChat.eventWs.onopen = null;
+      flprTwitchChat.eventWs.onmessage = null;
+      flprTwitchChat.eventWs.onerror = null;
+      flprTwitchChat.eventWs.onclose = null;
+      flprTwitchChat.eventWs.close();
+    }
+  }catch(_){}
+  flprTwitchChat.eventWs = null;
+  flprTwitchChat.eventConnected = false;
+  flprTwitchChat.eventConnecting = false;
+  flprTwitchChat.eventSessionId = "";
+  flprTwitchChat.eventSubCount = 0;
+  flprTwitchChat.eventSubTotal = 0;
+  flprTwitchChat.eventSubFailures = [];
+  if(!opts.keepStatus) twitchChatRefreshStatus();
+}
+function twitchEventSubFormatNotification(payload, metadata){
+  const type = String(payload?.subscription?.type || metadata?.subscription_type || "").toLowerCase();
+  const event = payload?.event || {};
+  const name = (v)=>String(v || "").trim() || "Someone";
+  const messageText = (msg)=>String(msg?.text || msg || "").trim();
+  if(type === "channel.follow"){
+    return { event:true, eventType:type, eventLabel:"FOLLOW", eventClass:"follow", user:name(event.user_name), message:`${name(event.user_name)} followed.` };
+  }
+  if(type === "channel.cheer"){
+    const bits = Number(event.bits || 0);
+    return { event:true, eventType:type, eventLabel:"BITS", eventClass:"bits", user:name(event.user_name), message:`${event.is_anonymous ? "Anonymous" : name(event.user_name)} cheered ${bits || ""} bits.`.replace(/\s+\./, "."), detail:String(event.message || "").trim() };
+  }
+  if(type === "channel.channel_points_custom_reward_redemption.add"){
+    const reward = name(event.reward?.title || "Channel Points");
+    return { event:true, eventType:type, eventLabel:"POINTS", eventClass:"points", user:name(event.user_name), message:`${name(event.user_name)} redeemed ${reward}.`, detail:String(event.user_input || "").trim() };
+  }
+  if(type === "channel.raid"){
+    const viewers = Number(event.viewers || 0);
+    return { event:true, eventType:type, eventLabel:"RAID", eventClass:"raid", user:name(event.from_broadcaster_user_name), message:`${name(event.from_broadcaster_user_name)} raided with ${viewers || "some"} viewers.` };
+  }
+  if(type === "stream.online"){
+    return { event:true, eventType:type, eventLabel:"STREAM", eventClass:"stream", message:`${name(event.broadcaster_user_name || FLPR_TWITCH_CHAT_CHANNEL)} went live.` };
+  }
+  if(type === "stream.offline"){
+    return { event:true, eventType:type, eventLabel:"STREAM", eventClass:"stream", message:`${name(event.broadcaster_user_name || FLPR_TWITCH_CHAT_CHANNEL)} went offline.` };
+  }
+  if(type === "channel.update"){
+    const bits = [event.title, event.category_name].map((v)=>String(v || "").trim()).filter(Boolean);
+    return { event:true, eventType:type, eventLabel:"CHANNEL", eventClass:"announce", message:`Channel updated${bits.length ? `: ${bits.join(" - ")}` : "."}` };
+  }
+  if(type === "channel.subscribe"){
+    return { event:true, eventType:type, eventLabel:"SUB", eventClass:"sub", user:name(event.user_name), message:`${name(event.user_name)} subscribed.` };
+  }
+  if(type === "channel.subscription.gift"){
+    const count = Number(event.total || event.cumulative_total || 1);
+    const gifter = event.is_anonymous ? "Anonymous" : name(event.user_name);
+    return { event:true, eventType:type, eventLabel:"SUB", eventClass:"sub", user:gifter, message:`${gifter} gifted ${count || 1} subscription${count === 1 ? "" : "s"}.` };
+  }
+  if(type === "channel.subscription.message"){
+    const months = Number(event.cumulative_months || 0);
+    return { event:true, eventType:type, eventLabel:"SUB", eventClass:"sub", user:name(event.user_name), message:`${name(event.user_name)} resubscribed${months ? ` for ${months} months` : ""}.`, detail:messageText(event.message) };
+  }
+  return { event:true, eventType:type || "eventsub", eventLabel:"EVENT", eventClass:"misc", message:`Twitch EventSub: ${type || "notification"}` };
+}
+function twitchEventSubHandleMessage(data){
+  const meta = data?.metadata || {};
+  const payload = data?.payload || {};
+  const msgType = String(meta.message_type || "").toLowerCase();
+  if(meta.message_id && !twitchEventSubRememberMessage(meta.message_id)) return;
+  if(msgType === "session_keepalive"){
+    twitchEventSubScheduleKeepalive(flprTwitchChat.eventKeepaliveSeconds || 30);
+    return;
+  }
+  if(msgType === "notification"){
+    twitchEventSubScheduleKeepalive(flprTwitchChat.eventKeepaliveSeconds || 30);
+    const entry = twitchEventSubFormatNotification(payload, meta);
+    if(entry) twitchChatAppendLine(entry);
+    return;
+  }
+  if(msgType === "revocation"){
+    const sub = payload?.subscription || {};
+    twitchChatAppendSystem(`EventSub revoked ${sub.type || "subscription"}: ${sub.status || "unknown"}.`);
+    return;
+  }
+  if(msgType === "session_reconnect"){
+    const url = String(payload?.session?.reconnect_url || "").trim();
+    if(url){
+      twitchChatAppendSystem("EventSub reconnect requested by Twitch.");
+      twitchEventSubOpenSocket(url, { preserveSubscriptions:true });
+    }
+  }
+}
+async function twitchEventSubSubscribeSession(sessionId){
+  const ctx = {
+    broadcasterId:flprTwitchChat.broadcasterId,
+    moderatorId:flprTwitchChat.moderatorId
+  };
+  const failures = [];
+  let ok = 0;
+  for(const def of FLPR_TWITCH_EVENTSUB_TYPES){
+    try{
+      await twitchEventSubCreateSubscription(def, sessionId, ctx);
+      ok += 1;
+    }catch(e){
+      failures.push(`${def.label}:${String(e?.message || e).slice(0, 80)}`);
+    }
+  }
+  flprTwitchChat.eventSubCount = ok;
+  flprTwitchChat.eventSubTotal = FLPR_TWITCH_EVENTSUB_TYPES.length;
+  flprTwitchChat.eventSubFailures = failures;
+  flprTwitchChat.eventConnected = ok > 0;
+  flprTwitchChat.eventConnecting = false;
+  twitchChatRefreshStatus();
+  if(ok){
+    twitchChatAppendSystem(`EventSub listening: ${ok}/${FLPR_TWITCH_EVENTSUB_TYPES.length} event types.`);
+  }
+  if(failures.length){
+    twitchChatAppendSystem(`EventSub skipped ${failures.length}: ${failures.slice(0, 3).join("; ")}${failures.length > 3 ? "; ..." : ""}`);
+  }
+}
+function twitchEventSubOpenSocket(url, opts = {}){
+  let previous = null;
+  try{
+    previous = opts.preserveSubscriptions ? flprTwitchChat.eventWs : null;
+    const ws = new WebSocket(url || "wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds=30");
+    flprTwitchChat.eventWs = ws;
+    flprTwitchChat.eventConnecting = true;
+    twitchChatRefreshStatus();
+    ws.onmessage = async (ev)=>{
+      let data = null;
+      try{ data = JSON.parse(String(ev?.data || "{}")); }catch(_){ return; }
+      const meta = data?.metadata || {};
+      const payload = data?.payload || {};
+      if(String(meta.message_type || "").toLowerCase() === "session_welcome"){
+        const session = payload?.session || {};
+        flprTwitchChat.eventSessionId = String(session.id || "");
+        flprTwitchChat.eventKeepaliveSeconds = Number(session.keepalive_timeout_seconds || 30);
+        flprTwitchChat.eventReconnectAttempts = 0;
+        twitchEventSubScheduleKeepalive(flprTwitchChat.eventKeepaliveSeconds);
+        if(previous && previous !== ws){
+          try{ previous.close(); }catch(_){}
+          flprTwitchChat.eventConnected = true;
+          flprTwitchChat.eventConnecting = false;
+          twitchChatRefreshStatus();
+        }else{
+          await twitchEventSubSubscribeSession(flprTwitchChat.eventSessionId);
+        }
+        return;
+      }
+      twitchEventSubHandleMessage(data);
+    };
+    ws.onerror = ()=>{
+      if(ws !== flprTwitchChat.eventWs) return;
+      twitchChatAppendSystem("EventSub socket error.");
+    };
+    ws.onclose = ()=>{
+      if(ws !== flprTwitchChat.eventWs) return;
+      flprTwitchChat.eventWs = null;
+      flprTwitchChat.eventConnected = false;
+      flprTwitchChat.eventConnecting = false;
+      twitchChatRefreshStatus();
+      twitchEventSubReconnectSoon();
+    };
+  }catch(e){
+    flprTwitchChat.eventConnecting = false;
+    twitchChatAppendSystem(`EventSub failed: ${String(e?.message || e)}`);
+    twitchChatRefreshStatus();
+  }
+}
+async function twitchEventSubConnect(opts = {}){
+  const username = String(opts.username || "").trim().toLowerCase();
+  const token = normalizeTwitchOauthToken(opts.token || "");
+  const clientId = String(opts.clientId || "").trim();
+  if(flprTwitchChat.eventSubEnabled === false) return;
+  if(!username || !token || !clientId){
+    twitchChatAppendSystem("EventSub needs username, OAuth token, and Client ID.");
+    twitchChatRefreshStatus();
+    return;
+  }
+  twitchEventSubDisconnect({ keepStatus:true });
+  flprTwitchChat.eventConnecting = true;
+  flprTwitchChat.eventBearerToken = twitchBearerToken(token);
+  flprTwitchChat.clientId = clientId;
+  twitchChatRefreshStatus();
+  if(!opts.quiet) twitchChatAppendSystem("Connecting to Twitch EventSub.");
+  try{
+    await twitchEventSubResolveUsers(username);
+    twitchEventSubOpenSocket("wss://eventsub.wss.twitch.tv/ws?keepalive_timeout_seconds=30");
+  }catch(e){
+    flprTwitchChat.eventConnecting = false;
+    twitchChatAppendSystem(`EventSub setup failed: ${String(e?.message || e)}`);
+    twitchChatRefreshStatus();
+  }
+}
 function twitchChatDisconnect(){
+  twitchEventSubDisconnect({ keepStatus:true });
   try{
     if(flprTwitchChat.ws){
       flprTwitchChat.ws.onopen = null;
@@ -39904,13 +42160,17 @@ function twitchChatDisconnect(){
   flprTwitchChat.ws = null;
   flprTwitchChat.connected = false;
   flprTwitchChat.connecting = false;
-  twitchChatStatusText("Disconnected from twitch.tv/ashodin");
+  twitchChatRefreshStatus();
 }
 function twitchChatConnect(){
   const userEl = document.getElementById("twitchChatUser");
   const tokenEl = document.getElementById("twitchChatToken");
+  const clientIdEl = document.getElementById("twitchEventSubClientId");
+  const eventSubEl = document.getElementById("twitchEventSubEnabled");
   const username = String(userEl?.value || "").trim().toLowerCase();
   const token = normalizeTwitchOauthToken(tokenEl?.value || "");
+  const clientId = String(clientIdEl?.value || "").trim();
+  const eventSubEnabled = eventSubEl ? !!eventSubEl.checked : true;
   if(!username || !token){
     twitchChatStatusText("Twitch username and OAuth token required.");
     return;
@@ -39918,10 +42178,16 @@ function twitchChatConnect(){
   twitchChatDisconnect();
   flprTwitchChat.username = username;
   flprTwitchChat.token = token;
+  flprTwitchChat.clientId = clientId;
+  flprTwitchChat.fontSize = Math.max(9, Math.min(18, Number(document.getElementById("twitchChatFontSize")?.value || flprTwitchChat.fontSize || 11) || 11));
+  flprTwitchChat.eventSubEnabled = eventSubEnabled;
   saveTwitchChatCfg();
   flprTwitchChat.connecting = true;
-  twitchChatStatusText("Connecting to twitch.tv/ashodin...");
+  twitchChatRefreshStatus();
   twitchChatAppendSystem("Connecting to Twitch chat.");
+  if(eventSubEnabled){
+    twitchEventSubConnect({ username, token, clientId });
+  }
   const ws = new WebSocket("wss://irc-ws.chat.twitch.tv:443");
   flprTwitchChat.ws = ws;
   ws.onopen = ()=>{
@@ -39941,7 +42207,7 @@ function twitchChatConnect(){
       if(/\s001\s/.test(line) || line.includes(" JOIN #")){
         flprTwitchChat.connected = true;
         flprTwitchChat.connecting = false;
-        twitchChatStatusText(`Connected as ${username}; channel twitch.tv/ashodin`);
+        twitchChatRefreshStatus();
         return;
       }
       if(line.includes("Login authentication failed")){
@@ -39963,7 +42229,7 @@ function twitchChatConnect(){
     flprTwitchChat.ws = null;
     flprTwitchChat.connected = false;
     flprTwitchChat.connecting = false;
-    twitchChatStatusText("Disconnected from twitch.tv/ashodin");
+    twitchChatRefreshStatus();
   };
 }
 function twitchChatSendCurrent(){
@@ -39991,8 +42257,20 @@ function ensureTwitchChatPanel(){
       </div>
       <div class="twitchChatConnectGrid">
         <input class="cInput" id="twitchChatUser" placeholder="Twitch username">
-        <input class="cInput" id="twitchChatToken" type="password" placeholder="OAuth token">
+        <input class="cInput" id="twitchChatToken" type="password" placeholder="OAuth / EventSub token" autocomplete="off" spellcheck="false" aria-label="Twitch OAuth and EventSub token">
         <button class="cBtn" id="twitchChatConnectBtn" type="button">CONNECT</button>
+      </div>
+      <div class="twitchEventSubGrid">
+        <label class="twitchEventSubToggle" title="EventSub sends follows, channel points, cheers, stream state, and other Twitch API events into this chat feed.">
+          <input id="twitchEventSubEnabled" type="checkbox" checked>
+          EVENTSUB
+        </label>
+        <input class="cInput" id="twitchEventSubClientId" placeholder="Twitch Client ID">
+      </div>
+      <div class="twitchChatFontGrid">
+        <div class="cLabel">CHAT FONT</div>
+        <input id="twitchChatFontSize" type="range" min="9" max="18" step="1" value="11">
+        <div class="twitchChatFontValue" id="twitchChatFontSizeValue">11px</div>
       </div>
       <div class="twitchChatNativeShell">
         <div class="twitchChatMessages" id="twitchChatMessages"></div>
@@ -40007,6 +42285,7 @@ function ensureTwitchChatPanel(){
       </div>
       <div class="twitchChatStatus" id="twitchChatStatus">Disconnected; channel twitch.tv/ashodin</div>
     `;
+    applyTwitchChatFontSize(flprTwitchChat.fontSize || loadTwitchChatCfg().fontSize || 11);
   }
   return panel;
 }
@@ -40083,28 +42362,30 @@ function compactConnectControlsLayout(panelConnect){
   const episodeState = document.getElementById("episodeStateTxt");
   const progTitle = findControlsSectionTitle(panelConnect, "PROGRESS");
   const progRow = document.getElementById("wipeProgressBtn")?.closest(".cRow");
-  const bonusPinballUtilityNote = document.getElementById("bonusPinballUtilityNote");
-  const bonusPinballUtilityRow = document.getElementById("bonusPinballToggleBtn")?.closest(".cRow");
+  const bonusPinballPanel = ensureBonusPinballControlsPanel();
   const repoTitle = findControlsSectionTitle(panelConnect, "TABLE REPOSITORY");
   const repoNote = repoTitle?.nextElementSibling;
   const repoRow = repoTitle ? repoTitle.parentElement?.querySelector('a[href*="flippermizer_table_repository_library.html"]')?.closest(".cRow") : null;
 
   const recvTitle = document.getElementById("receivedHdr");
   const recvRow = document.getElementById("apSyncReceivedBtn")?.closest(".cRow");
-  const recvWrap = panelConnect.querySelector(".recvWrap");
+  const recvWrap = panelConnect.querySelector(".recvWrap") || document.querySelector(".recvWrap");
   const apLogWrap = panelConnect.querySelector(".apConnLog");
   const twitchChatPanel = ensureTwitchChatPanel();
+  const testingPanel = document.querySelector('.controlsTabPanel[data-ctrl-panel="testing"]');
+  if(apLogWrap && testingPanel && apLogWrap.parentElement !== testingPanel) testingPanel.appendChild(apLogWrap);
+  unique([recvTitle, recvRow, recvWrap]).forEach((node)=>moveTo(testingPanel, node));
 
   unique([
     archLabel, apGrid, connectRow,
     hintTitle, hintNote, hintCtlRow, hintLast, hintAutoRow, trackerRow,
     itemTitle, easyBlock, easyNote, medBlock, medNote, fragBlock, countTitle, countGrid,
     episodeTitle, episodeRow, episodeState,
-    progTitle, progRow, bonusPinballUtilityNote, bonusPinballUtilityRow,
+    progTitle, progRow,
     repoTitle, repoNote, repoRow
   ]).forEach((node)=>moveTo(left, node));
 
-  unique([recvTitle, recvRow, recvWrap, twitchChatPanel, apLogWrap]).forEach((node)=>moveTo(right, node));
+  unique([bonusPinballPanel, twitchChatPanel]).forEach((node)=>moveTo(right, node));
 
   const makeSection = (parent, title, nodes, opts)=>{
     const list = unique(nodes);
@@ -40126,20 +42407,32 @@ function compactConnectControlsLayout(panelConnect){
   makeSection(left, "Hint Spoiler Source", [hintTitle, hintNote, hintCtlRow, hintLast, hintAutoRow, trackerRow], { accent:"gold", mini:"zip / txt / tracker mode" });
   makeSection(left, "Counters + Reconcile", [itemTitle, easyBlock, easyNote, medBlock, medNote, fragBlock, countTitle, countGrid], { accent:"blue", mini:"items / checks / delta" });
   makeSection(left, "Episode Tracking", [episodeTitle, episodeRow, episodeState], { accent:"green", mini:"records / FLPRP / achievements" });
-  makeSection(left, "Run Utilities", [progTitle, progRow, bonusPinballUtilityNote, bonusPinballUtilityRow, repoTitle, repoNote, repoRow], { accent:"red", mini:"wipe / bonus / bestiary" });
-  makeSection(right, "Received Items", [recvTitle, recvRow, recvWrap], { accent:"gold", mini:"latest checks + rewards" });
-  makeSection(right, "Twitch Chat", [twitchChatPanel], { accent:"blue", mini:"twitch.tv/ashodin" });
-  makeSection(right, "Connection Log", [apLogWrap], { accent:"blue", mini:"status / info / errors", grow:true });
+  makeSection(left, "Run Utilities", [progTitle, progRow, repoTitle, repoNote, repoRow], { accent:"red", mini:"wipe / bestiary" });
+  const bonusSection = makeSection(right, "Bonus Pinball", [bonusPinballPanel], { accent:"gold", mini:"field / layout / tests" });
+  if(bonusSection) bonusSection.id = "bonusPinballSectionCard";
+  makeSection(right, "Twitch Chat", [twitchChatPanel], { accent:"blue", mini:"twitch.tv/ashodin", grow:true });
 
-  // Any remaining connect-only nodes stay visible in a fallback section.
+  // Park any legacy loose controls invisibly. The old fallback "Additional Controls"
+  // section crowded the panel and often only contained recovered placeholders.
   Array.from(panelConnect.children).forEach((child)=>{
     if(child === compact) return;
     moveTo(left, child);
   });
-  const leftovers = Array.from(left.children).filter((child)=>!child.classList.contains("connectPanelSection"));
-  if(leftovers.length){
-    makeSection(left, "Additional Controls", leftovers, { accent:"blue" });
+  let ghost = panelConnect.querySelector(":scope > .controlsGhost");
+  if(!ghost){
+    ghost = document.createElement("div");
+    ghost.className = "controlsGhost";
+    ghost.hidden = true;
+    ghost.setAttribute("aria-hidden", "true");
+    panelConnect.appendChild(ghost);
   }
+  const hasMeaningfulFallbackContent = (child)=>{
+    if(!child || child.classList?.contains("connectPanelSection") || child.classList?.contains("controlsGhost")) return false;
+    const hasControls = !!child.querySelector?.("input,button,select,textarea,a[href],.recvWrap,.countGrid");
+    return hasControls;
+  };
+  const leftovers = Array.from(left.children).filter(hasMeaningfulFallbackContent);
+  leftovers.forEach((node)=>moveTo(ghost, node));
 }
 
 function cleanupRecoveredConnectPanel(panelConnect, panelTesting){
@@ -40165,6 +42458,13 @@ function cleanupRecoveredConnectPanel(panelConnect, panelTesting){
   ].forEach(moveTestingRowById);
   moveTestingCardById("hpTestName");
   moveTestingCardById("hpTestDamage10");
+  if(panelTesting){
+    [
+      document.getElementById("receivedHdr"),
+      document.getElementById("apSyncReceivedBtn")?.closest(".cRow"),
+      panelConnect.querySelector(".recvWrap") || document.querySelector(".recvWrap")
+    ].forEach((node)=>moveTo(panelTesting, node));
+  }
 
   Array.from(panelConnect.querySelectorAll(".connectPanelSection")).forEach((sec)=>{
     const title = sec.querySelector(":scope > .connectPanelSectionTitle");
@@ -40185,9 +42485,19 @@ function cleanupRecoveredConnectPanel(panelConnect, panelTesting){
     return hdr && String(hdr.textContent || "").trim().toLowerCase() === "additional controls";
   });
   if(additional){
+    let ghost = panelConnect.querySelector(":scope > .controlsGhost");
+    if(!ghost){
+      ghost = document.createElement("div");
+      ghost.className = "controlsGhost";
+      ghost.hidden = true;
+      ghost.setAttribute("aria-hidden", "true");
+      panelConnect.appendChild(ghost);
+    }
     const title = additional.querySelector(":scope > .connectPanelSectionTitle");
-    const content = Array.from(additional.children).filter((child)=>child !== title);
-    if(!content.length) additional.remove();
+    Array.from(additional.children).forEach((child)=>{
+      if(child !== title && !child.classList?.contains("controlsGhost")) moveTo(ghost, child);
+    });
+    additional.remove();
   }
 
   const leftCol = panelConnect.querySelector(".connectColLeft");
@@ -40209,6 +42519,9 @@ function hideObsoleteConnectSections(panelConnect){
       if(title === "counters + reconcile"){
         sec.style.display = "none";
         sec.setAttribute("aria-hidden", "true");
+      }
+      if(title === "additional controls"){
+        sec.remove();
       }
     }catch(_){}
   });
@@ -40390,6 +42703,10 @@ function compactTestingControlsLayout(panelTesting){
     "testRelicFinalLockBtn",
     "testRelicAftershockBtn"
   ]);
+  const apLogWrap = panelTesting.querySelector(".apConnLog") || document.querySelector(".apConnLog");
+  const recvTitle = document.getElementById("receivedHdr");
+  const recvRow = document.getElementById("apSyncReceivedBtn")?.closest(".cRow");
+  const recvWrap = panelTesting.querySelector(".recvWrap") || document.querySelector(".recvWrap");
 
   stack.innerHTML = "";
   const layout = document.createElement("div");
@@ -40406,7 +42723,9 @@ function compactTestingControlsLayout(panelTesting){
   makeControlsPanelSection(leftCol, "Boss Battle Flow", [buildControlsNote("Manual tests for boss hits, segment rolls, key progress, and the victory node."), bossFlowGrid], { accent:"red", mini:"damage / keys / finish state" });
   makeControlsPanelSection(leftCol, "Hints + Run Flow", [buildControlsNote("Shortcut tests for hint payouts, opening flow, and the victory stats handoff."), hintFlowGrid], { accent:"green", mini:"hint routing / opening / ending" });
   makeControlsPanelSection(rightCol, "Trap + Reward Popups", [buildControlsNote("Popup and reward simulations for traps, junk, balls, and achievements."), popupGrid], { accent:"gold", mini:"popups / rewards / trap visuals" });
-  makeControlsPanelSection(rightCol, "Relic Tests", [buildControlsNote("Relic state and map-effect buttons grouped in one place."), relicGrid], { accent:"blue", mini:"map / lock / encounter modifiers", grow:true });
+  makeControlsPanelSection(rightCol, "Relic Tests", [buildControlsNote("Relic state and map-effect buttons grouped in one place."), relicGrid], { accent:"blue", mini:"map / lock / encounter modifiers" });
+  makeControlsPanelSection(rightCol, "Received Items", [recvTitle, recvRow, recvWrap], { accent:"gold", mini:"latest checks + rewards" });
+  makeControlsPanelSection(rightCol, "Connection Log", [apLogWrap], { accent:"blue", mini:"AP status / in / out", grow:true });
 }
 
 function decorateTestingButtons(){
@@ -40549,6 +42868,7 @@ function initControlsTabsLayout(){
         });
       }
       if(panelConnect){
+        compactConnectControlsLayout(panelConnect);
         cleanupRecoveredConnectPanel(panelConnect, panelTesting);
         hideObsoleteConnectSections(panelConnect);
       }
@@ -40564,6 +42884,7 @@ function initControlsTabsLayout(){
     try{ saved = localStorage.getItem(CONTROLS_TAB_LS) || "connect"; }catch(_){}
     if(!["connect","visuals","testing","achievements"].includes(saved)) saved = "connect";
     setControlsTab(saved);
+    try{ refreshControlPanelLayoutHandles(); }catch(_){}
     return;
   }
   body.dataset.tabbed = "1";
@@ -40702,6 +43023,7 @@ function initControlsTabsLayout(){
   try{ saved = localStorage.getItem(CONTROLS_TAB_LS) || "connect"; }catch(_){}
   if(!["connect","visuals","testing","achievements"].includes(saved)) saved = "connect";
   setControlsTab(saved);
+  try{ refreshControlPanelLayoutHandles(); }catch(_){}
 }
 
 function applyChecksBgMode(mode, opts){
@@ -40753,22 +43075,161 @@ function wireControls(){
   }
   const bonusPinballToggleBtnEl = document.getElementById("bonusPinballToggleBtn");
   if(bonusPinballToggleBtnEl){
-    bonusPinballToggleBtnEl.onclick = ()=>{
-      playSfx("click");
-      const toggled = toggleBonusPinballUtilityWindow();
-      if(toggled === "opened"){
-        toast("good", "BONUS PINBALL", "Bonus Pinball field opened.", 1800);
-      }else if(toggled === "focused"){
-        toast("good", "BONUS PINBALL", "Bonus Pinball field brought to front.", 1800);
-      }else if(toggled === "closed"){
-        toast("warn", "BONUS PINBALL", "Bonus Pinball field closed.", 1600);
-      }else{
-        const url = getBonusPinballUtilityUrl();
-        try{ window.open(url, "_blank"); }catch(_){}
-        toast("warn", "POPUP BLOCKED", "Opened Bonus Pinball in a new tab instead.", 2200);
-      }
-      updateBonusPinballUtilityButton();
+    bonusPinballToggleBtnEl.onclick = null;
+    if(bonusPinballToggleBtnEl.dataset.directToggleBound !== "1"){
+      bonusPinballToggleBtnEl.dataset.directToggleBound = "1";
+      bonusPinballToggleBtnEl.addEventListener("click", (ev)=>{
+        ev.preventDefault();
+        ev.stopPropagation();
+        try{ ev.stopImmediatePropagation(); }catch(_){}
+        const visible = bonusPinballToggleBtnEl.getAttribute("aria-pressed") !== "true";
+        if(visible){
+          setIntegratedBonusPinballVisible(true, { manual:true, keepVisible:true });
+        }else{
+          bonusPinballManualVisible = false;
+          bonusPinballPositionMode = false;
+          clearIntegratedBonusPinballOverlaySignal();
+          try{ document.body.classList.remove("bonusPinballIntegratedOn"); }catch(_){}
+          try{ getIntegratedBonusPinballHost()?.setAttribute("aria-hidden", "true"); }catch(_){}
+          setIntegratedBonusPinballKeepVisible(false);
+          applyIntegratedBonusPinballLayerVisibility(false);
+          syncIntegratedBonusPinballPositionMode();
+          syncIntegratedBonusPinballControls();
+        }
+        toast(visible ? "good" : "warn", "BONUS PINBALL", visible ? "Bonus Pinball overlay shown." : "Bonus Pinball overlay hidden.", 1600);
+      }, true);
+    }
+  }
+  const bonusPinballMoveBtnEl = document.getElementById("bonusPinballMoveBtn");
+  if(bonusPinballMoveBtnEl){
+    bonusPinballMoveBtnEl.onclick = null;
+  }
+  const bonusPinballResetPositionBtnEl = document.getElementById("bonusPinballResetPositionBtn");
+  if(bonusPinballResetPositionBtnEl){
+    bonusPinballResetPositionBtnEl.onclick = null;
+  }
+  const bonusPinballScaleDownBtnEl = document.getElementById("bonusPinballScaleDownBtn");
+  if(bonusPinballScaleDownBtnEl){
+    bonusPinballScaleDownBtnEl.onclick = null;
+  }
+  const bonusPinballScaleUpBtnEl = document.getElementById("bonusPinballScaleUpBtn");
+  if(bonusPinballScaleUpBtnEl){
+    bonusPinballScaleUpBtnEl.onclick = null;
+  }
+  const bonusPinballScaleResetBtnEl = document.getElementById("bonusPinballScaleResetBtn");
+  if(bonusPinballScaleResetBtnEl){
+    bonusPinballScaleResetBtnEl.onclick = null;
+  }
+  const bonusPinballGapBtnEl = document.getElementById("bonusPinballGapBtn");
+  if(bonusPinballGapBtnEl){
+    bonusPinballGapBtnEl.onclick = null;
+  }
+  const bonusPinballGapResetBtnEl = document.getElementById("bonusPinballGapResetBtn");
+  if(bonusPinballGapResetBtnEl){
+    bonusPinballGapResetBtnEl.onclick = null;
+  }
+  const bonusPinballControlMap = {
+    bonusPinballQueueBtn: "launchRedeemBtn",
+    bonusPinballTestRunBtn: "testRunNowBtn",
+    bonusPinballAutoRedeemBtn: "testAutoRedeemBtn",
+    bonusPinballThemeBtn: "playfieldVariantBtn",
+    bonusPinballEditBtn: "playfieldEditBtn",
+    bonusPinballSnapBtn: "playfieldEditSnapBtn",
+    bonusPinballResetBtn: "playfieldEditResetBtn",
+    bonusPinballClearLeaderboardBtn: "lbClear"
+  };
+  const bindBonusButton = (id, frameButtonId, label)=>{
+    const btn = document.getElementById(id);
+    if(!btn) return;
+    btn.onclick = null;
+  };
+  Object.entries(bonusPinballControlMap).forEach(([id, frameButtonId])=> bindBonusButton(id, frameButtonId, id));
+  try{
+    if(!window.__flprBonusPinballDelegatedControlsBound){
+      window.__flprBonusPinballDelegatedControlsBound = true;
+      document.addEventListener("click", (ev)=>{
+        const btn = ev.target?.closest?.("button");
+        if(!btn) return;
+        if(btn.id === "bonusPinballToggleBtn"){
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{ ev.stopImmediatePropagation(); }catch(_){}
+          const visible = handleIntegratedBonusPinballToggleClick();
+          toast(visible ? "good" : "warn", "BONUS PINBALL", visible ? "Bonus Pinball overlay shown." : "Bonus Pinball overlay hidden.", 1600);
+          return;
+        }
+        if(btn.id === "bonusPinballMoveBtn"){
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{ ev.stopImmediatePropagation(); }catch(_){}
+          const on = toggleIntegratedBonusPinballPositionMode();
+          toast(on ? "good" : "warn", "BONUS PINBALL POSITION", on ? "Drag the Bonus Pinball table to move it." : "Bonus Pinball position saved.", 1800);
+          return;
+        }
+        if(btn.id === "bonusPinballResetPositionBtn"){
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{ ev.stopImmediatePropagation(); }catch(_){}
+          resetIntegratedBonusPinballPosition();
+          setIntegratedBonusPinballVisible(true, { manual:true, keepVisible:true });
+          syncIntegratedBonusPinballPositionMode();
+          toast("good", "BONUS PINBALL POSITION", "Table position reset.", 1500);
+          return;
+        }
+        if(btn.id === "bonusPinballScaleDownBtn" || btn.id === "bonusPinballScaleUpBtn"){
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{ ev.stopImmediatePropagation(); }catch(_){}
+          const scale = adjustIntegratedBonusPinballScale(btn.id === "bonusPinballScaleDownBtn" ? -0.05 : 0.05);
+          setIntegratedBonusPinballVisible(true, { manual:true, keepVisible:true });
+          toast("good", "BONUS PINBALL SCALE", `Scale set to ${Math.round(scale * 100)}%.`, 1200);
+          return;
+        }
+        if(btn.id === "bonusPinballScaleResetBtn"){
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{ ev.stopImmediatePropagation(); }catch(_){}
+          resetIntegratedBonusPinballScale();
+          setIntegratedBonusPinballVisible(true, { manual:true, keepVisible:true });
+          toast("good", "BONUS PINBALL SCALE", "Scale reset.", 1200);
+          return;
+        }
+        if(btn.id === "bonusPinballGapBtn"){
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{ ev.stopImmediatePropagation(); }catch(_){}
+          const on = toggleBonusPinballControlsGapMode();
+          toast(on ? "good" : "warn", "CONTROLS GAP", on ? "Drag the glowing handle between overlay and controls." : "Controls gap saved.", 1700);
+          return;
+        }
+        if(btn.id === "bonusPinballGapResetBtn"){
+          ev.preventDefault();
+          ev.stopPropagation();
+          try{ ev.stopImmediatePropagation(); }catch(_){}
+          resetBonusPinballControlsGap();
+          toast("good", "CONTROLS GAP", "Controls gap reset.", 1200);
+          return;
+        }
+        const frameButtonId = bonusPinballControlMap[btn.id];
+        if(!frameButtonId) return;
+        ev.preventDefault();
+        ev.stopPropagation();
+        try{ ev.stopImmediatePropagation(); }catch(_){}
+        clickIntegratedBonusPinballButton(frameButtonId);
+      }, false);
+    }
+  }catch(_){}
+  const bonusPinballRedeemerNameEl = document.getElementById("bonusPinballRedeemerName");
+  if(bonusPinballRedeemerNameEl){
+    bonusPinballRedeemerNameEl.oninput = ()=>{
+      const doc = getIntegratedBonusPinballDocument();
+      try{
+        const input = doc?.getElementById("channelRedeemerNameLive");
+        if(input) input.value = String(bonusPinballRedeemerNameEl.value || "");
+      }catch(_){}
     };
+  }
+  ensureIntegratedBonusPinball();
     updateBonusPinballUtilityButton();
     try{
       if(!window.__flprBonusPinballUtilityFocusBound){
@@ -40776,7 +43237,6 @@ function wireControls(){
         window.addEventListener("focus", ()=> updateBonusPinballUtilityButton(), { passive:true });
       }
     }catch(_){}
-  }
 
 
 const saveBtn = document.getElementById("saveSettingsBtn");
@@ -40933,12 +43393,31 @@ function wireTwitchChatControls(){
     const cfg = loadTwitchChatCfg();
     const user = document.getElementById("twitchChatUser");
     const token = document.getElementById("twitchChatToken");
+    const clientId = document.getElementById("twitchEventSubClientId");
+    const eventSub = document.getElementById("twitchEventSubEnabled");
+    const fontSize = document.getElementById("twitchChatFontSize");
+    const fontSizeValue = document.getElementById("twitchChatFontSizeValue");
     const connect = document.getElementById("twitchChatConnectBtn");
     const disconnect = document.getElementById("twitchChatDisconnectBtn");
     const msg = document.getElementById("twitchChatMessage");
     const send = document.getElementById("twitchChatSendBtn");
+    if(token){
+      try{ token.type = "password"; }catch(_){}
+      token.setAttribute("autocomplete", "off");
+      token.setAttribute("spellcheck", "false");
+      token.setAttribute("aria-label", "Twitch OAuth and EventSub token");
+      token.placeholder = "OAuth / EventSub token";
+    }
+    flprTwitchChat.username = cfg.username || flprTwitchChat.username || "";
+    flprTwitchChat.token = cfg.token || flprTwitchChat.token || "";
+    flprTwitchChat.clientId = cfg.clientId || flprTwitchChat.clientId || "";
+    flprTwitchChat.fontSize = cfg.fontSize || flprTwitchChat.fontSize || 11;
+    flprTwitchChat.eventSubEnabled = cfg.eventSubEnabled !== false;
     if(user && !user.value) user.value = cfg.username || "";
     if(token && !token.value) token.value = cfg.token || "";
+    if(clientId && !clientId.value) clientId.value = cfg.clientId || "";
+    if(eventSub) eventSub.checked = cfg.eventSubEnabled !== false;
+    applyTwitchChatFontSize(cfg.fontSize || 11);
     if(connect && !connect.__flprTwitchBound){
       connect.__flprTwitchBound = true;
       connect.onclick = ()=>{ playSfx("click"); twitchChatConnect(); };
@@ -40957,6 +43436,27 @@ function wireTwitchChatControls(){
         if(ev.key !== "Enter" || ev.shiftKey) return;
         ev.preventDefault();
         twitchChatSendCurrent();
+      });
+    }
+    if(eventSub && !eventSub.__flprTwitchBound){
+      eventSub.__flprTwitchBound = true;
+      eventSub.addEventListener("change", ()=>{
+        flprTwitchChat.eventSubEnabled = !!eventSub.checked;
+        flprTwitchChat.clientId = String(clientId?.value || "").trim();
+        saveTwitchChatCfg();
+        if(!eventSub.checked) twitchEventSubDisconnect();
+        else twitchChatRefreshStatus();
+      });
+    }
+    if(fontSize && !fontSize.__flprTwitchBound){
+      fontSize.__flprTwitchBound = true;
+      fontSize.addEventListener("input", ()=>{
+        applyTwitchChatFontSize(fontSize.value);
+        if(fontSizeValue) fontSizeValue.textContent = `${Math.max(9, Math.min(18, Number(fontSize.value || 11) || 11))}px`;
+      });
+      fontSize.addEventListener("change", ()=>{
+        applyTwitchChatFontSize(fontSize.value);
+        saveTwitchChatCfg();
       });
     }
   }catch(_){}
