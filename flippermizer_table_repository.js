@@ -151,6 +151,11 @@
     { code:'DEADP', slug:'deadpool', name:'Deadpool', aliases:[] },
     { code:'GHOST', slug:'ghostbusters', name:'Ghostbusters', aliases:[] },
     { code:'RBULL', slug:'rocky_and_bullwinkle', name:'The Adventures of Rocky and Bullwinkle and Friends', aliases:['Rocky and Bullwinkle','Adventures of Rocky and Bullwinkle and Friends'] },
+    { code:'SMB', slug:'super_mario_bros', name:'Super Mario Bros.', aliases:['Super Mario Bros','Super Mario Brothers'] },
+    { code:'SF2', slug:'street_fighter_ii', name:'Street Fighter II', aliases:['Street Fighter 2','Street Fighter'] },
+    { code:'QBERT', slug:'qberts_quest', name:'Q*bert\'s Quest', aliases:['Qbert\'s Quest','Q Bert\'s Quest','Q*Bert'] },
+    { code:'MMPAC', slug:'mr_and_mrs_pac_man', name:'Mr. & Mrs. Pac-Man', aliases:['Mr and Mrs Pac-Man','Mr. and Mrs. Pac-Man','Mr & Mrs Pac Man','Mr. & Mrs. Pac Man'] },
+    { code:'SINV', slug:'space_invaders', name:'Space Invaders', aliases:[] },
 
     { code:'BOSS_TABLE', slug:'boss_table_placeholder', name:'(Boss Table)', aliases:['Boss Table','Boss'] }
   ];
@@ -240,6 +245,11 @@
     DEADP:{ displayName:'Deadpool (Stern 2018)', manufacturer:'Stern', year:2018 },
     GHOST:{ displayName:'Ghostbusters (Original VPX Mod)', manufacturer:'Original VPX Mod', year:null },
     RBULL:{ displayName:'The Adventures of Rocky and Bullwinkle and Friends (Data East 1993)', manufacturer:'Data East', year:1993 },
+    SMB:{ displayName:'Super Mario Bros. (Gottlieb 1992)', manufacturer:'Gottlieb', year:1992 },
+    SF2:{ displayName:'Street Fighter II (Gottlieb 1993)', manufacturer:'Gottlieb', year:1993 },
+    QBERT:{ displayName:'Q*bert\'s Quest (Gottlieb 1983)', manufacturer:'Gottlieb', year:1983 },
+    MMPAC:{ displayName:'Mr. & Mrs. Pac-Man (Bally 1982)', manufacturer:'Bally', year:1982 },
+    SINV:{ displayName:'Space Invaders (Bally 1980)', manufacturer:'Bally', year:1980 },
     BOSS_TABLE:{ displayName:'(Boss Table)', manufacturer:'', year:null }
   };
 
@@ -317,12 +327,20 @@
     DEADP: 'WorldsBanners/BestiaryFlyers/DEADP.png',
     GHOST: 'WorldsBanners/BestiaryFlyers/GHOST.jpg',
     RBULL: 'WorldsBanners/BestiaryFlyers/RBULL.jpg',
+    SKATE: 'WorldsBanners/BestiaryFlyers/SKATE.jpg',
+    VECT: 'WorldsBanners/BestiaryFlyers/VECT.jpg',
+    GBALL: 'WorldsBanners/BestiaryFlyers/GBALL.jpg',
     HUR: 'WorldsBanners/BestiaryFlyers/HUR.jpg',
     COMET: 'WorldsBanners/BestiaryFlyers/COMET.jpg',
     CYC: 'WorldsBanners/BestiaryFlyers/CYC.jpg',
     WHRL: 'WorldsBanners/BestiaryFlyers/WHRL.jpg',
     SMVE: 'WorldsBanners/BestiaryFlyers/SMVE.jpg',
-    NFEAR: 'WorldsBanners/BestiaryFlyers/NFEAR.jpg'
+    NFEAR: 'WorldsBanners/BestiaryFlyers/NFEAR.jpg',
+    SMB: 'WorldsBanners/BestiaryFlyers/SMB.jpg',
+    SF2: 'WorldsBanners/BestiaryFlyers/SF2.jpg',
+    QBERT: 'WorldsBanners/BestiaryFlyers/QBERT.jpg',
+    MMPAC: 'WorldsBanners/BestiaryFlyers/MMPAC.jpg',
+    SINV: 'WorldsBanners/BestiaryFlyers/SINV.jpg'
   };
 
   var DEFAULT_WORLD_TABLE_CODES = {
@@ -430,7 +448,13 @@
 
     DEADP: ['Comic Book Collision'],
     GHOST: ['Comic Book Collision'],
-    RBULL: ['Comic Book Collision']
+    RBULL: ['Comic Book Collision'],
+
+    SMB: ['Pixel Quest'],
+    SF2: ['Pixel Quest'],
+    QBERT: ['Pixel Quest'],
+    MMPAC: ['Pixel Quest'],
+    SINV: ['Pixel Quest']
   };
 
   var DESIGNERS = [
@@ -779,7 +803,7 @@
   }
 
   var repo = {
-    version: '1.4.0',
+    version: '1.4.1',
     worldOrder: getWorldOrder(),
     worldSpecs: JSON.parse(JSON.stringify(WORLD_SPECS)),
     defaultWorldTableCodes: JSON.parse(JSON.stringify(DEFAULT_WORLD_TABLE_CODES)),
@@ -806,4 +830,3 @@
 
   global.FLPR_TABLE_REPO = repo;
 })(typeof window !== 'undefined' ? window : this);
-

@@ -8,6 +8,8 @@ Thumbs.db
 *.bak
 *.zip
 *.apworld
+__pycache__/
+*.pyc
 
 # Repo-local scratch
 dist/
