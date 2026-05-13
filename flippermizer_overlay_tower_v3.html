@@ -1936,17 +1936,7 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   animation: hintPulseGlow 1300ms ease-in-out infinite;
 }
 .nodeBtn.hintTargetNode::after{
-  content:"HINT ITEM LOCATED";
-  position:absolute;
-  right:6px;
-  top:6px;
-  padding:2px 4px;
-  border-radius:6px;
-  font-family:'Press Start 2P', monospace;
-  font-size:6px;
-  color: rgba(246,238,255,.98);
-  background: rgba(100,58,220,.92);
-  border:1px solid rgba(206,182,255,.74);
+  content:none;
 }
 .nodeBtn.hintTargetNode.hintTargetNodeBoss{
   border-color: rgba(255,132,144,.98) !important;
@@ -1955,11 +1945,32 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
     0 0 20px rgba(255,84,98,.40),
     0 0 30px rgba(204,26,52,.30) !important;
 }
-.nodeBtn.hintTargetNode.hintTargetNodeBoss::after{
-  content:"BOSS KEY HERE";
+.nodeBtn .hintNodeTag{
+  position:absolute;
+  right:6px;
+  top:6px;
+  z-index:4;
+  pointer-events:none;
+  max-width:calc(100% - 34px);
+  padding:2px 4px;
+  border-radius:6px;
+  font-family:'Press Start 2P', monospace;
+  font-size:6px;
+  line-height:1.15;
+  text-align:right;
+  color: rgba(246,238,255,.98);
+  background: rgba(100,58,220,.92);
+  border:1px solid rgba(206,182,255,.74);
+  box-shadow:0 0 10px rgba(140,86,255,.28);
+}
+.nodeBtn .hintNodeTag.hintBossTag{
   color: rgba(255,242,246,.99);
   background: rgba(176,22,44,.95);
   border-color: rgba(255,164,178,.84);
+  box-shadow:0 0 12px rgba(255,64,86,.34);
+}
+.nodeBtn.hintTargetNode .nodeTitle{
+  margin-top:20px;
 }
 @keyframes hintPulseGlow{
   0%,100%{ filter: brightness(1) saturate(1); }
@@ -5616,6 +5627,29 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 .lockChainsOverlay.bossKeyLock.active{
   filter: drop-shadow(0 0 10px rgba(0,0,0,.45)) drop-shadow(0 0 16px rgba(255,124,82,.22));
 }
+.lockChainsOverlay.siegeLockChains.active{
+  background:
+    repeating-linear-gradient(
+      33deg,
+      transparent 0 16px,
+      rgba(28,2,10,.78) 16px 18px,
+      rgba(255,96,90,.90) 18px 24px,
+      rgba(102,20,30,.96) 24px 28px,
+      transparent 28px 44px
+    ),
+    repeating-linear-gradient(
+      -33deg,
+      transparent 0 16px,
+      rgba(28,2,10,.78) 16px 18px,
+      rgba(255,128,98,.88) 18px 24px,
+      rgba(104,22,34,.94) 24px 28px,
+      transparent 28px 44px
+    );
+  filter:
+    drop-shadow(0 0 10px rgba(0,0,0,.48))
+    drop-shadow(0 0 14px rgba(255,38,58,.26));
+  animation:siegeLockChainsGlowKF 1800ms ease-in-out infinite;
+}
 .lockChainsOverlay.bossKeyLock[data-cracks="1"].active{
   background:
     linear-gradient(118deg,
@@ -5751,6 +5785,107 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 .lockBadgeOverlay.lockRise{
   opacity: 0;
   animation: lockBadgeRiseKF 920ms cubic-bezier(.18,.86,.22,1) forwards;
+}
+.lockBadgeOverlay.siegeLockBadge{
+  border-color:rgba(255,76,88,.96);
+  background:
+    radial-gradient(100% 160% at 50% 0%, rgba(255,220,126,.20), transparent 48%),
+    linear-gradient(180deg, rgba(118,9,28,.98), rgba(32,4,12,.96));
+  color:rgba(255,244,230,.98);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.45) inset,
+    0 8px 22px rgba(0,0,0,.46),
+    0 0 22px rgba(255,36,54,.38);
+}
+.lockBadgeOverlay.siegeLockBadge.active{
+  opacity:1;
+  animation:siegeLockBadgeGlowKF 1750ms ease-in-out infinite;
+}
+.siegeLockStamp{
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:12;
+  transform:translate(-50%, -50%) scale(.78) rotate(-2deg);
+  min-width:min(86%, 310px);
+  padding:11px 14px 10px;
+  border-radius:14px;
+  border:2px solid rgba(255,76,88,.90);
+  background:
+    radial-gradient(140% 180% at 50% 0%, rgba(255,216,128,.24), transparent 50%),
+    linear-gradient(180deg, rgba(158,12,42,.94), rgba(46,4,15,.96));
+  color:rgba(255,246,230,.98);
+  font-family:'Press Start 2P', monospace;
+  font-size:12px;
+  line-height:1.15;
+  letter-spacing:.06em;
+  text-align:center;
+  text-transform:uppercase;
+  pointer-events:none;
+  text-shadow:0 2px 0 rgba(0,0,0,.55), 0 0 12px rgba(255,210,130,.34);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.42) inset,
+    0 14px 28px rgba(0,0,0,.44),
+    0 0 24px rgba(255,32,54,.42),
+    0 0 46px rgba(255,104,34,.22);
+  opacity:0;
+  animation:siegeLockStampKF 1500ms cubic-bezier(.18,.86,.22,1) forwards;
+}
+.tile .siegeLockStamp{ font-size:9px; min-width:86%; padding:8px 10px 7px; }
+.pentaCard .siegeLockStamp{ font-size:10px; }
+.tile.siegeLockAppearing,
+.pentaCard.siegeLockAppearing{
+  border-color:rgba(255,64,82,.95) !important;
+  box-shadow:
+    0 0 0 2px rgba(255,50,72,.36),
+    0 0 30px rgba(255,38,58,.34),
+    0 0 58px rgba(255,102,38,.18),
+    inset 0 0 0 1px rgba(255,208,152,.18) !important;
+  animation:siegeLockHostKF 1420ms cubic-bezier(.18,.86,.22,1) forwards;
+}
+@keyframes siegeLockStampKF{
+  0%{ opacity:0; transform:translate(-50%, -38%) scale(.62) rotate(5deg); }
+  18%{ opacity:1; transform:translate(-50%, -54%) scale(1.12) rotate(-4deg); }
+  34%{ opacity:1; transform:translate(-50%, -50%) scale(.96) rotate(-1deg); }
+  78%{ opacity:1; transform:translate(-50%, -50%) scale(1) rotate(-2deg); }
+  100%{ opacity:0; transform:translate(-50%, -64%) scale(.96) rotate(-2deg); }
+}
+@keyframes siegeLockHostKF{
+  0%{ filter:brightness(.92) saturate(.94); }
+  24%{ filter:brightness(1.18) saturate(1.28); }
+  62%{ filter:brightness(1.08) saturate(1.16); }
+  100%{ filter:brightness(1) saturate(1); }
+}
+@keyframes siegeLockBadgeGlowKF{
+  0%,100%{
+    filter:brightness(1) saturate(1.06);
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,.45) inset,
+      0 8px 22px rgba(0,0,0,.46),
+      0 0 20px rgba(255,36,54,.40),
+      0 0 34px rgba(255,104,36,.18);
+  }
+  50%{
+    filter:brightness(1.24) saturate(1.32);
+    box-shadow:
+      0 0 0 1px rgba(255,218,154,.24) inset,
+      0 8px 24px rgba(0,0,0,.48),
+      0 0 30px rgba(255,36,54,.64),
+      0 0 56px rgba(255,118,36,.32);
+  }
+}
+@keyframes siegeLockChainsGlowKF{
+  0%,100%{
+    filter:
+      drop-shadow(0 0 10px rgba(0,0,0,.48))
+      drop-shadow(0 0 12px rgba(255,38,58,.24));
+  }
+  50%{
+    filter:
+      drop-shadow(0 0 10px rgba(0,0,0,.50))
+      drop-shadow(0 0 24px rgba(255,42,58,.48))
+      drop-shadow(0 0 36px rgba(255,116,34,.20));
+  }
 }
 @keyframes lockBadgeDropKF{
   0%{ opacity:.98; transform: translate(-50%, -48%) scale(1.02) rotate(0deg); }
@@ -6735,19 +6870,19 @@ body.chromaBlue .bossKeyCard::before{
   cursor:pointer;
 }
 .pentaCard .besiegedTargetLabel{
-  font-size:7px;
+  font-size:9px;
   color:rgba(255,224,190,.86);
   letter-spacing:1.1px;
 }
 .pentaCard .besiegedTargetScore{
-  font-size:16px;
+  font-size:18px;
   color:rgba(255,255,246,.98);
   text-shadow:
     0 0 12px rgba(255,236,160,.40),
     0 2px 0 rgba(42,0,8,.38);
 }
 .pentaCard .besiegedTargetHint{
-  font-size:7px;
+  font-size:8px;
   color:rgba(255,212,220,.78);
   letter-spacing:.7px;
 }
@@ -7054,6 +7189,857 @@ body.chromaBlue .bossKeyCard::before{
   border:1px solid rgba(255,255,255,.12);
   cursor:pointer;
   transition: transform 520ms cubic-bezier(.2,.9,.2,1), filter 520ms cubic-bezier(.2,.9,.2,1), opacity 520ms cubic-bezier(.2,.9,.2,1);
+}
+.pentagonWrap.besiegedDefenseFocus{
+  height:760px;
+}
+.pentagonWrap.besiegedDefenseFocus .nowPlayingBanner{
+  opacity:.18;
+}
+.pentagonWrap.besiegedDefenseFocus .pentaGuides{
+  opacity:.12;
+}
+.pentagonWrap.besiegedDefenseFocus .pentaCard:not(.besiegedTarget){
+  opacity:.12 !important;
+  filter:grayscale(1) brightness(.26) !important;
+}
+.pentaCard.besiegedTarget{
+  width:min(686px, 92vw);
+  height:568px;
+  border-radius:24px;
+  border-color:rgba(65,237,255,.72);
+  animation:none !important;
+  filter:none !important;
+  image-rendering:auto;
+  --siege-castle-top:rgba(185,219,226,.92);
+  --siege-castle-mid:rgba(86,124,139,.96);
+  --siege-castle-low:rgba(34,52,68,.98);
+  --siege-castle-accent:rgba(255,184,92,.96);
+  --siege-castle-gate:rgba(120,67,45,.98);
+  --siege-castle-gate-dark:rgba(44,20,14,.98);
+  --siege-emergency:0;
+  --siege-red-wash:0;
+  --siege-emergency-blink:0;
+  --siege-emergency-speed:2600ms;
+  background:
+    radial-gradient(220px 150px at 50% 44%, rgba(255,62,104,.18), transparent 70%),
+    radial-gradient(240px 150px at 50% 100%, rgba(0,219,255,.16), transparent 72%),
+    linear-gradient(180deg, rgba(4,14,28,.94), rgba(4,9,19,.94) 58%, rgba(18,5,13,.94));
+  box-shadow:
+    0 0 0 2px rgba(0,226,255,.18) inset,
+    0 0 32px rgba(0,213,255,.28),
+    0 24px 60px rgba(0,0,0,.54);
+}
+.pentaCard.besiegedTarget.isNowPlaying,
+.pentaCard.besiegedTarget.isDim{
+  opacity:1 !important;
+  filter:none !important;
+}
+.pentaCard.besiegedTarget .pentaTitle,
+.pentaCard.besiegedTarget .besiegedAttackerBanner,
+.pentaCard.besiegedTarget .besiegedStory,
+.pentaCard.besiegedTarget .besiegedStatusRail,
+.pentaCard.besiegedTarget .besiegedDefenseHud{
+  filter:none !important;
+  transform:none;
+}
+.pentaCard.besiegedTarget .pentaTitle{
+  position:absolute;
+  top:18px;
+  left:22px;
+  right:22px;
+  min-height:86px;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:nowrap;
+  text-align:center;
+  padding:12px 18px 10px;
+  background:linear-gradient(180deg, rgba(2,12,26,.94), rgba(4,9,18,.86));
+  border:1px solid rgba(0,224,255,.24);
+  border-radius:18px;
+  box-shadow:
+    inset 0 0 18px rgba(0,224,255,.08),
+    0 12px 24px rgba(0,0,0,.28);
+  transform:translateZ(0);
+}
+.pentaCard.besiegedTarget .pentaInner{
+  z-index:16;
+}
+.pentaCard.besiegedTarget .pentaTitle .name{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  padding-right:0;
+  gap:6px;
+  font-size:31px;
+  line-height:.95;
+  letter-spacing:.3px;
+  text-align:center;
+  text-shadow:
+    0 0 14px rgba(0,224,255,.20),
+    0 2px 0 rgba(0,0,0,.70);
+  filter:none !important;
+}
+.pentaCard.besiegedTarget .pentaTitle .name.nameLong{ font-size:27px; }
+.pentaCard.besiegedTarget .pentaTitle .name.nameXL{ font-size:23px; letter-spacing:.1px; }
+.pentaCard.besiegedTarget .pentaTitle .name .tableNamePrimary{
+  display:block;
+  max-width:100%;
+}
+.pentaCard.besiegedTarget .pentaTitle .name .tableNameBadgeSmall{
+  display:block;
+  margin:0;
+  padding:3px 10px 4px;
+  border-radius:999px;
+  border:1px solid rgba(123,239,255,.34);
+  background:rgba(0,18,32,.68);
+  color:rgba(185,238,255,.92);
+  font-size:11px;
+  line-height:1;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  text-shadow:none;
+}
+.pentaCard.besiegedTarget .pentaTitle .badgeIcon{
+  top:13px;
+  right:15px;
+}
+.pentaCard.besiegedTarget .miniBallRow{
+  display:none;
+}
+.pentaCard.besiegedTarget .tableBanner{
+  opacity:.28;
+  filter:none;
+  image-rendering:auto;
+}
+.pentaCard.besiegedTarget .tableBannerOverlay{
+  background:
+    linear-gradient(180deg, rgba(0,12,22,.42), rgba(4,10,17,.76)),
+    radial-gradient(85% 72% at 50% 62%, rgba(255,54,92,.12), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(0,224,255,.07) 0 1px, transparent 1px 28px),
+    repeating-linear-gradient(0deg, rgba(0,224,255,.05) 0 1px, transparent 1px 28px);
+}
+.pentaCard .besiegedCastleAura{
+  inset:112px 36px 88px;
+  border-radius:26px;
+  background:
+    linear-gradient(180deg, rgba(8,22,34,.88), rgba(10,13,24,.82)),
+    radial-gradient(70% 50% at 50% 54%, color-mix(in srgb, var(--siege-castle-mid) 34%, transparent), transparent 70%),
+    radial-gradient(90px 70px at 50% 18%, rgba(255,96,124,.18), transparent 72%),
+    repeating-linear-gradient(90deg, rgba(0,232,255,.10) 0 1px, transparent 1px 34px);
+  border:1px solid rgba(0,224,255,.30);
+  opacity:1;
+}
+.pentaCard .besiegedCastleKeep{
+  position:absolute;
+  left:50%;
+  top:190px;
+  z-index:6;
+  width:238px;
+  height:218px;
+  transform:translateX(-50%);
+  pointer-events:none;
+  border:1px solid rgba(87,236,255,.34);
+  border-radius:8px 8px 12px 12px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.12) 0 48%, rgba(0,0,0,.16) 48% 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--siege-castle-top) 84%, white 16%), var(--siege-castle-mid) 46%, var(--siege-castle-low)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 10px, rgba(0,0,0,.08) 10px 20px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -18px 24px rgba(0,0,0,.28),
+    0 0 18px color-mix(in srgb, var(--siege-castle-accent) 16%, transparent);
+  clip-path:polygon(0 100%, 0 22%, 7% 22%, 7% 4%, 16% 4%, 16% 22%, 29% 22%, 29% 4%, 38% 4%, 38% 22%, 62% 22%, 62% 4%, 71% 4%, 71% 22%, 84% 22%, 84% 4%, 93% 4%, 93% 22%, 100% 22%, 100% 100%);
+}
+.pentaCard .besiegedCastleKeep::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-76px;
+  width:106px;
+  height:92px;
+  transform:translateX(-50%);
+  background:
+    radial-gradient(36px 22px at 50% 100%, rgba(255,255,255,.12), transparent 72%),
+    repeating-radial-gradient(ellipse at 50% 100%, rgba(255,92,108,.42) 0 6px, rgba(86,4,22,.24) 7px 12px),
+    linear-gradient(180deg, rgba(190,8,43,.96), rgba(92,4,24,.98));
+  border:1px solid rgba(255,128,142,.34);
+  clip-path:polygon(50% 0, 100% 100%, 0 100%);
+  filter:none;
+  box-shadow:0 8px 10px rgba(0,0,0,.28);
+}
+.pentaCard .besiegedCastleKeep::after{
+  content:"";
+  position:absolute;
+  left:22px;
+  right:22px;
+  top:40px;
+  height:28px;
+  background:
+    linear-gradient(90deg, transparent 0 10%, rgba(255,255,255,.12) 10% 13%, transparent 13% 28%, rgba(255,255,255,.10) 28% 31%, transparent 31% 69%, rgba(0,0,0,.14) 69% 72%, transparent 72%),
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.06));
+  opacity:.62;
+}
+.pentaCard .besiegedCastleCrown{
+  top:175px;
+  left:142px;
+  right:142px;
+  height:38px;
+  border-color:rgba(87,236,255,.40);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--siege-castle-top) 88%, white 12%), var(--siege-castle-mid) 56%, var(--siege-castle-low)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.16) 0 14px, rgba(0,0,0,.24) 14px 24px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -10px 18px rgba(0,0,0,.28),
+    0 7px 16px rgba(0,0,0,.35),
+    0 0 18px color-mix(in srgb, var(--siege-castle-accent) 26%, transparent);
+}
+.pentaCard .besiegedCastleTower{
+  top:172px;
+  height:174px;
+  width:86px;
+  border-color:rgba(87,236,255,.34);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--siege-castle-top) 86%, white 14%), var(--siege-castle-mid) 48%, var(--siege-castle-low)),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.13) 0 9px, rgba(0,0,0,.20) 9px 18px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.07) 0 8px, rgba(0,0,0,.08) 8px 16px);
+  box-shadow:
+    inset 0 0 16px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 0 18px color-mix(in srgb, var(--siege-castle-accent) 20%, transparent);
+}
+.pentaCard .besiegedCastleTower::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:-82px;
+  width:92px;
+  height:96px;
+  transform:translateX(-50%);
+  background:
+    radial-gradient(34px 24px at 50% 96%, rgba(255,255,255,.10), transparent 72%),
+    repeating-radial-gradient(ellipse at 50% 100%, rgba(255,92,108,.42) 0 6px, rgba(80,4,24,.28) 7px 12px),
+    linear-gradient(180deg, rgba(187,7,43,.96), rgba(94,4,25,.98));
+  border:1px solid rgba(255,128,142,.34);
+  clip-path:polygon(50% 0, 100% 100%, 0 100%);
+  filter:none;
+  box-shadow:0 8px 10px rgba(0,0,0,.28);
+}
+.pentaCard .besiegedCastleTower.left{ left:76px; }
+.pentaCard .besiegedCastleTower.right{ right:76px; }
+.pentaCard .besiegedCastleGate{
+  bottom:160px;
+  width:112px;
+  height:100px;
+  z-index:9;
+  border-color:rgba(255,96,126,.30);
+  opacity:1;
+  background:
+    radial-gradient(80% 72% at 50% 0%, rgba(255,126,88,.24), transparent 64%),
+    repeating-linear-gradient(90deg, var(--siege-castle-gate) 0 10px, var(--siege-castle-gate-dark) 10px 14px);
+  box-shadow:
+    inset 0 0 18px rgba(0,0,0,.46),
+    0 -8px 18px color-mix(in srgb, var(--siege-castle-accent) 16%, transparent);
+}
+.pentaCard .besiegedCastleWindows{
+  position:absolute;
+  inset:144px 76px 176px;
+  z-index:8;
+  pointer-events:none;
+}
+.pentaCard .besiegedCastleWindows .castleWindow{
+  position:absolute;
+  width:15px;
+  height:22px;
+  border-radius:8px 8px 3px 3px;
+  border:1px solid rgba(111,237,255,.32);
+  background:
+    radial-gradient(circle at 50% 72%, rgba(0,0,0,.70), transparent 62%),
+    linear-gradient(180deg, rgba(34,64,74,.54), rgba(5,12,18,.78));
+  box-shadow:
+    inset 0 0 10px rgba(0,0,0,.54),
+    0 0 8px rgba(0,224,255,.14);
+  opacity:.72;
+}
+.pentaCard .besiegedCastleWindows .castleWindow::after{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-radius:inherit;
+  opacity:0;
+  background:
+    radial-gradient(circle at 50% 74%, rgba(255,255,132,.92), transparent 42%),
+    radial-gradient(circle at 50% 44%, rgba(255,124,32,.86), rgba(139,0,18,.34) 62%, transparent 76%);
+  filter:drop-shadow(0 0 8px rgba(255,72,28,.68));
+  animation:besiegedWindowFireKF 740ms ease-in-out infinite;
+}
+.pentaCard .besiegedCastleWindows .w1{ left:4%; top:27%; }
+.pentaCard .besiegedCastleWindows .w2{ left:8%; top:62%; }
+.pentaCard .besiegedCastleWindows .w3{ left:27%; top:36%; }
+.pentaCard .besiegedCastleWindows .w4{ left:37%; top:54%; }
+.pentaCard .besiegedCastleWindows .w5{ left:47%; top:38%; }
+.pentaCard .besiegedCastleWindows .w6{ right:37%; top:54%; }
+.pentaCard .besiegedCastleWindows .w7{ right:27%; top:36%; }
+.pentaCard .besiegedCastleWindows .w8{ right:8%; top:62%; }
+.pentaCard .besiegedCastleWindows .w9{ right:4%; top:27%; }
+.pentaCard .besiegedCastleWindows .w10{ left:42%; top:72%; width:12px; height:18px; }
+.pentaCard .besiegedCastleWindows .w11{ left:55%; top:72%; width:12px; height:18px; }
+.pentaCard .besiegedCastleWindows .w12{ left:50%; top:14%; width:12px; height:16px; }
+.pentaCard.besiegedTarget .besiegedCastleKeep,
+.pentaCard.besiegedTarget .besiegedCastleCrown,
+.pentaCard.besiegedTarget .besiegedCastleTower,
+.pentaCard.besiegedTarget .besiegedCastleGate,
+.pentaCard.besiegedTarget .besiegedCastleWindows,
+.pentaCard.besiegedTarget .besiegedDamageFx,
+.pentaCard.besiegedTarget .besiegedDefenseHud,
+.pentaCard.besiegedTarget .besiegedTargetBtn,
+.pentaCard.besiegedTarget .besiegedStatusRail,
+.pentaCard.besiegedTarget .besiegedAttackerBanner{
+  filter:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+.pentaCard .besiegedCastleFlag{
+  top:129px;
+}
+.pentaCard .besiegedAttackerBanner{
+  position:absolute;
+  left:auto;
+  right:28px;
+  top:86px;
+  z-index:18;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:7px;
+  width:min(224px, calc(100% - 56px));
+  padding:7px 10px;
+  border-radius:14px;
+  border:1px solid rgba(255,82,116,.34);
+  background:linear-gradient(90deg, rgba(30,4,13,.86), rgba(3,18,31,.82));
+  box-shadow:0 12px 26px rgba(0,0,0,.30);
+  pointer-events:auto;
+}
+.pentaCard .besiegedAttackerKicker{
+  font-size:7px;
+  color:rgba(123,239,255,.82);
+  letter-spacing:1.1px;
+}
+.pentaCard .besiegedAttackerName{
+  font-size:10px;
+  color:rgba(255,232,238,.96);
+  text-align:right;
+}
+.pentaCard .besiegedStatusRail{
+  position:absolute;
+  left:28px;
+  right:28px;
+  bottom:122px;
+  z-index:18;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(0,224,255,.28);
+  background:rgba(0,12,22,.72);
+  color:rgba(184,246,255,.88);
+  font-size:8px;
+  letter-spacing:.7px;
+  pointer-events:none;
+}
+.pentaCard .besiegedDefenseHud{
+  position:absolute;
+  left:30px;
+  right:30px;
+  bottom:100px;
+  z-index:18;
+  pointer-events:none;
+}
+.pentaCard .besiegedDefenseHudTop{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  color:rgba(255,236,242,.94);
+  font-size:10px;
+  letter-spacing:1px;
+  margin-bottom:7px;
+}
+.pentaCard .besiegedDefenseHudTop [data-besieged-defense-time]{
+  font-size:34px;
+  line-height:.86;
+  color:rgba(255,255,246,.98);
+  text-shadow:
+    0 0 14px rgba(255,236,160,.45),
+    0 2px 0 rgba(42,0,8,.38);
+}
+.pentaCard .besiegedDefenseBar{
+  height:18px;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid rgba(0,224,255,.34);
+  background:rgba(0,4,10,.72);
+  box-shadow:inset 0 0 10px rgba(0,0,0,.38);
+}
+.pentaCard .besiegedDefenseBar i{
+  display:block;
+  height:100%;
+  width:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg, rgba(255,54,96,.94), rgba(255,192,82,.92), rgba(0,233,255,.92));
+  box-shadow:0 0 16px rgba(0,224,255,.32);
+}
+.pentaCard .besiegedArmyBadge{
+  top:118px;
+  right:28px;
+  z-index:19;
+}
+.pentaCard .besiegedStory{
+  top:130px;
+  bottom:auto;
+  left:auto;
+  right:28px;
+  width:292px;
+  transform:translateY(-4px);
+  text-align:left;
+  border-color:rgba(0,224,255,.24);
+  background:linear-gradient(180deg, rgba(3,20,34,.84), rgba(8,6,16,.88));
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity 150ms ease, visibility 150ms ease, transform 150ms ease;
+}
+.pentaCard .besiegedStory::after{
+  display:block;
+  left:auto;
+  right:28px;
+  top:-8px;
+  bottom:auto;
+  border:0;
+  border-left:1px solid rgba(0,224,255,.20);
+  border-top:1px solid rgba(0,224,255,.20);
+  background:rgba(3,20,34,.90);
+}
+.pentaCard .besiegedAttackerBanner:hover ~ .besiegedStory,
+.pentaCard .besiegedStory:hover{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+.pentaCard .besiegedArmyField{
+  left:42px;
+  right:42px;
+  top:auto;
+  bottom:132px;
+  height:92px;
+  z-index:17;
+}
+.pentaCard .besiegedSiegeFx{
+  top:auto;
+  bottom:170px;
+  height:136px;
+  z-index:18;
+}
+.pentaCard .besiegedTargetBtn{
+  bottom:2px;
+  min-width:min(97%, 562px);
+  gap:5px;
+  padding:16px 28px 15px;
+  min-height:94px;
+  z-index:24;
+  pointer-events:auto;
+  border-color:rgba(0,224,255,.52);
+  background:
+    radial-gradient(100% 150% at 50% 0%, rgba(255,218,126,.22), transparent 50%),
+    linear-gradient(180deg, rgba(255,71,112,.88), rgba(97,8,32,.98) 62%, rgba(4,14,26,.98));
+}
+.pentaCard .besiegedTargetBtn:not(.isDefenseRunning) .besiegedTargetLabel{
+  font-size:18px;
+  color:rgba(255,255,246,.98);
+}
+.pentaCard .besiegedTargetBtn .besiegedTargetScore{
+  font-size:22px;
+}
+.pentaCard .besiegedTargetBtn .besiegedTargetHint{
+  font-size:10px;
+}
+.pentaCard .besiegedTargetScore:empty,
+.pentaCard .besiegedTargetHint:empty{
+  display:none;
+}
+.pentaCard.besiegedTarget.besiegedDamage1{
+  box-shadow:
+    0 0 0 2px rgba(0,226,255,.18) inset,
+    0 0 32px rgba(0,213,255,.28),
+    0 0 22px rgba(255,86,58,.14),
+    0 24px 60px rgba(0,0,0,.54);
+}
+.pentaCard.besiegedTarget.besiegedDamage2,
+.pentaCard.besiegedTarget.besiegedDamage3,
+.pentaCard.besiegedTarget.besiegedDamage4{
+  border-color:rgba(255,96,80,.78);
+  background:
+    radial-gradient(240px 170px at 50% 48%, rgba(255,68,50,.30), transparent 70%),
+    radial-gradient(260px 170px at 50% 100%, rgba(0,219,255,.14), transparent 72%),
+    linear-gradient(180deg, rgba(8,13,25,.98), rgba(9,8,18,.98) 55%, rgba(35,5,8,.98));
+}
+.pentaCard.besiegedTarget.besiegedDamage3,
+.pentaCard.besiegedTarget.besiegedDamage4{
+  box-shadow:
+    0 0 0 2px rgba(255,102,72,.26) inset,
+    0 0 26px rgba(255,72,48,.30),
+    0 0 44px rgba(255,148,48,.18),
+    0 24px 68px rgba(0,0,0,.62);
+}
+.pentaCard .besiegedCastleAura::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  opacity:var(--siege-red-wash, 0);
+  background:
+    radial-gradient(280px 210px at 50% 47%, rgba(255,25,46,.62), transparent 72%),
+    radial-gradient(190px 120px at 18% 80%, rgba(255,104,32,.44), transparent 72%),
+    radial-gradient(210px 130px at 84% 72%, rgba(255,44,22,.38), transparent 74%),
+    linear-gradient(180deg, rgba(255,0,34,.16), rgba(255,44,12,.22));
+  mix-blend-mode:screen;
+  transition:opacity 360ms ease;
+}
+.pentaCard.besiegedTarget.besiegedDamage2 .besiegedDefenseHudTop [data-besieged-defense-time]{
+  color:rgba(255,215,195,.98);
+  text-shadow:
+    0 0 14px rgba(255,88,48,.46),
+    0 2px 0 rgba(42,0,8,.44);
+}
+.pentaCard.besiegedTarget.besiegedDamage3 .besiegedDefenseHudTop [data-besieged-defense-time],
+.pentaCard.besiegedTarget.besiegedDamage4 .besiegedDefenseHudTop [data-besieged-defense-time]{
+  color:rgba(255,248,224,.98);
+  text-shadow:
+    0 0 12px rgba(255,238,166,.60),
+    0 0 24px rgba(255,44,42,.72),
+    0 2px 0 rgba(42,0,8,.54);
+}
+.pentaCard.besiegedTarget.besiegedDamage2 .besiegedDefenseBar,
+.pentaCard.besiegedTarget.besiegedDamage3 .besiegedDefenseBar,
+.pentaCard.besiegedTarget.besiegedDamage4 .besiegedDefenseBar{
+  border-color:rgba(255,92,58,.64);
+  background:rgba(21,0,8,.78);
+  box-shadow:
+    inset 0 0 12px rgba(0,0,0,.48),
+    0 0 12px rgba(255,62,36,.26);
+}
+.pentaCard.besiegedTarget.besiegedDamage2 .besiegedDefenseBar i{
+  background:linear-gradient(90deg, rgba(255,38,64,.98), rgba(255,132,50,.94), rgba(255,218,72,.88));
+  box-shadow:0 0 16px rgba(255,74,38,.34);
+}
+.pentaCard.besiegedTarget.besiegedDamage3 .besiegedDefenseBar i,
+.pentaCard.besiegedTarget.besiegedDamage4 .besiegedDefenseBar i{
+  background:linear-gradient(90deg, rgba(255,18,50,.98), rgba(255,70,36,.98), rgba(255,184,52,.92));
+  box-shadow:
+    0 0 16px rgba(255,46,34,.46),
+    0 0 26px rgba(255,126,40,.28);
+}
+.pentaCard.besiegedTarget.besiegedDamage3 .besiegedAttackerBanner,
+.pentaCard.besiegedTarget.besiegedDamage3 .besiegedStatusRail,
+.pentaCard.besiegedTarget.besiegedDamage4 .besiegedAttackerBanner,
+.pentaCard.besiegedTarget.besiegedDamage4 .besiegedStatusRail{
+  border-color:rgba(255,78,64,.72);
+  box-shadow:
+    inset 0 0 18px rgba(255,44,32,.14),
+    0 0 18px rgba(255,44,32,.22);
+}
+.pentaCard.besiegedTarget.besiegedEmergency{
+  animation:besiegedEmergencyBlinkKF var(--siege-emergency-speed, 2200ms) ease-in-out infinite !important;
+}
+.pentaCard.besiegedTarget.besiegedEmergency .besiegedDefenseHud,
+.pentaCard.besiegedTarget.besiegedEmergency .besiegedDefenseBar i,
+.pentaCard.besiegedTarget.besiegedEmergency .besiegedTargetBtn.isDefenseRunning{
+  animation:besiegedEmergencyHudBlinkKF var(--siege-emergency-speed, 2200ms) ease-in-out infinite;
+}
+.pentaCard .besiegedDamageFx{
+  position:absolute;
+  inset:100px 36px 74px;
+  z-index:21;
+  pointer-events:none;
+  overflow:hidden;
+  opacity:0;
+  transition:opacity 260ms ease;
+}
+.pentaCard.besiegedDamage1 .besiegedDamageFx{ opacity:.38; }
+.pentaCard.besiegedDamage2 .besiegedDamageFx{ opacity:.58; }
+.pentaCard.besiegedDamage3 .besiegedDamageFx{ opacity:.82; }
+.pentaCard.besiegedDamage4 .besiegedDamageFx{ opacity:1; }
+.besiegedDamageFx .smoke,
+.besiegedDamageFx .flame,
+.besiegedDamageFx .ember{
+  position:absolute;
+  display:block;
+  pointer-events:none;
+}
+.besiegedDamageFx .smoke{
+  bottom:58px;
+  width:54px;
+  height:86px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 50% 68%, rgba(118,132,142,.34), transparent 58%),
+    radial-gradient(circle at 44% 34%, rgba(220,228,232,.26), transparent 62%);
+  filter:blur(2px);
+  opacity:.46;
+  animation:besiegedSmokeRiseKF 2600ms ease-in-out infinite;
+}
+.besiegedDamageFx .smoke1{ left:18%; animation-delay:-420ms; }
+.besiegedDamageFx .smoke2{ left:47%; bottom:86px; width:72px; animation-delay:-1080ms; }
+.besiegedDamageFx .smoke3{ right:17%; animation-delay:-1640ms; }
+.besiegedDamageFx .flame{
+  bottom:42px;
+  width:28px;
+  height:46px;
+  border-radius:50% 50% 46% 46%;
+  background:
+    radial-gradient(circle at 52% 68%, rgba(255,247,140,.94), rgba(255,174,52,.78) 35%, transparent 64%),
+    radial-gradient(circle at 50% 46%, rgba(255,62,54,.86), rgba(116,0,28,.40) 58%, transparent 72%);
+  filter:drop-shadow(0 0 10px rgba(255,82,40,.58));
+  transform-origin:50% 100%;
+  opacity:.84;
+  animation:besiegedFlameKF 660ms ease-in-out infinite;
+}
+.besiegedDamageFx .flame1{ left:23%; animation-delay:-120ms; }
+.besiegedDamageFx .flame2{ left:49%; bottom:52px; height:58px; animation-delay:-360ms; }
+.besiegedDamageFx .flame3{ right:22%; animation-delay:-520ms; }
+.besiegedDamageFx .flame4{ left:12%; bottom:168px; height:34px; width:22px; animation-delay:-220ms; }
+.besiegedDamageFx .flame5{ left:38%; bottom:184px; height:30px; width:20px; animation-delay:-780ms; }
+.besiegedDamageFx .flame6{ right:12%; bottom:168px; height:34px; width:22px; animation-delay:-940ms; }
+.besiegedDamageFx .flame7{ left:58%; bottom:122px; height:32px; width:20px; animation-delay:-1120ms; }
+.besiegedDamageFx .flame8{ right:38%; bottom:130px; height:30px; width:20px; animation-delay:-1440ms; }
+.besiegedDamageFx .ember{
+  bottom:80px;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:rgba(255,182,72,.92);
+  box-shadow:0 0 10px rgba(255,94,36,.76);
+  animation:besiegedEmberKF 1600ms linear infinite;
+}
+.besiegedDamageFx .ember1{ left:30%; animation-delay:-260ms; }
+.besiegedDamageFx .ember2{ left:54%; animation-delay:-840ms; }
+.besiegedDamageFx .ember3{ right:28%; animation-delay:-1220ms; }
+.besiegedDamageFx .ember4{ left:16%; bottom:172px; animation-delay:-520ms; }
+.besiegedDamageFx .ember5{ left:41%; bottom:190px; animation-delay:-1020ms; }
+.besiegedDamageFx .ember6{ right:16%; bottom:172px; animation-delay:-1420ms; }
+.pentaCard .besiegedCastleCrown::after,
+.pentaCard .besiegedCastleGate::after,
+.pentaCard .besiegedCastleTower::after{
+  content:"";
+  position:absolute;
+  inset:5px;
+  border-radius:inherit;
+  pointer-events:none;
+  opacity:0;
+  background:
+    linear-gradient(112deg, transparent 0 28%, rgba(0,0,0,.82) 28% 30%, transparent 30% 43%, rgba(0,0,0,.72) 43% 45%, transparent 45%),
+    linear-gradient(58deg, transparent 0 54%, rgba(255,224,168,.30) 54% 55%, rgba(0,0,0,.66) 55% 57%, transparent 57%);
+  mix-blend-mode:screen;
+}
+.pentaCard.besiegedDamage1 .besiegedCastleCrown::after,
+.pentaCard.besiegedDamage1 .besiegedCastleGate::after,
+.pentaCard.besiegedDamage1 .besiegedCastleTower::after{ opacity:.30; }
+.pentaCard.besiegedDamage2 .besiegedCastleCrown::after,
+.pentaCard.besiegedDamage2 .besiegedCastleGate::after,
+.pentaCard.besiegedDamage2 .besiegedCastleTower::after{ opacity:.55; }
+.pentaCard.besiegedDamage3 .besiegedCastleCrown::after,
+.pentaCard.besiegedDamage3 .besiegedCastleGate::after,
+.pentaCard.besiegedDamage3 .besiegedCastleTower::after,
+.pentaCard.besiegedDamage4 .besiegedCastleCrown::after,
+.pentaCard.besiegedDamage4 .besiegedCastleGate::after,
+.pentaCard.besiegedDamage4 .besiegedCastleTower::after{ opacity:.82; }
+.pentaCard.besiegedDamage2 .besiegedCastleTower.left{ transform:translate3d(-2px, 2px, 0) rotate(-1deg); }
+.pentaCard.besiegedDamage2 .besiegedCastleTower.right{ transform:translate3d(2px, 2px, 0) rotate(1deg); }
+.pentaCard.besiegedDamage3 .besiegedCastleTower.left,
+.pentaCard.besiegedDamage4 .besiegedCastleTower.left{ transform:translate3d(-5px, 8px, 0) rotate(-3deg); }
+.pentaCard.besiegedDamage3 .besiegedCastleTower.right,
+.pentaCard.besiegedDamage4 .besiegedCastleTower.right{ transform:translate3d(5px, 8px, 0) rotate(3deg); }
+.pentaCard.besiegedDamage3 .besiegedCastleGate,
+.pentaCard.besiegedDamage4 .besiegedCastleGate{
+  box-shadow:
+    inset 0 0 18px rgba(0,0,0,.52),
+    0 -8px 20px rgba(255,72,38,.22),
+    0 0 18px rgba(255,108,38,.18);
+}
+.pentaCard.besiegedDamage4 .besiegedCastleCrown{
+  transform:translate3d(0, 7px, 0) rotate(-1deg);
+}
+.pentaCard.besiegedDamage4 .besiegedCastleGate{
+  transform:translateX(-50%) translate3d(0, 7px, 0) scaleY(.90);
+}
+.pentaCard.besiegedDamage1 .besiegedCastleWindows .w4::after,
+.pentaCard.besiegedDamage1 .besiegedCastleWindows .w8::after{ opacity:.36; }
+.pentaCard.besiegedDamage2 .besiegedCastleWindows .w2::after,
+.pentaCard.besiegedDamage2 .besiegedCastleWindows .w4::after,
+.pentaCard.besiegedDamage2 .besiegedCastleWindows .w7::after,
+.pentaCard.besiegedDamage2 .besiegedCastleWindows .w8::after{ opacity:.54; }
+.pentaCard.besiegedDamage3 .besiegedCastleWindows .castleWindow::after{ opacity:.70; }
+.pentaCard.besiegedDamage4 .besiegedCastleWindows .castleWindow::after{ opacity:.92; }
+.pentaCard.besiegedDefenseFailed{
+  border-color:rgba(255,36,58,.98) !important;
+  box-shadow:
+    0 0 0 3px rgba(255,42,54,.46) inset,
+    0 0 44px rgba(255,36,42,.56),
+    0 0 86px rgba(255,104,36,.30),
+    0 28px 76px rgba(0,0,0,.72) !important;
+}
+.pentaCard.besiegedDefenseFailed .besiegedCastleKeep{
+  animation:besiegedKeepCollapseKF 1320ms cubic-bezier(.24,.78,.22,1) forwards;
+}
+.pentaCard.besiegedDefenseFailed .besiegedCastleCrown{
+  animation:besiegedCrownCollapseKF 1180ms cubic-bezier(.24,.78,.22,1) forwards;
+}
+.pentaCard.besiegedDefenseFailed .besiegedCastleTower.left{
+  animation:besiegedTowerLeftCollapseKF 1300ms cubic-bezier(.24,.78,.22,1) forwards;
+}
+.pentaCard.besiegedDefenseFailed .besiegedCastleTower.right{
+  animation:besiegedTowerRightCollapseKF 1300ms cubic-bezier(.24,.78,.22,1) forwards;
+}
+.pentaCard.besiegedDefenseFailed .besiegedCastleGate{
+  animation:besiegedGateCollapseKF 1160ms cubic-bezier(.24,.78,.22,1) forwards;
+}
+.pentaCard.besiegedDefenseFailed .besiegedCastleFlag,
+.pentaCard.besiegedDefenseFailed .besiegedCastleWindows{
+  opacity:0;
+  transition:opacity 420ms ease;
+}
+.pentaCard.besiegedDefenseFailed .besiegedDamageFx{
+  opacity:1;
+  filter:saturate(1.35) brightness(1.16);
+}
+.pentaCard .besiegedRubbleFx{
+  position:absolute;
+  left:64px;
+  right:64px;
+  bottom:138px;
+  height:150px;
+  z-index:23;
+  pointer-events:none;
+  overflow:visible;
+}
+.besiegedRubbleFx .rubblePiece{
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:28px;
+  height:22px;
+  border-radius:5px;
+  opacity:0;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.18), transparent 44%),
+    linear-gradient(180deg, var(--siege-castle-top), var(--siege-castle-low));
+  border:1px solid rgba(88,236,255,.18);
+  box-shadow:
+    inset 0 -6px 10px rgba(0,0,0,.24),
+    0 0 14px rgba(255,82,42,.22);
+}
+.besiegedRubbleFx.play .rubblePiece{
+  animation:besiegedRubbleBlastKF 1440ms cubic-bezier(.12,.82,.24,1) forwards;
+}
+.besiegedRubbleFx .r1{ --rx:-236px; --ry:-64px; --rr:-52deg; --rs:.88; }
+.besiegedRubbleFx .r2{ --rx:-184px; --ry:-92px; --rr:32deg; --rs:.72; }
+.besiegedRubbleFx .r3{ --rx:-144px; --ry:-42px; --rr:-18deg; --rs:1.05; }
+.besiegedRubbleFx .r4{ --rx:-102px; --ry:-120px; --rr:66deg; --rs:.62; }
+.besiegedRubbleFx .r5{ --rx:-68px; --ry:-58px; --rr:-38deg; --rs:.82; }
+.besiegedRubbleFx .r6{ --rx:-34px; --ry:-126px; --rr:22deg; --rs:.58; }
+.besiegedRubbleFx .r7{ --rx:0px; --ry:-72px; --rr:9deg; --rs:1.08; }
+.besiegedRubbleFx .r8{ --rx:34px; --ry:-132px; --rr:-24deg; --rs:.56; }
+.besiegedRubbleFx .r9{ --rx:72px; --ry:-62px; --rr:42deg; --rs:.86; }
+.besiegedRubbleFx .r10{ --rx:112px; --ry:-112px; --rr:-68deg; --rs:.64; }
+.besiegedRubbleFx .r11{ --rx:154px; --ry:-48px; --rr:24deg; --rs:1.02; }
+.besiegedRubbleFx .r12{ --rx:194px; --ry:-88px; --rr:-34deg; --rs:.70; }
+.besiegedRubbleFx .r13{ --rx:238px; --ry:-58px; --rr:54deg; --rs:.92; }
+.besiegedRubbleFx .r14{ --rx:-212px; --ry:-18px; --rr:18deg; --rs:.64; }
+.besiegedRubbleFx .r15{ --rx:-118px; --ry:-8px; --rr:-12deg; --rs:.76; }
+.besiegedRubbleFx .r16{ --rx:-12px; --ry:-14px; --rr:30deg; --rs:.98; }
+.besiegedRubbleFx .r17{ --rx:118px; --ry:-10px; --rr:-22deg; --rs:.78; }
+.besiegedRubbleFx .r18{ --rx:214px; --ry:-20px; --rr:14deg; --rs:.66; }
+@keyframes besiegedSmokeRiseKF{
+  0%{ transform:translate3d(0, 28px, 0) scale(.72); opacity:0; }
+  20%{ opacity:.42; }
+  72%{ opacity:.30; }
+  100%{ transform:translate3d(10px, -54px, 0) scale(1.35); opacity:0; }
+}
+@keyframes besiegedFlameKF{
+  0%,100%{ transform:skewX(-6deg) scale(.92, .95); }
+  50%{ transform:skewX(6deg) scale(1.08, 1.16); }
+}
+@keyframes besiegedEmberKF{
+  0%{ transform:translate3d(0, 0, 0) scale(.75); opacity:0; }
+  20%{ opacity:1; }
+  100%{ transform:translate3d(18px, -86px, 0) scale(.28); opacity:0; }
+}
+@keyframes besiegedWindowFireKF{
+  0%,100%{ transform:scale(.82, .92); filter:drop-shadow(0 0 8px rgba(255,72,28,.58)); }
+  50%{ transform:scale(1.08, 1.22); filter:drop-shadow(0 0 13px rgba(255,104,34,.88)); }
+}
+@keyframes besiegedEmergencyBlinkKF{
+  0%,100%{
+    border-color:rgba(255,96,80,.82);
+    box-shadow:
+      0 0 0 2px rgba(255,102,72,.26) inset,
+      0 0 26px rgba(255,72,48,.30),
+      0 0 44px rgba(255,148,48,.18),
+      0 24px 68px rgba(0,0,0,.62);
+  }
+  50%{
+    border-color:rgba(255,34,58,.98);
+    box-shadow:
+      0 0 0 3px rgba(255,40,54,.46) inset,
+      0 0 34px rgba(255,36,42,.54),
+      0 0 76px rgba(255,102,42,.28),
+      0 24px 70px rgba(0,0,0,.68);
+  }
+}
+@keyframes besiegedEmergencyHudBlinkKF{
+  0%,100%{
+    filter:brightness(1) saturate(1);
+  }
+  50%{
+    filter:brightness(1.24) saturate(1.34);
+  }
+}
+@keyframes besiegedKeepCollapseKF{
+  0%{ transform:translateX(-50%) translate3d(0,0,0) rotate(0deg); opacity:1; }
+  24%{ transform:translateX(-50%) translate3d(0,-8px,0) rotate(1deg); opacity:1; }
+  56%{ transform:translateX(-50%) translate3d(0,56px,0) rotate(-4deg) scale(1.02,.62); opacity:.92; }
+  100%{ transform:translateX(-50%) translate3d(0,126px,0) rotate(4deg) scale(1.08,.18); opacity:0; }
+}
+@keyframes besiegedCrownCollapseKF{
+  0%{ transform:translate3d(0,0,0) rotate(0deg); opacity:1; }
+  38%{ transform:translate3d(0,32px,0) rotate(-5deg); opacity:.92; }
+  100%{ transform:translate3d(0,128px,0) rotate(8deg) scale(1.1,.16); opacity:0; }
+}
+@keyframes besiegedTowerLeftCollapseKF{
+  0%{ transform:translate3d(-5px,8px,0) rotate(-3deg); opacity:1; }
+  42%{ transform:translate3d(-34px,52px,0) rotate(-15deg); opacity:.92; }
+  100%{ transform:translate3d(-82px,142px,0) rotate(-28deg) scale(1.05,.18); opacity:0; }
+}
+@keyframes besiegedTowerRightCollapseKF{
+  0%{ transform:translate3d(5px,8px,0) rotate(3deg); opacity:1; }
+  42%{ transform:translate3d(34px,52px,0) rotate(15deg); opacity:.92; }
+  100%{ transform:translate3d(82px,142px,0) rotate(28deg) scale(1.05,.18); opacity:0; }
+}
+@keyframes besiegedGateCollapseKF{
+  0%{ transform:translateX(-50%) translate3d(0,7px,0) scaleY(.90); opacity:1; }
+  52%{ transform:translateX(-50%) translate3d(0,52px,0) scale(1.04,.58); opacity:.94; }
+  100%{ transform:translateX(-50%) translate3d(0,118px,0) scale(1.12,.18); opacity:0; }
+}
+@keyframes besiegedRubbleBlastKF{
+  0%{ transform:translate3d(0, 0, 0) rotate(0deg) scale(.38); opacity:0; }
+  12%{ opacity:1; }
+  56%{ transform:translate3d(var(--rx), var(--ry), 0) rotate(var(--rr)) scale(var(--rs)); opacity:1; }
+  100%{ transform:translate3d(var(--rx), 20px, 0) rotate(var(--rr)) scale(.72); opacity:.72; }
 }
 .pentaCard.isNowPlaying{ filter:brightness(1.08) saturate(1.06); }
 .pentaCard.isDim{ opacity:.72; filter:brightness(.86) saturate(.9); }
@@ -12554,6 +13540,7 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   top: 0;
   width: 0;
   height: 0;
+  box-sizing: border-box;
   border-radius: 14px;
   border: 2px solid rgba(34,255,136,0.90);
   background:
@@ -12956,6 +13943,7 @@ body.controlsLayoutEdit .flprControlResizeEdge{
   gap:8px;
 }
 .twitchVideoShell{
+  position:relative;
   min-height: 150px;
   height: clamp(150px, 22vh, 240px);
   border:1px solid rgba(145,70,255,.46);
@@ -12969,6 +13957,44 @@ body.controlsLayoutEdit .flprControlResizeEdge{
   height:100%;
   display:block;
   border:0;
+}
+.twitchVideoTools{
+  position:absolute;
+  left:8px;
+  right:8px;
+  top:8px;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  pointer-events:none;
+}
+.twitchVideoStatus{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  padding:5px 7px;
+  border-radius:8px;
+  border:1px solid rgba(206,182,255,.28);
+  background:rgba(10,4,24,.72);
+  color:rgba(238,230,255,.76);
+  font-family:'Press Start 2P', monospace;
+  font-size:6px;
+  line-height:1.2;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  box-shadow:0 0 10px rgba(0,0,0,.26);
+}
+.twitchVideoRefresh{
+  pointer-events:auto;
+  min-height:24px;
+  padding:0 8px;
+  border-radius:8px;
+  font-size:7px;
+  letter-spacing:.06em;
+  background:rgba(32,14,68,.88);
 }
 .twitchVideoFallback{
   height:100%;
@@ -13135,6 +14161,23 @@ body.controlsLayoutEdit .flprControlResizeEdge{
   grid-template-columns: auto minmax(0, 1fr);
   gap:8px;
   align-items:center;
+}
+.twitchSecretField{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) auto;
+  gap:6px;
+  min-width:0;
+}
+.twitchSecretField .cInput{
+  min-width:0;
+}
+.twitchSecretReveal{
+  min-width:48px;
+  padding:0 8px;
+  border-radius:8px;
+  font-size:7px;
+  letter-spacing:.06em;
 }
 .twitchEventSubToggle{
   display:inline-flex;
@@ -17513,6 +18556,8 @@ window.__manualDisconnect = false;
     comicbookcollision: "WorldsBanners/ComicBookCollision.png",
     insideoutlanes: "WorldsBanners/InsideOutLanes.png",
     inside_out_lanes: "WorldsBanners/InsideOutLanes.png",
+    pixelquest: "WorldsBanners/PixelQuest.png",
+    pixel_quest: "WorldsBanners/PixelQuest.png",
     theshowmustgoon: "WorldsBanners/TheShowMustGoOn.png",
     the_show_must_go_on: "WorldsBanners/TheShowMustGoOn.png"
   });
@@ -17595,7 +18640,15 @@ window.__manualDisconnect = false;
     JDREDD: "WorldsBanners/BestiaryFlyers/JDREDD.jpg",
     DEADP: "WorldsBanners/BestiaryFlyers/DEADP.png",
     GHOST: "WorldsBanners/BestiaryFlyers/GHOST.jpg",
-    RBULL: "WorldsBanners/BestiaryFlyers/RBULL.jpg"
+    RBULL: "WorldsBanners/BestiaryFlyers/RBULL.jpg",
+    SKATE: "WorldsBanners/BestiaryFlyers/SKATE.jpg",
+    VECT: "WorldsBanners/BestiaryFlyers/VECT.jpg",
+    GBALL: "WorldsBanners/BestiaryFlyers/GBALL.jpg",
+    SMB: "WorldsBanners/BestiaryFlyers/SMB.jpg",
+    SF2: "WorldsBanners/BestiaryFlyers/SF2.jpg",
+    QBERT: "WorldsBanners/BestiaryFlyers/QBERT.jpg",
+    MMPAC: "WorldsBanners/BestiaryFlyers/MMPAC.jpg",
+    SINV: "WorldsBanners/BestiaryFlyers/SINV.jpg"
   });
   const DEFAULT_TABLE_BANNER_REF_SET = new Set(
     Object.values(DEFAULT_TABLE_BANNER_REFS_BY_CODE || {}).map((v)=>String(v || "").trim()).filter(Boolean)
@@ -18623,6 +19676,7 @@ const defaultState = {
     nextRollAt:2
   },
   besiegedEvent: buildDefaultBesiegedState(),
+  besiegedPenaltyLock: buildDefaultBesiegedPenaltyLock(),
   extraBallTokens:0,
   extraBallAssignments:{},
   junkRedeems:{ easy:0, medium:0 },
@@ -18657,6 +19711,7 @@ function normalizeBossRetaliationState(raw){
   const nextRollAt = Math.max(2, Math.min(3, Math.round(Number(src.nextRollAt || nextRollAtDefault) || nextRollAtDefault)));
   return { phase, checksSinceTrap, nextRollAt: (phase === "phase2") ? 2 : nextRollAt };
 }
+const BESIEGED_DEFENSE_MS = 5 * 60 * 1000;
 function buildDefaultBesiegedState(){
   return {
     active:false,
@@ -18666,9 +19721,22 @@ function buildDefaultBesiegedState(){
     targetScore:0,
     targetLabel:"",
     activatedAt:0,
+    defenseStartedAt:0,
+    defenseDeadlineAt:0,
+    defenseFailedAt:0,
     armyType:"",
     armyLabel:"",
     bossUnlockedAtStart:false
+  };
+}
+function buildDefaultBesiegedPenaltyLock(){
+  return {
+    active:false,
+    worldKey:"",
+    tableKey:"",
+    tableName:"",
+    lockedAt:0,
+    reason:""
   };
 }
 function normalizeBesiegedState(raw){
@@ -18683,6 +19751,11 @@ function normalizeBesiegedState(raw){
   const armyLabel = String(src.armyLabel || "").trim();
   const bossUnlockedAtStart = !!src.bossUnlockedAtStart;
   const active = !!src.active && !!tableKey && !!worldKey;
+  const defenseStartedAt = Math.max(0, Number(src.defenseStartedAt || 0) || 0);
+  let defenseDeadlineAt = Math.max(0, Number(src.defenseDeadlineAt || 0) || 0);
+  if(defenseStartedAt > 0 && defenseDeadlineAt <= defenseStartedAt){
+    defenseDeadlineAt = defenseStartedAt + BESIEGED_DEFENSE_MS;
+  }
   return {
     active,
     worldKey: active ? worldKey : "",
@@ -18691,9 +19764,26 @@ function normalizeBesiegedState(raw){
     targetScore: active ? targetScore : 0,
     targetLabel: active ? targetLabel : "",
     activatedAt: Math.max(0, Number(src.activatedAt || 0) || 0),
+    defenseStartedAt: active ? defenseStartedAt : 0,
+    defenseDeadlineAt: active ? defenseDeadlineAt : 0,
+    defenseFailedAt: active ? Math.max(0, Number(src.defenseFailedAt || 0) || 0) : 0,
     armyType: active ? armyType : "",
     armyLabel: active ? armyLabel : "",
     bossUnlockedAtStart: active ? bossUnlockedAtStart : false
+  };
+}
+function normalizeBesiegedPenaltyLock(raw){
+  const src = (raw && typeof raw === "object") ? raw : {};
+  const tableKey = String(src.tableKey || "").trim();
+  const worldKey = String(src.worldKey || (tableKey ? String(tableKey).split("|")[0] : "") || "").trim();
+  const active = !!src.active && !!tableKey && !!worldKey;
+  return {
+    active,
+    worldKey: active ? worldKey : "",
+    tableKey: active ? tableKey : "",
+    tableName: active ? String(src.tableName || "").trim() : "",
+    lockedAt: active ? Math.max(0, Number(src.lockedAt || 0) || 0) : 0,
+    reason: active ? String(src.reason || "").trim() : ""
   };
 }
 
@@ -18787,6 +19877,39 @@ function readMusicStateSnapshotFromLocalStorage(){
   }catch(_){}
   return null;
 }
+function musicSnapshotHasAnyValue(snapshot){
+  try{
+    const snap = (snapshot && typeof snapshot === "object") ? snapshot : null;
+    if(!snap) return false;
+    return ["refs", "meta", "modes", "volumes"].some((key)=>{
+      const value = snap[key];
+      return value && typeof value === "object" && Object.keys(value).length > 0;
+    });
+  }catch(_){}
+  return false;
+}
+function musicSnapshotTime(snapshot){
+  const t = Date.parse(String(snapshot?.savedAt || ""));
+  return Number.isFinite(t) ? t : 0;
+}
+function musicGetLauncherApi(){
+  try{
+    const api = window.flprLauncher;
+    return (api && typeof api === "object") ? api : null;
+  }catch(_){}
+  return null;
+}
+function persistMusicStateSnapshotToLauncher(snapshot){
+  try{
+    const api = musicGetLauncherApi();
+    if(!api || typeof api.saveMusicState !== "function") return;
+    if(!window.__flprLauncherMusicHydrated){
+      window.__flprLauncherMusicPendingSnapshot = snapshot;
+      return;
+    }
+    api.saveMusicState(snapshot).catch(()=>{});
+  }catch(_){}
+}
 function persistMusicStateSnapshot(srcState){
   const snapshot = buildMusicStateSnapshot(srcState || state || {});
   try{ localStorage.setItem(MUSIC_STATE_LS_KEY, JSON.stringify(snapshot)); }catch(_){}
@@ -18794,6 +19917,38 @@ function persistMusicStateSnapshot(srcState){
     const blob = new Blob([JSON.stringify(snapshot)], { type:"application/json" });
     idbPut(MUSIC_STATE_IDB_KEY, blob).catch(()=>{});
   }catch(_){}
+  persistMusicStateSnapshotToLauncher(snapshot);
+}
+async function restoreMusicStateFromLauncher(){
+  const api = musicGetLauncherApi();
+  if(!api || typeof api.getMusicState !== "function"){
+    window.__flprLauncherMusicHydrated = true;
+    return false;
+  }
+  try{
+    const launcherSnap = await api.getMusicState();
+    const localSnap = readMusicStateSnapshotFromLocalStorage();
+    const launcherHasValues = musicSnapshotHasAnyValue(launcherSnap);
+    const localHasValues = musicSnapshotHasAnyValue(localSnap);
+    const launcherTs = musicSnapshotTime(launcherSnap);
+    const localTs = musicSnapshotTime(localSnap);
+    window.__flprLauncherMusicHydrated = true;
+    window.__flprLauncherMusicPendingSnapshot = null;
+    if(localHasValues && (!launcherHasValues || localTs > launcherTs)){
+      try{ await api.saveMusicState(localSnap); }catch(_){}
+      return false;
+    }
+    if(!launcherHasValues) return false;
+    if(!applyMusicStateSnapshot(state, launcherSnap)) return false;
+    try{ applyBundledMusicScenarioDefaults(state); }catch(_){}
+    try{ saveState(); }catch(_){}
+    try{ renderMusicScenarioCard(); }catch(_){}
+    try{ musicRefreshScenario(); }catch(_){}
+    return true;
+  }catch(_){
+    window.__flprLauncherMusicHydrated = true;
+  }
+  return false;
 }
 async function restoreMusicStateFromIDB(){
   try{
@@ -18896,6 +20051,7 @@ function seedApStartBaseline(s, slotData){
     for(const tableKey of startKeys){
       const worldId = getWorldIdForTableKey(tableKey);
       if(!worldId || !s.worlds[worldId]) continue;
+      if(isBossWorldId(worldId, s)) continue;
       s.balls[`${tableKey}|1`] = true;
       s.worlds[worldId].locked = false;
     }
@@ -19088,6 +20244,7 @@ function loadState(){
     if(typeof s.bossVictoryManualUnlock !== "boolean") s.bossVictoryManualUnlock = false;
     s.bossRetaliation = normalizeBossRetaliationState(s.bossRetaliation);
     s.besiegedEvent = normalizeBesiegedState(s.besiegedEvent);
+    s.besiegedPenaltyLock = normalizeBesiegedPenaltyLock(s.besiegedPenaltyLock);
     if(!Number.isFinite(Number(s.extraBallTokens))) s.extraBallTokens = 0;
     s.extraBallTokens = Math.max(0, Math.round(Number(s.extraBallTokens) || 0));
     if(!s.extraBallAssignments || typeof s.extraBallAssignments !== "object") s.extraBallAssignments = {};
@@ -19301,7 +20458,15 @@ function saveState(){
 let state = loadState();
 window.__bossDamageSeen = new Set(Object.keys(state?.bossDamageLedger || {}));
 try{ syncBossTableAuthority({ includePlaceholder:true, syncWorldSlots:true }); }catch(_){}
-setTimeout(()=>{ try{ restoreMusicStateFromIDB(); }catch(_){ } }, 0);
+setTimeout(()=>{
+  try{
+    restoreMusicStateFromLauncher()
+      .catch(()=>false)
+      .finally(()=>{ try{ restoreMusicStateFromIDB(); }catch(_){ } });
+  }catch(_){
+    try{ restoreMusicStateFromIDB(); }catch(_){ }
+  }
+}, 0);
 
 function getTaskProgressValue(locId, s){
   const src = s || state;
@@ -20344,6 +21509,9 @@ let bonusPinballGapMode = false;
 let bonusPinballGapDrag = null;
 let bonusPinballToggleGuardUntil = 0;
 let bonusPinballRunAutoHideTimer = 0;
+let bonusPinballManualSignalSuppressed = false;
+let bonusPinballAutoSignalSuppressedUntil = 0;
+let bonusPinballPrimed = false;
 const BONUS_PINBALL_POSITION_KEY = "flpr_bonus_pinball_integrated_position_v1";
 const BONUS_PINBALL_DEFAULT_POSITION = { x:90, y:158 };
 const BONUS_PINBALL_SCALE_KEY = "flpr_bonus_pinball_integrated_scale_v1";
@@ -20457,6 +21625,33 @@ function getIntegratedBonusPinballDocument(){
 function isIntegratedBonusPinballVisible(){
   try{ return document.body.classList.contains("bonusPinballIntegratedOn"); }catch(_){}
   return false;
+}
+function bonusPinballCaptureViewportState(){
+  try{
+    return {
+      x: Number(window.scrollX || document.documentElement?.scrollLeft || document.body?.scrollLeft || 0) || 0,
+      y: Number(window.scrollY || document.documentElement?.scrollTop || document.body?.scrollTop || 0) || 0,
+      bodyX: Number(document.body?.scrollLeft || 0) || 0,
+      bodyY: Number(document.body?.scrollTop || 0) || 0,
+      docX: Number(document.documentElement?.scrollLeft || 0) || 0,
+      docY: Number(document.documentElement?.scrollTop || 0) || 0
+    };
+  }catch(_){}
+  return { x:0, y:0, bodyX:0, bodyY:0, docX:0, docY:0 };
+}
+function bonusPinballRestoreViewportState(pos){
+  try{
+    const p = pos || {};
+    if(document.documentElement){
+      document.documentElement.scrollLeft = Number(p.docX || p.x || 0) || 0;
+      document.documentElement.scrollTop = Number(p.docY || p.y || 0) || 0;
+    }
+    if(document.body){
+      document.body.scrollLeft = Number(p.bodyX || p.x || 0) || 0;
+      document.body.scrollTop = Number(p.bodyY || p.y || 0) || 0;
+    }
+    window.scrollTo(Number(p.x || 0) || 0, Number(p.y || 0) || 0);
+  }catch(_){}
 }
 function getIntegratedBonusPinballPosition(){
   try{
@@ -20988,17 +22183,78 @@ function setIntegratedBonusPinballKeepVisible(on){
     }
   }catch(_){}
 }
+function clearIntegratedBonusPinballAutoHideTimer(){
+  if(!bonusPinballRunAutoHideTimer) return;
+  try{ clearTimeout(bonusPinballRunAutoHideTimer); }catch(_){}
+  bonusPinballRunAutoHideTimer = 0;
+}
+function isIntegratedBonusPinballAutoSignalSuppressed(){
+  return Date.now() < Number(bonusPinballAutoSignalSuppressedUntil || 0);
+}
+function suppressIntegratedBonusPinballSignalsTemporarily(ms){
+  const dur = Math.max(0, Number(ms) || 0);
+  if(!dur) return;
+  bonusPinballAutoSignalSuppressedUntil = Math.max(Number(bonusPinballAutoSignalSuppressedUntil || 0), Date.now() + dur);
+  bonusPinballLastBroadcastSignal = null;
+  try{ localStorage.removeItem(BONUS_PINBALL_SIGNAL_KEY); }catch(_){}
+  try{ document.body.classList.remove("bonusPinballDim"); }catch(_){}
+  if(bonusPinballUndimTimer){
+    try{ clearTimeout(bonusPinballUndimTimer); }catch(_){}
+    bonusPinballUndimTimer = 0;
+  }
+}
+function hideIntegratedBonusPinballAfterRun(){
+  try{
+    bonusPinballManualVisible = false;
+    bonusPinballPositionMode = false;
+    clearIntegratedBonusPinballAutoHideTimer();
+    suppressIntegratedBonusPinballSignalsTemporarily(4200);
+    try{ document.body.classList.remove("bonusPinballIntegratedOn", "bonusPinballDim"); }catch(_){}
+    try{ getIntegratedBonusPinballHost()?.setAttribute("aria-hidden", "true"); }catch(_){}
+    try{ setIntegratedBonusPinballKeepVisible(false); }catch(_){}
+    try{ applyIntegratedBonusPinballLayerVisibility(false); }catch(_){}
+    try{ syncIntegratedBonusPinballPositionMode(); }catch(_){}
+    try{ syncIntegratedBonusPinballControls(); }catch(_){}
+    try{ musicRefreshScenario(); }catch(_){}
+  }catch(_){}
+}
+function setIntegratedBonusPinballSignalSuppressed(on){
+  bonusPinballManualSignalSuppressed = !!on;
+  if(!bonusPinballManualSignalSuppressed){
+    bonusPinballAutoSignalSuppressedUntil = 0;
+    return;
+  }
+  bonusPinballLastBroadcastSignal = null;
+  try{ localStorage.removeItem(BONUS_PINBALL_SIGNAL_KEY); }catch(_){}
+  try{ document.body.classList.remove("bonusPinballDim"); }catch(_){}
+  if(bonusPinballUndimTimer){
+    try{ clearTimeout(bonusPinballUndimTimer); }catch(_){}
+    bonusPinballUndimTimer = 0;
+  }
+  try{ musicRefreshScenario(); }catch(_){}
+}
 function setIntegratedBonusPinballVisible(on, opts){
   opts = opts || {};
+  const viewportBefore = bonusPinballCaptureViewportState();
   if(opts.manual === true) bonusPinballManualVisible = !!on;
+  if(on){
+    setIntegratedBonusPinballSignalSuppressed(false);
+    if(opts.manual === true || opts.keepVisible === true) clearIntegratedBonusPinballAutoHideTimer();
+  }else if(opts.manual === true){
+    setIntegratedBonusPinballSignalSuppressed(true);
+    clearIntegratedBonusPinballAutoHideTimer();
+  }
   const host = ensureIntegratedBonusPinball();
+  bonusPinballRestoreViewportState(viewportBefore);
   try{ document.body.classList.toggle("bonusPinballIntegratedOn", !!on); }catch(_){}
   try{ host?.setAttribute("aria-hidden", on ? "false" : "true"); }catch(_){}
+  bonusPinballRestoreViewportState(viewportBefore);
   if(on){
     if(opts.keepVisible !== false) setIntegratedBonusPinballKeepVisible(true);
     applyIntegratedBonusPinballLayerVisibility(true);
     const mount = getIntegratedBonusPinballMount();
-    try{ mount?.focus?.(); }catch(_){}
+    try{ mount?.focus?.({ preventScroll:true }); }catch(_){ try{ mount?.focus?.(); }catch(__){} }
+    bonusPinballRestoreViewportState(viewportBefore);
   }else{
     if(opts.manual === true) clearIntegratedBonusPinballOverlaySignal();
     bonusPinballPositionMode = false;
@@ -21007,6 +22263,8 @@ function setIntegratedBonusPinballVisible(on, opts){
   }
   syncIntegratedBonusPinballPositionMode();
   syncIntegratedBonusPinballControls();
+  setTimeout(()=>bonusPinballRestoreViewportState(viewportBefore), 0);
+  setTimeout(()=>bonusPinballRestoreViewportState(viewportBefore), 80);
 }
 function toggleIntegratedBonusPinball(){
   const next = !isIntegratedBonusPinballVisible();
@@ -21024,7 +22282,7 @@ function handleIntegratedBonusPinballToggleClick(){
   return next;
 }
 function scheduleIntegratedBonusPinballRunAutoHide(){
-  try{ clearTimeout(bonusPinballRunAutoHideTimer); }catch(_){}
+  clearIntegratedBonusPinballAutoHideTimer();
   const startedAt = Date.now();
   const check = ()=>{
     bonusPinballRunAutoHideTimer = 0;
@@ -21036,19 +22294,17 @@ function scheduleIntegratedBonusPinballRunAutoHide(){
         status?.attemptActive ||
         status?.countdownActive ||
         Number(status?.queueLength || 0) > 0 ||
-        Number(status?.waitingLength || 0) > 0 ||
-        isBonusPinballOverlaySignalActive() ||
-        document.body.classList.contains("bonusPinballDim")
+        Number(status?.waitingLength || 0) > 0
       );
       if(!stillBusy){
-        setIntegratedBonusPinballVisible(false, { signal:true });
+        hideIntegratedBonusPinballAfterRun();
         return;
       }
       if(Date.now() - startedAt < 18000){
         bonusPinballRunAutoHideTimer = setTimeout(check, 520);
         return;
       }
-      setIntegratedBonusPinballVisible(false, { signal:true });
+      hideIntegratedBonusPinballAfterRun();
     }catch(_){
       if(Date.now() - startedAt < 18000) bonusPinballRunAutoHideTimer = setTimeout(check, 700);
     }
@@ -21056,7 +22312,7 @@ function scheduleIntegratedBonusPinballRunAutoHide(){
   bonusPinballRunAutoHideTimer = setTimeout(check, 1400);
 }
 function scheduleIntegratedBonusPinballDoneAutoHide(hideAfterMs){
-  try{ clearTimeout(bonusPinballRunAutoHideTimer); }catch(_){}
+  clearIntegratedBonusPinballAutoHideTimer();
   const delay = Math.max(400, Math.min(26000, Number(hideAfterMs) || 0));
   bonusPinballRunAutoHideTimer = setTimeout(()=>{
     bonusPinballRunAutoHideTimer = 0;
@@ -21066,18 +22322,15 @@ function scheduleIntegratedBonusPinballDoneAutoHide(hideAfterMs){
       const status = (()=>{ try{ return api?.getStatus?.() || null; }catch(_){ return null; } })();
       const stillRunning = !!(
         status?.attemptActive ||
-        status?.countdownActive ||
-        Number(status?.queueLength || 0) > 0 ||
-        Number(status?.waitingLength || 0) > 0
+        status?.countdownActive
       );
       if(stillRunning){
         scheduleIntegratedBonusPinballRunAutoHide();
         return;
       }
-      clearIntegratedBonusPinballOverlaySignal();
-      setIntegratedBonusPinballVisible(false, { signal:true });
+      hideIntegratedBonusPinballAfterRun();
     }catch(_){
-      try{ setIntegratedBonusPinballVisible(false, { signal:true }); }catch(__){}
+      try{ hideIntegratedBonusPinballAfterRun(); }catch(__){}
     }
   }, delay);
 }
@@ -21295,6 +22548,7 @@ async function loadIntegratedBonusPinballComponent(host, mount){
   }
 }
 function ensureIntegratedBonusPinball(){
+  const viewportBefore = bonusPinballCaptureViewportState();
   let host = getIntegratedBonusPinballHost();
   let mount = getIntegratedBonusPinballMount();
   if(host && mount){
@@ -21305,6 +22559,7 @@ function ensureIntegratedBonusPinball(){
     syncIntegratedBonusPinballPositionMode();
     syncBonusPinballControlsGapMode();
     if(mount.dataset.loaded !== "1") loadIntegratedBonusPinballComponent(host, mount);
+    bonusPinballRestoreViewportState(viewportBefore);
     return host;
   }
   host = document.createElement("div");
@@ -21324,6 +22579,7 @@ function ensureIntegratedBonusPinball(){
   host.appendChild(mount);
   const capture = document.querySelector(".capture") || document.body;
   capture.appendChild(host);
+  bonusPinballRestoreViewportState(viewportBefore);
   setIntegratedBonusPinballPosition(getIntegratedBonusPinballPosition(), { persist:false });
   setIntegratedBonusPinballScale(getIntegratedBonusPinballScale(), { persist:false });
   setBonusPinballControlsGap(getBonusPinballControlsGap(), { persist:false });
@@ -21331,6 +22587,7 @@ function ensureIntegratedBonusPinball(){
   syncIntegratedBonusPinballPositionMode();
   syncBonusPinballControlsGapMode();
   loadIntegratedBonusPinballComponent(host, mount);
+  bonusPinballRestoreViewportState(viewportBefore);
   try{
     if(!window.__flprBonusIntegratedSyncTimer){
       window.__flprBonusIntegratedSyncTimer = setInterval(()=>{ try{ syncIntegratedBonusPinballControls(); }catch(_){} }, 1000);
@@ -21338,11 +22595,27 @@ function ensureIntegratedBonusPinball(){
   }catch(_){}
   return host;
 }
+function primeIntegratedBonusPinball(){
+  if(bonusPinballPrimed) return;
+  bonusPinballPrimed = true;
+  const run = ()=>{
+    const viewportBefore = bonusPinballCaptureViewportState();
+    try{ ensureIntegratedBonusPinball(); }catch(_){}
+    bonusPinballRestoreViewportState(viewportBefore);
+    setTimeout(()=>bonusPinballRestoreViewportState(viewportBefore), 0);
+  };
+  try{
+    if(typeof requestIdleCallback === "function") requestIdleCallback(run, { timeout:1800 });
+    else setTimeout(run, 450);
+  }catch(_){ setTimeout(run, 450); }
+}
 function clickIntegratedBonusPinballButton(buttonId, opts){
   opts = opts || {};
   const runCommand = buttonId === "launchRedeemBtn" || buttonId === "testRunNowBtn" || buttonId === "testAutoRedeemBtn";
   const keepVisible = opts.keepVisible != null ? !!opts.keepVisible : !runCommand;
+  setIntegratedBonusPinballSignalSuppressed(false);
   if(runCommand){
+    bonusPinballAutoSignalSuppressedUntil = 0;
     bonusPinballManualVisible = false;
     bonusPinballPositionMode = false;
     try{ setIntegratedBonusPinballKeepVisible(false); }catch(_){}
@@ -21431,6 +22704,20 @@ function normalizeBonusPinballOverlaySignalPayload(payload){
 }
 function rememberBonusPinballOverlaySignal(payload){
   const data = normalizeBonusPinballOverlaySignalPayload(payload);
+  if(isIntegratedBonusPinballAutoSignalSuppressed()){
+    if(data || payload?.active === true){
+      bonusPinballLastBroadcastSignal = null;
+      try{ localStorage.removeItem(BONUS_PINBALL_SIGNAL_KEY); }catch(_){}
+      return;
+    }
+  }
+  if(bonusPinballManualSignalSuppressed && !bonusPinballManualVisible){
+    if(data || payload?.active === true){
+      bonusPinballLastBroadcastSignal = null;
+      try{ localStorage.removeItem(BONUS_PINBALL_SIGNAL_KEY); }catch(_){}
+      return;
+    }
+  }
   bonusPinballLastBroadcastSignal = data;
   if(data || payload?.active === false){
     try{ applyBonusPinballOverlayDim(); }catch(_){}
@@ -21446,6 +22733,8 @@ function clearIntegratedBonusPinballOverlaySignal(){
   }
 }
 function readBonusPinballOverlaySignal(){
+  if(isIntegratedBonusPinballAutoSignalSuppressed()) return null;
+  if(bonusPinballManualSignalSuppressed && !bonusPinballManualVisible) return null;
   const bridged = normalizeBonusPinballOverlaySignalPayload(bonusPinballLastBroadcastSignal);
   if(bridged) return bridged;
   try{
@@ -21476,6 +22765,14 @@ function isBonusPinballMusicSuppressed(){
 }
 function applyBonusPinballOverlayDim(){
   try{
+    if(isIntegratedBonusPinballAutoSignalSuppressed()){
+      try{ document.body.classList.remove("bonusPinballDim"); }catch(_){}
+      return;
+    }
+    if(bonusPinballManualSignalSuppressed && !bonusPinballManualVisible){
+      try{ document.body.classList.remove("bonusPinballDim"); }catch(_){}
+      return;
+    }
     const active = isBonusPinballOverlaySignalActive();
     const musicAllowed = isBonusPinballOverlaySignalMusicAllowed();
     if(active){
@@ -22529,7 +23826,13 @@ function refreshControlPanelLayoutHandles(){
   document.querySelectorAll(".connectCompactLayout,.visualsCompactLayout,.testingCompactLayout").forEach(ensureControlColumnHandle);
   document.querySelectorAll(".controlsPanels .connectPanelSection").forEach(ensureControlPanelHandles);
   bindControlLayoutDragEvents();
-  loadControlLayoutState().then(()=>applySavedControlLayout()).catch(()=>applySavedControlLayout());
+  loadControlLayoutState().then(()=>{
+    applySavedControlLayout();
+    primeIntegratedBonusPinball();
+  }).catch(()=>{
+    applySavedControlLayout();
+    primeIntegratedBonusPinball();
+  });
 }
 
 
@@ -28439,6 +29742,7 @@ function pauseAutoSwap(ms){
   autoSwapPausedUntil = Date.now() + Math.max(0, ms||0);
 }
 function canAutoSwap(){
+  if(typeof besiegedIsActive === "function" && besiegedIsActive()) return false;
   return Date.now() >= autoSwapPausedUntil;
 }
 
@@ -28819,7 +30123,156 @@ function besiegedChooseArmyConfig(){
   const key = keys[Math.floor(Math.random() * keys.length)] || "skeletons";
   return { key, ...configs[key] };
 }
-window.__besiegedBattleFx = window.__besiegedBattleFx || { active:false, timer:null, type:"", lastImpactAt:0 };
+const besiegedCastlePaletteCache = new Map();
+function besiegedHashColorSeed(text){
+  let h = 2166136261;
+  const s = String(text || "castle");
+  for(let i = 0; i < s.length; i++){
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+function besiegedColorFromSeed(seed, offset){
+  const hue = (Number(seed || 0) + Number(offset || 0)) % 360;
+  return `hsl(${hue} 46% 48%)`;
+}
+function besiegedRgbToHsl(r, g, b){
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+  if(max !== min){
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if(max === r) h = ((g - b) / d) + (g < b ? 6 : 0);
+    else if(max === g) h = ((b - r) / d) + 2;
+    else h = ((r - g) / d) + 4;
+    h /= 6;
+  }
+  return { h:h * 360, s, l };
+}
+function besiegedRgbCss(c, alpha){
+  const a = Math.max(0, Math.min(1, Number(alpha == null ? 1 : alpha)));
+  return `rgba(${Math.round(c.r)}, ${Math.round(c.g)}, ${Math.round(c.b)}, ${a})`;
+}
+function besiegedMixColor(c, pctWhite){
+  const p = Math.max(0, Math.min(1, Number(pctWhite || 0)));
+  return {
+    r: c.r + ((255 - c.r) * p),
+    g: c.g + ((255 - c.g) * p),
+    b: c.b + ((255 - c.b) * p)
+  };
+}
+function besiegedDarkenColor(c, pctBlack){
+  const p = 1 - Math.max(0, Math.min(1, Number(pctBlack || 0)));
+  return { r:c.r * p, g:c.g * p, b:c.b * p };
+}
+function besiegedApplyCastlePalette(card, palette){
+  if(!card || !palette) return;
+  try{
+    card.style.setProperty("--siege-castle-top", besiegedRgbCss(palette.top, .94));
+    card.style.setProperty("--siege-castle-mid", besiegedRgbCss(palette.mid, .96));
+    card.style.setProperty("--siege-castle-low", besiegedRgbCss(palette.low, .98));
+    card.style.setProperty("--siege-castle-accent", besiegedRgbCss(palette.accent, .96));
+    card.style.setProperty("--siege-castle-gate", besiegedRgbCss(palette.gate, .98));
+    card.style.setProperty("--siege-castle-gate-dark", besiegedRgbCss(palette.gateDark, .98));
+  }catch(_){}
+}
+function besiegedFallbackCastlePalette(seedText){
+  const seed = besiegedHashColorSeed(seedText);
+  const h = seed % 360;
+  const mid = { r:80 + (seed % 70), g:92 + ((seed >> 8) % 82), b:108 + ((seed >> 16) % 76) };
+  const accentHue = (h + 42) % 360;
+  return {
+    top: besiegedMixColor(mid, .42),
+    mid,
+    low: besiegedDarkenColor(mid, .56),
+    accent: { r:210 + (seed % 36), g:132 + ((seed >> 4) % 82), b:60 + ((seed >> 12) % 64) },
+    gate: { r:112, g:66 + (seed % 26), b:42 + ((seed >> 5) % 34) },
+    gateDark: { r:42, g:22, b:18 },
+    hue: accentHue
+  };
+}
+function besiegedExtractCastlePaletteFromImage(src, seedText){
+  const key = String(src || "");
+  if(!key) return Promise.resolve(besiegedFallbackCastlePalette(seedText));
+  if(besiegedCastlePaletteCache.has(key)) return Promise.resolve(besiegedCastlePaletteCache.get(key));
+  return new Promise((resolve)=>{
+    try{
+      const img = new Image();
+      if(/^https?:/i.test(key)) img.crossOrigin = "anonymous";
+      img.onload = ()=>{
+        try{
+          const canvas = document.createElement("canvas");
+          const size = 34;
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d", { willReadFrequently:true });
+          ctx.drawImage(img, 0, 0, size, size);
+          const data = ctx.getImageData(0, 0, size, size).data;
+          const colors = [];
+          for(let i = 0; i < data.length; i += 16){
+            const a = data[i + 3];
+            if(a < 180) continue;
+            const r = data[i], g = data[i + 1], b = data[i + 2];
+            const lum = (r * .299) + (g * .587) + (b * .114);
+            if(lum < 32 || lum > 236) continue;
+            const hsl = besiegedRgbToHsl(r, g, b);
+            const weight = (hsl.s * 1.7) + (Math.abs(hsl.l - .5) * .55) + (lum / 510);
+            colors.push({ r, g, b, hsl, weight });
+          }
+          colors.sort((a, b)=> b.weight - a.weight);
+          const mid = colors[0] || { r:112, g:142, b:156 };
+          const accent = colors.find((c)=> Math.abs(c.hsl.h - mid.hsl.h) > 24 && c.hsl.s > .22) || colors[1] || mid;
+          const gateBase = colors.find((c)=> c.r > c.g * .92 && c.r > c.b * 1.08 && c.hsl.l < .58) || mid;
+          const palette = {
+            top: besiegedMixColor(mid, .42),
+            mid,
+            low: besiegedDarkenColor(mid, .58),
+            accent: besiegedMixColor(accent, .12),
+            gate: besiegedDarkenColor(gateBase, .20),
+            gateDark: besiegedDarkenColor(gateBase, .68)
+          };
+          besiegedCastlePaletteCache.set(key, palette);
+          resolve(palette);
+        }catch(_){
+          const fallback = besiegedFallbackCastlePalette(seedText || key);
+          besiegedCastlePaletteCache.set(key, fallback);
+          resolve(fallback);
+        }
+      };
+      img.onerror = ()=>{
+        const fallback = besiegedFallbackCastlePalette(seedText || key);
+        besiegedCastlePaletteCache.set(key, fallback);
+        resolve(fallback);
+      };
+      img.src = key;
+    }catch(_){
+      resolve(besiegedFallbackCastlePalette(seedText || key));
+    }
+  });
+}
+function besiegedApplyCastlePaletteFromBanner(card, bannerUrl, seedText){
+  if(!card) return;
+  if(bannerUrl && besiegedCastlePaletteCache.has(String(bannerUrl))){
+    besiegedApplyCastlePalette(card, besiegedCastlePaletteCache.get(String(bannerUrl)));
+    return;
+  }
+  const fallback = besiegedFallbackCastlePalette(`${seedText || ""}|${bannerUrl || ""}`);
+  besiegedApplyCastlePalette(card, fallback);
+  if(!bannerUrl) return;
+  const token = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  card.dataset.siegePaletteToken = token;
+  besiegedExtractCastlePaletteFromImage(bannerUrl, seedText).then((palette)=>{
+    try{
+      if(card.isConnected && card.dataset.siegePaletteToken === token) besiegedApplyCastlePalette(card, palette);
+    }catch(_){}
+  });
+}
+window.__besiegedBattleFx = window.__besiegedBattleFx || { active:false, timer:null, type:"", lastImpactAt:0, lastDamageLevel:0, lastFireAt:0 };
 function besiegedPlayBattleTick(type){
   try{
     if(!sfx?.enabled) return;
@@ -28838,6 +30291,47 @@ function besiegedPlayBattleTick(type){
         setTimeout(()=>playTone({ freq:92, dur:0.18, type:"triangle", gain:0.042, sweepTo:58, sweepDur:0.16 }), 74);
       }
     }
+  }catch(_){}
+}
+function besiegedPlayDamageSfx(level, previousLevel){
+  try{
+    if(!sfx?.enabled) return;
+    const fx = (window.__besiegedBattleFx ||= { active:false, timer:null, type:"", lastImpactAt:0, lastDamageLevel:0, lastFireAt:0 });
+    const lvl = Math.max(0, Math.min(4, Math.round(Number(level) || 0)));
+    const prev = Math.max(0, Math.min(4, Math.round(Number(previousLevel) || 0)));
+    const now = Date.now();
+    if(lvl > prev){
+      const heavy = lvl >= 3;
+      playTone({ freq:heavy ? 96 : 132, dur:0.16, type:"sawtooth", gain:heavy ? 0.075 : 0.055, sweepTo:heavy ? 54 : 82, sweepDur:0.14 });
+      setTimeout(()=>playTone({ freq:heavy ? 318 : 428, dur:0.055, type:"square", gain:heavy ? 0.050 : 0.038, sweepTo:heavy ? 190 : 256, sweepDur:0.045 }), 46);
+      setTimeout(()=>playTone({ freq:heavy ? 680 : 820, dur:0.030, type:"triangle", gain:0.028, sweepTo:heavy ? 420 : 520, sweepDur:0.026 }), 112);
+      if(lvl >= 4){
+        setTimeout(()=>playTone({ freq:64, dur:0.28, type:"sawtooth", gain:0.070, sweepTo:38, sweepDur:0.24 }), 170);
+      }
+      fx.lastFireAt = Math.max(0, now - 900);
+    }
+    if(lvl >= 2){
+      const interval = lvl >= 4 ? 760 : (lvl >= 3 ? 1040 : 1420);
+      if((now - Number(fx.lastFireAt || 0)) >= interval){
+        fx.lastFireAt = now;
+        const base = 260 + Math.random() * 170;
+        playTone({ freq:base, dur:0.052, type:"square", gain:0.026 + (lvl * 0.004), sweepTo:base * 0.62, sweepDur:0.044 });
+        setTimeout(()=>playTone({ freq:128 + Math.random() * 60, dur:0.12, type:"sawtooth", gain:0.024 + (lvl * 0.003), sweepTo:78 + Math.random() * 32, sweepDur:0.10 }), 62);
+        if(lvl >= 3 && Math.random() < 0.55){
+          setTimeout(()=>playTone({ freq:620 + Math.random() * 360, dur:0.028, type:"triangle", gain:0.020, sweepTo:420 + Math.random() * 180, sweepDur:0.024 }), 128);
+        }
+      }
+    }
+  }catch(_){}
+}
+function besiegedPlayCastleCollapseSfx(){
+  try{
+    if(!sfx?.enabled) return;
+    playTone({ freq:92, dur:0.24, type:"sawtooth", gain:0.090, sweepTo:38, sweepDur:0.22 });
+    setTimeout(()=>playTone({ freq:44, dur:0.46, type:"sawtooth", gain:0.082, sweepTo:26, sweepDur:0.42 }), 120);
+    setTimeout(()=>playTone({ freq:520, dur:0.052, type:"square", gain:0.042, sweepTo:180, sweepDur:0.048 }), 205);
+    setTimeout(()=>playTone({ freq:132, dur:0.26, type:"triangle", gain:0.054, sweepTo:72, sweepDur:0.24 }), 360);
+    setTimeout(()=>playTone({ freq:760, dur:0.035, type:"triangle", gain:0.025, sweepTo:420, sweepDur:0.030 }), 540);
   }catch(_){}
 }
 function besiegedStartBattleAudio(type){
@@ -28860,6 +30354,8 @@ function besiegedStopBattleAudio(){
     fx.timer = null;
     fx.active = false;
     fx.type = "";
+    fx.lastDamageLevel = 0;
+    fx.lastFireAt = 0;
   }catch(_){}
 }
 function besiegedSyncBattleAudio(){
@@ -28873,16 +30369,60 @@ function besiegedGetState(){
   state.besiegedEvent = normalizeBesiegedState(state?.besiegedEvent);
   return state.besiegedEvent;
 }
+function besiegedGetPenaltyLock(){
+  state.besiegedPenaltyLock = normalizeBesiegedPenaltyLock(state?.besiegedPenaltyLock);
+  return state.besiegedPenaltyLock;
+}
 function besiegedIsActive(){
   return !!besiegedGetState().active;
 }
-function besiegedLocksTable(tableKey){
+function besiegedPenaltyLocksTable(tableKey){
+  const lock = besiegedGetPenaltyLock();
+  const tk = String(tableKey || "").trim();
+  return !!(lock.active && tk && String(lock.tableKey || "") === tk);
+}
+function besiegedActiveLocksTable(tableKey){
   const live = besiegedGetState();
-  return !!(live.active && String(tableKey || "").trim() && String(live.tableKey || "") !== String(tableKey || "").trim());
+  const tk = String(tableKey || "").trim();
+  return !!(live.active && tk && String(live.tableKey || "") === tk);
+}
+function besiegedShowsSiegeLock(tableKey){
+  const tk = String(tableKey || "").trim();
+  return !!(tk && (besiegedActiveLocksTable(tk) || besiegedPenaltyLocksTable(tk)));
+}
+function besiegedShowsTowerSiegeLock(tableKey){
+  const tk = String(tableKey || "").trim();
+  if(!tk) return false;
+  if(besiegedPenaltyLocksTable(tk)) return true;
+  const live = besiegedGetState();
+  return !!(
+    live.active
+    && Number(live.defenseFailedAt || 0) > 0
+    && String(live.tableKey || "") === tk
+  );
+}
+function besiegedLocksTable(tableKey){
+  const tk = String(tableKey || "").trim();
+  if(!tk) return false;
+  return besiegedShowsSiegeLock(tk);
 }
 function besiegedLocksWorld(worldKey){
+  return false;
+}
+function besiegedGetLockMessage(tableKey){
+  const tk = String(tableKey || "").trim();
   const live = besiegedGetState();
-  return !!(live.active && String(worldKey || "").trim() && String(live.worldKey || "") !== String(worldKey || "").trim());
+  if(live.active && tk && String(live.tableKey || "") === tk){
+    return `${String(live.tableName || "This table")} is besieged. Start Defense, hit the posted score, then break the siege.`;
+  }
+  const lock = besiegedGetPenaltyLock();
+  if(lock.active && tk && String(lock.tableKey || "") === tk){
+    return `${String(lock.tableName || "This table")} is siege-locked. Redeem a task on another table to reopen it.`;
+  }
+  return "";
+}
+function besiegedGetLockBadge(tableKey){
+  return besiegedShowsSiegeLock(tableKey) ? "SIEGE LOCK" : "LOCK";
 }
 function besiegedParseScoreValue(text){
   const match = String(text || "").match(/(\d[\d,]*)\+?/);
@@ -28939,9 +30479,8 @@ function besiegedChooseTargetTable(opts){
   opts = opts || {};
   try{
     const allowLocked = !!opts.force || !!opts.allowLocked;
-    const allowNoNodes = !!opts.force || !!opts.allowNoNodes;
+    const allowNoNodes = true;
     const candidates = [];
-    const incomplete = [];
     const tableEntries = getOpenNonBossTableCandidates({ allowLocked, allowNoNodes });
     for(const entryBase of tableEntries){
       const nodes = Array.isArray(entryBase.nodes) ? entryBase.nodes : [];
@@ -28949,11 +30488,9 @@ function besiegedChooseTargetTable(opts){
       const complete = !!(ids.length && ids.every((id)=> !!ap?.checked?.has?.(id)));
       const entry = { ...entryBase, complete };
       candidates.push(entry);
-      if(!complete) incomplete.push(entry);
     }
-    const pool = incomplete.length ? incomplete : candidates;
-    if(!pool.length) return null;
-    return pool[Math.floor(Math.random() * pool.length)] || pool[0] || null;
+    if(!candidates.length) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)] || candidates[0] || null;
   }catch(_){}
   return null;
 }
@@ -28962,6 +30499,7 @@ function besiegedSyncContext(opts){
   const live = besiegedGetState();
   if(!live.active) return false;
   let changed = false;
+  try{ if(besiegedEnforceBossLockDuringSiege("siege-context", { save:false })) changed = true; }catch(_){}
   const worldKey = String(live.worldKey || "");
   const tableKey = String(live.tableKey || "");
   const idx = Math.max(0, Number(String(tableKey).split("|")[1] || 0));
@@ -28998,12 +30536,71 @@ function besiegedBossUnlockedByStateOnly(){
   }catch(_){}
   return false;
 }
+function besiegedBossUnlockedByAuthorizationOnly(){
+  try{
+    const requiredCount = (typeof getBossKeysRequiredForOpen === "function") ? getBossKeysRequiredForOpen() : 3;
+    const testUnlockUntil = Number(window.__bossTestUnlockUntil || 0);
+    if(testUnlockUntil > Date.now()) return true;
+    const apCount = Number(window.__apBossKeyCount);
+    if(Number.isFinite(apCount)) return apCount >= requiredCount;
+    if(window.bossKeysState && Array.isArray(bossKeysState)){
+      const dockCount = bossKeysState.reduce((n, k)=> n + ((k && k.acquired) ? 1 : 0), 0);
+      if(dockCount >= requiredCount) return true;
+    }
+    if(typeof getBossKeysAcquiredCount === "function" && getBossKeysAcquiredCount() >= requiredCount) return true;
+  }catch(_){}
+  return false;
+}
+function besiegedEnforceBossLockDuringSiege(reason, opts){
+  opts = opts || {};
+  try{
+    const live = besiegedGetState();
+    if(!live.active) return false;
+    if(besiegedBossUnlockedByAuthorizationOnly()) return false;
+    const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
+    const firstPlayableWorldKey = getFirstPlayableWorldKey();
+    let changed = false;
+    if(state && state.worlds){
+      if(state.worlds[bossWorldKey] && state.worlds[bossWorldKey].locked !== true){
+        state.worlds[bossWorldKey].locked = true;
+        changed = true;
+      }
+      if(bossWorldKey !== "boss" && state.worlds.boss && state.worlds.boss.locked !== true){
+        state.worlds.boss.locked = true;
+        changed = true;
+      }
+    }
+    if(state && state.bossOpen){
+      state.bossOpen = false;
+      changed = true;
+    }
+    if(state && isBossWorldId(state.selected, state)){
+      state.lastSelected = state.selected;
+      state.selected = firstPlayableWorldKey;
+      changed = true;
+    }
+    if(ap && isBossWorldId(ap.currentWorld, state)){
+      ap.currentWorld = firstPlayableWorldKey;
+      changed = true;
+    }
+    window.__bossThreatDelayUntil = 0;
+    if(changed && opts.save !== false){
+      try{ saveState(); }catch(_){}
+    }
+    if(changed && reason){
+      try{ apLog(`Boss world kept locked during siege; ${reason}.`); }catch(_){}
+    }
+    return changed;
+  }catch(_){}
+  return false;
+}
 function besiegedRelockBossIfNeeded(live){
   try{
+    const authorizedOpen = besiegedBossUnlockedByAuthorizationOnly();
     const wasOpen = (typeof live?.bossUnlockedAtStart === "boolean")
       ? !!live.bossUnlockedAtStart
-      : besiegedBossUnlockedByStateOnly();
-    if(wasOpen) return false;
+      : authorizedOpen;
+    if(wasOpen && authorizedOpen) return false;
     const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
     if(state && state.worlds){
       if(state.worlds[bossWorldKey]) state.worlds[bossWorldKey].locked = true;
@@ -29024,16 +30621,453 @@ function besiegedRelockBossIfNeeded(live){
   }catch(_){}
   return false;
 }
+function besiegedFormatDefenseTime(ms){
+  const total = Math.max(0, Math.ceil(Number(ms || 0) / 1000));
+  const mm = Math.floor(total / 60);
+  const ss = total % 60;
+  return `${mm}:${String(ss).padStart(2, "0")}`;
+}
+function besiegedDefenseLeftMs(live){
+  const s = live || besiegedGetState();
+  if(!s.active || !(Number(s.defenseDeadlineAt || 0) > 0)) return BESIEGED_DEFENSE_MS;
+  return Math.max(0, Number(s.defenseDeadlineAt || 0) - Date.now());
+}
+function besiegedIsDefenseRunning(live){
+  const s = live || besiegedGetState();
+  return !!(s.active && !(Number(s.defenseFailedAt || 0) > 0) && Number(s.defenseStartedAt || 0) > 0 && Number(s.defenseDeadlineAt || 0) > 0);
+}
+function besiegedGetDefenseDamageLevel(live){
+  const s = live || besiegedGetState();
+  if(s.active && Number(s.defenseFailedAt || 0) > 0) return 4;
+  if(!besiegedIsDefenseRunning(s)) return 0;
+  const elapsedPct = 1 - (besiegedDefenseLeftMs(s) / BESIEGED_DEFENSE_MS);
+  if(elapsedPct >= 0.86) return 4;
+  if(elapsedPct >= 0.68) return 3;
+  if(elapsedPct >= 0.46) return 2;
+  if(elapsedPct >= 0.24) return 1;
+  return 0;
+}
+function besiegedUpdateDefenseActionUi(live){
+  try{
+    const s = live || besiegedGetState();
+    const running = besiegedIsDefenseRunning(s);
+    const failed = !!(s.active && Number(s.defenseFailedAt || 0) > 0);
+    const labelText = failed ? "CASTLE FALLEN" : (running ? "BREAK THE SIEGE" : "START DEFENSE");
+    const scoreText = failed ? "SIEGE LOST" : (running ? String(s.targetLabel || "TARGET SCORE") : "");
+    const hintText = failed ? "LOCKING TABLE" : (running ? "CLEARED TABLE SCORE" : "");
+    document.querySelectorAll(".pentaCard.besiegedTarget .besiegedTargetBtn").forEach((btn)=>{
+      if(!btn) return;
+      btn.classList.toggle("isDefenseRunning", running);
+      btn.disabled = failed;
+      btn.setAttribute("aria-label", failed ? "Castle fallen; siege lock is being applied" : (running ? "Break the siege with the cleared table score" : "Start defense"));
+      let label = btn.querySelector("[data-besieged-action-label]");
+      let score = btn.querySelector("[data-besieged-action-score]");
+      let hint = btn.querySelector("[data-besieged-action-hint]");
+      if(!label){
+        label = document.createElement("span");
+        label.className = "besiegedTargetLabel";
+        label.setAttribute("data-besieged-action-label", "");
+        btn.appendChild(label);
+      }
+      if(!score){
+        score = document.createElement("span");
+        score.className = "besiegedTargetScore";
+        score.setAttribute("data-besieged-action-score", "");
+        btn.appendChild(score);
+      }
+      if(!hint){
+        hint = document.createElement("span");
+        hint.className = "besiegedTargetHint";
+        hint.setAttribute("data-besieged-action-hint", "");
+        btn.appendChild(hint);
+      }
+      label.textContent = labelText;
+      score.textContent = scoreText;
+      hint.textContent = hintText;
+    });
+  }catch(_){}
+}
+function besiegedApplyDefenseDamageUi(live){
+  try{
+    const s = live || besiegedGetState();
+    const failed = !!(s.active && Number(s.defenseFailedAt || 0) > 0);
+    const level = besiegedGetDefenseDamageLevel(s);
+    const running = besiegedIsDefenseRunning(s);
+    const leftMs = besiegedDefenseLeftMs(s);
+    const elapsedPct = failed ? 1 : (running ? Math.max(0, Math.min(1, 1 - (leftMs / BESIEGED_DEFENSE_MS))) : 0);
+    const warningPct = Math.max(0, Math.min(1, (elapsedPct - 0.38) / 0.62));
+    const blinkPct = Math.max(0, Math.min(1, (elapsedPct - 0.64) / 0.36));
+    const blinkSpeed = Math.round(2700 - (blinkPct * 1200));
+    const fx = (window.__besiegedBattleFx ||= { active:false, timer:null, type:"", lastImpactAt:0, lastDamageLevel:0, lastFireAt:0 });
+    const previousLevel = Math.max(0, Math.round(Number(fx.lastDamageLevel || 0) || 0));
+    besiegedPlayDamageSfx(level, previousLevel);
+    fx.lastDamageLevel = level;
+    document.querySelectorAll(".pentaCard.besiegedTarget").forEach((card)=>{
+      for(let i = 0; i <= 4; i++) card.classList.toggle(`besiegedDamage${i}`, i === level);
+      card.style.setProperty("--siege-damage", String(level));
+      card.style.setProperty("--siege-emergency", elapsedPct.toFixed(3));
+      card.style.setProperty("--siege-red-wash", (warningPct * 0.58).toFixed(3));
+      card.style.setProperty("--siege-emergency-blink", blinkPct.toFixed(3));
+      card.style.setProperty("--siege-emergency-speed", `${blinkSpeed}ms`);
+      card.classList.toggle("besiegedEmergency", blinkPct > 0.04);
+      card.classList.toggle("besiegedDefenseFailed", failed);
+    });
+  }catch(_){}
+}
+function besiegedIsCurrentlyOpenTableKey(tableKey){
+  try{
+    const tk = String(tableKey || "").trim();
+    if(!tk || relicIsFinalLockedTable(tk)) return false;
+    if(besiegedPenaltyLocksTable(tk)) return false;
+    const parts = tk.split("|");
+    const wk = String(parts[0] || "").trim();
+    if(!wk || isBossWorldId(wk, state) || wk === "boss") return false;
+    const world = state?.worlds?.[wk];
+    if(!world || world.locked) return false;
+    return Number(getBallLevelByTableKey(tk) || 0) > 0;
+  }catch(_){}
+  return false;
+}
+function besiegedChoosePenaltyLockTable(live){
+  const current = live || besiegedGetState();
+  const currentKey = String(current.tableKey || "").trim();
+  if(currentKey && besiegedIsCurrentlyOpenTableKey(currentKey)){
+    return {
+      tableKey: currentKey,
+      worldKey: String(current.worldKey || currentKey.split("|")[0] || ""),
+      tableName: String(current.tableName || relicGetTableName(currentKey) || "Table")
+    };
+  }
+  return null;
+}
+function besiegedSpendPenaltyResource(){
+  try{
+    normalizeExtraBallState(state);
+    if(Number(state.extraBallTokens || 0) > 0){
+      state.extraBallTokens = Math.max(0, Math.round(Number(state.extraBallTokens || 0)) - 1);
+      normalizeExtraBallState(state);
+      return "Banked Extra Ball -1";
+    }
+    if(getJunkRedeemBalance("easy") > 0){
+      consumeJunkRedeemBalance("easy", 1);
+      return "Easy Junk Redeem -1";
+    }
+    if(getJunkRedeemBalance("medium") > 0){
+      consumeJunkRedeemBalance("medium", 1);
+      return "Medium Junk Redeem -1";
+    }
+  }catch(_){}
+  return "No banked penalty resource";
+}
+function besiegedAwardDefenseWin(live){
+  try{
+    normalizeExtraBallState(state);
+    state.extraBallTokens = Math.max(0, Math.round(Number(state.extraBallTokens || 0)) + 1);
+    normalizeExtraBallState(state);
+    showExtraBallBanner("SIEGE DEFENSE");
+    addRewardToOverview({
+      locationName:"(Siege Defense)",
+      itemName:"ExtraBall Token +1",
+      itemTitle:"EXTRABALL"
+    });
+    return true;
+  }catch(_){}
+  return false;
+}
+function besiegedSetPenaltyLockFromFailure(live){
+  const target = besiegedChoosePenaltyLockTable(live);
+  if(!target || !target.tableKey || !besiegedIsCurrentlyOpenTableKey(target.tableKey)) return null;
+  state.besiegedPenaltyLock = normalizeBesiegedPenaltyLock({
+    active:true,
+    tableKey:String(target.tableKey || ""),
+    worldKey:String(target.worldKey || ""),
+    tableName:String(target.tableName || "Table"),
+    lockedAt:Date.now(),
+    reason:"siege-timeout"
+  });
+  return state.besiegedPenaltyLock;
+}
+function besiegedApplyLockAppearingFx(el, opts){
+  opts = opts || {};
+  if(!el) return false;
+  try{
+    el.classList.add("siegeLockAppearing");
+    let chain = el.querySelector(".lockChainsOverlay");
+    if(!chain){
+      chain = document.createElement("div");
+      chain.className = "lockChainsOverlay";
+      el.appendChild(chain);
+    }
+    let badge = el.querySelector(".lockBadgeOverlay");
+    if(!badge){
+      badge = document.createElement("div");
+      badge.className = "lockBadgeOverlay";
+      el.appendChild(badge);
+    }
+    badge.textContent = "SIEGE LOCK";
+    badge.classList.add("siegeLockBadge");
+    chain.classList.add("siegeLockChains");
+    chain.classList.remove("active", "unlockDrop", "lockRise");
+    badge.classList.remove("active", "unlockDrop", "lockRise");
+    void chain.offsetWidth;
+    chain.classList.add("lockRise");
+    void badge.offsetWidth;
+    badge.classList.add("lockRise");
+
+    el.querySelectorAll(".siegeLockStamp").forEach((node)=>{ try{ node.remove(); }catch(_){} });
+    const stamp = document.createElement("div");
+    stamp.className = "siegeLockStamp";
+    stamp.textContent = "SIEGE LOCKED";
+    el.appendChild(stamp);
+    try{ sparksAtElement(el); }catch(_){}
+    try{ playSfx(opts.sfx || "trap"); }catch(_){}
+    setTimeout(()=>{
+      try{
+        el.classList.remove("siegeLockAppearing");
+        chain.classList.remove("lockRise");
+        badge.classList.remove("lockRise");
+        chain.classList.add("active");
+        badge.classList.add("active");
+        stamp.remove();
+      }catch(_){}
+    }, 1620);
+    return true;
+  }catch(_){}
+  return false;
+}
+function besiegedFindTowerCardForKey(tableKey){
+  try{
+    const parts = String(tableKey || "").split("|");
+    const wk = String(parts[0] || "");
+    const idx = Number(parts[1]);
+    if(!wk || !Number.isFinite(idx) || idx < 0) return null;
+    const wrap = document.querySelector("#selectedBody .pentagonWrap");
+    const cards = wrap && Array.isArray(wrap.__pentaCards) ? wrap.__pentaCards : null;
+    return cards && cards[idx] ? cards[idx] : null;
+  }catch(_){}
+  return null;
+}
+function besiegedFindOverviewTileForKey(tableKey){
+  try{
+    const key = String(tableKey || "").trim();
+    if(!key) return null;
+    const esc = (typeof CSS !== "undefined" && CSS && CSS.escape) ? CSS.escape(key) : key;
+    return document.querySelector(`#grid [data-tablekey="${esc}"]`);
+  }catch(_){}
+  return null;
+}
+function besiegedAnimatePenaltyLock(lock){
+  try{
+    const activeLock = normalizeBesiegedPenaltyLock(lock || state?.besiegedPenaltyLock);
+    if(!activeLock.active || !activeLock.tableKey || !activeLock.worldKey) return false;
+    if(!besiegedPenaltyLocksTable(activeLock.tableKey)) return false;
+    const parts = String(activeLock.tableKey || "").split("|");
+    const idx = Math.max(0, Number(parts[1] || 0) || 0);
+    state.selected = String(activeLock.worldKey || state.selected || "w1");
+    state.nowPlaying = state.nowPlaying || {};
+    if(!(Number(state.nowPlaying[state.selected]) >= 0)) state.nowPlaying[state.selected] = idx;
+    try{ ap.currentWorld = state.selected; }catch(_){}
+    try{
+      if(typeof showView === "function") showView("tower");
+      else { activeView = "tower"; try{ setTabUI(); }catch(_){} }
+    }catch(_){}
+    try{ renderAll(); }catch(_){}
+    requestAnimationFrame(()=>{
+      const towerCard = besiegedFindTowerCardForKey(activeLock.tableKey);
+      besiegedApplyLockAppearingFx(towerCard, { sfx:"trap" });
+    });
+    setTimeout(()=>{
+      try{
+        if(typeof showView === "function") showView("overview");
+        else { activeView = "overview"; try{ setTabUI(); }catch(_){} }
+      }catch(_){}
+      try{ renderOverviewGrid(); }catch(_){}
+      requestAnimationFrame(()=>{
+        const overviewTile = besiegedFindOverviewTileForKey(activeLock.tableKey);
+        besiegedApplyLockAppearingFx(overviewTile, { sfx:"trap" });
+        try{ focusOverviewTableForWindow(activeLock.tableKey, 4200); }catch(_){}
+      });
+    }, 1500);
+    return true;
+  }catch(_){}
+  return false;
+}
+function besiegedApplyCastleFailureFx(card){
+  if(!card) return false;
+  try{
+    card.classList.add("besiegedDefenseFailed", "besiegedDamage4", "besiegedEmergency");
+    let rubble = card.querySelector(".besiegedRubbleFx");
+    if(!rubble){
+      rubble = document.createElement("div");
+      rubble.className = "besiegedRubbleFx";
+      rubble.innerHTML = Array.from({ length:18 }, (_, i)=>`<span class="rubblePiece r${i + 1}"></span>`).join("");
+      card.appendChild(rubble);
+    }
+    rubble.classList.remove("play");
+    void rubble.offsetWidth;
+    rubble.classList.add("play");
+    try{ sparksAtElement(card); }catch(_){}
+    besiegedPlayCastleCollapseSfx();
+    return true;
+  }catch(_){}
+  return false;
+}
+function besiegedClearPenaltyLock(reason){
+  const lock = besiegedGetPenaltyLock();
+  if(!lock.active) return false;
+  const tableName = String(lock.tableName || "Locked table");
+  state.besiegedPenaltyLock = buildDefaultBesiegedPenaltyLock();
+  try{ saveState(); }catch(_){}
+  try{ toast("good", "SIEGE LOCK CLEARED", `${tableName} is playable again.`, 2800); }catch(_){}
+  try{ renderAll(); }catch(_){}
+  return true;
+}
+function besiegedMaybeClearPenaltyLockForTask(tableKey, node){
+  const lock = besiegedGetPenaltyLock();
+  const tk = String(tableKey || "").trim();
+  if(!lock.active || !tk || String(lock.tableKey || "") === tk) return false;
+  return besiegedClearPenaltyLock("other-task");
+}
+function besiegedUpdateDefenseHud(){
+  try{
+    const live = besiegedGetState();
+    const running = besiegedIsDefenseRunning(live);
+    const left = besiegedDefenseLeftMs(live);
+    const pct = running ? Math.max(0, Math.min(100, (left / BESIEGED_DEFENSE_MS) * 100)) : 100;
+    document.querySelectorAll("[data-besieged-defense-time]").forEach((el)=>{
+      el.textContent = running ? besiegedFormatDefenseTime(left) : "5:00";
+    });
+    document.querySelectorAll("[data-besieged-defense-fill]").forEach((el)=>{
+      el.style.width = `${pct.toFixed(2)}%`;
+    });
+    document.querySelectorAll("[data-besieged-defense-state]").forEach((el)=>{
+      el.textContent = running ? "DEFENSE RUNNING" : "READY TO START";
+    });
+    besiegedUpdateDefenseActionUi(live);
+    besiegedApplyDefenseDamageUi(live);
+  }catch(_){}
+}
+function besiegedCheckDefenseTimer(){
+  const live = besiegedGetState();
+  if(!besiegedIsDefenseRunning(live)) return false;
+  if(besiegedDefenseLeftMs(live) > 0) return false;
+  return besiegedFailDefense("timer");
+}
+let besiegedDefenseTimerId = null;
+function besiegedEnsureDefenseTimer(){
+  try{
+    const live = besiegedGetState();
+    const needsTimer = besiegedIsDefenseRunning(live);
+    if(needsTimer && !besiegedDefenseTimerId){
+      besiegedDefenseTimerId = setInterval(()=>{
+        besiegedUpdateDefenseHud();
+        besiegedCheckDefenseTimer();
+      }, 250);
+    }else if(!needsTimer && besiegedDefenseTimerId){
+      clearInterval(besiegedDefenseTimerId);
+      besiegedDefenseTimerId = null;
+    }
+    besiegedUpdateDefenseHud();
+  }catch(_){}
+}
+function besiegedStartDefense(){
+  const live = besiegedGetState();
+  if(!live.active) return false;
+  if(besiegedIsDefenseRunning(live)) return true;
+  const now = Date.now();
+  state.besiegedEvent = normalizeBesiegedState({
+    ...live,
+    defenseStartedAt: now,
+    defenseDeadlineAt: now + BESIEGED_DEFENSE_MS
+  });
+  try{ saveState(); }catch(_){}
+  try{ playSfx("trap"); }catch(_){}
+  try{ toast("warn", "DEFENSE STARTED", `${String(live.tableName || "Besieged table")} has 5:00 to hold.`, 3000); }catch(_){}
+  besiegedEnsureDefenseTimer();
+  return true;
+}
+let besiegedFailureFinalizeTimer = null;
+function besiegedFinalizeFailedDefense(failedLive, penaltyText, lock){
+  try{
+    const live = besiegedGetState();
+    const failedAt = Number(failedLive?.defenseFailedAt || 0);
+    if(!live.active || Number(live.defenseFailedAt || 0) !== failedAt) return false;
+    const tableName = String(failedLive?.tableName || "Besieged table").trim();
+    const finalLock = lock || besiegedSetPenaltyLockFromFailure(failedLive);
+    state.besiegedEvent = buildDefaultBesiegedState();
+    besiegedStopBattleAudio();
+    besiegedRelockBossIfNeeded(failedLive);
+    try{ saveState(); }catch(_){}
+    besiegedEnsureDefenseTimer();
+    try{
+      const lockName = String(finalLock?.tableName || tableName || "");
+      const lockText = lockName ? `${lockName} is siege-locked until a task is redeemed on another table.` : "No eligible opened table was available to lock.";
+      toast("bad", "DEFENSE FAILED", `${penaltyText}. ${lockText}`, 5600);
+    }catch(_){}
+    const animated = finalLock ? besiegedAnimatePenaltyLock(finalLock) : false;
+    if(!animated){
+      try{ renderAll(); }catch(_){}
+      try{
+        if(activeView === "checks"){
+          renderChecksWorldTabs();
+          renderChecks();
+        }
+      }catch(_){}
+    }
+    return true;
+  }catch(_){}
+  return false;
+}
+function besiegedFailDefense(reason){
+  const live = besiegedGetState();
+  if(!live.active) return false;
+  if(Number(live.defenseFailedAt || 0) > 0) return true;
+  const penaltyText = besiegedSpendPenaltyResource();
+  const failedAt = Date.now();
+  const failedLive = normalizeBesiegedState({
+    ...live,
+    defenseFailedAt: failedAt,
+    defenseDeadlineAt: failedAt
+  });
+  state.besiegedEvent = failedLive;
+  try{ saveState(); }catch(_){}
+  besiegedEnsureDefenseTimer();
+  try{ besiegedSyncContext({ save:false }); }catch(_){}
+  try{ showView("tower"); }catch(_){ activeView = "tower"; try{ setTabUI(); }catch(__){} }
+  try{ renderAll(); }catch(_){}
+  requestAnimationFrame(()=>{
+    try{
+      const card = besiegedFindTowerCardForKey(failedLive.tableKey);
+      if(!besiegedApplyCastleFailureFx(card)) besiegedPlayCastleCollapseSfx();
+    }catch(_){}
+  });
+  try{ toast("bad", "CASTLE FALLEN", `${String(failedLive.tableName || "Besieged table")} fell. Applying siege lock...`, 2600); }catch(_){}
+  try{
+    if(besiegedFailureFinalizeTimer) clearTimeout(besiegedFailureFinalizeTimer);
+    besiegedFailureFinalizeTimer = setTimeout(()=>{
+      besiegedFailureFinalizeTimer = null;
+      besiegedFinalizeFailedDefense(failedLive, penaltyText, null);
+    }, 2600);
+  }catch(_){}
+  return true;
+}
 function besiegedClear(reason){
   const live = besiegedGetState();
   if(!live.active) return false;
   const tableName = String(live.tableName || "Besieged table").trim();
+  const wonTimedDefense = !!(
+    reason !== "test-reset" &&
+    besiegedIsDefenseRunning(live) &&
+    besiegedDefenseLeftMs(live) > 0
+  );
+  if(wonTimedDefense) besiegedAwardDefenseWin(live);
   state.besiegedEvent = buildDefaultBesiegedState();
   besiegedStopBattleAudio();
   besiegedRelockBossIfNeeded(live);
   try{ saveState(); }catch(_){}
+  besiegedEnsureDefenseTimer();
   try{ playSfx("redeem"); }catch(_){}
-  try{ toast("good", "SIEGE BROKEN", `${tableName} is free; the tower unlocks again.`, 3400); }catch(_){}
+  try{ toast("good", "SIEGE BROKEN", `${tableName} is free; ${wonTimedDefense ? "Extra Ball awarded." : "the tower unlocks again."}`, 3800); }catch(_){}
   try{ renderAll(); }catch(_){}
   try{
     if(activeView === "checks"){
@@ -29049,6 +31083,7 @@ function besiegedActivate(opts){
   if(!opts.force && isBossDefeated()) return false;
   const target = opts.target || besiegedChooseTargetTable(opts);
   if(!target || !target.tableKey || !target.worldKey) return false;
+  if(isBossWorldId(target.worldKey, state)) return false;
   if(opts.force && Number(getBallLevelByTableKey(target.tableKey) || 0) <= 0){
     state.balls = state.balls || {};
     state.balls[`${target.tableKey}|1`] = true;
@@ -29065,15 +31100,14 @@ function besiegedActivate(opts){
     activatedAt: Date.now(),
     armyType: String(army.key || "skeletons"),
     armyLabel: String(army.label || "Skeleton Host"),
-    bossUnlockedAtStart: !!(
-      (typeof isBossUnlocked === "function" && isBossUnlocked()) ||
-      besiegedBossUnlockedByStateOnly()
-    )
+    bossUnlockedAtStart: !!besiegedBossUnlockedByAuthorizationOnly()
   });
+  try{ besiegedEnforceBossLockDuringSiege("siege-activated", { save:false }); }catch(_){}
   besiegedSyncContext({ save:false });
   try{ saveState(); }catch(_){}
   try{ playSfx("trap"); }catch(_){}
   try{ besiegedStartBattleAudio(army.key); }catch(_){}
+  try{ besiegedEnsureDefenseTimer(); }catch(_){}
   try{
     toast(
       "bad besiegedToast",
@@ -29102,6 +31136,7 @@ function bossMaybeTriggerBesiegedEvent(opts){
   }catch(_){}
   return false;
 }
+try{ besiegedEnsureDefenseTimer(); }catch(_){}
 function bossResetRetaliationState(phase){
   const nextPhase = String(phase || "phase1").toLowerCase() === "phase2" ? "phase2" : "phase1";
   state.bossRetaliation = {
@@ -29193,6 +31228,7 @@ function getOpenNonBossTableCandidates(opts){
         if(!tableName) continue;
         const ballLevel = Number(getBallLevelByTableKey(tableKey) || 0);
         if(!allowLocked && !(ballLevel > 0)) continue;
+        if(!allowLocked && besiegedPenaltyLocksTable(tableKey)) continue;
         const nodes = (typeof relicGetNodesForTable === "function") ? relicGetNodesForTable(tableKey) : [];
         if(!allowNoNodes && !nodes.length) continue;
         out.push({ worldKey:wk, tableKey, tableName, ballLevel, nodes });
@@ -32266,7 +34302,7 @@ function reconcileWorldStateFromReceivedInventory(reason) {
       const ti = parseInt(tiStr, 10);
       for (let b = 1; b <= count; b++) state.balls[`${worldKey}|${ti}|${b}`] = true;
 
-      if(state.worlds && state.worlds[worldKey]) state.worlds[worldKey].locked = false;
+      if(state.worlds && state.worlds[worldKey] && !isBossWorldId(worldKey, state)) state.worlds[worldKey].locked = false;
     }
 
     // Ensure at least World 1 stays unlocked
@@ -32343,7 +34379,7 @@ function forceUnlockTablesFromProgressiveInventory(opts){
         state.balls[`${tableKey}|${b}`] = true;
       }
       const worldId = getWorldIdForTableKey(tableKey);
-      if(state?.worlds?.[worldId] && state.worlds[worldId].locked){
+      if(state?.worlds?.[worldId] && state.worlds[worldId].locked && !isBossWorldId(worldId, state)){
         state.worlds[worldId].locked = false;
       }
 
@@ -32472,7 +34508,7 @@ for(const r of (received || [])){
       if(next >= 3) base.balls[k3] = true;
 
       const worldId = getWorldIdForTableKey(baseKey);
-      if(base.worlds && base.worlds[worldId]) base.worlds[worldId].locked = false;
+      if(base.worlds && base.worlds[worldId] && !isBossWorldId(worldId, base)) base.worlds[worldId].locked = false;
     }
 
     // Apply computed locks into CURRENT structure (preserves table order/names/banners)
@@ -32646,7 +34682,7 @@ function applyProgressiveBallToTower(tableName){
   // Unlock the world that owns this table if it is locked
   const worldId = getWorldIdForTableKey(baseKey);
   const world = (state.worlds && worldId) ? state.worlds[worldId] : null;
-  if(world && world.locked){
+  if(world && world.locked && !isBossWorldId(worldId, state)){
     world.locked = false;
     saveState();
   }
@@ -34533,6 +36569,7 @@ function triggerChecksDividerSnapFx(mode){
 function renderChecksWorldTabs(){
   const wrap = document.getElementById("checksWorldTabs");
   if(!wrap) return;
+  try{ besiegedEnforceBossLockDuringSiege("checks-tabs", { save:false }); }catch(_){}
   syncWorldPageToActiveContext();
   const bossUnlocked = isBossUnlocked();
   const bossKeyCount = Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(window.__apBossKeyCount ?? getBossKeysAcquiredCount()) || 0));
@@ -34719,6 +36756,7 @@ function renderChecksWorldTabs(){
 function renderChecks(){
   const body = document.getElementById("checksBody");
   if(!body) return;
+  try{ besiegedEnforceBossLockDuringSiege("checks-render", { save:false }); }catch(_){}
   hideCheckTaskHoverCard();
   body.innerHTML = "";
   // v138: reset boss layout classes
@@ -34967,7 +37005,17 @@ function renderTableBlock(parent, tableName, nodes, opts){
   const hintTargets = relicGetCombinedHintTargetsForTable(tableKey);
   const hintOnThisTable = hintTargets.length > 0;
   const hintBossKeyOnThisTable = hintTargets.some((t)=>hintIsBossTypeLabel(t?.typeLabel));
-  const hasBossHintNode = hintBossKeyOnThisTable && (nodes || []).some((node)=> hintIsBossTypeLabel(hintNodeMatchesAnyTarget(node, hintTargets)?.typeLabel));
+  const hintTargetHasNode = (target)=>{
+    try{
+      return !!(target && (nodes || []).some((node)=>hintNodeMatchesTarget(node, target)));
+    }catch(_){}
+    return false;
+  };
+  const hintTargetsWithNodes = hintOnThisTable ? hintTargets.filter((target)=>hintTargetHasNode(target)) : [];
+  const fallbackHintTargets = hintOnThisTable ? hintTargets.filter((target)=>!hintTargetHasNode(target)) : [];
+  const fallbackHintOnThisTable = fallbackHintTargets.length > 0;
+  const fallbackBossHintOnThisTable = fallbackHintTargets.some((t)=>hintIsBossTypeLabel(t?.typeLabel));
+  const hasBossHintNode = hintTargetsWithNodes.some((t)=>hintIsBossTypeLabel(t?.typeLabel));
   const trapLocked = isTrapCheckLockActive();
   const awayWithYouClearMode = isBossAwayWithYouTrapActive();
   const trapLocksThisTable = trapLocked && !(awayWithYouClearMode && !isBossTableBlock);
@@ -34986,7 +37034,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
     if(tryHandleExtraBallPlacementSelection(tableKey, tableName)) return;
     if(!tableUnlocked) return;
     if(besiegedLockedOut){
-      toast("warn", "TOWER LOCKDOWN", `${String(besiegedGetState().tableName || "Besieged table")} must be freed first.`, 2400);
+      toast("warn", "TOWER LOCKDOWN", besiegedGetLockMessage(tableKey), 2400);
       return;
     }
     if(relicFinalLocked){
@@ -35115,6 +37163,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
     apSend({ cmd:"LocationChecks", locations:[n.id] });
     apSend({ cmd:"Sync" });
     toast("warn","CHECK SENT", (n.short||"") + " ; ID " + n.id, 2200);
+    try{ besiegedMaybeClearPenaltyLockForTask(opts.tableKey, n); }catch(_){}
     return true;
   };
   const getRenderedNodeTier = (node, nodeIdx)=>{
@@ -35136,15 +37185,15 @@ function renderTableBlock(parent, tableName, nodes, opts){
     const locked = document.createElement("div");
     locked.className = "tableLockedHint";
     locked.textContent = besiegedLockedOut
-      ? `${String(besiegedGetState().tableName || "Besieged table")} must be cleared from Tower before the other tables reopen.`
+      ? besiegedGetLockMessage(tableKey)
       : (relicFinalLocked
         ? "Final Lock sealed this table until the boss is defeated."
         : "Table locked. Unlock Ball 1 to reveal checks.");
     const chain = document.createElement("div");
-    chain.className = "lockChainsOverlay active";
+    chain.className = "lockChainsOverlay active" + (besiegedShowsSiegeLock(tableKey) ? " siegeLockChains" : "");
     const lockBadge = document.createElement("div");
-    lockBadge.className = "lockBadgeOverlay active";
-    lockBadge.textContent = besiegedLockedOut ? "BESIEGED" : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
+    lockBadge.className = "lockBadgeOverlay active" + (besiegedShowsSiegeLock(tableKey) ? " siegeLockBadge" : "");
+    lockBadge.textContent = besiegedLockedOut ? besiegedGetLockBadge(tableKey) : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
     block.appendChild(head);
     block.appendChild(locked);
     block.appendChild(chain);
@@ -35246,6 +37295,13 @@ function renderTableBlock(parent, tableName, nodes, opts){
       renderCounterTitle(checked ? counterTarget : getTaskProgressValue(n.id));
     }
     btn.appendChild(tierBadge); btn.appendChild(title); btn.appendChild(small);
+    if(nodeHint){
+      const hintNodeTag = document.createElement("div");
+      const isBossHint = hintIsBossTypeLabel(nodeHint?.typeLabel);
+      hintNodeTag.className = "hintNodeTag" + (isBossHint ? " hintBossTag" : "");
+      hintNodeTag.textContent = isBossHint ? "BOSS KEY HERE" : "HINT ITEM LOCATED";
+      btn.appendChild(hintNodeTag);
+    }
     const taskTip = getTaskExplanationForNode(n);
     if(taskTip) bindCheckTaskHover(btn, taskTip);
     const nodeTrapLocked = trapLocksThisTable && !checked;
@@ -35390,13 +37446,13 @@ function renderTableBlock(parent, tableName, nodes, opts){
     block.appendChild(head);
     block.appendChild(grid);
   }
-  if(hintOnThisTable){
+  if(fallbackHintOnThisTable){
     const tag = document.createElement("div");
-    tag.className = "hintHereTag hintChecksTag" + (hintBossKeyOnThisTable ? " hintBossTag" : "");
-    tag.textContent = hintBossKeyOnThisTable ? "BOSS KEY HERE" : "HINT ITEM LOCATED";
+    tag.className = "hintHereTag hintChecksTag" + (fallbackBossHintOnThisTable ? " hintBossTag" : "");
+    tag.textContent = fallbackBossHintOnThisTable ? "BOSS KEY HERE" : "HINT ITEM LOCATED";
     block.appendChild(tag);
   }
-  if(hintBossKeyOnThisTable && !hasBossHintNode){
+  if(fallbackBossHintOnThisTable && !hasBossHintNode){
     const wm = document.createElement("div");
     wm.className = "hintKeyWatermark hintKeyWatermarkChecks";
     wm.textContent = "\u{1F511}";
@@ -37453,6 +39509,7 @@ function updateClimber(){
 function renderWorldButtons(){
   const container = document.getElementById("worlds");
   const wrap = document.querySelector(".worldsWrap");
+  try{ besiegedEnforceBossLockDuringSiege("tower-worlds", { save:false }); }catch(_){}
   const existing = new Map(Array.from(container.querySelectorAll(".world[data-world]")).map(el => [String(el.dataset.world || ""), el]));
   const liveTargets = relicGetCombinedHintTargets();
   syncWorldPageToActiveContext();
@@ -37605,6 +39662,7 @@ function getDisplayBallStateForTableKey(tableKey){
 function renderSelected(){
   const body = document.getElementById("selectedBody");
   if(!body) return;
+  try{ besiegedEnforceBossLockDuringSiege("tower-selected", { save:false }); }catch(_){}
   body.innerHTML = "";
   try{
     const w = state.worlds[state.selected];
@@ -37839,6 +39897,10 @@ function setNowPlayingIndex(worldKey, idx, opts){
   const prevIdx = getNowPlayingIndex(worldKey);
   const prevKey = `${worldKey}|${prevIdx}`;
   const nextKey = `${worldKey}|${idx}`;
+  if(besiegedLocksTable(nextKey)){
+    try{ toast("warn", "TOWER LOCKDOWN", besiegedGetLockMessage(nextKey), 2600); }catch(_){}
+    return;
+  }
   if(relicIsFinalLockedTable(nextKey)){
     try{ toast("warn", "FINAL LOCK", `${relicGetTableName(nextKey) || "That table"} is sealed shut.`, 2600); }catch(_){}
     return;
@@ -37976,14 +40038,15 @@ function renderTowerPentagon(container, worldObj, worldKey){
       card.onclick = ()=>{
         const tableKey = `${worldKey}|${idx}`;
         const tableName = String(state?.worlds?.[worldKey]?.tables?.[idx] || "");
+        const siegeLockMessage = besiegedGetLockMessage(tableKey);
+        if(siegeLockMessage){
+          try{ toast("warn", "TOWER LOCKDOWN", siegeLockMessage, 2400); }catch(_){}
+          return;
+        }
         if(tryHandleExtraBallPlacementSelection(tableKey, tableName)) return;
         window.__suppressPentaAnim = false;
         if(worldObj.locked) return;
         if(!isRevealed(worldKey, idx)) return;
-        if(besiegedLive.active && String(tableKey) !== String(besiegedLive.tableKey || "")){
-          try{ toast("warn", "TOWER LOCKDOWN", `${String(besiegedLive.tableName || "Besieged table")} must be freed first.`, 2400); }catch(_){}
-          return;
-        }
         if(relicIsFinalLockedTable(tableKey)){
           try{
             const lockedName = String(tableName || "That table");
@@ -38037,6 +40100,11 @@ function renderTowerPentagon(container, worldObj, worldKey){
     wheel = wrap.querySelector(".pentagonWheel");
   }
 
+  wrap.classList.toggle(
+    "besiegedDefenseFocus",
+    !!(besiegedLive.active && String(besiegedLive.worldKey || "") === String(worldKey || ""))
+  );
+  try{ besiegedEnsureDefenseTimer(); }catch(_){}
 
   // v113: world open animation (only when switching worlds; suppressed during AP sync refresh)
   try{
@@ -38115,27 +40183,43 @@ function renderTowerPentagon(container, worldObj, worldKey){
     const tableKey = `${worldKey}|${idx}`;
     const relicFinalLocked = relicIsFinalLockedTable(tableKey);
     const besiegedTarget = !!(besiegedLive.active && String(tableKey) === String(besiegedLive.tableKey || ""));
-    const besiegedLockedOut = !!(besiegedLive.active && !besiegedTarget);
+    const besiegedFailed = !!(besiegedTarget && Number(besiegedLive.defenseFailedAt || 0) > 0);
+    const besiegedLockedOut = !!besiegedLocksTable(tableKey);
     const tableTargets = liveTargets.filter(t => String(t?.tableKey || "") === tableKey);
     const isHintTargetTable = tableTargets.length > 0;
     const hintBossKeyOnCard = tableTargets.some(t => hintIsBossTypeLabel(t?.typeLabel));
-    const siegeDropY = besiegedTarget ? 24 : 0;
+    const siegeFocusPose = besiegedTarget ? { x:0, y:-102, scale:1 } : null;
 
     // Move into slot; suppress tween during AP sync
     if(suppressTween){
       card.style.transitionDuration = "0ms";
-      const scale = besiegedTarget ? (idx===now ? 1 : 0.88) : (idx===now ? 1.5 : 0.75);
-      card.style.transform = `translate(-50%,-50%) translate(${x}px, ${y + siegeDropY}px) scale(${scale})`;
+      const scale = siegeFocusPose ? siegeFocusPose.scale : (idx===now ? 1.5 : 0.75);
+      const tx = siegeFocusPose ? siegeFocusPose.x : x;
+      const ty = siegeFocusPose ? siegeFocusPose.y : y;
+      card.style.transform = `translate(-50%,-50%) translate(${tx}px, ${ty}px) scale(${scale})`;
     }else{
       card.style.transitionDuration = "";
-      const scale = besiegedTarget ? (rotatePhase ? 0.96 : (idx===now ? 1 : 0.88)) : (rotatePhase ? 1 : (idx===now ? 1.5 : 0.75));
-      card.style.transform = `translate(-50%,-50%) translate(${x}px, ${y + siegeDropY}px) scale(${scale})`;
+      const scale = siegeFocusPose ? siegeFocusPose.scale : (rotatePhase ? 1 : (idx===now ? 1.5 : 0.75));
+      const tx = siegeFocusPose ? siegeFocusPose.x : x;
+      const ty = siegeFocusPose ? siegeFocusPose.y : y;
+      card.style.transform = `translate(-50%,-50%) translate(${tx}px, ${ty}px) scale(${scale})`;
     }
 
     // Banner
     const tableBanner = getTableBannerUrl(worldKey, tName);
     const bannerEl = card.querySelector(".tableBanner");
+    try{
+      const bannerCode = String(getRepoCanonicalTableCode(tName) || "").trim();
+      const bannerSig = `${bannerCode || normKey(tName)}|${String(tableBanner || "")}`;
+      if(bannerEl && bannerEl.dataset.bannerSig !== bannerSig){
+        bannerEl.style.backgroundImage = "none";
+        bannerEl.dataset.bannerSig = bannerSig;
+        bannerEl.dataset.tableCode = bannerCode;
+        bannerEl.dataset.tableName = String(tName || "");
+      }
+    }catch(_){}
     bannerEl.style.backgroundImage = tableBanner ? `url('${tableBanner}')` : "none";
+    if(besiegedTarget) besiegedApplyCastlePaletteFromBanner(card, tableBanner, tName);
 
     // Name + emoji
     const revealed = isRevealed(worldKey, idx);
@@ -38149,6 +40233,7 @@ function renderTowerPentagon(container, worldObj, worldKey){
       + (checksComplete ? " checksCompleteTower" : "")
       + (relicFinalLocked ? " relicFinalLock" : "")
       + (besiegedTarget ? " besiegedTarget" : "")
+      + (besiegedFailed ? " besiegedDefenseFailed besiegedDamage4 besiegedEmergency" : "")
       + (besiegedLockedOut ? " besiegedLockedOut" : "")
       + (isHintTargetTable ? " hintTargetTower" : "")
       + (hintBossKeyOnCard ? " hintTargetTowerBoss" : "");
@@ -38158,6 +40243,7 @@ function renderTowerPentagon(container, worldObj, worldKey){
     const badgeEl = card.querySelector(".pentaTitle .badgeIcon");
     const titleEl = card.querySelector(".pentaTitle");
     setTableLabelWithBadge(nameEl, tName, { locked: !revealed });
+    titleEl?.querySelectorAll(".besiegedTitleGoal").forEach((el)=>el.remove());
     nameEl.classList.remove("nameLong", "nameXL");
     if(revealed){
       const tokens = displayName.split(/\s+/).filter(Boolean);
@@ -38175,15 +40261,18 @@ function renderTowerPentagon(container, worldObj, worldKey){
       if(ebBtn) titleEl.insertBefore(ebBtn, badgeEl);
     }catch(_){}
     const chainOverlay = card.querySelector(".lockChainsOverlay");
+    const showTowerSiegeLock = besiegedShowsTowerSiegeLock(tableKey);
     if(chainOverlay){
-      chainOverlay.classList.toggle("active", lockedByBall || relicFinalLocked);
-      if(lockedByBall || relicFinalLocked) chainOverlay.classList.remove("unlockDrop");
+      chainOverlay.classList.toggle("active", lockedByBall || relicFinalLocked || showTowerSiegeLock);
+      chainOverlay.classList.toggle("siegeLockChains", showTowerSiegeLock);
+      if(lockedByBall || relicFinalLocked || showTowerSiegeLock) chainOverlay.classList.remove("unlockDrop");
     }
     const lockBadgeOverlay = card.querySelector(".lockBadgeOverlay");
     if(lockBadgeOverlay){
-      const lockActive = lockedByBall || relicFinalLocked || besiegedLockedOut;
+      const lockActive = lockedByBall || relicFinalLocked || showTowerSiegeLock;
       lockBadgeOverlay.classList.toggle("active", lockActive);
-      lockBadgeOverlay.textContent = besiegedLockedOut ? "LOCKDOWN" : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
+      lockBadgeOverlay.classList.toggle("siegeLockBadge", showTowerSiegeLock);
+      lockBadgeOverlay.textContent = showTowerSiegeLock ? besiegedGetLockBadge(tableKey) : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
       if(lockActive) lockBadgeOverlay.classList.remove("unlockDrop");
     }
     card.style.cursor = extraBallPlacementArmed
@@ -38192,7 +40281,7 @@ function renderTowerPentagon(container, worldObj, worldKey){
     card.title = extraBallPlacementArmed
       ? "Place Extra Ball on this table"
       : (besiegedLockedOut
-        ? `${String(besiegedLive.tableName || "Besieged table")} must be freed first`
+        ? besiegedGetLockMessage(tableKey)
         : (lockedByBall ? "Locked; unlock Ball 1 to select this table" : (relicFinalLocked ? "Final Lock sealed this table" : "Set this table as Now Playing")));
     const featuredDesigner = getFeaturedDesignerForWorld(worldKey);
     const designerBtn = card.querySelector(".designerInfoBtn");
@@ -38245,6 +40334,7 @@ function renderTowerPentagon(container, worldObj, worldKey){
     let siegeStory = card.querySelector(".besiegedStory");
     let siegeBtn = card.querySelector(".besiegedTargetBtn");
     let siegeAura = card.querySelector(".besiegedCastleAura");
+    let siegeKeep = card.querySelector(".besiegedCastleKeep");
     let siegeCrown = card.querySelector(".besiegedCastleCrown");
     let siegeGate = card.querySelector(".besiegedCastleGate");
     let siegeArmy = card.querySelector(".besiegedArmyField");
@@ -38252,12 +40342,23 @@ function renderTowerPentagon(container, worldObj, worldKey){
     let siegeTowerLeft = card.querySelector(".besiegedCastleTower.left");
     let siegeTowerRight = card.querySelector(".besiegedCastleTower.right");
     let siegeFlag = card.querySelector(".besiegedCastleFlag");
+    let siegeWindows = card.querySelector(".besiegedCastleWindows");
+    let siegeHud = card.querySelector(".besiegedDefenseHud");
+    let siegeBanner = card.querySelector(".besiegedAttackerBanner");
+    let siegeStatusRail = card.querySelector(".besiegedStatusRail");
+    let siegeDamageFx = card.querySelector(".besiegedDamageFx");
+    let siegeRubbleFx = card.querySelector(".besiegedRubbleFx");
     if(besiegedTarget){
       const armyConfig = besiegedGetArmyConfig(besiegedLive.armyType);
       if(!siegeAura){
         siegeAura = document.createElement("div");
         siegeAura.className = "besiegedCastleAura";
         card.appendChild(siegeAura);
+      }
+      if(!siegeKeep){
+        siegeKeep = document.createElement("div");
+        siegeKeep.className = "besiegedCastleKeep";
+        card.appendChild(siegeKeep);
       }
       if(!siegeCrown){
         siegeCrown = document.createElement("div");
@@ -38284,6 +40385,63 @@ function renderTowerPentagon(container, worldObj, worldKey){
         siegeFlag.className = "besiegedCastleFlag";
         card.appendChild(siegeFlag);
       }
+      if(!siegeWindows){
+        siegeWindows = document.createElement("div");
+        siegeWindows.className = "besiegedCastleWindows";
+        siegeWindows.innerHTML = Array.from({ length:12 }, (_, wi)=>`<span class="castleWindow w${wi + 1}"></span>`).join("");
+        card.appendChild(siegeWindows);
+      }
+      if(!siegeDamageFx){
+        siegeDamageFx = document.createElement("div");
+        siegeDamageFx.className = "besiegedDamageFx";
+        siegeDamageFx.innerHTML = `
+          <span class="smoke smoke1"></span>
+          <span class="smoke smoke2"></span>
+          <span class="smoke smoke3"></span>
+          <span class="flame flame1"></span>
+          <span class="flame flame2"></span>
+          <span class="flame flame3"></span>
+          <span class="flame flame4"></span>
+          <span class="flame flame5"></span>
+          <span class="flame flame6"></span>
+          <span class="flame flame7"></span>
+          <span class="flame flame8"></span>
+          <span class="ember ember1"></span>
+          <span class="ember ember2"></span>
+          <span class="ember ember3"></span>
+          <span class="ember ember4"></span>
+          <span class="ember ember5"></span>
+          <span class="ember ember6"></span>
+        `;
+        card.appendChild(siegeDamageFx);
+      }
+      if(besiegedFailed && !siegeRubbleFx){
+        siegeRubbleFx = document.createElement("div");
+        siegeRubbleFx.className = "besiegedRubbleFx play";
+        siegeRubbleFx.innerHTML = Array.from({ length:18 }, (_, ri)=>`<span class="rubblePiece r${ri + 1}"></span>`).join("");
+        card.appendChild(siegeRubbleFx);
+      }else if(!besiegedFailed && siegeRubbleFx){
+        siegeRubbleFx.remove();
+        siegeRubbleFx = null;
+      }
+      if(!siegeBanner){
+        siegeBanner = document.createElement("div");
+        siegeBanner.className = "besiegedAttackerBanner";
+        card.appendChild(siegeBanner);
+      }
+      siegeBanner.innerHTML = `
+        <span class="besiegedAttackerKicker">ATTACKING FORCE</span>
+        <span class="besiegedAttackerName">${escapeHtml(String(armyConfig.badge || armyConfig.label || "BOSS ARMY"))}</span>
+      `;
+      if(!siegeStatusRail){
+        siegeStatusRail = document.createElement("div");
+        siegeStatusRail.className = "besiegedStatusRail";
+        card.appendChild(siegeStatusRail);
+      }
+      siegeStatusRail.innerHTML = `
+        <span>3 BALLS ALLOWED</span>
+        <span data-besieged-defense-state>${besiegedIsDefenseRunning(besiegedLive) ? "DEFENSE RUNNING" : "READY TO START"}</span>
+      `;
       if(!siegeArmy || String(siegeArmy.dataset.armyType || "") !== String(besiegedLive.armyType || "skeletons")){
         if(siegeArmy) siegeArmy.remove();
         siegeArmy = document.createElement("div");
@@ -38318,12 +40476,7 @@ function renderTowerPentagon(container, worldObj, worldKey){
         });
         card.appendChild(siegeFx);
       }
-      if(!siegeBadge){
-        siegeBadge = document.createElement("div");
-        siegeBadge.className = "besiegedArmyBadge";
-        card.appendChild(siegeBadge);
-      }
-      siegeBadge.textContent = String(armyConfig.badge || "\u{1F480} SKELETON HOST");
+      if(siegeBadge) siegeBadge.remove();
       if(!siegeStory){
         siegeStory = document.createElement("div");
         siegeStory.className = "besiegedStory";
@@ -38331,44 +40484,79 @@ function renderTowerPentagon(container, worldObj, worldKey){
       }
       const armyLabel = String(armyConfig.label || "The boss army");
       const armyVerb = /s$/i.test(armyLabel.trim()) ? "are" : "is";
-      siegeStory.textContent = `${armyLabel} ${armyVerb} attacking the castle-table. Hit the posted score to break the siege and unlock the tower. Three balls are allowed.`;
+      siegeStory.textContent = `${armyLabel} ${armyVerb} attacking. Start Defense, hit the posted score within five minutes, then mark the defense complete.`;
+      siegeBanner.title = siegeStory.textContent;
+      if(!siegeHud){
+        siegeHud = document.createElement("div");
+        siegeHud.className = "besiegedDefenseHud";
+        siegeHud.innerHTML = `
+          <div class="besiegedDefenseHudTop">
+            <span>DEFENSE TIMER</span>
+            <span data-besieged-defense-time>5:00</span>
+          </div>
+          <div class="besiegedDefenseBar"><i data-besieged-defense-fill></i></div>
+        `;
+        card.appendChild(siegeHud);
+      }
       if(!siegeBtn){
         siegeBtn = document.createElement("button");
         siegeBtn.type = "button";
         siegeBtn.className = "besiegedTargetBtn";
-        siegeBtn.addEventListener("click", (ev)=>{
-          ev.preventDefault();
-          ev.stopPropagation();
-          besiegedClear("tower-target");
-        });
         card.appendChild(siegeBtn);
       }
-      const siegeLabel = String(besiegedLive.targetLabel || "TARGET SCORE");
+      siegeBtn.onclick = (ev)=>{
+        ev.preventDefault();
+        ev.stopPropagation();
+        const current = besiegedGetState();
+        if(Number(current.defenseFailedAt || 0) > 0) return false;
+        if(!besiegedIsDefenseRunning(current)){
+          besiegedStartDefense();
+          return false;
+        }
+        besiegedClear("tower-target");
+        return false;
+      };
       const targetLabel = document.createElement("span");
       targetLabel.className = "besiegedTargetLabel";
-      targetLabel.textContent = "BREAK THE SIEGE";
+      targetLabel.setAttribute("data-besieged-action-label", "");
       const targetScore = document.createElement("span");
       targetScore.className = "besiegedTargetScore";
-      targetScore.textContent = siegeLabel;
+      targetScore.setAttribute("data-besieged-action-score", "");
       const targetHint = document.createElement("span");
       targetHint.className = "besiegedTargetHint";
-      targetHint.textContent = "THREE BALLS ALLOWED";
+      targetHint.setAttribute("data-besieged-action-hint", "");
       siegeBtn.textContent = "";
       siegeBtn.appendChild(targetLabel);
       siegeBtn.appendChild(targetScore);
       siegeBtn.appendChild(targetHint);
+      besiegedUpdateDefenseActionUi(besiegedLive);
+      besiegedUpdateDefenseHud();
     }else{
       if(siegeAura) siegeAura.remove();
+      if(siegeKeep) siegeKeep.remove();
       if(siegeCrown) siegeCrown.remove();
       if(siegeGate) siegeGate.remove();
       if(siegeTowerLeft) siegeTowerLeft.remove();
       if(siegeTowerRight) siegeTowerRight.remove();
       if(siegeFlag) siegeFlag.remove();
+      if(siegeWindows) siegeWindows.remove();
       if(siegeArmy) siegeArmy.remove();
       if(siegeFx) siegeFx.remove();
       if(siegeBadge) siegeBadge.remove();
       if(siegeStory) siegeStory.remove();
       if(siegeBtn) siegeBtn.remove();
+      if(siegeHud) siegeHud.remove();
+      if(siegeBanner) siegeBanner.remove();
+      if(siegeStatusRail) siegeStatusRail.remove();
+      if(siegeDamageFx) siegeDamageFx.remove();
+      if(siegeRubbleFx) siegeRubbleFx.remove();
+      for(let di = 0; di <= 4; di++) card.classList.remove(`besiegedDamage${di}`);
+      card.classList.remove("besiegedEmergency", "besiegedDefenseFailed");
+      card.style.removeProperty("--siege-damage");
+      card.style.removeProperty("--siege-emergency");
+      card.style.removeProperty("--siege-red-wash");
+      card.style.removeProperty("--siege-emergency-blink");
+      card.style.removeProperty("--siege-emergency-speed");
     }
 
     // Balls active states / lock if unrevealed
@@ -38415,16 +40603,18 @@ function simpleTableRow(worldKey, worldObj, t, idx){
   row.className = "tableRow";
   const revealed = isRevealed(worldKey, idx);
   const tableKey = `${worldKey}|${idx}`;
+  const besiegedLockedOut = besiegedLocksTable(tableKey);
+  const showTowerSiegeLock = besiegedShowsTowerSiegeLock(tableKey);
   const checksComplete = isTableChecksCompleteVisual(t, tableKey, { unlocked: revealed, revealed });
-  if(!revealed) row.classList.add("isLockedTable");
+  if(!revealed || showTowerSiegeLock) row.classList.add("isLockedTable");
   if(checksComplete) row.classList.add("checksCompleteTower");
   const name = revealed ? getRepoDisplayTableParts(t).title : "????";
   const bannerUrl = getTableBannerUrl(worldKey, t);
   row.innerHTML = `
     <div class="tableBanner"></div>
     <div class="tableBannerOverlay"></div>
-    <div class="lockChainsOverlay ${revealed ? "" : "active"}"></div>
-    <div class="lockBadgeOverlay ${revealed ? "" : "active"}">LOCK</div>
+    <div class="lockChainsOverlay ${(!revealed || showTowerSiegeLock) ? "active" : ""} ${showTowerSiegeLock ? "siegeLockChains" : ""}"></div>
+    <div class="lockBadgeOverlay ${(!revealed || showTowerSiegeLock) ? "active" : ""} ${showTowerSiegeLock ? "siegeLockBadge" : ""}">${showTowerSiegeLock ? besiegedGetLockBadge(tableKey) : "LOCK"}</div>
     <div class="tableContent">
       <div class="tableName"><div class="name"></div><div class="badgeIcon">${worldEmojis[worldKey] || ""}</div></div>
     </div>
@@ -38635,18 +40825,18 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
   }
   if(locked || relicFinalLocked || besiegedLockedOut){
     const chain = document.createElement("div");
-    chain.className = "lockChainsOverlay active";
+    chain.className = "lockChainsOverlay active" + (besiegedShowsSiegeLock(tableKey) ? " siegeLockChains" : "");
     t.appendChild(chain);
     const lockBadge = document.createElement("div");
-    lockBadge.className = "lockBadgeOverlay active";
-    lockBadge.textContent = besiegedLockedOut ? "BESIEGED" : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
+    lockBadge.className = "lockBadgeOverlay active" + (besiegedShowsSiegeLock(tableKey) ? " siegeLockBadge" : "");
+    lockBadge.textContent = besiegedLockedOut ? besiegedGetLockBadge(tableKey) : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
     t.appendChild(lockBadge);
   }
 
   t.onclick = ()=>{
     if(tryHandleExtraBallPlacementSelection(tableKey, name)) return;
     if(locked || relicFinalLocked || besiegedLockedOut){
-      if(besiegedLockedOut) toast("warn", "TOWER LOCKDOWN", `${String(besiegedGetState().tableName || "Besieged table")} must be freed first.`, 2200);
+      if(besiegedLockedOut) toast("warn", "TOWER LOCKDOWN", besiegedGetLockMessage(tableKey), 2200);
       if(relicFinalLocked) toast("warn", "FINAL LOCK", `${name} is sealed shut.`, 2200);
       return;
     }
@@ -38992,7 +41182,7 @@ function bindSwapInteractionReset(){
 }
 
 /* Hints tab */
-const HINT_HANGMAN_CHANCE = 0.10;
+const HINT_HANGMAN_CHANCE = 0.20;
 const HINT_HANGMAN_MAX_MISSES = 6;
 const HINT_HANGMAN_CHAT_COOLDOWN_MS = 10000;
 const HINT_HANGMAN_READY_FLASH_MS = 1400;
@@ -40118,7 +42308,7 @@ function hintStartHangman(h, opts, preludeText){
     maxMisses: HINT_HANGMAN_MAX_MISSES,
     cooldownByUser: {},
     startedAt: Date.now(),
-    lastMessage: opts.test ? "Test Hangman started. Twitch chat can solve it now." : "A 10% Hintopedia roll triggered Hangman."
+    lastMessage: opts.test ? "Test Hangman started. Twitch chat can solve it now." : "A 20% Hintopedia roll triggered Hangman."
   };
   if(opts.record !== false){
     hintPushHistory({
@@ -41618,14 +43808,29 @@ function findControlsSectionTitle(root, token){
 
 const FLPR_TWITCH_CHAT_CHANNEL = "ashodin";
 const FLPR_TWITCH_CHAT_CFG_LS = "flpr_twitch_chat_cfg_v1";
+const FLPR_TWITCH_CHAT_RECONNECT_BASE_MS = 2500;
+const FLPR_TWITCH_CHAT_RECONNECT_MAX_MS = 30000;
+const FLPR_TWITCH_CHAT_HEARTBEAT_MS = 30000;
+const FLPR_TWITCH_CHAT_STALE_MS = 110000;
+const FLPR_TWITCH_VIDEO_REFRESH_COOLDOWN_MS = 12000;
+const FLPR_TWITCH_VIDEO_WATCHDOG_MS = 12 * 60 * 1000;
 const flprTwitchChat = {
   ws:null,
   connected:false,
   connecting:false,
+  manualDisconnect:false,
   username:"",
   token:"",
   clientId:"",
   fontSize:11,
+  chatReconnectTimer:0,
+  chatReconnectAttempts:0,
+  chatHeartbeatTimer:0,
+  chatLastMessageAt:0,
+  chatLastPingAt:0,
+  videoLastRefreshAt:0,
+  videoRefreshTimer:0,
+  videoWatchdogTimer:0,
   eventSubEnabled:true,
   eventWs:null,
   eventConnected:false,
@@ -41668,12 +43873,28 @@ function canEmbedTwitchVideo(){
   return false;
 }
 function buildTwitchVideoEmbedSrc(){
-  const parentQs = getTwitchEmbedParents().map(parent => `parent=${encodeURIComponent(parent)}`).join("&");
-  return `https://player.twitch.tv/?channel=${encodeURIComponent(FLPR_TWITCH_CHAT_CHANNEL)}&${parentQs}&muted=true&autoplay=false`;
+  const params = new URLSearchParams();
+  params.set("channel", FLPR_TWITCH_CHAT_CHANNEL);
+  getTwitchEmbedParents().forEach((parent)=>params.append("parent", parent));
+  params.set("muted", "true");
+  params.set("autoplay", "true");
+  params.set("playsinline", "true");
+  return `https://player.twitch.tv/?${params.toString()}`;
+}
+function buildTwitchVideoEmbedSrcForReload(){
+  const src = buildTwitchVideoEmbedSrc();
+  const sep = src.includes("?") ? "&" : "?";
+  return `${src}${sep}flprReload=${Date.now()}`;
 }
 function buildTwitchVideoMarkup(){
   if(canEmbedTwitchVideo()){
-    return `<iframe id="twitchVideoFrame" title="Twitch video for Ashodin" src="${escapeHtml(buildTwitchVideoEmbedSrc())}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+    return `
+      <iframe id="twitchVideoFrame" title="Twitch video for Ashodin" src="${escapeHtml(buildTwitchVideoEmbedSrc())}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+      <div class="twitchVideoTools">
+        <div class="twitchVideoStatus" id="twitchVideoStatus">Stream player ready</div>
+        <button class="cBtn twitchVideoRefresh" id="twitchVideoRefreshBtn" type="button">REFRESH</button>
+      </div>
+    `;
   }
   return `
     <div class="twitchVideoFallback">
@@ -41682,6 +43903,73 @@ function buildTwitchVideoMarkup(){
       <a class="cBtn" href="https://www.twitch.tv/ashodin" target="_blank" rel="noopener">OPEN STREAM</a>
     </div>
   `;
+}
+function twitchVideoSetStatus(text){
+  const el = document.getElementById("twitchVideoStatus");
+  if(el) el.textContent = String(text || "");
+}
+function twitchVideoShellIsVisible(){
+  try{
+    const shell = document.querySelector(".twitchVideoShell");
+    if(!shell || shell.offsetParent === null) return false;
+    const rect = shell.getBoundingClientRect();
+    return rect.width > 8 && rect.height > 8;
+  }catch(_){}
+  return false;
+}
+function twitchVideoRefresh(reason, opts = {}){
+  const frame = document.getElementById("twitchVideoFrame");
+  if(!frame || !canEmbedTwitchVideo()) return false;
+  const now = Date.now();
+  if(!opts.force && now - Number(flprTwitchChat.videoLastRefreshAt || 0) < FLPR_TWITCH_VIDEO_REFRESH_COOLDOWN_MS) return false;
+  flprTwitchChat.videoLastRefreshAt = now;
+  frame.src = buildTwitchVideoEmbedSrcForReload();
+  twitchVideoSetStatus(reason ? `Stream refreshed; ${reason}` : "Stream refreshed");
+  return true;
+}
+function twitchVideoScheduleRefresh(reason, delayMs = 350, opts = {}){
+  clearTimeout(flprTwitchChat.videoRefreshTimer);
+  flprTwitchChat.videoRefreshTimer = setTimeout(()=>{
+    flprTwitchChat.videoRefreshTimer = 0;
+    twitchVideoRefresh(reason, opts);
+  }, Math.max(0, Number(delayMs) || 0));
+}
+function wireTwitchVideoControls(){
+  const frame = document.getElementById("twitchVideoFrame");
+  const refresh = document.getElementById("twitchVideoRefreshBtn");
+  if(frame && !frame.__flprTwitchVideoBound){
+    frame.__flprTwitchVideoBound = true;
+    flprTwitchChat.videoLastRefreshAt = flprTwitchChat.videoLastRefreshAt || Date.now();
+    frame.addEventListener("load", ()=>twitchVideoSetStatus("Stream player loaded"));
+    frame.addEventListener("error", ()=>twitchVideoScheduleRefresh("player error", 800, { force:true }));
+  }
+  if(refresh && !refresh.__flprTwitchVideoBound){
+    refresh.__flprTwitchVideoBound = true;
+    refresh.addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      ev.stopPropagation();
+      try{ playSfx("click"); }catch(_){}
+      twitchVideoRefresh("manual", { force:true });
+    });
+  }
+  if(window.__flprTwitchVideoWindowBound) return;
+  window.__flprTwitchVideoWindowBound = true;
+  window.addEventListener("online", ()=>twitchVideoScheduleRefresh("network restored", 900, { force:true }));
+  window.addEventListener("focus", ()=>{
+    if(twitchVideoShellIsVisible()) twitchVideoScheduleRefresh("window focus", 900);
+  });
+  window.addEventListener("pageshow", ()=>{
+    if(twitchVideoShellIsVisible()) twitchVideoScheduleRefresh("page restored", 900);
+  });
+  document.addEventListener("visibilitychange", ()=>{
+    if(!document.hidden && twitchVideoShellIsVisible()) twitchVideoScheduleRefresh("view restored", 900);
+  });
+  flprTwitchChat.videoWatchdogTimer = setInterval(()=>{
+    if(document.hidden || !navigator.onLine || !twitchVideoShellIsVisible()) return;
+    if(Date.now() - Number(flprTwitchChat.videoLastRefreshAt || 0) >= FLPR_TWITCH_VIDEO_WATCHDOG_MS){
+      twitchVideoRefresh("watchdog", { force:true });
+    }
+  }, 60000);
 }
 function loadTwitchChatCfg(){
   try{
@@ -41706,6 +43994,52 @@ function saveTwitchChatCfg(){
     }));
   }catch(_){}
 }
+function twitchChatClearReconnect(){
+  try{ clearTimeout(flprTwitchChat.chatReconnectTimer); }catch(_){}
+  flprTwitchChat.chatReconnectTimer = 0;
+}
+function twitchChatClearHeartbeat(){
+  try{ clearInterval(flprTwitchChat.chatHeartbeatTimer); }catch(_){}
+  flprTwitchChat.chatHeartbeatTimer = 0;
+}
+function twitchChatHasReconnectCredentials(){
+  return !!(String(flprTwitchChat.username || "").trim() && String(flprTwitchChat.token || "").trim());
+}
+function twitchChatScheduleReconnect(reason){
+  if(flprTwitchChat.manualDisconnect || !twitchChatHasReconnectCredentials()) return;
+  if(flprTwitchChat.chatReconnectTimer) return;
+  const attempts = Math.max(0, Number(flprTwitchChat.chatReconnectAttempts || 0));
+  const delay = Math.min(FLPR_TWITCH_CHAT_RECONNECT_MAX_MS, FLPR_TWITCH_CHAT_RECONNECT_BASE_MS * Math.pow(1.65, attempts));
+  flprTwitchChat.chatReconnectAttempts = attempts + 1;
+  twitchChatRefreshStatus();
+  twitchChatAppendSystem(`Twitch chat ${reason || "disconnected"}; reconnecting in ${Math.round(delay / 1000)}s.`);
+  flprTwitchChat.chatReconnectTimer = setTimeout(()=>{
+    flprTwitchChat.chatReconnectTimer = 0;
+    twitchChatConnect({ reconnect:true });
+  }, delay);
+}
+function twitchChatStartHeartbeat(){
+  twitchChatClearHeartbeat();
+  flprTwitchChat.chatLastMessageAt = Date.now();
+  flprTwitchChat.chatHeartbeatTimer = setInterval(()=>{
+    const ws = flprTwitchChat.ws;
+    if(!ws || ws.readyState !== WebSocket.OPEN) return;
+    const now = Date.now();
+    const lastMessageAt = Number(flprTwitchChat.chatLastMessageAt || 0);
+    if(lastMessageAt && now - lastMessageAt > FLPR_TWITCH_CHAT_STALE_MS){
+      twitchChatAppendSystem("Twitch chat heartbeat timed out. Reconnecting.");
+      try{ ws.close(); }catch(_){ twitchChatScheduleReconnect("heartbeat timed out"); }
+      return;
+    }
+    try{
+      flprTwitchChat.chatLastPingAt = now;
+      ws.send("PING :flippermizer");
+    }catch(_){
+      try{ ws.close(); }catch(__){}
+      twitchChatScheduleReconnect("heartbeat send failed");
+    }
+  }, FLPR_TWITCH_CHAT_HEARTBEAT_MS);
+}
 function twitchChatStatusText(text){
   const el = document.getElementById("twitchChatStatus");
   if(el) el.textContent = String(text || "");
@@ -41713,7 +44047,7 @@ function twitchChatStatusText(text){
 function twitchChatRefreshStatus(){
   const chat = flprTwitchChat.connected
     ? `Chat connected as ${flprTwitchChat.username || "viewer"}`
-    : (flprTwitchChat.connecting ? "Chat connecting" : "Chat disconnected");
+    : (flprTwitchChat.connecting ? "Chat connecting" : (flprTwitchChat.chatReconnectTimer ? "Chat reconnecting" : "Chat disconnected"));
   let eventSub = "";
   if(flprTwitchChat.eventSubEnabled === false){
     eventSub = "EventSub off";
@@ -42028,7 +44362,12 @@ function twitchEventSubHandleMessage(data){
   if(msgType === "notification"){
     twitchEventSubScheduleKeepalive(flprTwitchChat.eventKeepaliveSeconds || 30);
     const entry = twitchEventSubFormatNotification(payload, meta);
-    if(entry) twitchChatAppendLine(entry);
+    if(entry){
+      twitchChatAppendLine(entry);
+      if(String(entry.eventType || "") === "stream.online"){
+        twitchVideoScheduleRefresh("stream online", 900, { force:true });
+      }
+    }
     return;
   }
   if(msgType === "revocation"){
@@ -42146,7 +44485,10 @@ async function twitchEventSubConnect(opts = {}){
     twitchChatRefreshStatus();
   }
 }
-function twitchChatDisconnect(){
+function twitchChatDisconnect(opts = {}){
+  if(opts.manual !== false) flprTwitchChat.manualDisconnect = true;
+  twitchChatClearReconnect();
+  twitchChatClearHeartbeat();
   twitchEventSubDisconnect({ keepStatus:true });
   try{
     if(flprTwitchChat.ws){
@@ -42162,20 +44504,22 @@ function twitchChatDisconnect(){
   flprTwitchChat.connecting = false;
   twitchChatRefreshStatus();
 }
-function twitchChatConnect(){
+function twitchChatConnect(opts = {}){
   const userEl = document.getElementById("twitchChatUser");
   const tokenEl = document.getElementById("twitchChatToken");
   const clientIdEl = document.getElementById("twitchEventSubClientId");
   const eventSubEl = document.getElementById("twitchEventSubEnabled");
-  const username = String(userEl?.value || "").trim().toLowerCase();
-  const token = normalizeTwitchOauthToken(tokenEl?.value || "");
-  const clientId = String(clientIdEl?.value || "").trim();
-  const eventSubEnabled = eventSubEl ? !!eventSubEl.checked : true;
+  const username = String(userEl?.value || flprTwitchChat.username || "").trim().toLowerCase();
+  const token = normalizeTwitchOauthToken(tokenEl?.value || flprTwitchChat.token || "");
+  const clientId = String(clientIdEl?.value || flprTwitchChat.clientId || "").trim();
+  const eventSubEnabled = eventSubEl ? !!eventSubEl.checked : flprTwitchChat.eventSubEnabled !== false;
   if(!username || !token){
     twitchChatStatusText("Twitch username and OAuth token required.");
     return;
   }
-  twitchChatDisconnect();
+  twitchChatDisconnect({ manual:false });
+  flprTwitchChat.manualDisconnect = false;
+  if(!opts.reconnect) flprTwitchChat.chatReconnectAttempts = 0;
   flprTwitchChat.username = username;
   flprTwitchChat.token = token;
   flprTwitchChat.clientId = clientId;
@@ -42184,29 +44528,35 @@ function twitchChatConnect(){
   saveTwitchChatCfg();
   flprTwitchChat.connecting = true;
   twitchChatRefreshStatus();
-  twitchChatAppendSystem("Connecting to Twitch chat.");
+  twitchChatAppendSystem(opts.reconnect ? "Reconnecting to Twitch chat." : "Connecting to Twitch chat.");
   if(eventSubEnabled){
     twitchEventSubConnect({ username, token, clientId });
   }
   const ws = new WebSocket("wss://irc-ws.chat.twitch.tv:443");
   flprTwitchChat.ws = ws;
+  flprTwitchChat.chatLastMessageAt = Date.now();
   ws.onopen = ()=>{
     if(ws !== flprTwitchChat.ws) return;
+    flprTwitchChat.chatLastMessageAt = Date.now();
+    twitchChatStartHeartbeat();
     ws.send("CAP REQ :twitch.tv/tags twitch.tv/commands");
     ws.send(`PASS ${token}`);
     ws.send(`NICK ${username}`);
     ws.send(`JOIN #${FLPR_TWITCH_CHAT_CHANNEL}`);
   };
   ws.onmessage = (ev)=>{
+    flprTwitchChat.chatLastMessageAt = Date.now();
     const lines = String(ev?.data || "").split(/\r?\n/).filter(Boolean);
     lines.forEach((line)=>{
       if(line.startsWith("PING")){
         try{ ws.send(line.replace(/^PING/i, "PONG")); }catch(_){}
         return;
       }
+      if(line.startsWith("PONG")) return;
       if(/\s001\s/.test(line) || line.includes(" JOIN #")){
         flprTwitchChat.connected = true;
         flprTwitchChat.connecting = false;
+        flprTwitchChat.chatReconnectAttempts = 0;
         twitchChatRefreshStatus();
         return;
       }
@@ -42226,10 +44576,12 @@ function twitchChatConnect(){
   };
   ws.onclose = ()=>{
     if(ws !== flprTwitchChat.ws) return;
+    twitchChatClearHeartbeat();
     flprTwitchChat.ws = null;
     flprTwitchChat.connected = false;
     flprTwitchChat.connecting = false;
     twitchChatRefreshStatus();
+    if(!flprTwitchChat.manualDisconnect) twitchChatScheduleReconnect("socket closed");
   };
 }
 function twitchChatSendCurrent(){
@@ -42257,7 +44609,10 @@ function ensureTwitchChatPanel(){
       </div>
       <div class="twitchChatConnectGrid">
         <input class="cInput" id="twitchChatUser" placeholder="Twitch username">
-        <input class="cInput" id="twitchChatToken" type="password" placeholder="OAuth / EventSub token" autocomplete="off" spellcheck="false" aria-label="Twitch OAuth and EventSub token">
+        <div class="twitchSecretField">
+          <input class="cInput" id="twitchChatToken" type="password" placeholder="OAuth / EventSub token" autocomplete="off" spellcheck="false" aria-label="Twitch OAuth and EventSub token">
+          <button class="cBtn twitchSecretReveal" id="twitchChatTokenReveal" type="button" aria-pressed="false" aria-label="Reveal Twitch OAuth token">SHOW</button>
+        </div>
         <button class="cBtn" id="twitchChatConnectBtn" type="button">CONNECT</button>
       </div>
       <div class="twitchEventSubGrid">
@@ -42265,7 +44620,10 @@ function ensureTwitchChatPanel(){
           <input id="twitchEventSubEnabled" type="checkbox" checked>
           EVENTSUB
         </label>
-        <input class="cInput" id="twitchEventSubClientId" placeholder="Twitch Client ID">
+        <div class="twitchSecretField">
+          <input class="cInput" id="twitchEventSubClientId" type="password" placeholder="Twitch Client ID / EventSub key" autocomplete="off" spellcheck="false" aria-label="Twitch EventSub Client ID">
+          <button class="cBtn twitchSecretReveal" id="twitchEventSubClientIdReveal" type="button" aria-pressed="false" aria-label="Reveal Twitch EventSub Client ID">SHOW</button>
+        </div>
       </div>
       <div class="twitchChatFontGrid">
         <div class="cLabel">CHAT FONT</div>
@@ -42290,9 +44648,64 @@ function ensureTwitchChatPanel(){
   return panel;
 }
 
+function ensureFlprBotUtilityControl(){
+  let wrap = document.getElementById("flprBotRunUtilityWrap");
+  if(!wrap){
+    wrap = document.createElement("div");
+    wrap.id = "flprBotRunUtilityWrap";
+    wrap.className = "flprBotRunUtilityWrap";
+    const row = document.createElement("div");
+    row.className = "cRow";
+    const btn = document.createElement("button");
+    btn.className = "cBtn";
+    btn.id = "flprBotRunUtilityBtn";
+    btn.type = "button";
+    btn.textContent = "START FLPR-BOT";
+    const status = document.createElement("div");
+    status.className = "cNote";
+    status.id = "flprBotRunUtilityStatus";
+    status.textContent = "Launches FLPR-Bot in a terminal from the Electron launcher.";
+    row.appendChild(btn);
+    wrap.append(row, status);
+  }
+  const btn = wrap.querySelector("#flprBotRunUtilityBtn");
+  const status = wrap.querySelector("#flprBotRunUtilityStatus");
+  const api = musicGetLauncherApi();
+  const canRun = !!(api && typeof api.runFlprBot === "function");
+  if(btn){
+    btn.disabled = !canRun;
+    if(!btn.__flprBotRunBound){
+      btn.__flprBotRunBound = true;
+      btn.addEventListener("click", async ()=>{
+        const liveApi = musicGetLauncherApi();
+        if(!liveApi || typeof liveApi.runFlprBot !== "function"){
+          if(status) status.textContent = "FLPR-Bot launcher API is unavailable. Open this overlay from Electron.";
+          return;
+        }
+        btn.disabled = true;
+        btn.textContent = "STARTING...";
+        if(status) status.textContent = "Starting FLPR-Bot terminal...";
+        try{
+          const result = await liveApi.runFlprBot();
+          if(status) status.textContent = result?.ok
+            ? `Started FLPR-Bot: ${String(result.path || "FLPR-Bot.exe")}`
+            : `Could not start FLPR-Bot: ${String(result?.path || result?.error || "unknown error")}`;
+        }catch(err){
+          if(status) status.textContent = `Could not start FLPR-Bot: ${String(err?.message || err || "unknown error")}`;
+        }finally{
+          btn.disabled = false;
+          btn.textContent = "START FLPR-BOT";
+        }
+      });
+    }
+  }
+  if(status && !canRun) status.textContent = "FLPR-Bot starter is available when the overlay is opened from Electron.";
+  return wrap;
+}
+
 function compactConnectControlsLayout(panelConnect){
   if(!panelConnect) return;
-  if(panelConnect.dataset.connectCompact === "1" && panelConnect.querySelector(".connectPanelSection")) return;
+  if(panelConnect.dataset.connectCompact === "1" && panelConnect.querySelector(".connectPanelSection") && document.getElementById("flprBotRunUtilityWrap")) return;
   panelConnect.dataset.connectCompact = "1";
 
   const moveTo = (parent, node)=>{
@@ -42362,6 +44775,7 @@ function compactConnectControlsLayout(panelConnect){
   const episodeState = document.getElementById("episodeStateTxt");
   const progTitle = findControlsSectionTitle(panelConnect, "PROGRESS");
   const progRow = document.getElementById("wipeProgressBtn")?.closest(".cRow");
+  const flprBotUtility = ensureFlprBotUtilityControl();
   const bonusPinballPanel = ensureBonusPinballControlsPanel();
   const repoTitle = findControlsSectionTitle(panelConnect, "TABLE REPOSITORY");
   const repoNote = repoTitle?.nextElementSibling;
@@ -42382,7 +44796,7 @@ function compactConnectControlsLayout(panelConnect){
     itemTitle, easyBlock, easyNote, medBlock, medNote, fragBlock, countTitle, countGrid,
     episodeTitle, episodeRow, episodeState,
     progTitle, progRow,
-    repoTitle, repoNote, repoRow
+    flprBotUtility, repoTitle, repoNote, repoRow
   ]).forEach((node)=>moveTo(left, node));
 
   unique([bonusPinballPanel, twitchChatPanel]).forEach((node)=>moveTo(right, node));
@@ -42407,7 +44821,7 @@ function compactConnectControlsLayout(panelConnect){
   makeSection(left, "Hint Spoiler Source", [hintTitle, hintNote, hintCtlRow, hintLast, hintAutoRow, trackerRow], { accent:"gold", mini:"zip / txt / tracker mode" });
   makeSection(left, "Counters + Reconcile", [itemTitle, easyBlock, easyNote, medBlock, medNote, fragBlock, countTitle, countGrid], { accent:"blue", mini:"items / checks / delta" });
   makeSection(left, "Episode Tracking", [episodeTitle, episodeRow, episodeState], { accent:"green", mini:"records / FLPRP / achievements" });
-  makeSection(left, "Run Utilities", [progTitle, progRow, repoTitle, repoNote, repoRow], { accent:"red", mini:"wipe / bestiary" });
+  makeSection(left, "Run Utilities", [progTitle, progRow, flprBotUtility, repoTitle, repoNote, repoRow], { accent:"red", mini:"wipe / bot / bestiary" });
   const bonusSection = makeSection(right, "Bonus Pinball", [bonusPinballPanel], { accent:"gold", mini:"field / layout / tests" });
   if(bonusSection) bonusSection.id = "bonusPinballSectionCard";
   makeSection(right, "Twitch Chat", [twitchChatPanel], { accent:"blue", mini:"twitch.tv/ashodin", grow:true });
@@ -42782,6 +45196,7 @@ function setControlsTab(tabKey){
   try{ achTrackPanelClick(`controls-${key}`); }catch(_){}
   try{ localStorage.setItem(CONTROLS_TAB_LS, key); }catch(_){}
   try{ updateControlsTabHighlight(body); }catch(_){}
+  try{ scheduleControlsTabHighlightUpdate(body); }catch(_){}
 }
 
 function ensureControlsTabHighlight(body){
@@ -42795,10 +45210,45 @@ function ensureControlsTabHighlight(body){
     glow.className = "controlsTabGlow";
     tabs.insertBefore(glow, tabs.firstChild || null);
   }
+  if(!tabs.__flprGlowResizeObserver && typeof ResizeObserver === "function"){
+    try{
+      tabs.__flprGlowResizeObserver = new ResizeObserver(()=> scheduleControlsTabHighlightUpdate(root, 2));
+      tabs.__flprGlowResizeObserver.observe(tabs);
+      tabs.querySelectorAll(".controlsTabBtn").forEach((btn)=>tabs.__flprGlowResizeObserver.observe(btn));
+    }catch(_){}
+  }
   return glow;
 }
 
-function updateControlsTabHighlight(body){
+function scheduleControlsTabHighlightUpdate(body, frames){
+  const root = body || document.querySelector(".controlsBody");
+  if(!root) return;
+  const count = Math.max(1, Number(frames || 4) || 4);
+  if(root.__controlsTabHighlightRaf){
+    try{ cancelAnimationFrame(root.__controlsTabHighlightRaf); }catch(_){}
+    root.__controlsTabHighlightRaf = 0;
+  }
+  const step = (remaining)=>{
+    root.__controlsTabHighlightRaf = requestAnimationFrame(()=>{
+      root.__controlsTabHighlightRaf = 0;
+      try{ updateControlsTabHighlight(root, { retry:false }); }catch(_){}
+      if(remaining > 1) step(remaining - 1);
+    });
+  };
+  step(count);
+  try{
+    clearTimeout(root.__controlsTabHighlightTimer);
+    root.__controlsTabHighlightTimer = setTimeout(()=>updateControlsTabHighlight(root, { retry:false }), 120);
+  }catch(_){}
+  try{
+    if(document.fonts && document.fonts.ready && !root.__controlsTabFontsReadyBound){
+      root.__controlsTabFontsReadyBound = true;
+      document.fonts.ready.then(()=>scheduleControlsTabHighlightUpdate(root, 3)).catch(()=>{});
+    }
+  }catch(_){}
+}
+
+function updateControlsTabHighlight(body, opts){
   const root = body || document.querySelector(".controlsBody");
   if(!root) return;
   const tabs = root.querySelector(".controlsTabs");
@@ -42811,6 +45261,13 @@ function updateControlsTabHighlight(body){
   }
   const tabsRect = tabs.getBoundingClientRect();
   const rect = active.getBoundingClientRect();
+  if(tabsRect.width <= 1 || tabsRect.height <= 1 || rect.width <= 1 || rect.height <= 1){
+    tabs.classList.remove("hasActiveGlow");
+    if(!(opts && opts.retry === false)){
+      try{ scheduleControlsTabHighlightUpdate(root, 2); }catch(_){}
+    }
+    return;
+  }
   const left = rect.left - tabsRect.left;
   const top = rect.top - tabsRect.top;
   glow.style.left = `${left}px`;
@@ -43065,7 +45522,7 @@ function wireControls(){
   try{
     if(!window.__flprControlsGlowResizeBound){
       window.__flprControlsGlowResizeBound = true;
-      window.addEventListener("resize", ()=> updateControlsTabHighlight(), { passive:true });
+      window.addEventListener("resize", ()=> scheduleControlsTabHighlightUpdate(), { passive:true });
     }
   }catch(_){}
 
@@ -43076,29 +45533,7 @@ function wireControls(){
   const bonusPinballToggleBtnEl = document.getElementById("bonusPinballToggleBtn");
   if(bonusPinballToggleBtnEl){
     bonusPinballToggleBtnEl.onclick = null;
-    if(bonusPinballToggleBtnEl.dataset.directToggleBound !== "1"){
-      bonusPinballToggleBtnEl.dataset.directToggleBound = "1";
-      bonusPinballToggleBtnEl.addEventListener("click", (ev)=>{
-        ev.preventDefault();
-        ev.stopPropagation();
-        try{ ev.stopImmediatePropagation(); }catch(_){}
-        const visible = bonusPinballToggleBtnEl.getAttribute("aria-pressed") !== "true";
-        if(visible){
-          setIntegratedBonusPinballVisible(true, { manual:true, keepVisible:true });
-        }else{
-          bonusPinballManualVisible = false;
-          bonusPinballPositionMode = false;
-          clearIntegratedBonusPinballOverlaySignal();
-          try{ document.body.classList.remove("bonusPinballIntegratedOn"); }catch(_){}
-          try{ getIntegratedBonusPinballHost()?.setAttribute("aria-hidden", "true"); }catch(_){}
-          setIntegratedBonusPinballKeepVisible(false);
-          applyIntegratedBonusPinballLayerVisibility(false);
-          syncIntegratedBonusPinballPositionMode();
-          syncIntegratedBonusPinballControls();
-        }
-        toast(visible ? "good" : "warn", "BONUS PINBALL", visible ? "Bonus Pinball overlay shown." : "Bonus Pinball overlay hidden.", 1600);
-      }, true);
-    }
+    bonusPinballToggleBtnEl.dataset.directToggleBound = "0";
   }
   const bonusPinballMoveBtnEl = document.getElementById("bonusPinballMoveBtn");
   if(bonusPinballMoveBtnEl){
@@ -43393,7 +45828,9 @@ function wireTwitchChatControls(){
     const cfg = loadTwitchChatCfg();
     const user = document.getElementById("twitchChatUser");
     const token = document.getElementById("twitchChatToken");
+    const tokenReveal = document.getElementById("twitchChatTokenReveal");
     const clientId = document.getElementById("twitchEventSubClientId");
+    const clientIdReveal = document.getElementById("twitchEventSubClientIdReveal");
     const eventSub = document.getElementById("twitchEventSubEnabled");
     const fontSize = document.getElementById("twitchChatFontSize");
     const fontSizeValue = document.getElementById("twitchChatFontSizeValue");
@@ -43401,6 +45838,7 @@ function wireTwitchChatControls(){
     const disconnect = document.getElementById("twitchChatDisconnectBtn");
     const msg = document.getElementById("twitchChatMessage");
     const send = document.getElementById("twitchChatSendBtn");
+    wireTwitchVideoControls();
     if(token){
       try{ token.type = "password"; }catch(_){}
       token.setAttribute("autocomplete", "off");
@@ -43408,6 +45846,34 @@ function wireTwitchChatControls(){
       token.setAttribute("aria-label", "Twitch OAuth and EventSub token");
       token.placeholder = "OAuth / EventSub token";
     }
+    if(clientId){
+      try{ clientId.type = "password"; }catch(_){}
+      clientId.setAttribute("autocomplete", "off");
+      clientId.setAttribute("spellcheck", "false");
+      clientId.setAttribute("aria-label", "Twitch EventSub Client ID");
+      clientId.placeholder = "Twitch Client ID / EventSub key";
+    }
+    const bindSecretReveal = (input, button, hiddenLabel, shownLabel)=>{
+      if(!input || !button || button.__flprTwitchRevealBound) return;
+      button.__flprTwitchRevealBound = true;
+      const sync = ()=>{
+        const revealed = String(input.type || "").toLowerCase() === "text";
+        button.textContent = revealed ? "HIDE" : "SHOW";
+        button.setAttribute("aria-pressed", revealed ? "true" : "false");
+        button.setAttribute("aria-label", revealed ? shownLabel : hiddenLabel);
+      };
+      try{ input.type = "password"; }catch(_){}
+      sync();
+      button.addEventListener("click", (ev)=>{
+        ev.preventDefault();
+        ev.stopPropagation();
+        try{ input.type = (String(input.type || "").toLowerCase() === "password") ? "text" : "password"; }catch(_){}
+        sync();
+        try{ input.focus({ preventScroll:true }); }catch(_){}
+      });
+    };
+    bindSecretReveal(token, tokenReveal, "Reveal Twitch OAuth token", "Hide Twitch OAuth token");
+    bindSecretReveal(clientId, clientIdReveal, "Reveal Twitch EventSub Client ID", "Hide Twitch EventSub Client ID");
     flprTwitchChat.username = cfg.username || flprTwitchChat.username || "";
     flprTwitchChat.token = cfg.token || flprTwitchChat.token || "";
     flprTwitchChat.clientId = cfg.clientId || flprTwitchChat.clientId || "";
@@ -43607,6 +46073,29 @@ clearReceivedFeedHistory();
         uploadedAt: new Date().toISOString(),
         storage: `idb:${key}`
       };
+      let savedInLauncher = false;
+      try{
+        const api = musicGetLauncherApi();
+        if(api && typeof api.saveMusicFile === "function"){
+          const bytes = await file.arrayBuffer();
+          const result = await api.saveMusicFile(scenario, bytes, file.name || "", file.type || "");
+          if(result && result.ok && result.ref){
+            musicSetScenarioRef(scenario, String(result.ref || ""), {
+              ...uploadMeta,
+              sourcePath: String(file.name || "").trim(),
+              storage: "launcher:userData"
+            });
+            savedInLauncher = true;
+          }
+        }
+      }catch(e){
+        console.warn("music upload launcher persistence failed; falling back", e);
+      }
+      if(savedInLauncher){
+        input.value = "";
+        try{ playSfx("click"); }catch(_){}
+        return;
+      }
       try{
         await idbPut(key, file);
         revokeAudioUrl(key);
@@ -43655,6 +46144,13 @@ clearReceivedFeedHistory();
         musicStopPreview(scenario);
       }
       const ref = String(musicGetRefs()[scenario] || "").trim();
+      const meta = musicGetRawScenarioMeta(scenario);
+      if(String(meta?.storage || "") === "launcher:userData" || ref.startsWith("/__flpr_user_music/")){
+        try{
+          const api = musicGetLauncherApi();
+          if(api && typeof api.deleteMusicFile === "function") await api.deleteMusicFile(scenario);
+        }catch(_){}
+      }
       if(ref.startsWith("idb:")){
         const key = ref.slice(4);
         await idbDel(key).catch(()=>{});
@@ -45983,6 +48479,7 @@ function isTowerWorldUnlockedByState(worldKey){
   try{
     const wk = String(worldKey || "").trim();
     if(!wk) return false;
+    if(isBossWorldId(wk, state) && besiegedGetState().active && !besiegedBossUnlockedByAuthorizationOnly()) return false;
     if(state && state.worlds && state.worlds[wk] && state.worlds[wk].locked === false) return true;
     if(window.worldState && window.worldState[wk]){
       const ws = window.worldState[wk];
@@ -46147,6 +48644,7 @@ function getWorldBannerUrl(worldKey){
 }
 function isBossUnlocked(){
   try{
+    if(besiegedGetState().active && !besiegedBossUnlockedByAuthorizationOnly()) return false;
     const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
     const testUnlockUntil = Number(window.__bossTestUnlockUntil || 0);
     const requiredCount = getBossKeysRequiredForOpen();
@@ -46393,11 +48891,27 @@ function getTableBannerUrl(worldKey, tableName){
     }
     const wantCode = getRepoCanonicalTableCode(tn);
     const wantCanonical = getRepoCanonicalTableName(tn);
+    const defaultTableBanner = String(getDefaultTableBannerRef(wantCanonical || tn) || "").trim();
     const resolveRef = (ref)=>{
       try{
         if(typeof resolveBannerRef === "function") return resolveBannerRef(ref || "");
       }catch(_){}
       return String(ref || "");
+    };
+    const isKnownDefaultBannerRef = (ref)=>{
+      const raw = String(ref || "").trim();
+      return !!raw && DEFAULT_TABLE_BANNER_REF_SET.has(raw);
+    };
+    const isSafeCodeBannerRef = (ref)=>{
+      const raw = normalizeTableBannerRefForCode(wantCode, ref);
+      if(!raw) return false;
+      return !isKnownDefaultBannerRef(raw) || !defaultTableBanner || raw === defaultTableBanner;
+    };
+    const isSafeSlotBannerRef = (ref)=>{
+      const raw = normalizeTableBannerRefForTable(wantCanonical || tn, ref);
+      if(!raw) return false;
+      if(!wantCode) return true;
+      return !!defaultTableBanner && raw === defaultTableBanner;
     };
     const getExactSlotKey = ()=>{
       try{
@@ -46418,18 +48932,21 @@ function getTableBannerUrl(worldKey, tableName){
     // Preferred local state lookups (portable by codename, then by current world slot key)
     try{
       if(wantCode && state?.tableBannersByCode && state.tableBannersByCode[wantCode]){
-        const resolved = resolveRef(state.tableBannersByCode[wantCode]);
+        const rawRef = normalizeTableBannerRefForCode(wantCode, state.tableBannersByCode[wantCode]);
+        if(rawRef !== state.tableBannersByCode[wantCode]) state.tableBannersByCode[wantCode] = rawRef;
+        const resolved = isSafeCodeBannerRef(rawRef) ? resolveRef(rawRef) : "";
         if(resolved) return resolved;
       }
       const slotKey = getExactSlotKey() || getTableKeyForName(tn);
       if(slotKey && state?.tableBanners && state.tableBanners[slotKey]){
-        const resolved = resolveRef(state.tableBanners[slotKey]);
+        const rawSlotRef = normalizeTableBannerRefForTable(wantCanonical || tn, state.tableBanners[slotKey]);
+        if(rawSlotRef !== state.tableBanners[slotKey]) state.tableBanners[slotKey] = rawSlotRef;
+        const resolved = isSafeSlotBannerRef(rawSlotRef) ? resolveRef(rawSlotRef) : "";
         if(resolved) return resolved;
       }
     }catch(_){}
 
     // Seed-accurate repository default should beat any stale legacy/global caches.
-    const defaultTableBanner = getDefaultTableBannerRef(wantCanonical || tn);
     if(defaultTableBanner) return resolveRef(defaultTableBanner) || defaultTableBanner;
 
     // Legacy/global fallbacks.
@@ -46867,5 +49384,3 @@ function bossDamageParse(name){
 
 
 <div id="globalCursorFx" class="globalFxLayer"></div></body></html>
-
-
