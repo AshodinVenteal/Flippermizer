@@ -9,6 +9,9 @@ Streams utilizing Flippermizer can be seen at http://twitch.tv/ashodin on Tuesda
 ## What's Included?
 
 - `flippermizer_overlay_tower_v3.html`
+- `flippermizer_standalone_client.html`
+- `flippermizer_standalone_client.css`
+- `flippermizer_standalone_client.js`
 - `flippermizer_table_repository.js`
 - `flippermizer_task_explanations.js`
 - `flippermizer_table_repository_library.html`
@@ -31,3 +34,16 @@ Streams utilizing Flippermizer can be seen at http://twitch.tv/ashodin on Tuesda
 Open `flippermizer_overlay_tower_v3.html` in a browser or OBS browser source.
 
 For the built-in bestiary link, keep `flippermizer_table_repository_library.html` in the same folder as the overlay file.
+
+For the standalone AP client, open `flippermizer_standalone_client.html` in a browser. It provides a pared-back Multiworld/Singleplayer interface without stream integrations, traps, or bonus pinball.
+
+## Standalone EXE
+
+The standalone client can also be packaged as a Windows executable:
+
+```powershell
+npm install
+npm run dist:portable
+```
+
+The portable build is written to `dist/`.

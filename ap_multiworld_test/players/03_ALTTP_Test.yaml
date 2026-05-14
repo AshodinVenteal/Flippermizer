@@ -1,0 +1,25 @@
+name: ALTTPP3
+description: "A Link to the Past AP slot for Flippermizer multiworld redemption testing."
+game: A Link to the Past
+
+A Link to the Past:
+  progression_balancing: 50
+  accessibility: items
+  goal: ganon
+  mode: open
+  glitches_required: no_glitches
+  dark_room_logic: lamp
+  entrance_shuffle: vanilla
+  item_pool: normal
+  item_functionality: normal
+  enemy_health: default
+  enemy_damage: default
+  progressive: on
+  swordless: false
+  boss_shuffle: none
+  enemy_shuffle: false
+  pot_shuffle: false
+  beemizer_total_chance: 0
+  beemizer_trap_chance: 0
+  timer: none
+

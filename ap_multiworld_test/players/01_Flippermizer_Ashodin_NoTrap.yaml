@@ -1,0 +1,19 @@
+name: AshodinNoTrap
+description: "Standalone Flippermizer no-trap AP client multiworld redemption test."
+game: Manual_FlippermizerBaseGame_Ashodin
+
+Manual_FlippermizerBaseGame_Ashodin:
+  progression_balancing: 50
+  accessibility: items
+  boss_keys_required_for_boss_table_open: 3
+  filter_mode_trap_enabled: false
+  task_shuffle_enabled: true
+  random_start_tables_open: false
+  filler_traps: 0
+  score_adjustment_mode: normal
+  base_game_active_table_count: 25
+  base_game_selection_mode: curated_catalog_groups
+  base_game_curated_world_groups: "inside_out_lanes, pixel_quest, badges_and_chases, nineties_movie_mayhem, sci_fi_signal"
+  base_game_random_one_featured_designer_only: false
+  base_game_starting_open_table_count: 5
+  base_game_enabled: true

@@ -563,6 +563,49 @@ body.bonusPinballDim .randomizerIntro{
   overflow:auto;
   overflow-wrap:anywhere;
 }
+.obsFilterTrapPanel{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.obsFilterTrapGrid{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap:8px;
+}
+.obsFilterTrapPanel .cInput{
+  width:100%;
+}
+.obsFilterTrapToggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:34px;
+  padding:7px 9px;
+  border:1px solid rgba(255,214,122,.22);
+  border-radius:8px;
+  background:rgba(0,0,0,.22);
+  color:rgba(255,244,212,.86);
+  font-size:8px;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+}
+.obsFilterTrapActions{
+  display:grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap:8px;
+}
+.obsFilterTrapStatus{
+  min-height:34px;
+  border:1px solid rgba(255,214,122,.18);
+  border-radius:8px;
+  padding:7px 8px;
+  background:rgba(0,0,0,.22);
+  color:rgba(255,244,212,.78);
+  font-size:7px;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
 #bonusPinballSectionCard{
   flex:0 0 auto;
   min-height: 420px;
@@ -4420,9 +4463,11 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   position: fixed;
   left: -9999px;
   top: -9999px;
-  width: 315px;
-  min-height: 132px;
-  max-width: 315px;
+  width: 390px;
+  min-height: 112px;
+  max-width: 390px;
+  max-height: min(58vh, 360px);
+  overflow: auto;
   padding: 14px 15px;
   border-radius: 12px;
   border: 2px solid rgba(0,217,255,.68);
@@ -4431,14 +4476,13 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
     linear-gradient(180deg, rgba(5,19,32,.98), rgba(2,9,18,.98));
   color: rgba(232,250,255,.98);
   font-family: 'Press Start 2P', monospace;
-  font-size: 15px;
-  line-height: 1.55;
-  letter-spacing: .34px;
-  text-align: center;
+  font-size: 11px;
+  line-height: 1.62;
+  letter-spacing: 0;
+  text-align: left;
   text-transform: uppercase;
   white-space: normal;
-  display: grid;
-  place-items: center;
+  display: block;
   box-shadow:
     0 14px 30px rgba(0,0,0,.52),
     0 0 24px rgba(0,166,255,.28),
@@ -4490,6 +4534,63 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
     radial-gradient(120% 140% at 25% 0%, rgba(255,77,109,0.16), rgba(0,0,0,0) 60%),
     linear-gradient(180deg, rgba(44,10,18,0.82), rgba(2,8,16,0.72));
 }
+.toast.apItemToast{
+  position:relative;
+  border-radius:14px;
+  padding:12px 13px 11px;
+  overflow:hidden;
+}
+.toast.apItemToast::before{
+  content:"";
+  display:block;
+  position:absolute;
+  inset:0 auto 0 0;
+  width:5px;
+  background:var(--ap-item-color, rgba(0,166,255,.95));
+  box-shadow:0 0 18px var(--ap-item-glow, rgba(0,166,255,.35));
+}
+.toast.apItemToast .k{
+  margin-left:5px;
+  font-size:7px;
+  letter-spacing:.7px;
+}
+.toast.apItemToast .v{
+  margin-left:5px;
+}
+.apItemToastMeta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:7px;
+}
+.apItemToastBadge{
+  display:inline-flex;
+  align-items:center;
+  min-height:16px;
+  padding:3px 6px 2px;
+  border:1px solid color-mix(in srgb, var(--ap-item-color, #00a6ff), transparent 16%);
+  border-radius:6px;
+  color:var(--ap-item-color, #9edcff);
+  background:rgba(0,0,0,.22);
+  font-size:7px;
+  line-height:1;
+}
+.apItemToastItem{
+  color:var(--ap-item-color, #e8faff);
+  text-shadow:0 0 10px var(--ap-item-glow, rgba(0,166,255,.35));
+  font-size:11px;
+  line-height:1.25;
+}
+.apItemToastFrom{
+  margin-top:7px;
+  color:rgba(232,250,255,.75);
+  font-size:8px;
+  line-height:1.35;
+}
+.toast.apItem-progression{ --ap-item-color:#c77dff; --ap-item-glow:rgba(199,125,255,.42); border-color:rgba(199,125,255,.95); }
+.toast.apItem-useful{ --ap-item-color:#53b7ff; --ap-item-glow:rgba(83,183,255,.38); border-color:rgba(83,183,255,.9); }
+.toast.apItem-trap{ --ap-item-color:#ff4d6d; --ap-item-glow:rgba(255,77,109,.38); border-color:rgba(255,77,109,.95); }
+.toast.apItem-filler{ --ap-item-color:#c7d0d8; --ap-item-glow:rgba(199,208,216,.22); border-color:rgba(199,208,216,.64); }
 .toast.besiegedToast{
   position:fixed;
   top:calc(16px + (var(--captureH) * .30));
@@ -4894,6 +4995,8 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 .apStatusTxt{ font-size:9px; color: rgba(232,250,255,0.85); line-height:1.35; }
 
 .apConnLog{
+  position:relative;
+  isolation:isolate;
   margin-top:10px;
   border:2px solid rgba(0,166,255,0.55);
   border-radius:18px;
@@ -4901,12 +5004,18 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   background: rgba(2,8,16,0.55);
 }
 .apConnLogHead{
+  position:relative;
+  z-index:3;
+  pointer-events:auto;
   padding:10px 12px 9px;
   border-bottom:1px solid rgba(0,166,255,0.35);
   display:flex; justify-content:space-between; align-items:center; gap:10px;
 }
 .apConnLogTitle{ font-size:9px; color: var(--cyan); }
 .apConnLogTabs{
+  position:relative;
+  z-index:3;
+  pointer-events:auto;
   display:flex;
   gap:6px;
   padding:8px 10px 7px;
@@ -4925,6 +5034,9 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   font-size:7px;
   letter-spacing:.55px;
   cursor:pointer;
+  position:relative;
+  z-index:4;
+  pointer-events:auto;
 }
 .apLogTab.active{
   border-color: rgba(34,255,136,0.86);
@@ -4936,7 +5048,14 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   color: rgba(255,232,232,0.96);
   box-shadow: 0 0 12px rgba(255,80,80,0.26);
 }
+.apLogTab[data-aplog-tab="chat"].active{
+  border-color: rgba(255,214,102,0.92);
+  color: rgba(255,248,220,0.96);
+  box-shadow: 0 0 12px rgba(255,196,64,0.24);
+}
 .apConnLogBody{
+  position:relative;
+  z-index:1;
   height: 160px;
   overflow:auto;
   padding:10px 12px;
@@ -4945,6 +5064,41 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   color: rgba(232,250,255,0.90);
   white-space:pre-wrap;
   word-break:break-word;
+}
+.apClientSayWrap{
+  position:relative;
+  z-index:3;
+  pointer-events:auto;
+  border-top:1px solid rgba(0,166,255,0.30);
+  background: rgba(0,166,255,0.045);
+}
+.apClientSayRow{
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) auto;
+  gap:8px;
+  align-items:center;
+  padding:9px 10px 6px;
+}
+.apClientSayInput{
+  min-width:0;
+  width:100%;
+  pointer-events:auto;
+}
+.apClientSayBtn{
+  white-space:nowrap;
+  pointer-events:auto;
+}
+#apLogCopyBtn,
+#apLogClearBtn{
+  position:relative;
+  z-index:4;
+  pointer-events:auto;
+}
+.apClientSayHint{
+  padding:0 10px 10px;
+  font-size:7px;
+  line-height:1.45;
+  color:rgba(205,230,244,0.68);
 }
 .musicNowPlayingToast{
   position:absolute;
@@ -5520,6 +5674,23 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 .recvRow{ display:grid; grid-template-columns: 88px minmax(0,1fr); gap:10px; align-items:start; padding:6px 8px; border:1px solid rgba(232,250,255,0.14); border-radius:10px; background:rgba(0,0,0,0.25); }
 .recvTime{ color:rgba(232,250,255,0.65); font-variant-numeric: tabular-nums; white-space:nowrap; padding-right:6px; }
 .recvText{ color:rgba(232,250,255,0.94); line-height:1.25; min-width:0; padding-left:2px; }
+.recvRow.apItem-progression{ border-color:rgba(199,125,255,.48); box-shadow:inset 4px 0 0 rgba(199,125,255,.72); }
+.recvRow.apItem-useful{ border-color:rgba(83,183,255,.42); box-shadow:inset 4px 0 0 rgba(83,183,255,.68); }
+.recvRow.apItem-trap{ border-color:rgba(255,77,109,.48); box-shadow:inset 4px 0 0 rgba(255,77,109,.72); }
+.recvRow.apItem-filler{ border-color:rgba(199,208,216,.24); box-shadow:inset 4px 0 0 rgba(199,208,216,.38); }
+.recvBadge{
+  display:inline-block;
+  margin:0 0 4px;
+  padding:2px 5px;
+  border-radius:5px;
+  border:1px solid currentColor;
+  font-size:7px;
+  line-height:1;
+}
+.recvBadge.apItem-progression{ color:#c77dff; }
+.recvBadge.apItem-useful{ color:#53b7ff; }
+.recvBadge.apItem-trap{ color:#ff4d6d; }
+.recvBadge.apItem-filler{ color:#c7d0d8; }
 .nodeBtn.pending{ outline:2px solid rgba(255,201,84,0.7); }
 
 
@@ -7047,6 +7218,576 @@ body.chromaBlue .bossKeyCard::before{
 @keyframes bossIncomingCursorBlink{
   0%,48%{ opacity:1; }
   49%,100%{ opacity:0; }
+}
+.bossKeyCinematic{
+  position:absolute;
+  inset:0;
+  z-index: 1285;
+  pointer-events:none;
+  overflow:hidden;
+  opacity:0;
+  background:
+    radial-gradient(82% 58% at 50% 42%, rgba(20,70,92,.12), rgba(0,0,0,.10) 44%, rgba(0,0,0,.74) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.74), rgba(1,7,14,.84));
+  transition: opacity 190ms ease;
+}
+.bossKeyCinematic.show{
+  opacity:1;
+}
+.bossKeyCinematic.hide{
+  opacity:0;
+  transition-duration: 420ms;
+}
+.bossKeyCinematic::before{
+  content:"";
+  position:absolute;
+  inset:-8%;
+  background:
+    radial-gradient(58% 42% at 50% 40%, rgba(151,255,242,.22), transparent 62%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.035) 0 2px, transparent 2px 7px);
+  opacity:.36;
+  mix-blend-mode:screen;
+  animation: bossKeyStormPulseKF 420ms steps(2, end) infinite;
+}
+.bossKeyCinematic::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,.20), transparent 0 17%, rgba(0,255,213,.10) 18%, transparent 36%),
+    radial-gradient(circle at 50% 42%, rgba(29,214,255,.20), transparent 0 34%, rgba(0,0,0,0) 56%);
+  opacity:0;
+  animation: bossKeyCenterFlashKF 1200ms ease-out 90ms both;
+}
+.bossKeyCinematicBackdrop{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(120% 84% at 50% 44%, rgba(6,38,58,.24), rgba(0,0,0,.58) 58%, rgba(0,0,0,.88) 100%);
+}
+.bossKeyCinematicLightning{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  mix-blend-mode:screen;
+  filter: drop-shadow(0 0 9px rgba(126,246,255,.72));
+}
+.bossKeyCinematicBolt{
+  position:absolute;
+  left: var(--bolt-x, 50%);
+  top: var(--bolt-y, 50%);
+  width: var(--bolt-w, 7px);
+  height: var(--bolt-h, 160px);
+  border-radius:999px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.96) 8%, rgba(117,247,255,.92) 42%, rgba(255,255,255,.80) 60%, rgba(0,255,213,0));
+  box-shadow:
+    0 0 8px rgba(255,255,255,.70),
+    0 0 18px rgba(29,214,255,.74),
+    0 0 34px rgba(0,255,213,.42);
+  opacity:0;
+  transform: translate(-50%, -50%) rotate(var(--bolt-r, 0deg)) scaleY(.74);
+  transform-origin:50% 50%;
+  animation: bossKeyBoltFlashKF var(--bolt-dur, 760ms) steps(2, end) var(--bolt-delay, 0ms) both;
+}
+.bossKeyCinematicBolt::before,
+.bossKeyCinematicBolt::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  width:72%;
+  height:42%;
+  border-radius:999px;
+  background:inherit;
+  box-shadow:inherit;
+}
+.bossKeyCinematicBolt::before{
+  top:20%;
+  transform:translateX(-50%) rotate(34deg);
+}
+.bossKeyCinematicBolt::after{
+  top:48%;
+  transform:translateX(-50%) rotate(-42deg);
+}
+.bossKeyCinematicStage{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.bossKeyCinematicFlyer{
+  position:absolute;
+  left: var(--bk-center-x, 50%);
+  top: var(--bk-center-y, 43%);
+  width: min(27vw, 260px);
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%) scale(.88);
+  opacity:0;
+  z-index:4;
+  filter:
+    drop-shadow(0 0 18px rgba(0,255,213,.38))
+    drop-shadow(0 0 48px rgba(29,214,255,.26));
+  animation: bossKeyMaterializeCoreKF 1850ms cubic-bezier(.2,.84,.16,1) 250ms forwards;
+}
+.bossKeyCinematic.charging .bossKeyCinematicFlyer{
+  animation:
+    bossKeyCenterChargeKF 105ms steps(2, end) infinite,
+    bossKeyChargeGlowKF 720ms ease-in-out infinite;
+  opacity:1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.bossKeyCinematic.flying .bossKeyCinematicFlyer{
+  animation: bossKeyFlyToSlotKF 720ms cubic-bezier(.16,.92,.18,1) forwards;
+  opacity:1;
+}
+.bossKeyCinematic.impact .bossKeyCinematicFlyer{
+  opacity:0;
+  transition: opacity 90ms ease-out;
+}
+.bossKeyCinematicKeyCore{
+  position:absolute;
+  inset:12%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:22px;
+}
+.bossKeyCinematicKeyCore::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  border-radius:50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.28), rgba(119,252,255,.18) 28%, rgba(0,255,213,.08) 46%, transparent 68%);
+  filter: blur(7px);
+  animation: bossKeyAuraSpinKF 1600ms linear infinite;
+}
+.bossKeyCinematicKeyCore img{
+  position:relative;
+  z-index:2;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:
+    drop-shadow(0 0 12px rgba(0,0,0,.52))
+    drop-shadow(0 0 20px rgba(0,255,213,.34));
+}
+.bossKeyCinematicGlyph{
+  position:relative;
+  z-index:2;
+  font-size:min(17vw, 166px);
+  line-height:1;
+  filter:
+    drop-shadow(0 0 12px rgba(0,0,0,.58))
+    drop-shadow(0 0 24px rgba(0,255,213,.36));
+}
+.bossKeyCinematicShard{
+  position:absolute;
+  left:calc(50% + var(--sx, 0px));
+  top:calc(50% + var(--sy, 0px));
+  width:var(--sw, 42px);
+  height:var(--sh, 9px);
+  border-radius:999px;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(222,255,250,.96), rgba(29,214,255,.70), rgba(255,255,255,0));
+  box-shadow:0 0 12px rgba(0,255,213,.58), 0 0 24px rgba(29,214,255,.30);
+  opacity:0;
+  transform: translate(-50%, -50%) rotate(var(--sr, 0deg)) scaleX(.24);
+  animation: bossKeyShardFadeKF 920ms ease-out var(--sd, 0ms) both;
+  mix-blend-mode:screen;
+}
+.bossKeyCinematicAetherSpiral{
+  position:absolute;
+  left: var(--bk-center-x, 50%);
+  top: var(--bk-center-y, 43%);
+  z-index:2;
+  width:min(72vw, 780px);
+  aspect-ratio:1 / 1;
+  transform:translate(-50%, -50%);
+  pointer-events:none;
+  mix-blend-mode:screen;
+  filter:
+    drop-shadow(0 0 16px rgba(126,246,255,.48))
+    drop-shadow(0 0 42px rgba(0,255,213,.28));
+  opacity:0;
+  animation: bossKeyAetherSpiralShellKF 2480ms cubic-bezier(.18,.86,.22,1) 40ms both;
+}
+.bossKeyCinematicAetherSpiral::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:28%;
+  aspect-ratio:1 / 1;
+  transform:translate(-50%, -50%) scale(.54);
+  border-radius:50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.96), rgba(175,255,248,.58) 21%, rgba(0,255,213,.20) 44%, transparent 72%);
+  filter:blur(7px);
+  opacity:0;
+  animation: bossKeyAetherCoreBloomKF 2200ms ease-out 210ms both;
+}
+.bossKeyCinematic.charging .bossKeyCinematicAetherSpiral,
+.bossKeyCinematic.flying .bossKeyCinematicAetherSpiral{
+  opacity:0;
+  transition:opacity 260ms ease-out;
+}
+.bossKeyCinematic.snapped .bossKeyCinematicAetherSpiral{
+  animation: bossKeyAetherSwirlAbsorbKF 380ms cubic-bezier(.16,.92,.18,1) both;
+}
+.bossKeyCinematicAetherSvg{
+  position:absolute;
+  inset:-4%;
+  width:108%;
+  height:108%;
+  overflow:visible;
+  transform-origin:50% 50%;
+  animation: bossKeyAetherSvgDriftKF 2480ms cubic-bezier(.18,.86,.22,1) both;
+}
+.bossKeyCinematicAetherArm{
+  fill:none;
+  stroke:rgba(209,255,250,.92);
+  stroke-width:var(--arm-w, 5);
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  opacity:0;
+  filter:
+    blur(var(--arm-blur, 0px))
+    drop-shadow(0 0 9px rgba(219,255,252,.44))
+    drop-shadow(0 0 26px rgba(0,255,213,.30));
+  animation: bossKeyAetherArmFlowKF var(--arm-dur, 1700ms) cubic-bezier(.17,.86,.24,1) var(--arm-delay, 0ms) both;
+}
+.bossKeyCinematicAetherArm.mist{
+  stroke:rgba(65,220,255,.28);
+  stroke-width:var(--arm-mist-w, 28);
+  filter:blur(var(--arm-mist-blur, 8px)) drop-shadow(0 0 26px rgba(0,178,255,.22));
+  animation-duration:var(--arm-mist-dur, 2100ms);
+}
+.bossKeyCinematicAetherArm.hot{
+  stroke:rgba(255,255,255,.98);
+  stroke-width:var(--arm-hot-w, 2.6);
+  filter:
+    blur(.2px)
+    drop-shadow(0 0 7px rgba(255,255,255,.74))
+    drop-shadow(0 0 20px rgba(114,251,255,.44));
+  animation-duration:var(--arm-hot-dur, 1280ms);
+  animation-delay:calc(var(--arm-delay, 0ms) + 180ms);
+}
+.bossKeyCinematicSpiralMote{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:var(--mote-size, 8px);
+  height:var(--mote-size, 8px);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.98), rgba(181,255,247,.92) 35%, rgba(0,255,213,.20) 100%);
+  box-shadow:
+    0 0 10px rgba(255,255,255,.72),
+    0 0 24px rgba(0,255,213,.48);
+  opacity:0;
+  transform:translate(-50%, -50%) rotate(var(--mote-a, 0deg)) translateX(var(--mote-r0, 180px)) scale(.35);
+  animation: bossKeyAetherMoteKF var(--mote-dur, 1700ms) cubic-bezier(.17,.86,.24,1) var(--mote-delay, 0ms) both;
+}
+.bossKeyCinematicSpiralMote::after{
+  content:"";
+  position:absolute;
+  right:48%;
+  top:50%;
+  width:var(--mote-tail, 46px);
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg, transparent, rgba(166,255,248,.82), rgba(255,255,255,.92));
+  transform:translateY(-50%);
+  transform-origin:100% 50%;
+  opacity:.76;
+}
+.bossKeyCinematicEnergySnap{
+  position:absolute;
+  left: var(--bk-center-x, 50%);
+  top: var(--bk-center-y, 43%);
+  z-index:3;
+  width:min(34vw, 360px);
+  aspect-ratio:1 / 1;
+  transform:translate(-50%, -50%) scale(.3);
+  pointer-events:none;
+  mix-blend-mode:screen;
+  opacity:0;
+}
+.bossKeyCinematicEnergySnap::before,
+.bossKeyCinematicEnergySnap::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  opacity:0;
+}
+.bossKeyCinematicEnergySnap::before{
+  background:
+    radial-gradient(circle, rgba(255,255,255,.98) 0 4%, rgba(197,255,249,.68) 8%, rgba(0,255,213,.24) 21%, transparent 48%),
+    conic-gradient(from 12deg, transparent 0 20deg, rgba(255,255,255,.90) 28deg, rgba(0,255,213,.32) 38deg, transparent 54deg 88deg, rgba(175,255,248,.70) 98deg, transparent 118deg 360deg);
+  filter:blur(1px) drop-shadow(0 0 18px rgba(255,255,255,.58)) drop-shadow(0 0 38px rgba(0,255,213,.42));
+}
+.bossKeyCinematicEnergySnap::after{
+  inset:18%;
+  border:2px solid rgba(224,255,251,.92);
+  box-shadow:
+    0 0 18px rgba(255,255,255,.54),
+    0 0 36px rgba(0,255,213,.42),
+    inset 0 0 24px rgba(0,255,213,.20);
+}
+.bossKeyCinematicEnergySnap.on{
+  animation: bossKeyEnergySnapShellKF 420ms cubic-bezier(.16,.92,.18,1) both;
+}
+.bossKeyCinematicEnergySnap.on::before{
+  animation: bossKeyEnergySnapFlashKF 360ms ease-out both;
+}
+.bossKeyCinematicEnergySnap.on::after{
+  animation: bossKeyEnergySnapRingKF 420ms cubic-bezier(.16,.92,.18,1) both;
+}
+.bossKeyCinematicTitle{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:5;
+  width:min(92%, 920px);
+  text-align:center;
+  font-weight:900;
+  line-height:.94;
+  text-transform:uppercase;
+  letter-spacing:4px;
+  color:rgba(235,255,252,.98);
+  text-shadow:
+    0 0 12px rgba(255,255,255,.68),
+    0 0 28px rgba(0,255,213,.58),
+    0 4px 0 rgba(0,0,0,.72);
+  opacity:0;
+  animation: bossKeyWordsKF 1900ms ease-in-out 1740ms both;
+}
+.bossKeyCinematicTitle.top{
+  top: calc(var(--bk-center-y, 43%) - 190px);
+  font-size: clamp(22px, 4.1vw, 58px);
+}
+.bossKeyCinematicTitle.bottom{
+  top: calc(var(--bk-center-y, 43%) + 150px);
+  font-size: clamp(20px, 3.3vw, 46px);
+  color:rgba(183,255,232,.98);
+}
+.bossKeyCinematicRing{
+  position:absolute;
+  left: var(--bk-center-x, 50%);
+  top: var(--bk-center-y, 43%);
+  z-index:3;
+  width:min(41vw, 430px);
+  aspect-ratio:1 / 1;
+  border-radius:50%;
+  transform:translate(-50%, -50%) scale(.62);
+  border:2px solid rgba(180,255,244,.58);
+  box-shadow:
+    0 0 18px rgba(0,255,213,.44),
+    0 0 54px rgba(29,214,255,.25),
+    inset 0 0 34px rgba(0,255,213,.12);
+  opacity:0;
+  animation: bossKeyRingKF 1700ms ease-out 190ms both;
+}
+.bossKeyCinematicSparks{
+  position:absolute;
+  inset:0;
+  z-index:6;
+  pointer-events:none;
+  overflow:hidden;
+}
+.bossKeyCinematicSpark{
+  position:absolute;
+  left:var(--spark-x, 50%);
+  top:var(--spark-y, 50%);
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.98), rgba(255,242,174,.88) 38%, rgba(0,255,213,.32) 100%);
+  box-shadow:0 0 11px rgba(255,238,170,.72), 0 0 22px rgba(0,255,213,.48);
+  animation: bossKeyCinematicSparkKF var(--spark-dur, 760ms) ease-out forwards;
+}
+.bossDock.bossKeySectionCharge .bossDockInner{
+  animation: bossKeyDockQuakeKF 90ms steps(2, end) infinite;
+  filter:
+    drop-shadow(0 0 10px rgba(0,255,213,.32))
+    drop-shadow(0 0 24px rgba(29,214,255,.20));
+}
+.bossDock.bossKeySectionCharge .bossKeyCard{
+  opacity:1 !important;
+}
+.bossKeyCard.bossKeyReceivingSlot{
+  opacity:1 !important;
+  border-color:rgba(180,255,244,.96);
+  box-shadow:
+    0 0 0 2px rgba(180,255,244,.18) inset,
+    0 0 26px rgba(0,255,213,.42),
+    0 0 62px rgba(29,214,255,.28);
+}
+.bossKeyCard.bossKeyReceivingSlot .bossKeyFrame{
+  animation: bossKeySlotChargeKF 130ms steps(2, end) infinite;
+}
+.bossKeyCard.bossKeyAwaitingSlam .bossKeyImg,
+.bossKeyCard.bossKeyAwaitingSlam .bossKeyGlyph{
+  opacity:0;
+}
+.bossKeyCard.bossKeyImpact{
+  animation: bossKeySlotImpactKF 560ms cubic-bezier(.18,.9,.18,1) 1;
+}
+.bossKeyCard.bossKeyImpact .bossKeyImg,
+.bossKeyCard.bossKeyImpact .bossKeyGlyph{
+  opacity:1;
+  animation: bossKeySlotKeyImpactKF 560ms cubic-bezier(.18,.9,.18,1) 1;
+}
+.capture.bossKeyScreenShake{
+  animation: bossKeyScreenShakeKF 420ms linear 1;
+}
+@keyframes bossKeyStormPulseKF{
+  0%,100%{ opacity:.24; filter:brightness(.96); }
+  44%{ opacity:.48; filter:brightness(1.45); }
+  66%{ opacity:.18; filter:brightness(.82); }
+}
+@keyframes bossKeyCenterFlashKF{
+  0%{ opacity:0; transform:scale(.78); }
+  12%{ opacity:.92; }
+  100%{ opacity:0; transform:scale(1.42); }
+}
+@keyframes bossKeyBoltFlashKF{
+  0%, 100%{ opacity:0; transform: translate(-50%, -50%) rotate(var(--bolt-r, 0deg)) scaleY(.48); }
+  8%, 24%, 54%{ opacity:1; transform: translate(-50%, -50%) rotate(var(--bolt-r, 0deg)) scaleY(1); }
+  16%, 42%, 68%{ opacity:.16; transform: translate(-50%, -50%) rotate(var(--bolt-r, 0deg)) scaleY(.86); }
+}
+@keyframes bossKeyMaterializeCoreKF{
+  0%{ opacity:0; transform: translate(-50%, -50%) scale(.62) rotate(-7deg); filter:blur(6px) brightness(1.8); }
+  18%{ opacity:.32; }
+  44%{ opacity:.78; clip-path: inset(34% 0 26% 0); filter:blur(2px) brightness(1.35); }
+  74%{ opacity:1; clip-path: inset(0 0 0 0); transform: translate(-50%, -50%) scale(1.04) rotate(1deg); filter:blur(0) brightness(1.18); }
+  100%{ opacity:1; clip-path: inset(0 0 0 0); transform: translate(-50%, -50%) scale(1) rotate(0deg); filter:blur(0) brightness(1); }
+}
+@keyframes bossKeyShardFadeKF{
+  0%{ opacity:0; transform: translate(-50%, -50%) rotate(var(--sr, 0deg)) scaleX(.14); }
+  20%, 68%{ opacity:1; }
+  100%{ opacity:0; transform: translate(-50%, -50%) rotate(var(--sr, 0deg)) scaleX(1.2); }
+}
+@keyframes bossKeyAetherSpiralShellKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(1.14) rotate(-18deg); filter:blur(8px) brightness(1.08); }
+  12%{ opacity:.82; }
+  38%{ opacity:1; transform:translate(-50%, -50%) scale(.99) rotate(20deg); filter:blur(2px) brightness(1.34); }
+  54%{ opacity:.62; transform:translate(-50%, -50%) scale(.90) rotate(42deg); filter:blur(1px) brightness(1.48); }
+  68%{ opacity:.28; transform:translate(-50%, -50%) scale(.78) rotate(76deg); filter:blur(2px) brightness(1.72); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(.46) rotate(108deg); filter:blur(6px) brightness(2.1); }
+}
+@keyframes bossKeyAetherSwirlAbsorbKF{
+  0%{ opacity:.34; transform:translate(-50%, -50%) scale(.76) rotate(72deg); filter:blur(2px) brightness(1.7); }
+  44%{ opacity:.28; transform:translate(-50%, -50%) scale(.36) rotate(118deg); filter:blur(1px) brightness(2.05); }
+  72%{ opacity:.16; transform:translate(-50%, -50%) scale(.18) rotate(146deg); filter:blur(2px) brightness(2.35); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(.06) rotate(174deg); filter:blur(7px) brightness(2.65); }
+}
+@keyframes bossKeyAetherCoreBloomKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.22); filter:blur(14px) brightness(1.1); }
+  34%{ opacity:.42; }
+  56%{ opacity:.88; transform:translate(-50%, -50%) scale(.72); filter:blur(6px) brightness(1.7); }
+  74%{ opacity:.24; transform:translate(-50%, -50%) scale(.92); filter:blur(9px) brightness(2.0); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.14); filter:blur(12px) brightness(2.3); }
+}
+@keyframes bossKeyAetherSvgDriftKF{
+  0%{ transform:rotate(-10deg) scale(1.08); }
+  64%{ transform:rotate(34deg) scale(.92); }
+  100%{ transform:rotate(58deg) scale(.72); }
+}
+@keyframes bossKeyAetherArmFlowKF{
+  0%{ opacity:0; stroke-dashoffset:1; }
+  10%{ opacity:var(--arm-opacity, .74); }
+  46%{ opacity:var(--arm-opacity, .92); stroke-dashoffset:.24; }
+  62%{ opacity:var(--arm-fade-opacity, .38); stroke-dashoffset:.06; }
+  78%{ opacity:.14; stroke-dashoffset:0; }
+  100%{ opacity:0; stroke-dashoffset:-.09; }
+}
+@keyframes bossKeyAetherMoteKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) rotate(var(--mote-a, 0deg)) translateX(var(--mote-r0, 250px)) scale(.26); filter:blur(4px); }
+  12%{ opacity:.92; }
+  48%{ opacity:1; transform:translate(-50%, -50%) rotate(calc(var(--mote-a, 0deg) + var(--mote-spin, 360deg))) translateX(var(--mote-r1, 72px)) scale(1); filter:blur(.3px); }
+  70%{ opacity:.24; transform:translate(-50%, -50%) rotate(calc(var(--mote-a, 0deg) + var(--mote-spin, 360deg) + 54deg)) translateX(34px) scale(.58); filter:blur(1.4px); }
+  100%{ opacity:0; transform:translate(-50%, -50%) rotate(calc(var(--mote-a, 0deg) + var(--mote-spin, 360deg) + 88deg)) translateX(14px) scale(.34); filter:blur(3px); }
+}
+@keyframes bossKeyEnergySnapShellKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.18) rotate(-18deg); }
+  12%{ opacity:1; }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.1) rotate(42deg); }
+}
+@keyframes bossKeyEnergySnapFlashKF{
+  0%{ opacity:0; transform:scale(.18); filter:blur(8px) brightness(1.1); }
+  16%{ opacity:1; transform:scale(.48); filter:blur(1px) brightness(2.6); }
+  100%{ opacity:0; transform:scale(1.08); filter:blur(7px) brightness(1.4); }
+}
+@keyframes bossKeyEnergySnapRingKF{
+  0%{ opacity:0; transform:scale(.22); }
+  18%{ opacity:.92; }
+  100%{ opacity:0; transform:scale(1.42); }
+}
+@keyframes bossKeyWordsKF{
+  0%{ opacity:0; transform:translateX(-50%) translateY(14px) scale(.96); filter:blur(5px); }
+  20%, 72%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); filter:blur(0); }
+  100%{ opacity:0; transform:translateX(-50%) translateY(-8px) scale(1.02); filter:blur(3px); }
+}
+@keyframes bossKeyRingKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.34) rotate(0deg); }
+  14%{ opacity:1; }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.38) rotate(240deg); }
+}
+@keyframes bossKeyAuraSpinKF{
+  0%{ transform:rotate(0deg) scale(.96); opacity:.82; }
+  50%{ transform:rotate(180deg) scale(1.06); opacity:1; }
+  100%{ transform:rotate(360deg) scale(.96); opacity:.82; }
+}
+@keyframes bossKeyCenterChargeKF{
+  0%,100%{ transform: translate(calc(-50% - 2px), calc(-50% + 1px)) scale(1.02) rotate(-1deg); }
+  50%{ transform: translate(calc(-50% + 3px), calc(-50% - 2px)) scale(1.04) rotate(1.2deg); }
+}
+@keyframes bossKeyChargeGlowKF{
+  0%,100%{ filter:drop-shadow(0 0 20px rgba(0,255,213,.40)) drop-shadow(0 0 44px rgba(29,214,255,.24)); }
+  50%{ filter:drop-shadow(0 0 30px rgba(255,255,255,.70)) drop-shadow(0 0 72px rgba(0,255,213,.46)); }
+}
+@keyframes bossKeyFlyToSlotKF{
+  0%{ transform: translate(-50%, -50%) scale(1.02) rotate(-1deg); filter:brightness(1.45) drop-shadow(0 0 28px rgba(0,255,213,.58)); }
+  72%{ transform: translate(calc(-50% + var(--bk-fly-x, 0px)), calc(-50% + var(--bk-fly-y, 0px) - 34px)) scale(var(--bk-slot-scale-pop, .40)) rotate(-7deg); filter:brightness(1.7) drop-shadow(0 0 38px rgba(255,255,255,.82)); }
+  100%{ transform: translate(calc(-50% + var(--bk-fly-x, 0px)), calc(-50% + var(--bk-fly-y, 0px))) scale(var(--bk-slot-scale, .34)) rotate(0deg); filter:brightness(2.05) drop-shadow(0 0 42px rgba(255,255,255,.94)); }
+}
+@keyframes bossKeyDockQuakeKF{
+  0%,100%{ transform:translate3d(-1px, 0, 0); }
+  50%{ transform:translate3d(2px, -1px, 0); }
+}
+@keyframes bossKeySlotChargeKF{
+  0%,100%{ filter:brightness(1.08) saturate(1.12); transform:translate3d(-1px,0,0); }
+  50%{ filter:brightness(1.48) saturate(1.35); transform:translate3d(2px,-1px,0); }
+}
+@keyframes bossKeySlotImpactKF{
+  0%{ transform:translate3d(0,0,0) scale(1); filter:brightness(1); }
+  14%{ transform:translate3d(0,6px,0) scale(1.08); filter:brightness(2.05); }
+  34%{ transform:translate3d(-5px,-2px,0) scale(1.02); }
+  54%{ transform:translate3d(4px,2px,0) scale(1.01); }
+  100%{ transform:translate3d(0,0,0) scale(1); filter:brightness(1.08); }
+}
+@keyframes bossKeySlotKeyImpactKF{
+  0%{ transform:scale(.58); filter:brightness(2.4) drop-shadow(0 0 18px rgba(255,255,255,.84)); }
+  52%{ transform:scale(1.16); }
+  100%{ transform:scale(1); filter:brightness(1) drop-shadow(0 0 14px rgba(0,255,213,.22)); }
+}
+@keyframes bossKeyScreenShakeKF{
+  0%,100%{ transform:translate3d(0,0,0); }
+  12%{ transform:translate3d(-6px,2px,0); }
+  24%{ transform:translate3d(5px,-3px,0); }
+  36%{ transform:translate3d(-4px,-2px,0); }
+  48%{ transform:translate3d(6px,3px,0); }
+  62%{ transform:translate3d(-3px,2px,0); }
+  78%{ transform:translate3d(3px,-1px,0); }
+}
+@keyframes bossKeyCinematicSparkKF{
+  0%{ opacity:1; transform:translate3d(0,0,0) scale(1.15); }
+  100%{ opacity:0; transform:translate3d(var(--dx,0px), var(--dy,-120px), 0) scale(.22); }
 }
 .bossKeysHint{
   position: absolute;
@@ -16489,6 +17230,77 @@ body.flprShopSparksSlime .spark{
   opacity: .58;
   transition: opacity .28s ease, filter .28s ease, transform .28s ease;
 }
+#viewChecks #checksCountersDock .cSectionTitle.checksCounterDockTitle{
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  align-self: flex-end !important;
+  width: 170px !important;
+  max-width: 170px !important;
+  min-height: 38px !important;
+  margin: 0 0 8px auto !important;
+  padding: 7px 8px 6px !important;
+  border: 2px solid rgba(0,217,255,.62) !important;
+  border-radius: 13px !important;
+  background:
+    radial-gradient(115% 130% at 50% -24%, rgba(34,255,136,.18), rgba(0,0,0,0) 52%),
+    linear-gradient(180deg, rgba(7,28,44,.96), rgba(3,13,24,.94)) !important;
+  box-shadow:
+    0 8px 18px rgba(0,0,0,.38),
+    0 0 18px rgba(0,180,255,.20),
+    inset 0 0 0 1px rgba(255,255,255,.08) !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  text-align: center !important;
+  font-family: 'Press Start 2P', monospace !important;
+  line-height: 1.15 !important;
+  letter-spacing: .08em !important;
+  color: rgba(230,250,255,.98) !important;
+  text-shadow: 0 0 12px rgba(0,217,255,.34) !important;
+}
+#viewChecks #checksCountersDock .cSectionTitle.checksCounterDockTitle::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:4px !important;
+  border-radius:9px !important;
+  border:1px dashed rgba(160,235,255,.22) !important;
+  pointer-events:none !important;
+}
+#viewChecks #checksCountersDock .cSectionTitle.checksCounterDockTitle::after{
+  content:"" !important;
+  position:absolute !important;
+  left:-40% !important;
+  top:0 !important;
+  width:34% !important;
+  height:100% !important;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent) !important;
+  transform:skewX(-18deg) !important;
+  animation:counterTitleSweepKF 4.8s ease-in-out infinite !important;
+  pointer-events:none !important;
+}
+#viewChecks #checksCountersDock .counterDockTitleMain{
+  position:relative !important;
+  z-index:1 !important;
+  display:block !important;
+  font-size:8px !important;
+}
+#viewChecks #checksCountersDock .counterDockTitleSub{
+  position:relative !important;
+  z-index:1 !important;
+  display:block !important;
+  margin-top:4px !important;
+  font-size:6px !important;
+  color:rgba(184,255,218,.82) !important;
+  letter-spacing:.12em !important;
+}
+@keyframes counterTitleSweepKF{
+  0%,52%{ left:-45%; opacity:0; }
+  62%{ opacity:.55; }
+  80%{ left:112%; opacity:0; }
+  100%{ left:112%; opacity:0; }
+}
 #viewChecks #checksCountersDock.active{
   opacity: 1;
   filter: saturate(1.18) brightness(1.04);
@@ -18072,11 +18884,19 @@ body.flprShopSparksSlime .spark{
           </div>
         </div>
         <div class="apConnLogTabs" id="apLogTabs" data-bound="1">
-          <button class="apLogTab active" type="button" data-aplog-tab="status">STATUS</button>
+          <button class="apLogTab" type="button" data-aplog-tab="status">STATUS</button>
           <button class="apLogTab" type="button" data-aplog-tab="generic">GENERIC INFO</button>
+          <button class="apLogTab active" type="button" data-aplog-tab="chat">AP CHAT / HINTS</button>
           <button class="apLogTab" type="button" data-aplog-tab="errors">ERRORS</button>
         </div>
         <div class="apConnLogBody" id="apConnLogBody"></div>
+        <div class="apClientSayWrap">
+          <form class="apClientSayRow" id="apClientSayForm" action="javascript:void(0)" onsubmit="return false;">
+            <input class="cInput apClientSayInput" id="apClientSayInput" type="text" autocomplete="off" spellcheck="false" placeholder="Type AP chat or !hint request">
+            <button class="cBtn apClientSayBtn" id="apClientSayBtn" type="submit">SEND</button>
+          </form>
+          <div class="apHint apClientSayHint">Sends normal AP chat commands, including !hint, without changing the client connection mode.</div>
+        </div>
       </div></div></div></div><div class="controlsTabPanel" data-ctrl-panel="visuals"><div class="cRow"><button class="cBtn" id="chromaBlueBtn" title="OBS: toggle blue chroma background">CHROMA BLUE: OFF</button><button class="cBtn" id="saveApCfgBtn">SAVE AP CFG</button></div><div class="ctrlCard"><div class="cLabel" style="margin-top:14px;">BOSS HP TEST (shows in Boss Table checks)</div><div class="hpTestGrid">
         <div>
           
@@ -21374,6 +22194,7 @@ function bossClearNonVictoryNotifications(){
   try{
     ap.trapQueue = [];
     ap.trapActive = null;
+    try{ clearCaptureTrapFilterMode(); }catch(_){}
     const trapStack = document.getElementById("trapStack");
     if(trapStack) trapStack.innerHTML = "";
   }catch(_){}
@@ -23181,10 +24002,17 @@ const ap = {
   receivedSeen: new Set(),   // keys derived from (index|item|location|player)
   receivedByIndex: new Map(),
   receivedDeferred: [],      // received items seen before DataPackage names were loaded
+  sentToastSeen: new Set(),
   ws: null,
   uuid: null,
   cfg: loadApCfg(),
   roomGames: [],
+  slotInfoById: new Map(),
+  playerNameById: new Map(),
+  gameByPlayerId: new Map(),
+  gameDataPackages: new Map(),
+  connectedPlayerIds: new Set(),
+  serverEventSeen: new Set(),
   connected: false,
   slotData: {},
   genericChecks: { enabled:false, byLocation:new Map(), entries:[] },
@@ -23837,8 +24665,8 @@ function refreshControlPanelLayoutHandles(){
 
 
 const AP_LOG_BUFFER_MAX = 260;
-const apLogBuffers = { status: [], generic: [], errors: [] };
-let apLogActiveTab = "status";
+const apLogBuffers = { status: [], generic: [], errors: [], chat: [] };
+let apLogActiveTab = "chat";
 function fmtSrvTs(d=new Date()){
   const pad=(n,l=2)=>String(n).padStart(l,"0");
   return `[${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())},${pad(d.getMilliseconds(),3)}]`;
@@ -23846,6 +24674,7 @@ function fmtSrvTs(d=new Date()){
 function normalizeApLogTab(tab){
   const t = String(tab || "").toLowerCase();
   if(t === "generic") return "generic";
+  if(t === "chat" || t === "server" || t === "messages") return "chat";
   if(t === "error" || t === "errors") return "errors";
   return "status";
 }
@@ -23883,6 +24712,7 @@ function isApLogWarningOrError(msg){
 }
 function apLogEmptyText(tab){
   if(tab === "status") return "No status logs yet.";
+  if(tab === "chat") return "No AP chat/server messages yet.";
   if(tab === "errors") return "No warning/error logs yet.";
   return "No generic logs yet.";
 }
@@ -23907,21 +24737,595 @@ function setApLogTab(tab){
 function apLogTabLabel(tab){
   const t = normalizeApLogTab(tab);
   if(t === "status") return "status";
+  if(t === "chat") return "AP chat";
   if(t === "errors") return "errors";
   return "generic";
 }
-function apLog(msg){
-  const line = `${fmtSrvTs()}: ${msg}`;
-  const tab = classifyApLogTab(msg);
-  const buf = apLogBuffers[tab];
+function apAppendLogLine(tab, line){
+  const t = normalizeApLogTab(tab);
+  const buf = apLogBuffers[t] || (apLogBuffers[t] = []);
   buf.push(line);
   if(buf.length > AP_LOG_BUFFER_MAX) buf.splice(0, buf.length - AP_LOG_BUFFER_MAX);
-  if(isApLogWarningOrError(msg)){
-    const ebuf = apLogBuffers.errors || (apLogBuffers.errors = []);
-    ebuf.push(line);
-    if(ebuf.length > AP_LOG_BUFFER_MAX) ebuf.splice(0, ebuf.length - AP_LOG_BUFFER_MAX);
+}
+function apLog(msg, opts){
+  const line = `${fmtSrvTs()}: ${msg}`;
+  const forcedTab = opts && Object.prototype.hasOwnProperty.call(opts, "tab")
+    ? String(opts.tab || "")
+    : "";
+  const tab = forcedTab ? normalizeApLogTab(forcedTab) : classifyApLogTab(msg);
+  const tabs = [tab];
+  if(opts && Array.isArray(opts.mirrorTabs)){
+    opts.mirrorTabs.forEach((t)=>{
+      const nt = normalizeApLogTab(t);
+      if(!tabs.includes(nt)) tabs.push(nt);
+    });
+  }
+  tabs.forEach((t)=>apAppendLogLine(t, line));
+  if(tab !== "errors" && isApLogWarningOrError(msg)){
+    apAppendLogLine("errors", line);
   }
   renderApLogTab();
+}
+function apPartNumber(part, keys){
+  if(!part || typeof part !== "object") return NaN;
+  for(const key of keys || []){
+    const raw = part[key];
+    const num = Number(raw);
+    if(Number.isFinite(num)) return num;
+  }
+  return NaN;
+}
+function apFirstFiniteNumber(){
+  for(const raw of arguments){
+    const num = Number(raw);
+    if(Number.isFinite(num)) return num;
+  }
+  return NaN;
+}
+function apStoreSlotInfo(slotInfo){
+  if(!slotInfo || typeof slotInfo !== "object") return;
+  if(!ap.slotInfoById) ap.slotInfoById = new Map();
+  if(!ap.playerNameById) ap.playerNameById = new Map();
+  if(!ap.gameByPlayerId) ap.gameByPlayerId = new Map();
+  Object.entries(slotInfo).forEach(([slot, info])=>{
+    const id = Number(slot);
+    if(!Number.isFinite(id) || id <= 0) return;
+    const src = (info && typeof info === "object") ? info : {};
+    const prev = ap.slotInfoById.get(id) || {};
+    const name = String(src.name ?? src.alias ?? prev.name ?? "").trim();
+    const game = String(src.game ?? prev.game ?? "").trim();
+    const next = { ...prev, ...src, id, name, game };
+    ap.slotInfoById.set(id, next);
+    if(name) ap.playerNameById.set(id, name);
+    if(game) ap.gameByPlayerId.set(id, game);
+  });
+}
+function apStorePlayers(players){
+  if(!Array.isArray(players)) return;
+  if(!ap.playerNameById) ap.playerNameById = new Map();
+  if(!ap.slotInfoById) ap.slotInfoById = new Map();
+  players.forEach((p)=>{
+    const src = (p && typeof p === "object") ? p : {};
+    const id = Array.isArray(p) ? Number(p[1]) : Number(src.slot ?? src.slot_id ?? src.id ?? src.player);
+    if(!Number.isFinite(id) || id <= 0) return;
+    const name = String(Array.isArray(p) ? (p[2] ?? p[3] ?? "") : (src.alias ?? src.name ?? src.player_name ?? "")).trim();
+    const team = Array.isArray(p) ? Number(p[0]) : Number(src.team ?? src.team_id);
+    const tags = Array.isArray(src.tags) ? src.tags : (Array.isArray(src.client_tags) ? src.client_tags : undefined);
+    const version = src.version ?? src.client_version ?? undefined;
+    if(name) ap.playerNameById.set(id, name);
+    const prev = ap.slotInfoById?.get?.(id) || {};
+    ap.slotInfoById.set(id, {
+      ...prev,
+      ...src,
+      id,
+      name: name || prev.name || "",
+      game: prev.game || ap.gameByPlayerId?.get?.(id) || "",
+      team: Number.isFinite(team) ? team : prev.team,
+      tags: tags || prev.tags,
+      version: version || prev.version
+    });
+  });
+}
+function apPlayerName(playerId, fallback){
+  const id = Number(playerId);
+  if(Number.isFinite(id) && id > 0){
+    const direct = ap.playerNameById?.get?.(id);
+    if(direct) return String(direct);
+    const slotName = ap.slotInfoById?.get?.(id)?.name;
+    if(slotName) return String(slotName);
+    if(Number(ap.slot || 0) === id && ap.cfg?.player) return String(ap.cfg.player);
+    return `Player ${id}`;
+  }
+  return String(fallback || ap.cfg?.player || "Player");
+}
+function apPlayerGame(playerId, fallback){
+  const id = Number(playerId);
+  if(Number.isFinite(id) && id > 0){
+    const direct = ap.gameByPlayerId?.get?.(id);
+    if(direct) return String(direct);
+    const slotGame = ap.slotInfoById?.get?.(id)?.game;
+    if(slotGame) return String(slotGame);
+    if(Number(ap.slot || 0) === id && ap.cfg?.game) return String(ap.cfg.game);
+    return String(fallback || "");
+  }
+  return String(fallback || ap.cfg?.game || "Archipelago");
+}
+function apNetworkPlayerId(p){
+  const src = (p && typeof p === "object") ? p : {};
+  const raw = Array.isArray(p) ? p[1] : (src.slot ?? src.slot_id ?? src.id ?? src.player);
+  const id = Number(raw);
+  return Number.isFinite(id) && id > 0 ? id : 0;
+}
+function apNetworkPlayerName(p){
+  const src = (p && typeof p === "object") ? p : {};
+  return String(Array.isArray(p) ? (p[2] ?? p[3] ?? "") : (src.alias ?? src.name ?? src.player_name ?? "")).trim();
+}
+function apNetworkPlayerMeta(p, fallbackId){
+  const src = (p && typeof p === "object") ? p : {};
+  const id = apNetworkPlayerId(p) || Number(fallbackId || 0) || 0;
+  const prev = id > 0 ? (ap.slotInfoById?.get?.(id) || {}) : {};
+  const teamRaw = Array.isArray(p) ? p[0] : (src.team ?? src.team_id ?? prev.team ?? ap.team ?? 0);
+  const team = Number(teamRaw);
+  const version = src.version ?? src.client_version ?? prev.version ?? { major:0, minor:6, build:2 };
+  const tags = Array.isArray(src.tags) ? src.tags : (Array.isArray(src.client_tags) ? src.client_tags : (Array.isArray(prev.tags) ? prev.tags : getConnectTags()));
+  return {
+    id,
+    name: apNetworkPlayerName(p) || apPlayerName(id, ""),
+    game: apPlayerGame(id, ""),
+    team: Number.isFinite(team) ? team : 0,
+    version,
+    tags
+  };
+}
+function apVersionTextForLog(version){
+  if(version && typeof version === "object"){
+    const major = Number(version.major ?? version.Major);
+    const minor = Number(version.minor ?? version.Minor);
+    const build = Number(version.build ?? version.patch ?? version.Patch);
+    if(Number.isFinite(major) && Number.isFinite(minor) && Number.isFinite(build)) return `${major}.${minor}.${build}`;
+  }
+  const text = String(version ?? "").trim();
+  return text || "0.6.2";
+}
+function apTagsTextForLog(tags){
+  const list = Array.isArray(tags) && tags.length ? tags : ["AP"];
+  return "[" + list.map((tag)=>`'${String(tag).replace(/'/g, "\\'")}'`).join(", ") + "]";
+}
+function apPlayerPresenceLine(meta, action){
+  const m = meta || {};
+  const player = String(m.name || apPlayerName(m.id, "")).trim() || "Player";
+  const team = (Number(m.team || 0) + 1);
+  const game = String(m.game || apPlayerGame(m.id, "")).trim();
+  const version = apVersionTextForLog(m.version);
+  const tags = apTagsTextForLog(m.tags);
+  if(action === "left") return `${player} (Team #${team}) has left the game. Client(${version}), ${tags}.`;
+  return `${player} (Team #${team})${game ? ` playing ${game}` : ""} has joined. Client(${version}), ${tags}.`;
+}
+function apSelfPresenceMeta(pkt){
+  const slot = Number(ap.slot || pkt?.slot || pkt?.slot_id || 0) || 0;
+  const info = ap.slotInfoById?.get?.(slot) || {};
+  return {
+    id: slot,
+    name: apPlayerName(slot, ap.cfg?.player || ""),
+    game: apPlayerGame(slot, ap.cfg?.game || ""),
+    team: Number(pkt?.team ?? ap.team ?? info.team ?? 0) || 0,
+    version: { major:0, minor:6, build:2 },
+    tags: getConnectTags()
+  };
+}
+function apFormatPlayerForLog(id, fallback){
+  const player = apPlayerName(id, fallback || "");
+  const game = apPlayerGame(id, "");
+  return `${player}${game ? ` (${game})` : ""}`;
+}
+function apFormatPlayerListForLog(ids, maxCount){
+  const list = Array.from(ids || []).map((id)=>Number(id)).filter((id)=>Number.isFinite(id) && id > 0);
+  const max = Math.max(1, Number(maxCount || 8) || 8);
+  const shown = list.slice(0, max).map((id)=>apFormatPlayerForLog(id));
+  if(list.length > shown.length) shown.push(`+${list.length - shown.length} more`);
+  return shown.join(", ");
+}
+function apLogPlayerRosterDelta(players, opts){
+  opts = opts || {};
+  if(!Array.isArray(players) || !players.length) return;
+  try{ apStorePlayers(players); }catch(_){}
+  const ids = players.map(apNetworkPlayerId).filter((id)=>id > 0);
+  if(!ids.length) return;
+  const next = new Set(ids);
+  const prev = ap.connectedPlayerIds instanceof Set ? ap.connectedPlayerIds : new Set();
+  const firstRoster = !prev.size || opts.forceSummary;
+  if(firstRoster && opts.suppressInitial === true){
+    ap.connectedPlayerIds = next;
+    return;
+  }
+  ids.forEach((id)=>{
+    if(prev.has(id)) return;
+    const source = players.find((p)=>apNetworkPlayerId(p) === id);
+    apLog(apPlayerPresenceLine(apNetworkPlayerMeta(source, id), "joined"), { tab:"chat", mirrorTabs:["status"] });
+  });
+  prev.forEach((id)=>{
+    if(next.has(id)) return;
+    apLog(apPlayerPresenceLine(apNetworkPlayerMeta(null, id), "left"), { tab:"chat", mirrorTabs:["status"] });
+  });
+  ap.connectedPlayerIds = next;
+}
+function apLogRoomInfoPacket(pkt){
+  const seed = String(pkt?.seed_name || "").trim();
+  const games = Array.isArray(pkt?.games) ? pkt.games.filter(Boolean) : [];
+  const slotInfo = (pkt?.slot_info && typeof pkt.slot_info === "object") ? pkt.slot_info : (pkt?.slotInfo || {});
+  const slotIds = Object.keys(slotInfo || {}).map((id)=>Number(id)).filter((id)=>Number.isFinite(id) && id > 0);
+  const roomBits = [];
+  if(seed) roomBits.push(`seed ${seed}`);
+  if(games.length) roomBits.push(`${games.length} game${games.length === 1 ? "" : "s"}`);
+  if(slotIds.length) roomBits.push(`${slotIds.length} slot${slotIds.length === 1 ? "" : "s"}`);
+  apLog(`ROOM INFO; ${roomBits.join("; ") || "handshake received"}`, { tab:"status" });
+  if(slotIds.length){
+    apLog(`ROOM SLOTS; ${apFormatPlayerListForLog(slotIds, 12)}`, { tab:"status" });
+  }
+}
+function apLocationNameForLog(locId, playerId){
+  const id = Number(locId);
+  if(!Number.isFinite(id)) return "";
+  const name = apLocationNameFor(id, playerId, "");
+  return getDisplayedLocationName(name || `Location #${id}`);
+}
+function apLogCheckedLocationDelta(locationIds, beforeSet, opts){
+  opts = opts || {};
+  if(!Array.isArray(locationIds)) return;
+  const nextIds = locationIds.map((id)=>Number(id)).filter((id)=>Number.isFinite(id) && id > 0);
+  const before = beforeSet instanceof Set ? beforeSet : new Set();
+  const added = nextIds.filter((id)=>!before.has(id));
+  if(added.length){
+    const missingCount = Number(opts.missingCount);
+    const total = Number.isFinite(missingCount) ? (nextIds.length + Math.max(0, missingCount)) : Number(opts.total || 0);
+    added.slice(0, 12).forEach((id, idx)=>{
+      const indexInPacket = nextIds.indexOf(id);
+      const progress = Math.max(before.size + idx + 1, indexInPacket >= 0 ? indexInPacket + 1 : 0);
+      const suffix = total > 0 ? ` (${progress}/${total})` : "";
+      apLog(`New Check: ${apLocationNameForLog(id, ap.slot)}${suffix}`, { tab:"chat", mirrorTabs:["status"] });
+    });
+    if(added.length > 12) apLog(`New Check: +${added.length - 12} more`, { tab:"chat", mirrorTabs:["status"] });
+  }else if(opts.forceSummary){
+    apLog(`CHECK STATE; ${nextIds.length} checked location${nextIds.length === 1 ? "" : "s"}`, { tab:"status" });
+  }
+}
+function apStoreGameDataPackage(gameName, gameData){
+  const game = String(gameName || "").trim();
+  if(!game || !gameData || typeof gameData !== "object") return null;
+  if(!ap.gameDataPackages) ap.gameDataPackages = new Map();
+  const itemNameToId = gameData.item_name_to_id || {};
+  const locNameToId = gameData.location_name_to_id || {};
+  const itemNameById = new Map();
+  const locNameById = new Map();
+  Object.entries(itemNameToId).forEach(([name,id])=>{
+    const n = Number(id);
+    if(Number.isFinite(n)) itemNameById.set(n, String(name));
+  });
+  Object.entries(locNameToId).forEach(([name,id])=>{
+    const n = Number(id);
+    if(Number.isFinite(n)) locNameById.set(n, String(name));
+  });
+  const rec = { game, itemNameToId, locNameToId, itemNameById, locNameById };
+  ap.gameDataPackages.set(game, rec);
+  return rec;
+}
+function apDataPackageForGame(gameName){
+  const game = String(gameName || "").trim();
+  return game ? (ap.gameDataPackages?.get?.(game) || null) : null;
+}
+function apDataPackageGamesRequest(){
+  const games = new Set();
+  try{ if(ap.cfg?.game) games.add(String(ap.cfg.game)); }catch(_){}
+  try{ (ap.roomGames || []).forEach((g)=>{ if(g) games.add(String(g)); }); }catch(_){}
+  try{ (ap.gameByPlayerId || new Map()).forEach((g)=>{ if(g) games.add(String(g)); }); }catch(_){}
+  return Array.from(games).map((g)=>g.trim()).filter((g)=>g && g !== "Archipelago");
+}
+function apItemNameFor(itemId, playerId, fallback){
+  const id = Number(itemId);
+  if(Number.isFinite(id)){
+    const playerGame = apPlayerGame(playerId, "");
+    const pkgName = playerGame ? apDataPackageForGame(playerGame)?.itemNameById?.get?.(id) : "";
+    if(pkgName) return String(pkgName);
+    const ownName = ap.itemNameById?.get?.(id);
+    if(ownName) return String(ownName);
+  }
+  return String(fallback || (Number.isFinite(id) ? `Item #${id}` : "Item"));
+}
+function apLocationNameFor(locationId, playerId, fallback){
+  const id = Number(locationId);
+  if(Number.isFinite(id)){
+    const playerGame = apPlayerGame(playerId, "");
+    const pkgName = playerGame ? apDataPackageForGame(playerGame)?.locNameById?.get?.(id) : "";
+    if(pkgName) return String(pkgName);
+    const ownName = ap.locNameById?.get?.(id);
+    if(ownName) return String(ownName);
+  }
+  return String(fallback || (Number.isFinite(id) ? `Location #${id}` : "Location"));
+}
+function apItemClassFromFlags(flags, itemName){
+  const f = Number(flags || 0);
+  const trap = !!(f & 0b100) || isTrapItem(itemName);
+  if(trap) return { key:"trap", label:"TRAP", title:"TRAP ITEM", kind:"bad" };
+  if(f & 0b001) return { key:"progression", label:"PROGRESSION", title:"PROGRESSION ITEM", kind:"good" };
+  if(f & 0b010) return { key:"useful", label:"USEFUL", title:"USEFUL ITEM", kind:"info" };
+  return { key:"filler", label:"FILLER", title:"FILLER ITEM", kind:"info" };
+}
+function apReceivedSourceMeta(it){
+  const sourcePlayerId = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? ap.slot ?? 0);
+  const player = apPlayerName(sourcePlayerId, ap.cfg?.player || "Player");
+  const game = apPlayerGame(sourcePlayerId, ap.cfg?.game || "Archipelago");
+  return { sourcePlayerId, player, game };
+}
+function showApReceivedItemToast(itemName, it, locId, opts){
+  opts = opts || {};
+  if(opts.noPopup || opts.isSnapshot || opts.isFlush) return;
+  if(isBossVictoryFinalizing()) return;
+  const wrap = document.getElementById("toastWrap");
+  if(!wrap) return;
+  const item = String(itemName || apItemNameFor(it?.item, ap.slot, "") || "Unknown Item");
+  const cls = apItemClassFromFlags(it?.flags, item);
+  const src = apReceivedSourceMeta(it || {});
+  const locName = Number(locId) > 0 ? apLocationNameFor(locId, src.sourcePlayerId, "") : "";
+  const d = document.createElement("div");
+  d.className = `toast apItemToast apItem-${cls.key}`;
+  d.innerHTML = `
+    <div class="k">${escapeHtml(cls.title)} RECEIVED</div>
+    <div class="v">
+      <div class="apItemToastMeta"><span class="apItemToastBadge">${escapeHtml(cls.label)}</span><span class="apItemToastBadge">${escapeHtml(src.game || "Unknown Game")}</span></div>
+      <div class="apItemToastItem">${escapeHtml(item)}</div>
+      <div class="apItemToastFrom">FROM; ${escapeHtml(src.player || "Unknown Player")}${locName ? `<br>CHECK; ${escapeHtml(getDisplayedLocationName(locName))}` : ""}</div>
+    </div>`;
+  wrap.appendChild(d);
+  const ms = Math.max(2600, Number(opts.ms || 5200) || 5200);
+  setTimeout(()=>{
+    d.style.opacity = "0";
+    d.style.transform = "translateX(14px)";
+  }, Math.max(200, ms - 220));
+  setTimeout(()=>{ try{ wrap.removeChild(d); }catch(_){} }, ms + 50);
+}
+function apJsonParts(pkt){
+  return Array.isArray(pkt?.data) ? pkt.data.filter((p)=>p && typeof p === "object") : [];
+}
+function apFirstJsonPart(pkt, type){
+  const want = String(type || "").toLowerCase();
+  return apJsonParts(pkt).find((p)=>String(p.type || "").toLowerCase() === want) || null;
+}
+function apPlayerParts(pkt){
+  return apJsonParts(pkt).filter((p)=>String(p.type || "").toLowerCase() === "player_id");
+}
+function apPartFallbackText(part){
+  return String(part?.text ?? part?.name ?? part?.value ?? "").trim();
+}
+function extractApItemSendMeta(pkt){
+  const pktType = String(pkt?.type || "").trim().toLowerCase();
+  if(pktType !== "itemsend" && pktType !== "item_send") return null;
+  const netItem = (pkt?.item && typeof pkt.item === "object") ? pkt.item : {};
+  const itemPart = apFirstJsonPart(pkt, "item_id");
+  const locPart = apFirstJsonPart(pkt, "location_id");
+  const players = apPlayerParts(pkt);
+  const firstPlayerId = players.length ? apPartNumber(players[0], ["player", "player_id", "id"]) : NaN;
+  const lastPlayerId = players.length ? apPartNumber(players[players.length - 1], ["player", "player_id", "id"]) : NaN;
+  const itemId = apFirstFiniteNumber(
+    apPartNumber(itemPart, ["item", "item_id", "id"]),
+    netItem.item,
+    pkt.item_id,
+    (pkt?.item && typeof pkt.item !== "object") ? pkt.item : NaN
+  );
+  const locId = apFirstFiniteNumber(
+    apPartNumber(locPart, ["location", "location_id", "id"]),
+    netItem.location,
+    pkt.location,
+    pkt.location_id
+  );
+  const receiverId = apFirstFiniteNumber(
+    pkt.receiving,
+    pkt.receiver,
+    pkt.target,
+    pkt.player_received,
+    apPartNumber(itemPart, ["player", "player_id", "owner", "receiving_player"]),
+    players.length > 1 ? lastPlayerId : NaN
+  );
+  const senderId = apFirstFiniteNumber(
+    pkt.player,
+    pkt.sender,
+    pkt.finder,
+    netItem.player,
+    apPartNumber(locPart, ["player", "player_id", "owner"]),
+    firstPlayerId
+  );
+  const flags = Number(itemPart?.flags ?? itemPart?.item_flags ?? netItem.flags ?? pkt.flags ?? 0) || 0;
+  const itemName = apItemNameFor(itemId, receiverId, apPartFallbackText(itemPart));
+  const locationName = Number.isFinite(locId) && locId > 0 ? apLocationNameFor(locId, senderId, apPartFallbackText(locPart)) : apPartFallbackText(locPart);
+  return {
+    senderId: Number.isFinite(senderId) ? senderId : 0,
+    receiverId: Number.isFinite(receiverId) ? receiverId : 0,
+    itemId: Number.isFinite(itemId) ? itemId : null,
+    locId: Number.isFinite(locId) ? locId : null,
+    flags,
+    itemName,
+    locationName,
+    senderPlayer: apPlayerName(senderId, players[0] ? apPartFallbackText(players[0]) : ""),
+    senderGame: apPlayerGame(senderId, ""),
+    receiverPlayer: apPlayerName(receiverId, players.length ? apPartFallbackText(players[players.length - 1]) : ""),
+    receiverGame: apPlayerGame(receiverId, "")
+  };
+}
+function shouldShowApSentItemToast(meta){
+  if(!meta) return false;
+  const sender = Number(meta.senderId || 0);
+  const receiver = Number(meta.receiverId || 0);
+  const self = Number(ap?.slot || 0);
+  if(!self || sender !== self) return false;
+  if(receiver === self) return false;
+  const key = `${sender}|${receiver}|${meta.itemId ?? ""}|${meta.locId ?? ""}|${meta.flags ?? 0}`;
+  ap.sentToastSeen = ap.sentToastSeen || new Set();
+  if(ap.sentToastSeen.has(key)) return false;
+  if(ap.sentToastSeen.size > 500) ap.sentToastSeen.clear();
+  ap.sentToastSeen.add(key);
+  return true;
+}
+function showApSentItemToast(meta, opts){
+  opts = opts || {};
+  if(opts.noPopup || isBossVictoryFinalizing()) return;
+  if(!shouldShowApSentItemToast(meta)) return;
+  const wrap = document.getElementById("toastWrap");
+  if(!wrap) return;
+  const item = String(meta.itemName || "Unknown Item");
+  const cls = apItemClassFromFlags(meta.flags, item);
+  const targetGame = String(meta.receiverGame || "Unknown Game");
+  const targetPlayer = String(meta.receiverPlayer || "Unknown Player");
+  const locName = String(meta.locationName || "").trim();
+  const d = document.createElement("div");
+  d.className = `toast apItemToast apItem-${cls.key}`;
+  d.innerHTML = `
+    <div class="k">${escapeHtml(cls.title)} SENT</div>
+    <div class="v">
+      <div class="apItemToastMeta"><span class="apItemToastBadge">${escapeHtml(cls.label)}</span><span class="apItemToastBadge">${escapeHtml(targetGame)}</span></div>
+      <div class="apItemToastItem">${escapeHtml(item)}</div>
+      <div class="apItemToastFrom">TO; ${escapeHtml(targetPlayer)}${targetGame ? ` (${escapeHtml(targetGame)})` : ""}${locName ? `<br>CHECK; ${escapeHtml(getDisplayedLocationName(locName))}` : ""}</div>
+    </div>`;
+  wrap.appendChild(d);
+  const ms = Math.max(2600, Number(opts.ms || 5200) || 5200);
+  setTimeout(()=>{
+    d.style.opacity = "0";
+    d.style.transform = "translateX(14px)";
+  }, Math.max(200, ms - 220));
+  setTimeout(()=>{ try{ wrap.removeChild(d); }catch(_){} }, ms + 50);
+  apLog(`SENT ${item} to ${targetPlayer} (${targetGame})${locName ? "; " + getDisplayedLocationName(locName) : ""}`, { tab:"chat", mirrorTabs:["status"] });
+}
+function apServerEventDedupe(key, maxSize){
+  const k = String(key || "").trim();
+  if(!k) return false;
+  ap.serverEventSeen = ap.serverEventSeen || new Set();
+  if(ap.serverEventSeen.has(k)) return true;
+  if(ap.serverEventSeen.size > Math.max(100, Number(maxSize || 800) || 800)) ap.serverEventSeen.clear();
+  ap.serverEventSeen.add(k);
+  return false;
+}
+function formatApItemSendLogLine(meta){
+  if(!meta) return "";
+  const sender = String(meta.senderPlayer || "Unknown Player").trim();
+  const receiver = String(meta.receiverPlayer || "Unknown Player").trim();
+  const item = String(meta.itemName || "Unknown Item").trim();
+  const loc = String(meta.locationName || "").trim();
+  const location = loc ? ` (${getDisplayedLocationName(loc)})` : "";
+  if(String(sender).toLowerCase() === String(receiver).toLowerCase()){
+    return `${sender} found their ${item}${location}`;
+  }
+  return `${sender} sent ${item} to ${receiver}${location}`;
+}
+function apLogItemSendMeta(meta){
+  if(!meta) return false;
+  const key = `itemsend|${meta.senderId || 0}|${meta.receiverId || 0}|${meta.itemId ?? ""}|${meta.locId ?? ""}|${meta.flags ?? 0}`;
+  if(apServerEventDedupe(key)) return false;
+  const line = formatApItemSendLogLine(meta);
+  if(!line) return false;
+  apLog(line, { tab:"chat", mirrorTabs:["status"] });
+  return true;
+}
+function apJsonPartText(part){
+  if(part == null) return "";
+  if(typeof part === "string" || typeof part === "number" || typeof part === "boolean") return String(part);
+  if(typeof part !== "object") return "";
+  const type = String(part.type || "").toLowerCase();
+  const fallback = String(part.text ?? part.name ?? part.value ?? "").trim();
+  if(type === "player_id"){
+    const id = apPartNumber(part, ["player", "player_id", "id", "text"]);
+    return apPlayerName(id, fallback);
+  }
+  if(type === "item_id"){
+    const id = apPartNumber(part, ["item", "item_id", "id", "text"]);
+    const playerId = apPartNumber(part, ["player", "player_id", "owner", "receiving_player"]);
+    return apItemNameFor(id, playerId, fallback);
+  }
+  if(type === "location_id"){
+    const id = apPartNumber(part, ["location", "location_id", "id", "text"]);
+    const playerId = apPartNumber(part, ["player", "player_id", "owner"]);
+    return apLocationNameFor(id, playerId, fallback);
+  }
+  if(type === "item_name" || type === "location_name" || type === "entrance_name" || type === "hint_status" || type === "color"){
+    return fallback;
+  }
+  return fallback;
+}
+function formatApJsonMessage(pkt){
+  const data = Array.isArray(pkt?.data) ? pkt.data : [];
+  let msg = data.map(apJsonPartText).join("");
+  if(!msg) msg = String(pkt?.text ?? pkt?.message ?? "");
+  return String(msg || "").replace(/\r\n/g, "\n").trim();
+}
+function apLogServerMessage(pkt){
+  let sentMeta = null;
+  try{
+    sentMeta = extractApItemSendMeta(pkt);
+    if(sentMeta) showApSentItemToast(sentMeta);
+  }catch(_){}
+  const msg = formatApJsonMessage(pkt);
+  const type = String(pkt?.type || "").trim();
+  if(!msg){
+    if(sentMeta && apLogItemSendMeta(sentMeta)) return;
+    if(type) apLog(`${type}; ${JSON.stringify(pkt).slice(0, 420)}`, { tab:"chat", mirrorTabs:["status"] });
+    return;
+  }
+  apLog(msg, { tab:"chat", mirrorTabs:["status"] });
+}
+function apFormatReceivedNetworkItem(it, locId){
+  const src = apReceivedSourceMeta(it || {});
+  const itemName = apItemNameFor(it?.item, ap.slot, "");
+  const cls = apItemClassFromFlags(it?.flags, itemName);
+  const locName = Number(locId) > 0 ? apLocationNameForLog(locId, src.sourcePlayerId) : "";
+  const parts = [`${cls.label}: ${itemName || "Unknown Item"}`, `from ${src.player}${src.game ? ` (${src.game})` : ""}`];
+  if(locName) parts.push(`check ${locName}`);
+  return parts.join("; ");
+}
+function apLogReceivedItemsPacket(items, baseIndex, nextIndex, opts){
+  opts = opts || {};
+  if(!Array.isArray(items) || !items.length) return;
+  const first = Number(baseIndex);
+  const last = Number(nextIndex) - 1;
+  const range = Number.isFinite(first) && Number.isFinite(last) ? `${first}-${Math.max(first, last)}` : "unknown";
+  const isSnapshot = !!opts.isSnapshot;
+  const liveItems = isSnapshot ? [] : items;
+  if(liveItems.length){
+    const shown = liveItems.slice(0, 6).map((it, i)=>{
+      const locId = it?.location ?? it?.location_id ?? it?.loc ?? null;
+      return apFormatReceivedNetworkItem(it || {}, locId);
+    });
+    if(liveItems.length > shown.length) shown.push(`+${liveItems.length - shown.length} more`);
+    apLog(`RECEIVED ITEMS; ${liveItems.length}; index ${range}; ${shown.join(" | ")}`, { tab:"status" });
+    return;
+  }
+  apLog(`RECEIVED ITEMS SNAPSHOT; ${items.length}; index ${range}`, { tab:"status" });
+}
+function apLogDataPackagePacket(pkt){
+  const gamesData = (pkt?.data?.games && typeof pkt.data.games === "object") ? pkt.data.games : {};
+  const games = Object.keys(gamesData);
+  if(!games.length) return;
+  const shown = games.slice(0, 8);
+  if(games.length > shown.length) shown.push(`+${games.length - shown.length} more`);
+  apLog(`DATAPACKAGE; loaded ${games.length} game${games.length === 1 ? "" : "s"}; ${shown.join(", ")}`, { tab:"status" });
+}
+function apLogBouncedPacket(pkt){
+  const data = pkt?.data;
+  const tags = Array.isArray(pkt?.tags) ? pkt.tags.join(", ") : "";
+  const games = Array.isArray(pkt?.games) ? pkt.games.join(", ") : "";
+  const type = String(data?.type || pkt?.type || "").trim();
+  const pieces = ["BOUNCED"];
+  if(type) pieces.push(type);
+  if(tags) pieces.push(`tags ${tags}`);
+  if(games) pieces.push(`games ${games}`);
+  if(data && typeof data === "object"){
+    const summary = JSON.stringify(data).slice(0, 320);
+    if(summary) pieces.push(summary);
+  }
+  apLog(pieces.join("; "), { tab:"chat", mirrorTabs:["status"] });
+}
+function apLogUnhandledServerPacket(pkt){
+  const cmd = String(pkt?.cmd || "").trim();
+  if(!cmd) return;
+  if(cmd === "PrintJSON" || cmd === "Print" || cmd === "RoomInfo" || cmd === "Connected" || cmd === "ConnectionRefused" || cmd === "RoomUpdate" || cmd === "DataPackage" || cmd === "ReceivedItems" || cmd === "Bounced") return;
+  const summary = JSON.stringify(pkt).slice(0, 420);
+  apLog(`SERVER ${cmd}${summary ? `; ${summary}` : ""}`, { tab: cmd === "InvalidPacket" ? "errors" : "chat", mirrorTabs:["status"] });
 }
 function setApIndicator(mode, text){
   const light = document.getElementById("apLight");
@@ -27108,6 +28512,323 @@ const FILTER_TRAP_CLASS_BY_MODE = {
   "Neon Vision": "filterTrapNeonVision",
   "Scroll Vision": "filterTrapScrollVision"
 };
+const OBS_FILTER_TRAP_CFG_LS = "flpr_obs_filter_trap_cfg_v1";
+const OBS_FILTER_TRAP_DEFAULT_CFG = Object.freeze({
+  enabled: true,
+  url: "ws://127.0.0.1:4455",
+  sourceName: "Pinball Playfield",
+  password: ""
+});
+const obsFilterTrap = {
+  ws: null,
+  connecting: false,
+  connected: false,
+  identified: false,
+  connectPromise: null,
+  requestSeq: 1,
+  pending: new Map(),
+  desiredModes: new Set(),
+  activeModes: new Set(),
+  lastError: ""
+};
+function normalizeObsFilterTrapCfg(raw){
+  const src = (raw && typeof raw === "object") ? raw : {};
+  const url = String(src.url || OBS_FILTER_TRAP_DEFAULT_CFG.url).trim() || OBS_FILTER_TRAP_DEFAULT_CFG.url;
+  const sourceName = String(src.sourceName || OBS_FILTER_TRAP_DEFAULT_CFG.sourceName).trim() || OBS_FILTER_TRAP_DEFAULT_CFG.sourceName;
+  return {
+    enabled: src.enabled !== false,
+    url,
+    sourceName,
+    password: String(src.password || "")
+  };
+}
+function loadObsFilterTrapCfg(){
+  try{ return normalizeObsFilterTrapCfg(JSON.parse(localStorage.getItem(OBS_FILTER_TRAP_CFG_LS) || "{}")); }catch(_){}
+  return normalizeObsFilterTrapCfg({});
+}
+function saveObsFilterTrapCfg(cfg){
+  const next = normalizeObsFilterTrapCfg(cfg);
+  try{ localStorage.setItem(OBS_FILTER_TRAP_CFG_LS, JSON.stringify(next)); }catch(_){}
+  return next;
+}
+function obsFilterTrapLog(msg, opts){
+  if(opts && opts.quiet) return;
+  try{ apLog("OBS Filter Traps; " + String(msg || "")); }catch(_){}
+}
+function obsFilterTrapStatusText(){
+  const cfg = loadObsFilterTrapCfg();
+  if(cfg.enabled === false) return "Off; OBS filter toggles disabled.";
+  if(obsFilterTrap.connected && obsFilterTrap.identified){
+    const active = Array.from(obsFilterTrap.desiredModes || []).join(", ") || "none";
+    return `Connected; ${cfg.sourceName}; active ${active}.`;
+  }
+  if(obsFilterTrap.connecting) return `Connecting; ${cfg.url}`;
+  if(obsFilterTrap.lastError) return `Disconnected; ${obsFilterTrap.lastError}`;
+  return `Ready; ${cfg.sourceName} via ${cfg.url}`;
+}
+function obsFilterTrapRefreshStatus(text){
+  const status = document.getElementById("obsFilterTrapStatus");
+  if(status) status.textContent = String(text || obsFilterTrapStatusText());
+  const connectBtn = document.getElementById("obsFilterTrapConnectBtn");
+  if(connectBtn){
+    connectBtn.disabled = !!obsFilterTrap.connecting;
+    connectBtn.textContent = obsFilterTrap.connecting ? "CONNECTING..." : (obsFilterTrap.connected ? "RECONNECT" : "CONNECT");
+  }
+}
+function obsFilterTrapRejectPending(message){
+  const err = new Error(message || "OBS websocket disconnected.");
+  obsFilterTrap.pending.forEach((entry)=>{
+    try{ clearTimeout(entry.timeout); }catch(_){}
+    try{ entry.reject(err); }catch(_){}
+  });
+  obsFilterTrap.pending.clear();
+}
+function obsFilterTrapDisconnect(opts){
+  opts = opts || {};
+  try{
+    if(obsFilterTrap.ws){
+      obsFilterTrap.ws.onopen = null;
+      obsFilterTrap.ws.onmessage = null;
+      obsFilterTrap.ws.onerror = null;
+      obsFilterTrap.ws.onclose = null;
+      obsFilterTrap.ws.close();
+    }
+  }catch(_){}
+  obsFilterTrap.ws = null;
+  obsFilterTrap.connecting = false;
+  obsFilterTrap.connected = false;
+  obsFilterTrap.identified = false;
+  obsFilterTrap.connectPromise = null;
+  if(!opts.keepPending) obsFilterTrapRejectPending("OBS websocket disconnected.");
+  obsFilterTrapRefreshStatus();
+}
+function obsFilterTrapArrayBufferToBase64(buffer){
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  bytes.forEach((b)=>{ binary += String.fromCharCode(b); });
+  return btoa(binary);
+}
+async function obsFilterTrapSha256Base64(text){
+  if(!window.crypto || !window.crypto.subtle) throw new Error("Browser crypto is unavailable for OBS authentication.");
+  const digest = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(text || "")));
+  return obsFilterTrapArrayBufferToBase64(digest);
+}
+async function obsFilterTrapBuildAuth(password, authentication){
+  const salt = String(authentication?.salt || "");
+  const challenge = String(authentication?.challenge || "");
+  const secret = await obsFilterTrapSha256Base64(String(password || "") + salt);
+  return obsFilterTrapSha256Base64(secret + challenge);
+}
+function obsFilterTrapIdentifyPayload(hello, cfg){
+  return (async()=>{
+    const d = hello?.d || {};
+    const payload = {
+      rpcVersion: Math.max(1, Math.min(1, Number(d.rpcVersion || 1) || 1)),
+      eventSubscriptions: 0
+    };
+    if(d.authentication){
+      if(!String(cfg.password || "")) throw new Error("OBS password required.");
+      payload.authentication = await obsFilterTrapBuildAuth(cfg.password, d.authentication);
+    }
+    return payload;
+  })();
+}
+function obsFilterTrapConnect(opts){
+  opts = opts || {};
+  const cfg = loadObsFilterTrapCfg();
+  if(cfg.enabled === false && !opts.ignoreEnabled) return Promise.reject(new Error("OBS filter traps disabled."));
+  if(obsFilterTrap.connected && obsFilterTrap.identified && obsFilterTrap.ws?.readyState === WebSocket.OPEN) return Promise.resolve(true);
+  if(obsFilterTrap.connectPromise && !opts.force) return obsFilterTrap.connectPromise;
+  obsFilterTrapDisconnect({ keepPending:true });
+  obsFilterTrap.connecting = true;
+  obsFilterTrap.connected = false;
+  obsFilterTrap.identified = false;
+  obsFilterTrap.lastError = "";
+  obsFilterTrapRefreshStatus();
+  obsFilterTrap.connectPromise = new Promise((resolve, reject)=>{
+    let ws = null;
+    let settled = false;
+    const settle = (err)=>{
+      if(settled) return;
+      settled = true;
+      try{ clearTimeout(timeout); }catch(_){}
+      obsFilterTrap.connecting = false;
+      obsFilterTrap.connectPromise = null;
+      if(err){
+        obsFilterTrap.lastError = String(err?.message || err || "connection failed");
+        obsFilterTrap.connected = false;
+        obsFilterTrap.identified = false;
+        obsFilterTrapRefreshStatus();
+        try{ if(ws) ws.close(); }catch(_){}
+        reject(err instanceof Error ? err : new Error(String(err || "OBS connection failed.")));
+        return;
+      }
+      obsFilterTrap.lastError = "";
+      obsFilterTrap.connected = true;
+      obsFilterTrap.identified = true;
+      obsFilterTrapRefreshStatus();
+      resolve(true);
+    };
+    const timeout = setTimeout(()=>settle(new Error("OBS websocket timed out.")), 6000);
+    try{
+      ws = new WebSocket(cfg.url);
+      obsFilterTrap.ws = ws;
+      ws.onmessage = async (ev)=>{
+        let msg = null;
+        try{ msg = JSON.parse(String(ev?.data || "{}")); }catch(_){ return; }
+        const op = Number(msg?.op);
+        if(op === 0){
+          try{
+            const identify = await obsFilterTrapIdentifyPayload(msg, cfg);
+            ws.send(JSON.stringify({ op:1, d:identify }));
+          }catch(err){
+            settle(err);
+          }
+          return;
+        }
+        if(op === 2){
+          settle(null);
+          obsFilterTrapLog(`connected to ${cfg.url}`, opts);
+          return;
+        }
+        if(op === 7){
+          const data = msg?.d || {};
+          const id = String(data.requestId || "");
+          const pending = obsFilterTrap.pending.get(id);
+          if(!pending) return;
+          obsFilterTrap.pending.delete(id);
+          try{ clearTimeout(pending.timeout); }catch(_){}
+          const ok = data.requestStatus?.result !== false;
+          if(ok) pending.resolve(data.responseData || {});
+          else pending.reject(new Error(String(data.requestStatus?.comment || data.requestStatus?.code || "OBS request failed.")));
+        }
+      };
+      ws.onerror = ()=>{ obsFilterTrap.lastError = "socket error"; obsFilterTrapRefreshStatus(); };
+      ws.onclose = ()=>{
+        if(ws !== obsFilterTrap.ws) return;
+        const wasSettled = settled;
+        obsFilterTrap.ws = null;
+        obsFilterTrap.connected = false;
+        obsFilterTrap.identified = false;
+        obsFilterTrap.connecting = false;
+        obsFilterTrap.connectPromise = null;
+        obsFilterTrapRejectPending("OBS websocket closed.");
+        if(!wasSettled) settle(new Error(obsFilterTrap.lastError || "OBS websocket closed."));
+        else obsFilterTrapRefreshStatus();
+      };
+    }catch(err){
+      settle(err);
+    }
+  });
+  return obsFilterTrap.connectPromise;
+}
+async function obsFilterTrapRequest(requestType, requestData, opts){
+  opts = opts || {};
+  await obsFilterTrapConnect({ quiet:true, ignoreEnabled:!!opts.ignoreEnabled });
+  const ws = obsFilterTrap.ws;
+  if(!ws || ws.readyState !== WebSocket.OPEN || !obsFilterTrap.identified) throw new Error("OBS websocket is not ready.");
+  return new Promise((resolve, reject)=>{
+    const requestId = `flpr-filter-trap-${Date.now()}-${obsFilterTrap.requestSeq++}`;
+    const timeout = setTimeout(()=>{
+      obsFilterTrap.pending.delete(requestId);
+      reject(new Error(`${requestType} timed out.`));
+    }, 5000);
+    obsFilterTrap.pending.set(requestId, { resolve, reject, timeout });
+    try{
+      ws.send(JSON.stringify({
+        op: 6,
+        d: { requestType, requestId, requestData: requestData || {} }
+      }));
+    }catch(err){
+      obsFilterTrap.pending.delete(requestId);
+      try{ clearTimeout(timeout); }catch(_){}
+      reject(err);
+    }
+  });
+}
+function obsFilterTrapNormalizeModes(modes){
+  const allowed = new Set(Array.isArray(FILTER_TRAP_MODES) ? FILTER_TRAP_MODES : []);
+  return Array.from(new Set((Array.isArray(modes) ? modes : [])
+    .map((mode)=> String(mode || "").trim())
+    .filter((mode)=> mode && (!allowed.size || allowed.has(mode)))));
+}
+function obsFilterTrapSetSourceFilterEnabled(mode, enabled, opts){
+  opts = opts || {};
+  const cfg = loadObsFilterTrapCfg();
+  const filterName = String(mode || "").trim();
+  if(!filterName) return Promise.resolve(false);
+  return obsFilterTrapRequest("SetSourceFilterEnabled", {
+    sourceName: cfg.sourceName,
+    filterName,
+    filterEnabled: !!enabled
+  }, { ignoreEnabled:!!opts.ignoreEnabled }).then(()=>{
+    if(enabled) obsFilterTrap.activeModes.add(filterName);
+    else obsFilterTrap.activeModes.delete(filterName);
+    obsFilterTrap.lastError = "";
+    obsFilterTrapRefreshStatus();
+    return true;
+  });
+}
+async function obsFilterTrapFlushDesired(opts){
+  opts = opts || {};
+  const cfg = loadObsFilterTrapCfg();
+  if(cfg.enabled === false && !opts.ignoreEnabled) return false;
+  const desired = new Set(obsFilterTrapNormalizeModes(Array.from(obsFilterTrap.desiredModes || [])));
+  const candidates = new Set([...Array.from(obsFilterTrap.activeModes || []), ...Array.from(desired)]);
+  if(opts.forceDisableAll) FILTER_TRAP_MODES.forEach((mode)=>candidates.add(mode));
+  if(!candidates.size) return true;
+  await obsFilterTrapConnect({ quiet:true, force:!!opts.forceConnect, ignoreEnabled:!!opts.ignoreEnabled });
+  const jobs = [];
+  candidates.forEach((mode)=>{
+    const shouldEnable = desired.has(mode);
+    if(!opts.force && obsFilterTrap.activeModes.has(mode) === shouldEnable) return;
+    jobs.push(obsFilterTrapSetSourceFilterEnabled(mode, shouldEnable, { ignoreEnabled:!!opts.ignoreEnabled })
+      .catch((err)=>({ mode, err })));
+  });
+  if(!jobs.length) return true;
+  const results = await Promise.all(jobs);
+  const failures = results.filter((row)=> row && row.err);
+  if(failures.length){
+    const first = failures[0];
+    throw new Error(`${first.mode}: ${String(first.err?.message || first.err || "OBS request failed")}`);
+  }
+  obsFilterTrapRefreshStatus();
+  return true;
+}
+function obsFilterTrapSetDesiredModes(modes, opts){
+  opts = opts || {};
+  const normalized = obsFilterTrapNormalizeModes(modes);
+  obsFilterTrap.desiredModes = new Set(normalized);
+  obsFilterTrapRefreshStatus();
+  const cfg = loadObsFilterTrapCfg();
+  if(cfg.enabled === false) return;
+  if(!normalized.length && !obsFilterTrap.activeModes.size && !opts.forceDisableAll) return;
+  obsFilterTrapFlushDesired(opts).catch((err)=>{
+    obsFilterTrap.lastError = String(err?.message || err || "OBS sync failed");
+    obsFilterTrapRefreshStatus();
+    obsFilterTrapLog(obsFilterTrap.lastError, opts);
+  });
+}
+function syncObsTrapFilterModes(modes, opts){
+  obsFilterTrapSetDesiredModes(modes, opts || {});
+}
+function obsFilterTrapDisableAllFilters(opts){
+  opts = opts || {};
+  obsFilterTrap.desiredModes = new Set();
+  obsFilterTrapRefreshStatus();
+  return obsFilterTrapFlushDesired({ forceDisableAll:true, force:true, ignoreEnabled:true, forceConnect:!!opts.forceConnect })
+    .then(()=>{
+      obsFilterTrapLog("all Filter Trap filters disabled", opts);
+      return true;
+    })
+    .catch((err)=>{
+      obsFilterTrap.lastError = String(err?.message || err || "OBS disable failed");
+      obsFilterTrapRefreshStatus();
+      obsFilterTrapLog(obsFilterTrap.lastError, opts);
+      throw err;
+    });
+}
+
 ap.activeTrapFilterMode = ap.activeTrapFilterMode || "";
 ap.activeTrapFilterModes = Array.isArray(ap.activeTrapFilterModes)
   ? ap.activeTrapFilterModes.filter(Boolean).map((mode)=> String(mode).trim()).filter(Boolean)
@@ -27116,7 +28837,8 @@ function isFilterTrapName(name){
   const s = String(name || "").toLowerCase();
   return (/\bfilter\b/.test(s) && /\btrap\b/.test(s));
 }
-function refreshCaptureTrapFilterModes(){
+function refreshCaptureTrapFilterModes(opts){
+  opts = opts || {};
   try{
     const capture = document.querySelector(".capture");
     if(!capture) return;
@@ -27140,6 +28862,7 @@ function refreshCaptureTrapFilterModes(){
     }
     ap.activeTrapFilterModes = modes;
     ap.activeTrapFilterMode = modes[0] || "";
+    try{ syncObsTrapFilterModes(modes, { forceDisableAll: !!opts.forceObsDisableAll }); }catch(_){}
   }catch(_){}
 }
 function applyCaptureTrapFilterMode(mode){
@@ -27155,9 +28878,10 @@ function addCaptureTrapFilterMode(mode){
   ap.activeTrapFilterModes = Array.from(next);
   refreshCaptureTrapFilterModes();
 }
-function clearCaptureTrapFilterMode(){
+function clearCaptureTrapFilterMode(opts){
+  opts = opts || {};
   ap.activeTrapFilterModes = [];
-  refreshCaptureTrapFilterModes();
+  refreshCaptureTrapFilterModes({ forceObsDisableAll: !!opts.forceObsDisableAll });
 }
 function removeCaptureTrapFilterMode(mode){
   const wanted = String(mode || "").trim();
@@ -27390,8 +29114,10 @@ function renderActiveTrapBanner(){
         return;
       }
       const remaining = entriesNow.filter((_, entryIndex)=> entryIndex !== idx);
-      if(doneEntry && doneEntry.filterMode){
-        try{ removeCaptureTrapFilterMode(doneEntry.filterMode); }catch(_){}
+      if(doneEntry && doneEntry.filterMode && remaining.length){
+        const remainingModes = getTrapEntryFilterModes({ stack: remaining });
+        ap.activeTrapFilterModes = remainingModes;
+        try{ refreshCaptureTrapFilterModes(); }catch(_){}
       }
       try{ grantTrapCompletionExtraBall(doneTrapName, { portal: doneTrapPortal, remainingCount: remaining.length }); }catch(_){}
       if(remaining.length){
@@ -28417,6 +30143,52 @@ function playSfx(kind){
     // Quiet monitor typing tick (used during hint typewriter reveal).
     const base = 760 + Math.random() * 180;
     playTone({freq:base, dur:0.026, type:"square", gain:0.045, sweepTo:base - (70 + Math.random()*40), sweepDur:0.026});
+  }else if(kind === "bossKeyLightning"){
+    // Boss Key generation: lightning forks while the key materializes.
+    playTone({freq:96, dur:0.34, type:"sawtooth", gain:0.17, sweepTo:54, sweepDur:0.32});
+    setTimeout(()=>playTone({freq:1420, dur:0.05, type:"square", gain:0.12, sweepTo:2200, sweepDur:0.04}), 38);
+    setTimeout(()=>playTone({freq:920, dur:0.06, type:"triangle", gain:0.10, sweepTo:1840, sweepDur:0.05}), 112);
+    setTimeout(()=>playTone({freq:70, dur:0.28, type:"triangle", gain:0.11, sweepTo:42, sweepDur:0.24}), 210);
+    setTimeout(()=>playTone({freq:1760, dur:0.045, type:"square", gain:0.10, sweepTo:2480, sweepDur:0.04}), 420);
+    setTimeout(()=>playTone({freq:1180, dur:0.055, type:"square", gain:0.09, sweepTo:760, sweepDur:0.05}), 610);
+  }else if(kind === "bossKeyMaterialize"){
+    // Piece-by-piece shimmer while the key resolves in the lightning.
+    playTone({freq:420, dur:0.10, type:"triangle", gain:0.09, sweepTo:660, sweepDur:0.09});
+    setTimeout(()=>playTone({freq:620, dur:0.11, type:"sine", gain:0.09, sweepTo:960, sweepDur:0.10}), 130);
+    setTimeout(()=>playTone({freq:880, dur:0.12, type:"triangle", gain:0.10, sweepTo:1320, sweepDur:0.11}), 310);
+    setTimeout(()=>playTone({freq:1180, dur:0.16, type:"sine", gain:0.09, sweepTo:1680, sweepDur:0.14}), 540);
+  }else if(kind === "bossKeyAcquiredDing"){
+    // Bright ding when BOSS KEY ACQUIRED appears.
+    playTone({freq:1568, dur:0.08, type:"sine", gain:0.16, sweepTo:1760, sweepDur:0.06});
+    setTimeout(()=>playTone({freq:2352, dur:0.12, type:"triangle", gain:0.13, sweepTo:2637, sweepDur:0.10}), 74);
+    setTimeout(()=>playTone({freq:1175, dur:0.22, type:"sine", gain:0.09, sweepTo:1320, sweepDur:0.18}), 154);
+  }else if(kind === "bossKeyEnergySnap"){
+    // Tight energy snap when the aether finishes coalescing into the key.
+    playTone({freq:1840, dur:0.042, type:"square", gain:0.11, sweepTo:2860, sweepDur:0.032});
+    setTimeout(()=>playTone({freq:520, dur:0.055, type:"triangle", gain:0.08, sweepTo:320, sweepDur:0.045}), 28);
+    setTimeout(()=>playTone({freq:2460, dur:0.040, type:"sine", gain:0.075, sweepTo:1680, sweepDur:0.034}), 62);
+  }else if(kind === "bossKeyCharge"){
+    // Tense vibrating electrical lock-on before the slam.
+    playTone({freq:168, dur:0.54, type:"sawtooth", gain:0.10, sweepTo:224, sweepDur:0.50});
+    setTimeout(()=>playTone({freq:760, dur:0.07, type:"square", gain:0.08, sweepTo:560, sweepDur:0.06}), 70);
+    setTimeout(()=>playTone({freq:920, dur:0.07, type:"square", gain:0.08, sweepTo:620, sweepDur:0.06}), 205);
+    setTimeout(()=>playTone({freq:1080, dur:0.08, type:"square", gain:0.08, sweepTo:720, sweepDur:0.07}), 360);
+  }else if(kind === "bossKeyTravelSizzle"){
+    // Electric sizzle while the key travels into its slot.
+    playTone({freq:240, dur:0.72, type:"sawtooth", gain:0.08, sweepTo:420, sweepDur:0.68});
+    setTimeout(()=>playTone({freq:940, dur:0.06, type:"square", gain:0.08, sweepTo:1480, sweepDur:0.05}), 20);
+    setTimeout(()=>playTone({freq:1320, dur:0.05, type:"square", gain:0.075, sweepTo:860, sweepDur:0.045}), 118);
+    setTimeout(()=>playTone({freq:1760, dur:0.055, type:"square", gain:0.085, sweepTo:2400, sweepDur:0.05}), 224);
+    setTimeout(()=>playTone({freq:1120, dur:0.05, type:"square", gain:0.075, sweepTo:700, sweepDur:0.045}), 350);
+    setTimeout(()=>playTone({freq:2080, dur:0.06, type:"square", gain:0.08, sweepTo:2840, sweepDur:0.05}), 486);
+    setTimeout(()=>playTone({freq:820, dur:0.08, type:"triangle", gain:0.07, sweepTo:540, sweepDur:0.07}), 626);
+  }else if(kind === "bossKeySlam" || kind === "bossKeySlamBoom"){
+    // Slam BOOM when the key locks into place, with a high spark tail.
+    playTone({freq:58, dur:0.30, type:"square", gain:0.22, sweepTo:34, sweepDur:0.28});
+    setTimeout(()=>playTone({freq:112, dur:0.22, type:"sawtooth", gain:0.17, sweepTo:62, sweepDur:0.20}), 28);
+    setTimeout(()=>playTone({freq:250, dur:0.12, type:"triangle", gain:0.14, sweepTo:136, sweepDur:0.11}), 64);
+    setTimeout(()=>playTone({freq:1320, dur:0.09, type:"triangle", gain:0.11, sweepTo:2100, sweepDur:0.08}), 112);
+    setTimeout(()=>playTone({freq:1820, dur:0.12, type:"sine", gain:0.08, sweepTo:1160, sweepDur:0.11}), 210);
   }else if(kind === "key"){
     playTone({freq:1480, dur:0.06, type:"triangle", gain:0.14, sweepTo:1860, sweepDur:0.05});
     setTimeout(()=>playTone({freq:1760, dur:0.07, type:"triangle", gain:0.16, sweepTo:2200, sweepDur:0.06}), 75);
@@ -29532,6 +31304,20 @@ function initCounterDrawers(){
   if(!dock || dock.__flprDrawerInit === true) return;
   dock.__hoverExpanded = false;
   ensureCounterDockRetreatBar(dock);
+  const ensureCounterDockTitle = () => {
+    let title = Array.from(dock.querySelectorAll(".cSectionTitle")).find(el => (el.textContent||"").toUpperCase().includes("ITEM COUNTERS"));
+    if(!title){
+      title = document.createElement("div");
+      title.className = "cSectionTitle";
+      dock.insertBefore(title, dock.firstChild);
+    }
+    title.classList.add("checksCounterDockTitle");
+    title.style.removeProperty("display");
+    title.style.removeProperty("margin-top");
+    title.innerHTML = '<span class="counterDockTitleMain">ITEM COUNTERS</span><span class="counterDockTitleSub">JUNK / FRAG</span>';
+    return title;
+  };
+  ensureCounterDockTitle();
   dock.addEventListener("pointerleave", ()=>{ collapseCounterDockIfIdle(); });
   dock.addEventListener("focusout", ()=>{ setTimeout(()=>{ try{ if(!dock.contains(document.activeElement)) collapseCounterDockIfIdle(); }catch(_){} }, 0); });
 
@@ -29657,8 +31443,7 @@ function initCounterDrawers(){
 
   [easy, med, frag].forEach(d => { if(d) wrap.appendChild(d); });
   if(wrap.children.length){
-    const title = Array.from(dock.querySelectorAll(".cSectionTitle")).find(el => (el.textContent||"").toUpperCase().includes("ITEM COUNTERS"));
-    if(title) title.style.display = "none";
+    ensureCounterDockTitle();
     dock.appendChild(wrap);
     dock.classList.remove("active");
     dock.classList.remove("expanded");
@@ -32161,7 +33946,7 @@ function isSeedScopedGenericEntry(entry, locationName){
   return false;
 }
 function getPreferredGenericObjective(taskEntry, genericEntry){
-  const shuffled = String(taskEntry?.objective || "").trim();
+  const shuffled = String(taskEntry?.objective || taskEntry?.display_name || taskEntry?.title || "").trim();
   const generic = String(genericEntry?.objective || genericEntry?.display_name || genericEntry?.title || "").trim();
   if(shuffled && !isGenericTaskPlaceholderLabel(shuffled)) return shuffled;
   if(generic) return generic;
@@ -32405,6 +34190,140 @@ function getTaskNameFromLocationNode(node){
   }
   return "";
 }
+function parseRedeemScoreTarget(taskName){
+  const raw = String(taskName || "");
+  if(!raw) return null;
+  const matches = raw.match(/(\d[\d,]*)\s*\+?/g);
+  if(!matches || !matches.length) return null;
+  const last = String(matches[matches.length - 1] || "").replace(/[^\d]/g, "");
+  const num = Number(last);
+  return Number.isFinite(num) && num > 0 ? num : null;
+}
+function getCheckRedeemTaskType(node, opts){
+  opts = opts || {};
+  if(opts.isBossVictory) return "victory";
+  const entry = node?.taskShuffleEntry || node?.genericEntry || {};
+  const explicit = String(opts.taskType || entry.kind || entry.task_type || entry.type || "").trim().toLowerCase();
+  if(explicit === "score" || explicit === "task" || explicit === "victory") return explicit;
+  const taskName = String(opts.taskName || getTaskNameFromLocationNode(node) || node?.short || node?.full || "").trim();
+  if(/\bscore\b/i.test(taskName)) return "score";
+  if(opts.isBossCheck) return "boss_task";
+  return "task";
+}
+function buildCheckRedeemMetadata(node, opts){
+  opts = opts || {};
+  const locId = Number(node?.id ?? opts.id ?? 0);
+  const full = String(node?.full || opts.locationName || node?.short || (locId ? ("ID " + locId) : "")).trim();
+  const short = String(node?.short || opts.short || "").trim();
+  const displayed = getDisplayedLocationName(full || short);
+  const split = splitLocName(full || displayed || short);
+  const locMeta = extractGenericSlotMeta(full || displayed || short);
+  const entry = node?.taskShuffleEntry || node?.genericEntry || {};
+  const taskName = String(opts.taskName || getTaskNameFromLocationNode(node) || locMeta?.kind || short || full || "").trim();
+  const tableName = String(
+    opts.tableName ||
+    node?.tableName ||
+    entry.target_table ||
+    entry.table ||
+    locMeta?.table ||
+    split?.table ||
+    tableNameFromLocation(full || displayed || short, "") ||
+    ""
+  ).trim();
+  const difficulty = String(
+    opts.difficulty ||
+    node?.genericDifficulty ||
+    entry.difficulty ||
+    locMeta?.difficulty ||
+    inferLocationDifficulty(node) ||
+    opts.tier ||
+    ""
+  ).trim().toLowerCase();
+  const taskType = getCheckRedeemTaskType(node, { ...opts, taskName });
+  const scoreTarget = taskType === "score" ? parseRedeemScoreTarget(taskName) : null;
+  const source = String(opts.source || opts.sourceTag || "manual").trim() || "manual";
+  const sourceParts = source.split(":");
+  const sourceType = String(opts.sourceType || sourceParts[0] || "manual").trim();
+  const bossCategory = opts.isBossCheck ? achClassifyTaskName(taskName || short || full || "") : "";
+  return {
+    schema: "flippermizer.check_redeemed.v1",
+    client: "Flippermizer Standalone",
+    version: String(typeof FLPR_OVERLAY_VERSION_CODE !== "undefined" ? FLPR_OVERLAY_VERSION_CODE : ""),
+    game: String(ap?.cfg?.game || ""),
+    player: String(ap?.cfg?.player || ap?.playerName || ""),
+    slot: Number(ap?.slot || 0) || null,
+    team: Number(ap?.team || 0) || 0,
+    seed_name: String(ap?.seedName || ""),
+    location_id: Number.isFinite(locId) ? locId : null,
+    location_name: full || short,
+    displayed_location_name: displayed || full || short,
+    table_name: tableName,
+    table_key: String(opts.tableKey || node?.tableKey || ""),
+    world: String(opts.world || ap?.currentWorld || ""),
+    task_name: taskName,
+    task_type: taskType,
+    task_slot_type: String(entry.kind || entry.task_type || entry.type || locMeta?.kind || ""),
+    difficulty,
+    score_target: scoreTarget,
+    source,
+    source_type: sourceType,
+    source_detail: String(sourceParts.slice(1).join(":") || opts.sourceDetail || ""),
+    is_boss: !!opts.isBossCheck,
+    is_boss_victory: !!opts.isBossVictory,
+    boss_category: bossCategory,
+    counter_target: Number.isFinite(Number(opts.counterTarget)) ? Number(opts.counterTarget) : null,
+    counter_value: Number.isFinite(Number(opts.counterValue)) ? Number(opts.counterValue) : null,
+    timestamp: new Date().toISOString()
+  };
+}
+function formatCheckRedeemMetadataLine(meta){
+  const table = String(meta?.table_name || "Unknown Table").trim();
+  const task = String(meta?.task_name || meta?.displayed_location_name || "Unknown Check").trim();
+  const diff = String(meta?.difficulty || "").trim().toUpperCase();
+  const type = String(meta?.task_type || "task").trim().toUpperCase();
+  const source = String(meta?.source || "manual").trim();
+  const bits = [];
+  if(table) bits.push(table);
+  if(diff || type) bits.push([diff, type].filter(Boolean).join(" "));
+  bits.push(task);
+  bits.push(`source ${source}`);
+  return bits.filter(Boolean).join(" ; ");
+}
+function apSendRedeemMetadataBounce(meta){
+  if(!meta || !ap?.connected) return false;
+  const games = [String(ap?.cfg?.game || "")].filter(Boolean);
+  return !!apSend({
+    cmd: "Bounce",
+    games,
+    data: {
+      type: "flippermizer_check_redeemed",
+      meta
+    }
+  });
+}
+function apSendLocationCheckWithMetadata(locId, meta){
+  const id = Number(locId);
+  if(!Number.isFinite(id) || id <= 0) return false;
+  const packet = {
+    cmd: "LocationChecks",
+    locations: [id],
+    flippermizer_redeem: meta || null
+  };
+  const sent = !!apSend(packet);
+  if(sent && meta){
+    apSendRedeemMetadataBounce(meta);
+    apLog("Check metadata sent; " + formatCheckRedeemMetadataLine(meta), { tab:"status" });
+  }
+  return sent;
+}
+function apLogBouncedRedeemMetadata(pkt){
+  const data = pkt?.data || {};
+  if(String(data?.type || "") !== "flippermizer_check_redeemed") return false;
+  const meta = data.meta || data;
+  if(!meta || typeof meta !== "object") return false;
+  apLog("FLIPPERMIZER CHECK; " + formatCheckRedeemMetadataLine(meta), { tab:"chat", mirrorTabs:["status"] });
+  return true;
+}
 
 const audioUrlCache = new Map();
 const audioLoadInFlight = new Map();
@@ -32581,15 +34500,19 @@ function getTaskCounterProgressVerb(taskName, counterMeta){
 function getTaskExplanationForNode(node){
   const taskName = getTaskNameFromLocationNode(node);
   if(!taskName) return "";
+  const shuffledExplanation = String(node?.taskShuffleEntry?.explanation || "").trim();
   const genericExplanation = String(node?.genericEntry?.explanation || "").trim();
+  const pairedExplanation = shuffledExplanation || genericExplanation;
   const resolvedMeta = getTaskExplanationMetaForNode(taskName, node);
   const resolved = String(resolvedMeta.text || "").trim();
   const direct = getDirectMechanicHint(taskName);
-  const hasSpecificGeneric = !!stripBoilerplateHintText(genericExplanation);
-  const hasStrongResolved = resolvedMeta.kind === "exact" || resolvedMeta.kind === "score" || resolvedMeta.kind === "rule" || resolvedMeta.kind === "counter";
+  const hasSpecificGeneric = !!stripBoilerplateHintText(pairedExplanation);
+  const hasStrongResolved = resolvedMeta.kind === "table" || resolvedMeta.kind === "exact" || resolvedMeta.kind === "score" || resolvedMeta.kind === "rule" || resolvedMeta.kind === "counter";
   const parts = [];
-  if(hasSpecificGeneric){
-    pushUniqueHintInfo(parts, genericExplanation, taskName);
+  if(resolvedMeta.kind === "table"){
+    pushUniqueHintInfo(parts, resolved, taskName);
+  }else if(hasSpecificGeneric){
+    pushUniqueHintInfo(parts, pairedExplanation, taskName);
     if(!parts.length){
       pushUniqueHintInfo(parts, resolved, taskName);
     }else if(!hasStrongResolved && (resolvedMeta.kind === "rule" || resolvedMeta.kind === "legacy")){
@@ -32613,8 +34536,8 @@ let checkTaskHoverShowTimer = 0;
 let checkTaskHoverPendingBtn = null;
 let checkTaskHoverPendingText = "";
 const CHECK_TASK_HOVER_DELAY_MS = 1000;
-const CHECK_TASK_HOVER_WIDTH = 315;
-const CHECK_TASK_HOVER_MIN_HEIGHT = 132;
+const CHECK_TASK_HOVER_WIDTH = 390;
+const CHECK_TASK_HOVER_MIN_HEIGHT = 112;
 function clearCheckTaskHoverTimer(){
   if(checkTaskHoverShowTimer){
     clearTimeout(checkTaskHoverShowTimer);
@@ -32835,10 +34758,10 @@ function buildApConnectPlans(input, preferWsFirst){
 }
 
 function apSend(obj){
-  if(ap?.inherentSeedActive && inherentSeedHandleSend(obj)) return;
+  if(ap?.inherentSeedActive && inherentSeedHandleSend(obj)) return true;
   if(!ap.ws || ap.ws.readyState !== WebSocket.OPEN){
     apLog("OUT (blocked); " + (obj?.cmd||""));
-    return;
+    return false;
   }
   // Avoid spamming the log with periodic Sync pings
   if(!(obj && obj.cmd === "Sync")){
@@ -32846,9 +34769,83 @@ function apSend(obj){
     catch(_){ apLog("OUT " + (obj?.cmd||"")); }
   }
   if(obj && obj.cmd === "Sync") ap.lastSyncSentAt = Date.now();
-  ap.ws.send(JSON.stringify([obj]));
+  try{
+    ap.ws.send(JSON.stringify([obj]));
+    return true;
+  }catch(e){
+    apLog("OUT failed; " + (e?.message || e), { tab:"errors" });
+    return false;
+  }
 }
 
+function apSay(text){
+  const msg = String(text ?? "").trim();
+  if(!msg) return false;
+  if(ap?.inherentSeedActive){
+    apLog("AP chat blocked; singleplayer seed mode is not connected to an AP server.", { tab:"chat" });
+    return false;
+  }
+  if(!ap.ws || ap.ws.readyState !== WebSocket.OPEN || !ap.connected){
+    apLog("AP chat blocked; not connected.", { tab:"errors" });
+    try{ toast("warn", "AP CHAT BLOCKED", "Connect to AP first.", 1800); }catch(_){}
+    return false;
+  }
+  apLog("> " + msg, { tab:"chat", mirrorTabs:["status"] });
+  return !!apSend({ cmd:"Say", text:msg });
+}
+try{ window.apSay = apSay; }catch(_){}
+
+let apSayUiLastSubmit = { text:"", at:0 };
+function apSubmitSayFromControls(){
+  const input = document.getElementById("apClientSayInput");
+  const text = String(input?.value || "").trim();
+  if(!text) return false;
+  const now = Date.now();
+  if(apSayUiLastSubmit.text === text && now - apSayUiLastSubmit.at < 350) return false;
+  apSayUiLastSubmit = { text, at:now };
+  try{ playSfx("click"); }catch(_){}
+  if(apSay(text)){
+    if(input) input.value = "";
+    try{ setApLogTab("chat"); }catch(_){}
+    return true;
+  }
+  return false;
+}
+try{ window.apSubmitSayFromControls = apSubmitSayFromControls; }catch(_){}
+
+function bindApSayControls(){
+  const form = document.getElementById("apClientSayForm");
+  const input = document.getElementById("apClientSayInput");
+  const button = document.getElementById("apClientSayBtn");
+  if(!form || !input) return;
+  if(form.__flprBound !== true){
+    form.__flprBound = true;
+    form.addEventListener("submit", (ev)=>{
+      ev.preventDefault();
+      apSubmitSayFromControls();
+    });
+  }
+  if(input.__flprSayKeyBound !== true){
+    input.__flprSayKeyBound = true;
+    input.addEventListener("keydown", (ev)=>{
+      if(ev.key !== "Enter" || ev.shiftKey) return;
+      ev.preventDefault();
+      apSubmitSayFromControls();
+    });
+  }
+  if(button && button.__flprSayButtonBound !== true){
+    button.__flprSayButtonBound = true;
+    try{ button.type = "button"; }catch(_){}
+    button.addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      apSubmitSayFromControls();
+    });
+    button.addEventListener("pointerup", (ev)=>{
+      ev.preventDefault();
+      apSubmitSayFromControls();
+    });
+  }
+}
 
 const AP_RECEIVED_LS = "flpr_ap_received_v1";
 function loadReceivedList(){
@@ -32885,8 +34882,9 @@ function renderReceivedList(){
   }
   const show=list.slice(-80).reverse();
   for(const r of show){
+    const cls = apItemClassFromFlags(r?.flags, r?.itemName);
     const row=document.createElement("div");
-    row.className="recvRow";
+    row.className=`recvRow apItem-${cls.key}`;
     const t=document.createElement("div");
     t.className="recvTime";
     t.textContent=r.time||"";
@@ -32894,7 +34892,10 @@ function renderReceivedList(){
     txt.className="recvText";
     const a=r.locationName ? `CHECK; ${getDisplayedLocationName(r.locationName)}` : "CHECK; -";
     const b=r.itemName ? `ITEM; ${r.itemName}` : "ITEM; -";
-    txt.innerHTML = `${a}<br>${b}`;
+    const srcPlayer = String(r.sourcePlayerName || "").trim();
+    const srcGame = String(r.sourceGame || "").trim();
+    const src = (srcPlayer || srcGame) ? `FROM; ${srcPlayer || "Unknown Player"}${srcGame ? ` (${srcGame})` : ""}` : "";
+    txt.innerHTML = `<span class="recvBadge apItem-${cls.key}">${escapeHtml(cls.label)}</span><br>${escapeHtml(a)}<br>${escapeHtml(b)}${src ? `<br>${escapeHtml(src)}` : ""}`;
     row.appendChild(t); row.appendChild(txt);
     body.appendChild(row);
   }
@@ -32933,6 +34934,9 @@ function addReceivedToList(itemName, locationName, checkName, recvIndex, flags, 
     baseItemName: baseItemName||itemName||"",
     locationName: locationName||"",
     checkName: checkName||"",
+    sourcePlayerId: Number.isFinite(Number(meta?.sourcePlayerId)) ? Number(meta.sourcePlayerId) : null,
+    sourcePlayerName: String(meta?.sourcePlayerName || ""),
+    sourceGame: String(meta?.sourceGame || ""),
     recvIndex: (recvIndex != null ? recvIndex : null),
     locId: (locId != null ? Number(locId) : null),
     flags: (flags ?? 0),
@@ -32965,7 +34969,11 @@ function processReceivedItem(it, itemIndex, locId, opts){
     ap.pendingByLoc.delete(locId);
   }
 
-  const name = ap.itemNameById.get(it.item) || "";
+  const receiptSource = apReceivedSourceMeta(it || {});
+  const itemIdNum = Number(it?.item);
+  const name = ap.itemNameById.get(it.item)
+    || (Number.isFinite(itemIdNum) ? (apDataPackageForGame(ap.cfg?.game)?.itemNameById?.get?.(itemIdNum) || "") : "")
+    || "";
   // Preserve raw item name; do not randomly bucket plain "Junk".
   const effectiveName = String(name || "");
   const itemFlags = Number(it?.flags ?? 0);
@@ -33053,8 +35061,18 @@ function processReceivedItem(it, itemIndex, locId, opts){
   }
 
   // Record into Received Items list (controls)
-  const locNm = getDisplayedLocationName((paired?.locationName) || (locId != null ? (ap.locNameById.get(locId) || ("Location #" + locId)) : ""));
-  addReceivedToList(effectiveName, locNm, (paired?.checkName || paired?.locationName || locNm), itemIndex, (it.flags ?? 0), locId, name, { bossPct: resolvedBossPct });
+  const sourceLocName = locId != null ? apLocationNameFor(locId, receiptSource.sourcePlayerId, "") : "";
+  const locNm = getDisplayedLocationName((paired?.locationName) || sourceLocName || (locId != null ? (ap.locNameById.get(locId) || ("Location #" + locId)) : ""));
+  addReceivedToList(effectiveName, locNm, (paired?.checkName || paired?.locationName || locNm), itemIndex, (it.flags ?? 0), locId, name, {
+    bossPct: resolvedBossPct,
+    sourcePlayerId: receiptSource.sourcePlayerId,
+    sourcePlayerName: receiptSource.player,
+    sourceGame: receiptSource.game
+  });
+  if(!opts.isSnapshot && !opts.isFlush && !opts.noPopup){
+    apLog(`RECEIVED ${effectiveName} from ${receiptSource.player} (${receiptSource.game})${locNm ? "; " + locNm : ""}`, { tab:"chat", mirrorTabs:["status"] });
+  }
+  try{ showApReceivedItemToast(effectiveName, it, locId, opts); }catch(_){}
   try{
     if(hintTryClearSolvedTargetByLoc(locId)){
       hintRefreshAllHighlights();
@@ -33103,7 +35121,8 @@ function processReceivedItem(it, itemIndex, locId, opts){
       }
     }else{
       // Progressive Ball items have their own flow (modal; then apply ball after), handled later.
-      if(!isProgressiveBallItem && !isBossSegmentItem){
+      // Boss Key items have their own dock-slot cinematic, so skip the generic reward popup.
+      if(!isProgressiveBallItem && !isBossSegmentItem && !isBossKeyItemName(effectiveName)){
         playSfx("receive");
         const holdMs = 3000;
         const preMs = showOverviewModal({ tag:"REWARD", title:"ITEM RECEIVED", big:effectiveName, sub:(paired && paired.tableName ? paired.tableName : ""), meta:(paired && paired.locationName ? ("CHECK; " + paired.locationName) : ""), isTrap:false, holdMs });
@@ -33601,6 +35620,11 @@ function apConnect(){
   window.__manualDisconnect = false;
   ap.connected = false;
   ap.roomGames = [];
+  ap.slotInfoById = new Map();
+  ap.playerNameById = new Map();
+  ap.gameByPlayerId = new Map();
+  ap.gameDataPackages = new Map();
+  ap.sentToastSeen = new Set();
   ap.checked = new Set();
   ap.locsByTableKey = new Map();
   ap.locNameById = new Map();
@@ -33651,8 +35675,27 @@ function apConnect(){
 
     for(const pkt of arr){
       if(!pkt || !pkt.cmd) continue;
+      let handled = false;
+
+      if(pkt.cmd === "PrintJSON"){
+        handled = true;
+        apLogServerMessage(pkt);
+      }
+
+      if(pkt.cmd === "Print"){
+        handled = true;
+        const txt = String(pkt.text ?? pkt.message ?? "").trim();
+        if(txt) apLog(txt, { tab:"chat", mirrorTabs:["status"] });
+      }
+
+      if(pkt.cmd === "Bounced"){
+        handled = true;
+        if(!apLogBouncedRedeemMetadata(pkt)) apLogBouncedPacket(pkt);
+        continue;
+      }
 
       if(pkt.cmd === "RoomInfo"){
+        handled = true;
         try{ if(ap.roomInfoTimer){ clearTimeout(ap.roomInfoTimer); ap.roomInfoTimer = null; } }catch(_){}
         try{
           const seedSig = String(pkt.seed_name || "");
@@ -33713,7 +35756,9 @@ function apConnect(){
           if(hEl && host) hEl.textContent = "CONNECTED; " + host;
         }catch(_){}
 
-        ap.roomGames = Array.isArray(pkt.games) ? pkt.games : [];
+        try{ apStoreSlotInfo(pkt.slot_info || pkt.slotInfo || {}); }catch(_){}
+        try{ apLogRoomInfoPacket(pkt); }catch(_){}
+        ap.roomGames = Array.isArray(pkt.games) ? pkt.games : apDataPackageGamesRequest();
         // Auto-pick game if mismatch
         const preferred = (ap.cfg.game||"").trim();
         const ok = preferred && ap.roomGames.includes(preferred);
@@ -33736,11 +35781,30 @@ function apConnect(){
           items_handling: getItemsHandling(),
           tags: getConnectTags()
         });
-        apSend({ cmd:"GetDataPackage", games:[ap.cfg.game] });
+        const packageGames = apDataPackageGamesRequest();
+        apSend({ cmd:"GetDataPackage", games: packageGames.length ? packageGames : [ap.cfg.game].filter(Boolean) });
       }
 
       if(pkt.cmd === "Connected"){
+        handled = true;
         ap.connected = true; apLog("connected"); startApPolling();
+        ap.slot = Number(pkt.slot ?? pkt.slot_id ?? ap.slot ?? 0) || ap.slot || 0;
+        ap.team = Number(pkt.team ?? ap.team ?? 0) || 0;
+        try{ apStorePlayers(pkt.players || []); }catch(_){}
+        if(ap.slot){
+          ap.playerName = apPlayerName(ap.slot, ap.cfg.player);
+          if(ap.cfg.game) ap.gameByPlayerId.set(ap.slot, ap.cfg.game);
+          if(ap.cfg.player) ap.playerNameById.set(ap.slot, ap.cfg.player);
+        }
+        try{
+          const selfMeta = apSelfPresenceMeta(pkt);
+          apLog(`Client(${apVersionTextForLog(selfMeta.version)}), ${apTagsTextForLog(selfMeta.tags)}.`, { tab:"chat", mirrorTabs:["status"] });
+          apLog(apPlayerPresenceLine(selfMeta, "joined"), { tab:"chat", mirrorTabs:["status"] });
+          apLogPlayerRosterDelta(pkt.players || [], { source:"Connected", suppressInitial:true });
+          const checkedCount = Array.isArray(pkt.checked_locations) ? pkt.checked_locations.length : 0;
+          const missingCount = Array.isArray(pkt.missing_locations) ? pkt.missing_locations.length : 0;
+          apLog(`Server state: ${checkedCount} checked, ${missingCount} missing.`, { tab:"status" });
+        }catch(_){}
         setApIndicator("green","CONNECTED; HANDSHAKING STATUSES");
         updateApConnectButtons("connected");
         try{ setGenericCheckPayload(pkt.slot_data || {}); }catch(_){}
@@ -33759,21 +35823,32 @@ function apConnect(){
       }
 
       if(pkt.cmd === "ConnectionRefused"){
+        handled = true;
         const errs = Array.isArray(pkt.errors) ? pkt.errors.join(", ") : String(pkt.errors || "Unknown");
         apLog("ConnectionRefused; " + errs);
         toast("bad","AP CONNECTION REFUSED", errs || "Unknown", 4200);
       }
 
       if(pkt.cmd === "RoomUpdate"){
+        handled = true;
+        try{ apLogPlayerRosterDelta(pkt.players || [], { source:"RoomUpdate" }); }catch(_){}
+        const beforeChecked = new Set(ap.checked || []);
         const changed = handleCheckedLocations(pkt.checked_locations || [], { awardAchievements:true, source:"room-update" });
+        try{ apLogCheckedLocationDelta(pkt.checked_locations || [], beforeChecked, { missingCount:Array.isArray(pkt.missing_locations) ? pkt.missing_locations.length : NaN }); }catch(_){}
         if(changed){
           apLog("RoomUpdate; checked locations changed; checks UI refreshed.");
         }
       }
 
       if(pkt.cmd === "DataPackage"){
+        handled = true;
         // Build maps
-        const g = pkt?.data?.games?.[ap.cfg.game];
+        const gamesData = (pkt?.data?.games && typeof pkt.data.games === "object") ? pkt.data.games : {};
+        Object.entries(gamesData).forEach(([gameName, gameData])=>{
+          try{ apStoreGameDataPackage(gameName, gameData); }catch(_){}
+        });
+        try{ apLogDataPackagePacket(pkt); }catch(_){}
+        const g = gamesData?.[ap.cfg.game];
         if(g){
           const itemNameToId = g.item_name_to_id || {};
           const locNameToId = g.location_name_to_id || {};
@@ -33816,11 +35891,12 @@ function apConnect(){
       }
 
       if(pkt.cmd === "ReceivedItems"){
+        handled = true;
         const items = Array.isArray(pkt.items) ? pkt.items : [];
-        // Packet's `index` is the next empty slot; individual items do NOT carry their own index.
+        // AP's `index` is the starting slot for the first item in this packet.
         // The indices for this packet's items are: baseIndex..baseIndex+items.length-1.
-        const nextIndex = (typeof pkt.index === "number") ? pkt.index : (ap.lastReceivedIndex || 0);
-        const baseIndex = nextIndex - items.length;
+        const baseIndex = Number.isFinite(Number(pkt.index)) ? Number(pkt.index) : (ap.lastReceivedIndex || 0);
+        const nextIndex = baseIndex + items.length;
 
         // If baseIndex is 0, this should be treated as a full inventory snapshot; reset prior inventory.
         if(baseIndex === 0){
@@ -33838,6 +35914,7 @@ function apConnect(){
             localStorage.setItem('flpr_ap_last_popup_index', String(snapLast));
           }catch(_){}
         }
+        try{ apLogReceivedItemsPacket(items, baseIndex, nextIndex, { isSnapshot:(baseIndex === 0) }); }catch(_){}
 
         for(let i=0;i<items.length;i++){
           const it = items[i] || {};
@@ -33888,6 +35965,9 @@ function apConnect(){
         }catch(_){}
       }
 
+      if(!handled){
+        try{ apLogUnhandledServerPacket(pkt); }catch(_){}
+      }
     }
   });
   ap.ws.addEventListener("close", (ev)=>{
@@ -34160,10 +36240,25 @@ function autoRedeemRandomByDifficulty(diff, opts){
   apLog(`autoRedeem; ${want}; id ${pick.id}; ${pick.short || pick.full || ""}`);
   playSfx("redeem");
   if(!opts.dryRun && ap.connected){
-    const pend = { id: pick.id, locationName: pick.full || pick.short || ("ID " + pick.id), tableName: pick.tableName || "" };
+    const redeemMeta = buildCheckRedeemMetadata(pick, {
+      source: opts.sourceTag || `auto:${want}`,
+      sourceType: "auto",
+      difficulty: want,
+      tableName: pick.tableName || "",
+      world: ap.currentWorld || ""
+    });
+    const pend = {
+      id: pick.id,
+      locationName: pick.full || pick.short || ("ID " + pick.id),
+      tableName: pick.tableName || "",
+      taskName: redeemMeta.task_name,
+      taskType: redeemMeta.task_type,
+      difficulty: redeemMeta.difficulty,
+      redeemMeta
+    };
     ap.pendingQueue.push({ ...pend, sentAt: Date.now() });
     markPending(pick.id, pend);
-    apSend({ cmd:"LocationChecks", locations:[pick.id] });
+    apSendLocationCheckWithMetadata(pick.id, redeemMeta);
     apSend({ cmd:"Sync" });
   }
   return pick;
@@ -36054,6 +38149,7 @@ function bossKeysApplyAcquiredCount(count, opts){
     }
     bossKeysSyncLegacyMirror(c);
     if(opts.updateApCount !== false) window.__apBossKeyCount = c;
+    try{ window.__prevApBossKeyCount = Math.max(Number(window.__prevApBossKeyCount || 0), c); }catch(_){}
     bossKeysSave();
     bossKeysRender();
     if(opts.animate !== false && c > prev){
@@ -36094,17 +38190,18 @@ function runBossKeySingleTest(){
     const missingIdx = Array.from({ length:BOSS_KEYS_COUNT }, (_, i)=>i).find(i => !bossKeysState?.[i]?.acquired);
     if(typeof missingIdx !== "number"){
       bossKeysRender();
-      bossKeysAnimate(Math.max(0, BOSS_KEYS_COUNT - 1), true);
+      bossKeysRunRedeemSequence(Math.max(0, BOSS_KEYS_COUNT - 1), BOSS_KEYS_COUNT, { force:true, dedupeMs:0 });
       toast("warn","BOSS KEY TEST",`+1 unavailable; already at ${BOSS_KEYS_COUNT}/${BOSS_KEYS_COUNT}.`, 2200);
       return;
     }
 
     if(!bossKeysState[missingIdx]) return;
+    const beforeCount = getBossKeysAcquiredCount();
     bossKeysState[missingIdx].acquired = true;
     bossKeysSyncLegacyMirror(getBossKeysAcquiredCount());
     bossKeysSave();
     bossKeysRender();
-    bossKeysAnimate(missingIdx, true);
+    bossKeysRunRedeemSequence(beforeCount, getBossKeysAcquiredCount(), { force:true, dedupeMs:0 });
     toast("warn","BOSS KEY TEST",`Collected Key ${missingIdx + 1}/${BOSS_KEYS_COUNT}`, 2200);
 
     const nowCount = getBossKeysAcquiredCount();
@@ -36195,23 +38292,24 @@ function runBossKeysToThreeTest(){
         if(bossPick?.ok) apLog(`Boss table auto-selected (test); ${bossPick.tableName}`);
       }catch(_){ }
       bossKeysRender();
-      bossKeysAnimate(Math.max(0, requiredCount - 1), true);
+      bossKeysRunRedeemSequence(Math.max(0, requiredCount - 1), requiredCount, { force:true, dedupeMs:0 });
       startBossIncomingAlert(5200);
       toast("warn","BOSS KEY TEST",`Already at ${requiredCount}/${requiredCount}; replayed incoming alert.`, 2600);
       scheduleRestore(5400);
       return;
     }
 
-    const stepMs = 520;
+    const stepMs = BOSS_KEY_CINEMATIC_CHAIN_STEP_MS;
     missing.forEach((idx, step)=>{
       setTimeout(()=>{
         try{
           if(!bossKeysState[idx]) return;
+          const beforeCount = getBossKeysAcquiredCount();
           bossKeysState[idx].acquired = true;
           bossKeysSyncLegacyMirror(getBossKeysAcquiredCount());
           bossKeysSave();
           bossKeysRender();
-          bossKeysAnimate(idx, true);
+          bossKeysRunRedeemSequence(beforeCount, getBossKeysAcquiredCount(), { force:true, dedupeMs:0 });
           if(step === missing.length - 1){
             window.__bossTestUnlockUntil = Date.now() + 6400;
             try{ forceBossWorldUnlocked("boss-key-test"); }catch(_){}
@@ -36438,6 +38536,9 @@ function getBossTableNameCandidates(opts){
 function isBossPercentHpLocationNode(node){
   const raw = `${String(node?.full || "")} ${String(node?.short || "")}`.toLowerCase();
   if(!raw.trim()) return false;
+  const table = String(node?.tableName || splitLocName(node?.full || "").table || "").trim();
+  const tableKey = canonicalTableMapKey(table);
+  if(tableKey && ["bosstable", "boss"].includes(tableKey) && !bossIsVictoryLocationNode(node)) return true;
   if(/boss\s*damage\s*\d+\s*%/.test(raw)) return true;
   if(/boss\s*hp/.test(raw) && /\d+\s*%/.test(raw)) return true;
   if(/boss/.test(raw) && /\d+\s*%/.test(raw)) return true;
@@ -37141,7 +39242,8 @@ function renderTableBlock(parent, tableName, nodes, opts){
   }
   const grid = document.createElement("div");
   grid.className = "nodeGrid";
-  const sendCheckLocation = (n, sourceTag)=>{
+  const sendCheckLocation = (n, sourceTag, redeemOpts)=>{
+    redeemOpts = redeemOpts || {};
     if(!ap.connected) return false;
     const isBossNode = !!(isBossTableBlock || isBossPercentHpLocationNode(n) || bossIsVictoryLocationNode(n));
     const pendTableName = isBossNode
@@ -37156,11 +39258,27 @@ function renderTableBlock(parent, tableName, nodes, opts){
       isBossCheck: isBossNode,
       isBossVictory: !!bossIsVictoryLocationNode(n)
     };
+    const redeemMeta = buildCheckRedeemMetadata(n, {
+      source: sourceTag || "manual",
+      sourceType: sourceTag ? String(sourceTag).split(":")[0] : "manual",
+      tableName: pendTableName,
+      tableKey: opts.tableKey || "",
+      world: ap.currentWorld || "",
+      difficulty: redeemOpts.difficulty || n.genericDifficulty || inferLocationDifficulty(n) || "",
+      isBossCheck: isBossNode,
+      isBossVictory: !!bossIsVictoryLocationNode(n),
+      counterTarget: redeemOpts.counterTarget || null,
+      counterValue: redeemOpts.counterValue ?? null
+    });
+    pend.taskName = redeemMeta.task_name;
+    pend.taskType = redeemMeta.task_type;
+    pend.difficulty = redeemMeta.difficulty;
+    pend.redeemMeta = redeemMeta;
     ap.pendingQueue.push({ ...pend, sentAt: Date.now() });
     markPending(n.id, pend);
     playSfx("redeem");
-    apLog("LocationChecks; " + n.id + (sourceTag ? `; ${sourceTag}` : ""));
-    apSend({ cmd:"LocationChecks", locations:[n.id] });
+    apLog("CHECK SENT; " + n.id + (sourceTag ? `; ${sourceTag}` : "") + `; ${redeemMeta.task_type}; ${redeemMeta.task_name}`, { tab:"chat", mirrorTabs:["status"] });
+    apSendLocationCheckWithMetadata(n.id, redeemMeta);
     apSend({ cmd:"Sync" });
     toast("warn","CHECK SENT", (n.short||"") + " ; ID " + n.id, 2200);
     try{ besiegedMaybeClearPenaltyLockForTask(opts.tableKey, n); }catch(_){}
@@ -37259,8 +39377,8 @@ function renderTableBlock(parent, tableName, nodes, opts){
     const displayTaskName = getTaskNameFromLocationNode(n) || String(n.short || n.full || "").trim();
     const counterTarget = Math.max(0, Number(taskCounterMeta?.target) || 0);
     const bossTaskCategory = isBossTableBlock ? achClassifyTaskName(bossTaskName || n.short || n.full || "") : "";
-    const scoreTitleMatch = (!isBossTableBlock && !bossVictoryNode)
-      ? String(displayTaskName || "").match(/^obtain a score of\s+(.+)$/i)
+    const scoreTitleMatch = (!bossVictoryNode)
+      ? String(displayTaskName || "").match(/^(?:obtain a )?score(?: target)?(?: of)?\s+(.+)$/i)
       : null;
     const baseTitleText = bossVictoryNode ? "Boss Victory" : (isBossTableBlock ? bossAttackTitleForCategory(bossTaskCategory, bossTaskName || n.short || n.full || "") : displayTaskName);
     if(scoreTitleMatch){
@@ -37363,7 +39481,11 @@ function renderTableBlock(parent, tableName, nodes, opts){
           toast("warn","NO JUNK REDEEM", `${activeDiff.toUpperCase()} redeem is no longer available.`, 2200);
           return;
         }
-        const sent = sendCheckLocation(n, `junk:${activeDiff}`);
+        const sent = sendCheckLocation(n, `junk:${activeDiff}`, {
+          difficulty: tier,
+          counterTarget: taskCounterMeta?.target || null,
+          counterValue: taskCounterMeta ? getTaskProgressValue(n.id) : null
+        });
         if(!sent){
           addJunkRedeemBalance(activeDiff, 1);
           toast("warn","REDEEM FAILED", "Could not send check; Junk Redeem restored.", 2400);
@@ -37376,7 +39498,11 @@ function renderTableBlock(parent, tableName, nodes, opts){
         return;
       }
       if(!ap.connected) return;
-      if(sendCheckLocation(n, "manual")){
+      if(sendCheckLocation(n, "manual", {
+        difficulty: tier,
+        counterTarget: taskCounterMeta?.target || null,
+        counterValue: taskCounterMeta ? getTaskProgressValue(n.id) : null
+      })){
         if(String(opts.tableKey || "") === "boss|0"){
           try{ applyChecksNowPlayingHighlight(); }catch(_){}
         }else{
@@ -37414,7 +39540,11 @@ function renderTableBlock(parent, tableName, nodes, opts){
           toast("warn","AP DISCONNECTED", `Reconnect to auto-clear ${displayTaskName}.`, 2600);
           return;
         }
-        if(sendCheckLocation(n, sourceTag)) renderChecks();
+        if(sendCheckLocation(n, sourceTag, {
+          difficulty: tier,
+          counterTarget: taskCounterMeta?.target || null,
+          counterValue: getTaskProgressValue(n.id)
+        })) renderChecks();
       };
       renderCounterValue(checked ? Number(taskCounterMeta.target) || 0 : getTaskProgressValue(n.id));
       minusBtn.onclick = (ev)=>{
@@ -43221,15 +45351,90 @@ function inherentPickStartingTables(tables, count){
   }
   return shuffled.slice(0, want);
 }
-function inherentTaskSpecs(tableIndex){
+function inherentNormalizeTableKey(value){
+  try{
+    const exp = window.FLPR_TASK_EXPLANATIONS;
+    if(exp && typeof exp.normalizeTableKey === "function") return exp.normalizeTableKey(value);
+  }catch(_){}
+  return String(value || "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
+}
+function inherentBundledTaskCatalog(){
+  try{
+    const getter = window.flprGetBundledTaskCatalog || window.FLPR_TASK_EXPLANATIONS?.getBundledTaskCatalog;
+    if(typeof getter === "function") return getter();
+  }catch(_){}
+  return { byTable:{}, tables:[] };
+}
+function inherentCatalogEntryForTable(tableName){
+  const catalog = inherentBundledTaskCatalog();
+  const key = inherentNormalizeTableKey(tableName);
+  if(catalog?.byTable?.[key]) return catalog.byTable[key];
+  try{
+    const repo = window.FLPR_TABLE_REPO;
+    const canonical = repo && typeof repo.getCanonicalTableName === "function" ? repo.getCanonicalTableName(tableName) : "";
+    const cKey = inherentNormalizeTableKey(canonical);
+    if(cKey && catalog?.byTable?.[cKey]) return catalog.byTable[cKey];
+  }catch(_){}
+  return null;
+}
+function inherentFallbackScores(tableIndex){
   const i = Math.max(0, Number(tableIndex) || 0);
+  return {
+    easy: [
+      inherentFormatScore(750000 + (i * 250000)),
+      inherentFormatScore(1250000 + (i * 325000))
+    ],
+    medium: [
+      inherentFormatScore(3500000 + (i * 650000)),
+      inherentFormatScore(6000000 + (i * 850000))
+    ],
+    hard: [
+      inherentFormatScore(10000000 + (i * 1100000)),
+      inherentFormatScore(18000000 + (i * 1500000))
+    ]
+  };
+}
+function inherentPick(list, tableIndex, offset, fallback){
+  const pool = Array.isArray(list) ? list.map((value)=>String(value || "").trim()).filter(Boolean) : [];
+  if(!pool.length) return fallback;
+  const idx = Math.abs((Math.max(0, Number(tableIndex) || 0) * 7) + Number(offset || 0)) % pool.length;
+  return pool[idx] || fallback;
+}
+function inherentTaskExplanationFor(tableName, objective){
+  const taskName = String(objective || "").trim();
+  const targetTable = String(tableName || "").trim();
+  if(!taskName) return "";
+  try{
+    const getter = window.flprGetTaskExplanationMeta || window.FLPR_TASK_EXPLANATIONS?.resolveTaskExplanationMeta;
+    if(typeof getter === "function"){
+      const meta = getter(taskName, {
+        tableName: targetTable,
+        table: targetTable,
+        target_table: targetTable,
+        full: targetTable ? `${targetTable} - ${taskName}` : taskName,
+        location: targetTable ? `${targetTable} - ${taskName}` : taskName
+      });
+      return String(meta?.text || "").trim();
+    }
+  }catch(_){}
+  return "";
+}
+function inherentTaskSpecs(tableName, tableIndex){
+  if(arguments.length === 1){
+    tableIndex = tableName;
+    tableName = "";
+  }
+  const entry = inherentCatalogEntryForTable(tableName);
+  const tasks = entry?.tasksByDifficulty || {};
+  const fallbackScores = inherentFallbackScores(tableIndex);
+  const scores = entry?.scoreTargets || fallbackScores;
   return [
-    { name:"Easy Skill Shot" },
-    { name:`Easy Score (${inherentFormatScore(750000 + (i * 250000))})` },
-    { name:"Medium Multiball Start" },
-    { name:"Hit 25 Pop Bumpers" },
-    { name:`Hard Score (${inherentFormatScore(10000000 + (i * 1000000))})` },
-    { name:"Hard Wizard Objective" }
+    { name:inherentPick(tasks.easy, tableIndex, 0, "Make a Skill Shot"), difficulty:"easy", kind:"task" },
+    { name:`Easy Score (${inherentPick(scores.easy, tableIndex, 1, fallbackScores.easy[0])})`, difficulty:"easy", kind:"score" },
+    { name:inherentPick(tasks.medium, tableIndex, 2, "Start Multiball"), difficulty:"medium", kind:"task" },
+    { name:`Medium Score (${inherentPick(scores.medium, tableIndex, 3, fallbackScores.medium[0])})`, difficulty:"medium", kind:"score" },
+    { name:inherentPick(tasks.hard, tableIndex, 4, "Collect a Super Jackpot"), difficulty:"hard", kind:"task" },
+    { name:`Hard Score (${inherentPick(scores.hard, tableIndex, 5, fallbackScores.hard[0])})`, difficulty:"hard", kind:"score" }
   ];
 }
 function inherentRewardFor(tableIndex, taskIndex, tableName, tables){
@@ -43240,7 +45445,7 @@ function inherentRewardFor(tableIndex, taskIndex, tableName, tables){
   if(j === 1) return (i % 3 === 0) ? "Hint Ball Location" : "Easy Junk Item";
   if(j === 2) return ([4, 12, 20].includes(i)) ? "Boss Key" : ((i % 4 === 1) ? "Hint Boss Key" : "Medium Junk Item");
   if(j === 3) return (i % 5 === 2) ? "Pinball Fragment" : "Hint Ball Location";
-  if(j === 4) return (i % 7 === 3) ? "Filter Trap" : `Progressive Ball - ${tableName}`;
+  if(j === 4) return `Progressive Ball - ${tableName}`;
   return (i % 6 === 0) ? "Medium Junk Item" : "Easy Junk Item";
 }
 function buildInherentTestSeedFixture(){
@@ -43260,26 +45465,56 @@ function buildInherentTestSeedFixture(){
     return itemNameToId[key];
   };
   tables.forEach((table, tableIndex)=>{
-    inherentTaskSpecs(tableIndex).forEach((task, taskIndex)=>{
+    inherentTaskSpecs(table.tableName, tableIndex).forEach((task, taskIndex)=>{
       const locationName = `${table.tableName} - ${task.name}`;
       const itemName = inherentRewardFor(tableIndex, taskIndex, table.tableName, tables);
       const locId = nextLocId++;
       const itemId = ensureItem(itemName);
       locNameToId[locationName] = locId;
       locationItemByLocId[locId] = { itemId, itemName, flags: isTrapItem(itemName) ? 4 : 0 };
+      const difficulty = String(task?.difficulty || (taskIndex < 2 ? "easy" : (taskIndex < 4 ? "medium" : "hard")));
+      const kind = String(task?.kind || (task.name.toLowerCase().includes("score") ? "score" : "task"));
       entries.push({
         location: locationName,
         table: table.tableName,
-        difficulty: taskIndex < 2 ? "easy" : (taskIndex < 4 ? "medium" : "hard"),
-        kind: taskIndex === 3 ? "counter" : (task.name.toLowerCase().includes("score") ? "score" : "task"),
-        objective: task.name
+        target_table: table.tableName,
+        source_table: table.tableName,
+        source_location: locationName,
+        difficulty,
+        kind,
+        task_type: kind,
+        objective: task.name,
+        display_name: task.name,
+        title: task.name,
+        explanation: inherentTaskExplanationFor(table.tableName, task.name)
       });
       spoilerLines.push(`${locationName}: ${itemName}`);
     });
   });
-  const bossDamageChecks = Array.from({ length:10 }, (_, i)=>[
-    `Boss Table - Boss Damage 10% Strike ${i + 1}`,
-    "Boss Segment Damage 10%"
+  const bossDamageChecks = [
+    "Rip a Spinner",
+    "Make a 2-Shot Combo",
+    "Make a 3-Shot Combo",
+    "Shoot Left Orbit/Loop/Lane",
+    "Shoot Right Orbit/Loop/Lane",
+    "Shoot Any Ramp",
+    "Hit Any Scoop or Saucer",
+    "Complete Top Lanes",
+    "Complete a Target Bank",
+    "Start Any Multiball",
+    "Obtain a score of 100,000+",
+    "Obtain a score of 250,000+",
+    "Obtain a score of 500,000+",
+    "Obtain a score of 1,000,000+",
+    "Obtain a score of 2,500,000+",
+    "Obtain a score of 5,000,000+",
+    "Obtain a score of 10,000,000+",
+    "Obtain a score of 25,000,000+",
+    "Obtain a score of 50,000,000+",
+    "Obtain a score of 100,000,000+"
+  ].map((objective)=>[
+    `Boss Table - ${objective}`,
+    "Boss Damage 16%"
   ]);
   [
     ...bossDamageChecks,
@@ -43319,6 +45554,7 @@ function inherentSeedPopulateLocationMaps(fixture){
   ap.locNameById = new Map();
   ap.locById = new Map();
   ap.itemNameById = new Map();
+  try{ apStoreGameDataPackage(ap.cfg?.game || "Manual_FlippermizerBaseGame", { item_name_to_id: fixture.itemNameToId || {}, location_name_to_id: fixture.locNameToId || {} }); }catch(_){}
   Object.entries(fixture.itemNameToId || {}).forEach(([name, id])=> ap.itemNameById.set(Number(id), name));
   Object.entries(fixture.locNameToId || {}).forEach(([name, id])=>{
     const locId = Number(id);
@@ -43379,6 +45615,13 @@ async function loadInherentTestSeed(){
   ap.connected = true;
   ap.seedName = INHERENT_TEST_SEED_NAME;
   ap.cfg = { ...(ap.cfg || {}), player: ap.cfg?.player || "Ashodin", game: "Manual_FlippermizerBaseGame" };
+  ap.slot = 1;
+  ap.team = 0;
+  ap.slotInfoById = new Map();
+  ap.playerNameById = new Map();
+  ap.gameByPlayerId = new Map();
+  ap.gameDataPackages = new Map();
+  try{ apStoreSlotInfo({ 1:{ name:ap.cfg.player, game:ap.cfg.game } }); }catch(_){}
   ap.checked = new Set();
   ap.pendingByLoc = new Map();
   ap.pendingQueue = [];
@@ -44648,6 +46891,117 @@ function ensureTwitchChatPanel(){
   return panel;
 }
 
+function readObsFilterTrapControls(){
+  const current = loadObsFilterTrapCfg();
+  return saveObsFilterTrapCfg({
+    enabled: document.getElementById("obsFilterTrapEnabled")?.checked !== false,
+    url: String(document.getElementById("obsFilterTrapUrl")?.value || current.url || OBS_FILTER_TRAP_DEFAULT_CFG.url).trim(),
+    sourceName: String(document.getElementById("obsFilterTrapSource")?.value || current.sourceName || OBS_FILTER_TRAP_DEFAULT_CFG.sourceName).trim(),
+    password: String(document.getElementById("obsFilterTrapPassword")?.value || "")
+  });
+}
+function applyObsFilterTrapControls(cfg){
+  const next = normalizeObsFilterTrapCfg(cfg || loadObsFilterTrapCfg());
+  const enabled = document.getElementById("obsFilterTrapEnabled");
+  const url = document.getElementById("obsFilterTrapUrl");
+  const source = document.getElementById("obsFilterTrapSource");
+  const password = document.getElementById("obsFilterTrapPassword");
+  if(enabled) enabled.checked = next.enabled !== false;
+  if(url) url.value = next.url;
+  if(source) source.value = next.sourceName;
+  if(password) password.value = next.password;
+  obsFilterTrapRefreshStatus();
+}
+function ensureObsFilterTrapControlsPanel(){
+  let panel = document.getElementById("obsFilterTrapPanel");
+  if(!panel){
+    panel = document.createElement("div");
+    panel.id = "obsFilterTrapPanel";
+    panel.className = "obsFilterTrapPanel";
+    panel.innerHTML = `
+      <label class="obsFilterTrapToggle">
+        <input id="obsFilterTrapEnabled" type="checkbox">
+        OBS FILTER TRAPS
+      </label>
+      <div class="obsFilterTrapGrid">
+        <input class="cInput" id="obsFilterTrapUrl" placeholder="ws://127.0.0.1:4455" spellcheck="false" autocomplete="off" aria-label="OBS websocket URL">
+        <input class="cInput" id="obsFilterTrapSource" placeholder="Pinball Playfield" spellcheck="false" autocomplete="off" aria-label="OBS source name">
+      </div>
+      <div class="twitchSecretField">
+        <input class="cInput" id="obsFilterTrapPassword" type="password" placeholder="OBS websocket password" spellcheck="false" autocomplete="off" aria-label="OBS websocket password">
+        <button class="cBtn twitchSecretReveal" id="obsFilterTrapPasswordReveal" type="button" aria-pressed="false" aria-label="Reveal OBS websocket password">SHOW</button>
+      </div>
+      <div class="obsFilterTrapActions">
+        <button class="cBtn" id="obsFilterTrapConnectBtn" type="button">CONNECT</button>
+        <button class="cBtn danger" id="obsFilterTrapDisableBtn" type="button">DISABLE FILTERS</button>
+      </div>
+      <div class="obsFilterTrapStatus" id="obsFilterTrapStatus"></div>
+    `;
+  }
+  if(!panel.__flprObsFilterTrapBound){
+    panel.__flprObsFilterTrapBound = true;
+    panel.addEventListener("change", (ev)=>{
+      const id = String(ev.target?.id || "");
+      if(!/^obsFilterTrap/.test(id)) return;
+      const cfg = readObsFilterTrapControls();
+      if(id === "obsFilterTrapEnabled" && cfg.enabled === false){
+        obsFilterTrapDisableAllFilters({ quiet:false }).catch(()=>{});
+      }else if(obsFilterTrap.desiredModes && obsFilterTrap.desiredModes.size){
+        obsFilterTrapFlushDesired({ force:true }).catch((err)=>{
+          obsFilterTrap.lastError = String(err?.message || err || "OBS sync failed");
+          obsFilterTrapRefreshStatus();
+        });
+      }else{
+        obsFilterTrapRefreshStatus();
+      }
+    });
+    panel.addEventListener("input", (ev)=>{
+      const id = String(ev.target?.id || "");
+      if(id === "obsFilterTrapUrl" || id === "obsFilterTrapSource" || id === "obsFilterTrapPassword"){
+        readObsFilterTrapControls();
+        obsFilterTrapRefreshStatus();
+      }
+    });
+    panel.addEventListener("click", (ev)=>{
+      const btn = ev.target?.closest?.("button");
+      if(!btn) return;
+      if(btn.id === "obsFilterTrapPasswordReveal"){
+        ev.preventDefault();
+        const input = document.getElementById("obsFilterTrapPassword");
+        const show = input && input.type === "password";
+        if(input) input.type = show ? "text" : "password";
+        btn.textContent = show ? "HIDE" : "SHOW";
+        btn.setAttribute("aria-pressed", show ? "true" : "false");
+        return;
+      }
+      if(btn.id === "obsFilterTrapConnectBtn"){
+        ev.preventDefault();
+        readObsFilterTrapControls();
+        obsFilterTrapConnect({ force:true }).then(()=>{
+          try{ toast("good", "OBS FILTER TRAPS", "Connected.", 1600); }catch(_){}
+          return obsFilterTrapFlushDesired({ force:true });
+        }).catch((err)=>{
+          obsFilterTrap.lastError = String(err?.message || err || "OBS connection failed");
+          obsFilterTrapRefreshStatus();
+          try{ toast("warn", "OBS FILTER TRAPS", obsFilterTrap.lastError, 2600); }catch(_){}
+        });
+        return;
+      }
+      if(btn.id === "obsFilterTrapDisableBtn"){
+        ev.preventDefault();
+        readObsFilterTrapControls();
+        obsFilterTrapDisableAllFilters({ forceConnect:true }).then(()=>{
+          try{ toast("good", "OBS FILTER TRAPS", "Filters disabled.", 1600); }catch(_){}
+        }).catch((err)=>{
+          try{ toast("warn", "OBS FILTER TRAPS", String(err?.message || err || "Disable failed"), 2600); }catch(_){}
+        });
+      }
+    });
+  }
+  applyObsFilterTrapControls(loadObsFilterTrapCfg());
+  return panel;
+}
+
 function ensureFlprBotUtilityControl(){
   let wrap = document.getElementById("flprBotRunUtilityWrap");
   if(!wrap){
@@ -44786,6 +47140,7 @@ function compactConnectControlsLayout(panelConnect){
   const recvWrap = panelConnect.querySelector(".recvWrap") || document.querySelector(".recvWrap");
   const apLogWrap = panelConnect.querySelector(".apConnLog");
   const twitchChatPanel = ensureTwitchChatPanel();
+  const obsFilterTrapPanel = ensureObsFilterTrapControlsPanel();
   const testingPanel = document.querySelector('.controlsTabPanel[data-ctrl-panel="testing"]');
   if(apLogWrap && testingPanel && apLogWrap.parentElement !== testingPanel) testingPanel.appendChild(apLogWrap);
   unique([recvTitle, recvRow, recvWrap]).forEach((node)=>moveTo(testingPanel, node));
@@ -44799,7 +47154,7 @@ function compactConnectControlsLayout(panelConnect){
     flprBotUtility, repoTitle, repoNote, repoRow
   ]).forEach((node)=>moveTo(left, node));
 
-  unique([bonusPinballPanel, twitchChatPanel]).forEach((node)=>moveTo(right, node));
+  unique([bonusPinballPanel, obsFilterTrapPanel, twitchChatPanel]).forEach((node)=>moveTo(right, node));
 
   const makeSection = (parent, title, nodes, opts)=>{
     const list = unique(nodes);
@@ -44824,6 +47179,7 @@ function compactConnectControlsLayout(panelConnect){
   makeSection(left, "Run Utilities", [progTitle, progRow, flprBotUtility, repoTitle, repoNote, repoRow], { accent:"red", mini:"wipe / bot / bestiary" });
   const bonusSection = makeSection(right, "Bonus Pinball", [bonusPinballPanel], { accent:"gold", mini:"field / layout / tests" });
   if(bonusSection) bonusSection.id = "bonusPinballSectionCard";
+  makeSection(right, "OBS Filter Traps", [obsFilterTrapPanel], { accent:"red", mini:"playfield source filters" });
   makeSection(right, "Twitch Chat", [twitchChatPanel], { accent:"blue", mini:"twitch.tv/ashodin", grow:true });
 
   // Park any legacy loose controls invisibly. The old fallback "Additional Controls"
@@ -46018,6 +48374,7 @@ clearReceivedFeedHistory();
     toast("good","LOG CLEARED", `${tabLabel.toUpperCase()} tab cleared`, 1500);
   };
   renderApLogTab();
+  bindApSayControls();
   wireTwitchChatControls();
 
   if(s) s.onchange = ()=>{ ap.cfg.server = s.value.trim(); saveApCfg(ap.cfg); };
@@ -46602,8 +48959,8 @@ restartTimer();
     runBossDamageTestByPct(20, "TEST HEAVY HIT");
   }, { lockMs:1200 });
   bind("testBesiegedTableBtn", ()=>{ playSfx("click"); runBesiegedTableTestFlow(); }, { lockMs:2200 });
-  bind("testBossKeyOneBtn", ()=>{ playSfx("click"); uiLog("test boss key +1"); runBossKeySingleTest(); }, { lockMs:2200 });
-  bind("testBossKeysToThreeBtn", ()=>{ playSfx("click"); uiLog(`test boss keys -> ${getBossKeysRequiredForOpen()}`); runBossKeysToThreeTest(); }, { lockMs:2600 });
+  bind("testBossKeyOneBtn", ()=>{ playSfx("click"); uiLog("test boss key +1"); runBossKeySingleTest(); }, { lockMs:6150 });
+  bind("testBossKeysToThreeBtn", ()=>{ playSfx("click"); uiLog(`test boss keys -> ${getBossKeysRequiredForOpen()}`); runBossKeysToThreeTest(); }, { lockMs:19000 });
   bind("testOpeningRandomizerBtn", ()=>{ playSfx("click"); uiLog("test opening randomizer"); runOpeningRandomizerTestFlow(); }, { lockMs:2800 });
   bind("testRelicTiltedCompassBtn", ()=>{ playSfx("click"); uiLog("test relic tilted compass"); runRelicTiltedCompassTest(); }, { lockMs:1800 });
   bind("testRelicColdOpenBtn", ()=>{ playSfx("click"); uiLog("test relic cold open"); runRelicColdOpenTest(); }, { lockMs:1800 });
@@ -46884,6 +49241,12 @@ const BOSS_KEY_REVEAL_MS = 1320;
 const BOSS_KEY_COLLECTED_FADE_MS = 2640;
 const BOSS_KEY_REDEEM_STEP_MS = 260;
 const BOSS_KEY_REDEEM_FADE_MS = 5600;
+const BOSS_KEY_CINEMATIC_TOTAL_MS = 5450;
+const BOSS_KEY_CINEMATIC_SNAP_AT_MS = 1540;
+const BOSS_KEY_CINEMATIC_WORDS_AT_MS = 1740;
+const BOSS_KEY_CINEMATIC_FLY_AT_MS = 3660;
+const BOSS_KEY_CINEMATIC_IMPACT_AT_MS = 4360;
+const BOSS_KEY_CINEMATIC_CHAIN_STEP_MS = 5750;
 
 let bossKeysState = Array.from({length:BOSS_KEYS_COUNT}, ()=>({acquired:false, img:null}));
 let bossKeyRevealUntil = Array.from({length:BOSS_KEYS_COUNT}, ()=>0);
@@ -47003,6 +49366,7 @@ function bossKeysBindDockHover(){
 function bossKeysRunRedeemSequence(fromCount, toCount, opts){
   opts = opts || {};
   try{
+    if(window.__suppressBossKeyFx && !opts.force) return;
     const from = Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(fromCount) || 0));
     const to = Math.max(from, Math.min(BOSS_KEYS_COUNT, Number(toCount) || 0));
     if(to <= from) return;
@@ -47036,14 +49400,23 @@ function bossKeysRunRedeemSequence(fromCount, toCount, opts){
       dock.classList.add("redeemPeek");
     }
 
+    const useCinematic = (opts.cinematic !== false && typeof playBossKeyReceiveCinematic === "function");
+    const stepMs = useCinematic ? BOSS_KEY_CINEMATIC_CHAIN_STEP_MS : BOSS_KEY_REDEEM_STEP_MS;
+    const chainDelayMs = useCinematic ? Math.max(0, Number(window.__bossKeyCinematicNextAt || 0) - Date.now()) : 0;
     for(let i=from; i<to; i++){
       const step = i - from;
       setTimeout(()=>{
-        try{ bossKeysAnimate(i, true); }catch(_){}
-      }, step * BOSS_KEY_REDEEM_STEP_MS);
+        try{
+          if(useCinematic) playBossKeyReceiveCinematic(i, opts);
+          else bossKeysAnimate(i, true);
+        }catch(_){}
+      }, chainDelayMs + (step * stepMs));
     }
 
-    const holdMs = ((to - from - 1) * BOSS_KEY_REDEEM_STEP_MS) + 420;
+    const holdMs = chainDelayMs + ((to - from - 1) * stepMs) + (useCinematic ? BOSS_KEY_CINEMATIC_TOTAL_MS : 420);
+    if(useCinematic){
+      try{ window.__bossKeyCinematicNextAt = Date.now() + chainDelayMs + ((to - from) * stepMs); }catch(_){}
+    }
     if(dock){
       bossKeyRedeemFadeTimer = setTimeout(()=>{
         try{
@@ -47095,6 +49468,376 @@ function bossKeyApplyRevealClass(card, ms){
       try{ card.classList.remove("fxReveal"); }catch(_){}
     }, holdMs + 24);
   }catch(_){}
+}
+function bossKeyCinematicState(){
+  const fx = window.__bossKeyCinematicFx || (window.__bossKeyCinematicFx = { active:null, timers:[] });
+  if(!Array.isArray(fx.timers)) fx.timers = [];
+  return fx;
+}
+function bossKeyCinematicLater(fn, ms){
+  const fx = bossKeyCinematicState();
+  const timer = setTimeout(()=>{
+    try{
+      fx.timers = (fx.timers || []).filter(t => t !== timer);
+      fn();
+    }catch(_){}
+  }, Math.max(0, Number(ms) || 0));
+  fx.timers.push(timer);
+  return timer;
+}
+function bossKeyClearCinematic(){
+  const fx = bossKeyCinematicState();
+  try{
+    (fx.timers || []).forEach(t => clearTimeout(t));
+    fx.timers = [];
+  }catch(_){}
+  try{ if(fx.active) fx.active.remove(); }catch(_){}
+  fx.active = null;
+  try{
+    document.querySelectorAll(".bossKeyReceivingSlot, .bossKeyAwaitingSlam, .bossKeyImpact").forEach((el)=>{
+      el.classList.remove("bossKeyReceivingSlot", "bossKeyAwaitingSlam", "bossKeyImpact");
+    });
+  }catch(_){}
+  try{ document.getElementById("bossDock")?.classList.remove("bossKeySectionCharge"); }catch(_){}
+  try{ document.querySelector(".capture")?.classList.remove("bossKeyScreenShake"); }catch(_){}
+}
+function bossKeyFindCard(idx){
+  try{
+    const want = Math.max(0, Number(idx) || 0);
+    const cards = Array.from(document.querySelectorAll(".bossKeyCard"));
+    return cards[want] || cards.find(card => Number(card?.dataset?.bkSlot || 0) === want + 1) || null;
+  }catch(_){ return null; }
+}
+function bossKeyCinematicMakeKeyCore(idx){
+  const core = document.createElement("div");
+  core.className = "bossKeyCinematicKeyCore";
+  let src = "";
+  try{
+    src = String(bossKeysState?.[idx]?.img || "").trim();
+    if(!src){
+      const liveImg = bossKeyFindCard(idx)?.querySelector(".bossKeyImg");
+      src = String(liveImg?.getAttribute("src") || liveImg?.src || "").trim();
+    }
+  }catch(_){}
+  if(src){
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "Boss Key";
+    img.draggable = false;
+    core.appendChild(img);
+  }else{
+    const glyph = document.createElement("div");
+    glyph.className = "bossKeyCinematicGlyph";
+    glyph.textContent = "\u{1F5DD}\uFE0F";
+    core.appendChild(glyph);
+  }
+  return core;
+}
+function bossKeyCinematicSpawnLightning(layer, count){
+  if(!layer) return;
+  const n = Math.max(8, Math.min(34, Number(count) || 20));
+  for(let i=0;i<n;i++){
+    const bolt = document.createElement("div");
+    bolt.className = "bossKeyCinematicBolt";
+    const nearCenter = i < Math.ceil(n * 0.55);
+    const x = nearCenter ? (38 + Math.random() * 24) : (4 + Math.random() * 92);
+    const y = nearCenter ? (26 + Math.random() * 34) : (5 + Math.random() * 86);
+    bolt.style.setProperty("--bolt-x", `${x.toFixed(1)}%`);
+    bolt.style.setProperty("--bolt-y", `${y.toFixed(1)}%`);
+    bolt.style.setProperty("--bolt-r", `${(Math.random() * 150 - 75).toFixed(1)}deg`);
+    bolt.style.setProperty("--bolt-h", `${(84 + Math.random() * 260).toFixed(0)}px`);
+    bolt.style.setProperty("--bolt-w", `${(3 + Math.random() * 7).toFixed(1)}px`);
+    bolt.style.setProperty("--bolt-delay", `${(Math.random() * 1180).toFixed(0)}ms`);
+    bolt.style.setProperty("--bolt-dur", `${(420 + Math.random() * 760).toFixed(0)}ms`);
+    layer.appendChild(bolt);
+  }
+}
+function bossKeyCinematicSpawnShards(flyer, count){
+  if(!flyer) return;
+  const n = Math.max(10, Math.min(28, Number(count) || 18));
+  for(let i=0;i<n;i++){
+    const shard = document.createElement("div");
+    shard.className = "bossKeyCinematicShard";
+    shard.style.setProperty("--sx", `${(Math.random() * 160 - 80).toFixed(1)}px`);
+    shard.style.setProperty("--sy", `${(Math.random() * 150 - 75).toFixed(1)}px`);
+    shard.style.setProperty("--sw", `${(24 + Math.random() * 72).toFixed(1)}px`);
+    shard.style.setProperty("--sh", `${(4 + Math.random() * 10).toFixed(1)}px`);
+    shard.style.setProperty("--sr", `${(Math.random() * 180 - 90).toFixed(1)}deg`);
+    shard.style.setProperty("--sd", `${(150 + Math.random() * 1180).toFixed(0)}ms`);
+    flyer.appendChild(shard);
+  }
+}
+function bossKeyCinematicSpawnAetherSpiral(layer, count){
+  if(!layer) return;
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNs, "svg");
+  svg.classList.add("bossKeyCinematicAetherSvg");
+  svg.setAttribute("viewBox", "-320 -320 640 640");
+  svg.setAttribute("aria-hidden", "true");
+  layer.appendChild(svg);
+
+  const polar = (r, deg)=>{
+    const rad = deg * Math.PI / 180;
+    return {
+      x: Math.cos(rad) * r,
+      y: Math.sin(rad) * r
+    };
+  };
+  const fmt = (p)=>`${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+  const armPath = (angle, turn, jitter)=>{
+    const p0 = polar(304 + jitter * 18, angle);
+    const c1 = polar(292 + jitter * 12, angle + turn * (22 + jitter * 6));
+    const c2 = polar(246 + jitter * 12, angle + turn * (66 + jitter * 10));
+    const p1 = polar(214 + jitter * 10, angle + turn * (106 + jitter * 8));
+    const c3 = polar(174 + jitter * 8, angle + turn * (146 + jitter * 9));
+    const c4 = polar(134 + jitter * 6, angle + turn * (190 + jitter * 8));
+    const p2 = polar(96 + jitter * 5, angle + turn * (236 + jitter * 7));
+    const c5 = polar(64 + jitter * 4, angle + turn * (278 + jitter * 6));
+    const c6 = polar(34 + jitter * 3, angle + turn * (318 + jitter * 6));
+    const p3 = polar(8 + Math.random() * 10, angle + turn * (350 + jitter * 4));
+    return `M ${fmt(p0)} C ${fmt(c1)} ${fmt(c2)} ${fmt(p1)} C ${fmt(c3)} ${fmt(c4)} ${fmt(p2)} C ${fmt(c5)} ${fmt(c6)} ${fmt(p3)}`;
+  };
+  const appendPath = (d, className, i, opts)=>{
+    const path = document.createElementNS(svgNs, "path");
+    path.setAttribute("d", d);
+    path.setAttribute("pathLength", "1");
+    path.setAttribute("class", className);
+    path.style.setProperty("--arm-delay", `${Math.max(0, opts.delay || 0).toFixed(0)}ms`);
+    path.style.setProperty("--arm-dur", `${Math.max(300, opts.dur || 1600).toFixed(0)}ms`);
+    path.style.setProperty("--arm-opacity", String(opts.opacity || ".82"));
+    path.style.setProperty("--arm-fade-opacity", String(opts.fadeOpacity || ".38"));
+    path.style.setProperty("--arm-w", `${(opts.w || 5).toFixed(1)}px`);
+    path.style.setProperty("--arm-hot-w", `${(opts.hotW || 2.2).toFixed(1)}px`);
+    path.style.setProperty("--arm-hot-dur", `${Math.max(300, opts.hotDur || 1180).toFixed(0)}ms`);
+    path.style.setProperty("--arm-mist-w", `${(opts.mistW || 28).toFixed(1)}px`);
+    path.style.setProperty("--arm-mist-blur", `${(opts.mistBlur || 8).toFixed(1)}px`);
+    path.style.setProperty("--arm-mist-dur", `${Math.max(300, opts.mistDur || 2100).toFixed(0)}ms`);
+    svg.appendChild(path);
+    return path;
+  };
+
+  const armCount = Math.max(7, Math.min(13, Math.floor((Number(count) || 26) * 0.34)));
+  const turn = 1;
+  for(let i=0;i<armCount;i++){
+    const angle = (i * (360 / armCount)) + (Math.random() * 20 - 10);
+    const jitter = Math.random() * 2 - 1;
+    const d = armPath(angle, turn, jitter);
+    const delay = i * 58 + Math.random() * 140;
+    appendPath(d, "bossKeyCinematicAetherArm mist", i, {
+      delay,
+      dur: 1980 + Math.random() * 520,
+      mistDur: 2140 + Math.random() * 620,
+      mistW: 30 + Math.random() * 28,
+      mistBlur: 7 + Math.random() * 7,
+      opacity: .42,
+      fadeOpacity: .22
+    });
+    appendPath(d, "bossKeyCinematicAetherArm", i, {
+      delay: delay + 90,
+      dur: 1480 + Math.random() * 420,
+      w: 4.2 + Math.random() * 4.8,
+      opacity: .86,
+      fadeOpacity: .44
+    });
+    appendPath(d, "bossKeyCinematicAetherArm hot", i, {
+      delay: delay + 230,
+      dur: 1040 + Math.random() * 360,
+      hotDur: 980 + Math.random() * 320,
+      hotW: 1.4 + Math.random() * 2.2,
+      opacity: .95,
+      fadeOpacity: .54
+    });
+  }
+  const moteCount = Math.max(12, Math.min(34, Number(count) || 24));
+  for(let i=0;i<moteCount;i++){
+    const mote = document.createElement("div");
+    mote.className = "bossKeyCinematicSpiralMote";
+    const angle = (i * (360 / moteCount)) + (Math.random() * 32 - 16);
+    mote.style.setProperty("--mote-a", `${angle.toFixed(1)}deg`);
+    mote.style.setProperty("--mote-spin", `${(300 + Math.random() * 180).toFixed(1)}deg`);
+    mote.style.setProperty("--mote-r0", `${(230 + Math.random() * 110).toFixed(1)}px`);
+    mote.style.setProperty("--mote-r1", `${(42 + Math.random() * 62).toFixed(1)}px`);
+    mote.style.setProperty("--mote-size", `${(3 + Math.random() * 7).toFixed(1)}px`);
+    mote.style.setProperty("--mote-tail", `${(42 + Math.random() * 82).toFixed(1)}px`);
+    mote.style.setProperty("--mote-delay", `${(Math.random() * 520).toFixed(0)}ms`);
+    mote.style.setProperty("--mote-dur", `${(1250 + Math.random() * 820).toFixed(0)}ms`);
+    layer.appendChild(mote);
+  }
+}
+function bossKeyCinematicSpawnSparks(layer, x, y, count){
+  if(!layer) return;
+  const n = Math.max(16, Math.min(58, Number(count) || 34));
+  for(let i=0;i<n;i++){
+    const spark = document.createElement("div");
+    spark.className = "bossKeyCinematicSpark";
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 48 + Math.random() * 160;
+    spark.style.setProperty("--spark-x", `${x}px`);
+    spark.style.setProperty("--spark-y", `${y}px`);
+    spark.style.setProperty("--dx", `${(Math.cos(angle) * dist).toFixed(1)}px`);
+    spark.style.setProperty("--dy", `${(Math.sin(angle) * dist - Math.random() * 38).toFixed(1)}px`);
+    spark.style.setProperty("--spark-dur", `${(620 + Math.random() * 680).toFixed(0)}ms`);
+    layer.appendChild(spark);
+    setTimeout(()=>{ try{ spark.remove(); }catch(_){ } }, 1500);
+  }
+}
+function bossKeyTriggerSlotBurst(card){
+  try{
+    const square = card?.querySelector(".bossKeySquare");
+    if(!square) return;
+    let burst = square.querySelector(".bkBurst");
+    if(!burst){
+      burst = document.createElement("div");
+      burst.className = "bkBurst";
+      square.appendChild(burst);
+    }
+    burst.classList.remove("on");
+    void burst.offsetWidth;
+    burst.classList.add("on");
+  }catch(_){}
+}
+function playBossKeyReceiveCinematic(idx, opts){
+  opts = opts || {};
+  try{
+    if(isBossVictoryFinalizing()) return 0;
+  }catch(_){}
+  bossKeyClearCinematic();
+  try{ if(typeof pauseAutoSwap === "function") pauseAutoSwap(BOSS_KEY_CINEMATIC_TOTAL_MS + 800); }catch(_){}
+
+  const host = document.querySelector(".capture") || document.body;
+  const hostRect = host.getBoundingClientRect ? host.getBoundingClientRect() : { left:0, top:0, width:window.innerWidth, height:window.innerHeight };
+  const hostW = Math.max(240, Number(hostRect.width) || window.innerWidth || 960);
+  const hostH = Math.max(240, Number(hostRect.height) || window.innerHeight || 720);
+  const centerX = hostW * 0.5;
+  const centerY = hostH * 0.43;
+  const card = bossKeyFindCard(idx);
+  const square = card ? (card.querySelector(".bossKeySquare") || card) : null;
+  const targetRectRaw = square && square.getBoundingClientRect ? square.getBoundingClientRect() : null;
+  const hasTarget = !!(targetRectRaw && targetRectRaw.width > 6 && targetRectRaw.height > 6);
+  const targetX = hasTarget
+    ? (targetRectRaw.left + targetRectRaw.width * 0.5 - hostRect.left)
+    : (hostW * ((Math.max(0, Number(idx)||0) + 0.5) / Math.max(1, BOSS_KEYS_COUNT)));
+  const targetY = hasTarget
+    ? (targetRectRaw.top + targetRectRaw.height * 0.5 - hostRect.top)
+    : (hostH - 78);
+  const flyerW = Math.min(hostW * 0.27, 260);
+  const slotScale = hasTarget ? Math.max(0.18, Math.min(0.56, (targetRectRaw.width / Math.max(1, flyerW)) * 0.98)) : 0.34;
+  const slotScalePop = Math.min(0.66, slotScale * 1.18);
+
+  if(card){
+    card.classList.add("bossKeyReceivingSlot", "bossKeyAwaitingSlam");
+    bossKeyHoldReveal(idx, BOSS_KEY_CINEMATIC_TOTAL_MS + 900);
+    bossKeyApplyRevealClass(card, BOSS_KEY_CINEMATIC_TOTAL_MS + 900);
+  }
+
+  const wrap = document.createElement("div");
+  wrap.className = "bossKeyCinematic";
+  wrap.setAttribute("aria-hidden", "true");
+  wrap.style.setProperty("--bk-center-x", `${centerX}px`);
+  wrap.style.setProperty("--bk-center-y", `${centerY}px`);
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "bossKeyCinematicBackdrop";
+  wrap.appendChild(backdrop);
+
+  const lightning = document.createElement("div");
+  lightning.className = "bossKeyCinematicLightning";
+  wrap.appendChild(lightning);
+
+  const spiral = document.createElement("div");
+  spiral.className = "bossKeyCinematicAetherSpiral";
+  wrap.appendChild(spiral);
+
+  const ring = document.createElement("div");
+  ring.className = "bossKeyCinematicRing";
+  wrap.appendChild(ring);
+
+  const snap = document.createElement("div");
+  snap.className = "bossKeyCinematicEnergySnap";
+  wrap.appendChild(snap);
+
+  const stage = document.createElement("div");
+  stage.className = "bossKeyCinematicStage";
+  wrap.appendChild(stage);
+
+  const top = document.createElement("div");
+  top.className = "bossKeyCinematicTitle top";
+  top.textContent = "BOSS KEY";
+  wrap.appendChild(top);
+
+  const bottom = document.createElement("div");
+  bottom.className = "bossKeyCinematicTitle bottom";
+  bottom.textContent = "ACQUIRED";
+  wrap.appendChild(bottom);
+
+  const flyer = document.createElement("div");
+  flyer.className = "bossKeyCinematicFlyer";
+  flyer.style.setProperty("--bk-fly-x", `${(targetX - centerX).toFixed(1)}px`);
+  flyer.style.setProperty("--bk-fly-y", `${(targetY - centerY).toFixed(1)}px`);
+  flyer.style.setProperty("--bk-slot-scale", slotScale.toFixed(3));
+  flyer.style.setProperty("--bk-slot-scale-pop", slotScalePop.toFixed(3));
+  flyer.appendChild(bossKeyCinematicMakeKeyCore(idx));
+  stage.appendChild(flyer);
+
+  const sparks = document.createElement("div");
+  sparks.className = "bossKeyCinematicSparks";
+  wrap.appendChild(sparks);
+
+  bossKeyCinematicSpawnLightning(lightning, 24);
+  bossKeyCinematicSpawnAetherSpiral(spiral, 26);
+  bossKeyCinematicSpawnShards(flyer, 20);
+
+  host.appendChild(wrap);
+  const fx = bossKeyCinematicState();
+  fx.active = wrap;
+  requestAnimationFrame(()=>{ try{ wrap.classList.add("show"); }catch(_){ } });
+
+  try{ playSfx("bossKeyLightning"); }catch(_){}
+  bossKeyCinematicLater(()=>{
+    try{
+      wrap.classList.add("snapped");
+      snap.classList.remove("on");
+      void snap.offsetWidth;
+      snap.classList.add("on");
+      playSfx("bossKeyEnergySnap");
+    }catch(_){}
+  }, BOSS_KEY_CINEMATIC_SNAP_AT_MS);
+  bossKeyCinematicLater(()=>{ try{ playSfx("bossKeyAcquiredDing"); }catch(_){ } }, BOSS_KEY_CINEMATIC_WORDS_AT_MS);
+  bossKeyCinematicLater(()=>{
+    try{ wrap.classList.add("charging"); }catch(_){}
+    try{ document.getElementById("bossDock")?.classList.add("bossKeySectionCharge"); }catch(_){}
+  }, 3040);
+  bossKeyCinematicLater(()=>{
+    try{ wrap.classList.add("flying"); }catch(_){}
+    try{ playSfx("bossKeyTravelSizzle"); }catch(_){}
+  }, BOSS_KEY_CINEMATIC_FLY_AT_MS);
+  bossKeyCinematicLater(()=>{
+    try{
+      wrap.classList.add("impact");
+      if(card){
+        card.classList.remove("bossKeyAwaitingSlam");
+        card.classList.add("bossKeyImpact");
+        bossKeyTriggerSlotBurst(card);
+      }
+      host.classList.add("bossKeyScreenShake");
+      bossKeyCinematicSpawnSparks(sparks, targetX, targetY, 42);
+      try{ sparksAtClient(hostRect.left + targetX, hostRect.top + targetY); }catch(_){}
+      try{ playSfx("bossKeySlamBoom"); }catch(_){}
+    }catch(_){}
+  }, BOSS_KEY_CINEMATIC_IMPACT_AT_MS);
+  bossKeyCinematicLater(()=>{
+    try{ wrap.classList.add("hide"); }catch(_){}
+    try{ document.getElementById("bossDock")?.classList.remove("bossKeySectionCharge"); }catch(_){}
+    try{ host.classList.remove("bossKeyScreenShake"); }catch(_){}
+  }, BOSS_KEY_CINEMATIC_TOTAL_MS - 520);
+  bossKeyCinematicLater(()=>{
+    try{ wrap.remove(); }catch(_){}
+    fx.active = null;
+    try{
+      if(card) card.classList.remove("bossKeyReceivingSlot", "bossKeyAwaitingSlam", "bossKeyImpact");
+    }catch(_){}
+  }, BOSS_KEY_CINEMATIC_TOTAL_MS);
+  return BOSS_KEY_CINEMATIC_TOTAL_MS;
 }
 function bossKeysLoad(){
   try{
@@ -49143,13 +51886,30 @@ function bossTrySendVictoryCheck(reason){
     isBossCheck: true,
     isBossVictory: true
   };
+  const redeemMeta = buildCheckRedeemMetadata(loc, {
+    source: "boss-victory",
+    sourceType: "boss",
+    sourceDetail: String(reason || "0% HP"),
+    tableName: pend.tableName,
+    tableKey: "boss|0",
+    world: "boss",
+    taskName: "Boss Victory",
+    taskType: "victory",
+    difficulty: "boss",
+    isBossCheck: true,
+    isBossVictory: true
+  });
+  pend.taskName = redeemMeta.task_name;
+  pend.taskType = redeemMeta.task_type;
+  pend.difficulty = redeemMeta.difficulty;
+  pend.redeemMeta = redeemMeta;
   state.bossVictoryPending = true;
   state.bossVictoryManualUnlock = false;
   try{ markPending(loc.id, pend); }catch(_){}
   try{ saveState(); }catch(_){}
   try{ bossFocusVictoryChecksView({ render:false, showView:true }); }catch(_){}
   apLog(`Boss victory check sent; id ${loc.id}; reason ${reason || "0% HP"}`);
-  apSend({ cmd:"LocationChecks", locations:[loc.id] });
+  apSendLocationCheckWithMetadata(loc.id, redeemMeta);
   try{ episodeMarkBossComplete(); }catch(_){}
   try{
     apLog("Boss victory status sent; CLIENT_GOAL");

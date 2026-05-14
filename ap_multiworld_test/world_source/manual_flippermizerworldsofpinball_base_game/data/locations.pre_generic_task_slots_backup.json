@@ -1,0 +1,2502 @@
+[
+    {
+        "name": "Medieval Madness - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:1|"
+    },
+    {
+        "name": "Medieval Madness - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:1|"
+    },
+    {
+        "name": "Medieval Madness - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:1|"
+    },
+    {
+        "name": "Medieval Madness - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:2|"
+    },
+    {
+        "name": "Medieval Madness - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:2|"
+    },
+    {
+        "name": "Medieval Madness - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:2|"
+    },
+    {
+        "name": "Medieval Madness - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:3|"
+    },
+    {
+        "name": "Medieval Madness - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:3|"
+    },
+    {
+        "name": "Medieval Madness - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:3|"
+    },
+    {
+        "name": "Attack from Mars - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:1|"
+    },
+    {
+        "name": "Attack from Mars - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:1|"
+    },
+    {
+        "name": "Attack from Mars - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:1|"
+    },
+    {
+        "name": "Attack from Mars - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:2|"
+    },
+    {
+        "name": "Attack from Mars - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:2|"
+    },
+    {
+        "name": "Attack from Mars - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:2|"
+    },
+    {
+        "name": "Attack from Mars - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:3|"
+    },
+    {
+        "name": "Attack from Mars - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:3|"
+    },
+    {
+        "name": "Attack from Mars - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:3|"
+    },
+    {
+        "name": "World Cup Soccer - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:1|"
+    },
+    {
+        "name": "World Cup Soccer - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:1|"
+    },
+    {
+        "name": "World Cup Soccer - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:1|"
+    },
+    {
+        "name": "World Cup Soccer - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:2|"
+    },
+    {
+        "name": "World Cup Soccer - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:2|"
+    },
+    {
+        "name": "World Cup Soccer - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:2|"
+    },
+    {
+        "name": "World Cup Soccer - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:3|"
+    },
+    {
+        "name": "World Cup Soccer - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:3|"
+    },
+    {
+        "name": "World Cup Soccer - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:3|"
+    },
+    {
+        "name": "The Getaway - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Getaway:1|"
+    },
+    {
+        "name": "The Getaway - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Getaway:1|"
+    },
+    {
+        "name": "The Getaway - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Getaway:1|"
+    },
+    {
+        "name": "The Getaway - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Getaway:2|"
+    },
+    {
+        "name": "The Getaway - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Getaway:2|"
+    },
+    {
+        "name": "The Getaway - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Getaway:2|"
+    },
+    {
+        "name": "The Getaway - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Getaway:3|"
+    },
+    {
+        "name": "The Getaway - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Getaway:3|"
+    },
+    {
+        "name": "The Getaway - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Getaway:3|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:1|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:1|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:1|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:2|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:2|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:2|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:3|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:3|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:3|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:1|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:1|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:1|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:2|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:2|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:2|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:3|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:3|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:3|"
+    },
+    {
+        "name": "Fathom - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Fathom:1|"
+    },
+    {
+        "name": "Fathom - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Fathom:1|"
+    },
+    {
+        "name": "Fathom - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Fathom:1|"
+    },
+    {
+        "name": "Fathom - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Fathom:2|"
+    },
+    {
+        "name": "Fathom - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Fathom:2|"
+    },
+    {
+        "name": "Fathom - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Fathom:2|"
+    },
+    {
+        "name": "Fathom - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Fathom:3|"
+    },
+    {
+        "name": "Fathom - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Fathom:3|"
+    },
+    {
+        "name": "Fathom - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Fathom:3|"
+    },
+    {
+        "name": "Hook - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hook:1|"
+    },
+    {
+        "name": "Hook - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hook:1|"
+    },
+    {
+        "name": "Hook - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hook:1|"
+    },
+    {
+        "name": "Hook - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hook:2|"
+    },
+    {
+        "name": "Hook - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hook:2|"
+    },
+    {
+        "name": "Hook - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hook:2|"
+    },
+    {
+        "name": "Hook - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hook:3|"
+    },
+    {
+        "name": "Hook - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hook:3|"
+    },
+    {
+        "name": "Hook - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hook:3|"
+    },
+    {
+        "name": "Congo - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Congo:1|"
+    },
+    {
+        "name": "Congo - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Congo:1|"
+    },
+    {
+        "name": "Congo - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Congo:1|"
+    },
+    {
+        "name": "Congo - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Congo:2|"
+    },
+    {
+        "name": "Congo - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Congo:2|"
+    },
+    {
+        "name": "Congo - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Congo:2|"
+    },
+    {
+        "name": "Congo - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Congo:3|"
+    },
+    {
+        "name": "Congo - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Congo:3|"
+    },
+    {
+        "name": "Congo - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Congo:3|"
+    },
+    {
+        "name": "Mystery Castle - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:1|"
+    },
+    {
+        "name": "Mystery Castle - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:1|"
+    },
+    {
+        "name": "Mystery Castle - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:1|"
+    },
+    {
+        "name": "Mystery Castle - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:2|"
+    },
+    {
+        "name": "Mystery Castle - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:2|"
+    },
+    {
+        "name": "Mystery Castle - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:2|"
+    },
+    {
+        "name": "Mystery Castle - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:3|"
+    },
+    {
+        "name": "Mystery Castle - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:3|"
+    },
+    {
+        "name": "Mystery Castle - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:3|"
+    },
+    {
+        "name": "The A-Team - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The A-Team:1|"
+    },
+    {
+        "name": "The A-Team - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The A-Team:1|"
+    },
+    {
+        "name": "The A-Team - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The A-Team:1|"
+    },
+    {
+        "name": "The A-Team - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The A-Team:2|"
+    },
+    {
+        "name": "The A-Team - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The A-Team:2|"
+    },
+    {
+        "name": "The A-Team - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The A-Team:2|"
+    },
+    {
+        "name": "The A-Team - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The A-Team:3|"
+    },
+    {
+        "name": "The A-Team - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The A-Team:3|"
+    },
+    {
+        "name": "The A-Team - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The A-Team:3|"
+    },
+    {
+        "name": "Knight Rider - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:1|"
+    },
+    {
+        "name": "Knight Rider - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:1|"
+    },
+    {
+        "name": "Knight Rider - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:1|"
+    },
+    {
+        "name": "Knight Rider - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:2|"
+    },
+    {
+        "name": "Knight Rider - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:2|"
+    },
+    {
+        "name": "Knight Rider - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:2|"
+    },
+    {
+        "name": "Knight Rider - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:3|"
+    },
+    {
+        "name": "Knight Rider - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:3|"
+    },
+    {
+        "name": "Knight Rider - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "KnightRider",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Knight Rider:3|"
+    },
+    {
+        "name": "Hollywood Heat - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:1|"
+    },
+    {
+        "name": "Hollywood Heat - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:1|"
+    },
+    {
+        "name": "Hollywood Heat - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:1|"
+    },
+    {
+        "name": "Hollywood Heat - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:2|"
+    },
+    {
+        "name": "Hollywood Heat - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:2|"
+    },
+    {
+        "name": "Hollywood Heat - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:2|"
+    },
+    {
+        "name": "Hollywood Heat - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:3|"
+    },
+    {
+        "name": "Hollywood Heat - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:3|"
+    },
+    {
+        "name": "Hollywood Heat - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:3|"
+    },
+    {
+        "name": "Baywatch - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Baywatch:1|"
+    },
+    {
+        "name": "Baywatch - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Baywatch:1|"
+    },
+    {
+        "name": "Baywatch - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Baywatch:1|"
+    },
+    {
+        "name": "Baywatch - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Baywatch:2|"
+    },
+    {
+        "name": "Baywatch - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Baywatch:2|"
+    },
+    {
+        "name": "Baywatch - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Baywatch:2|"
+    },
+    {
+        "name": "Baywatch - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Baywatch:3|"
+    },
+    {
+        "name": "Baywatch - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Baywatch:3|"
+    },
+    {
+        "name": "Baywatch - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Baywatch:3|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:1|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:1|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:1|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:2|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:2|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:2|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:3|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:3|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:3|"
+    },
+    {
+        "name": "Meteor - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Meteor:1|"
+    },
+    {
+        "name": "Meteor - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Meteor:1|"
+    },
+    {
+        "name": "Meteor - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Meteor:1|"
+    },
+    {
+        "name": "Meteor - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Meteor:2|"
+    },
+    {
+        "name": "Meteor - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Meteor:2|"
+    },
+    {
+        "name": "Meteor - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Meteor:2|"
+    },
+    {
+        "name": "Meteor - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Meteor:3|"
+    },
+    {
+        "name": "Meteor - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Meteor:3|"
+    },
+    {
+        "name": "Meteor - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Meteor:3|"
+    },
+    {
+        "name": "Harlem Globetrotters - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:1|"
+    },
+    {
+        "name": "Harlem Globetrotters - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:1|"
+    },
+    {
+        "name": "Harlem Globetrotters - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:1|"
+    },
+    {
+        "name": "Harlem Globetrotters - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:2|"
+    },
+    {
+        "name": "Harlem Globetrotters - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:2|"
+    },
+    {
+        "name": "Harlem Globetrotters - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:2|"
+    },
+    {
+        "name": "Harlem Globetrotters - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:3|"
+    },
+    {
+        "name": "Harlem Globetrotters - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:3|"
+    },
+    {
+        "name": "Harlem Globetrotters - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:3|"
+    },
+    {
+        "name": "Dolly Parton - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:1|"
+    },
+    {
+        "name": "Dolly Parton - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:1|"
+    },
+    {
+        "name": "Dolly Parton - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:1|"
+    },
+    {
+        "name": "Dolly Parton - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:2|"
+    },
+    {
+        "name": "Dolly Parton - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:2|"
+    },
+    {
+        "name": "Dolly Parton - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:2|"
+    },
+    {
+        "name": "Dolly Parton - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:3|"
+    },
+    {
+        "name": "Dolly Parton - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:3|"
+    },
+    {
+        "name": "Dolly Parton - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:3|"
+    },
+    {
+        "name": "Paragon - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Paragon:1|"
+    },
+    {
+        "name": "Paragon - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Paragon:1|"
+    },
+    {
+        "name": "Paragon - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Paragon:1|"
+    },
+    {
+        "name": "Paragon - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Paragon:2|"
+    },
+    {
+        "name": "Paragon - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Paragon:2|"
+    },
+    {
+        "name": "Paragon - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Paragon:2|"
+    },
+    {
+        "name": "Paragon - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Paragon:3|"
+    },
+    {
+        "name": "Paragon - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Paragon:3|"
+    },
+    {
+        "name": "Paragon - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Paragon:3|"
+    },
+    {
+        "name": "Robocop - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Robocop:1|"
+    },
+    {
+        "name": "Robocop - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Robocop:1|"
+    },
+    {
+        "name": "Robocop - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Robocop:1|"
+    },
+    {
+        "name": "Robocop - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Robocop:2|"
+    },
+    {
+        "name": "Robocop - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Robocop:2|"
+    },
+    {
+        "name": "Robocop - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Robocop:2|"
+    },
+    {
+        "name": "Robocop - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Robocop:3|"
+    },
+    {
+        "name": "Robocop - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Robocop:3|"
+    },
+    {
+        "name": "Robocop - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Robocop:3|"
+    },
+    {
+        "name": "Grand Lizard - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:1|"
+    },
+    {
+        "name": "Grand Lizard - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:1|"
+    },
+    {
+        "name": "Grand Lizard - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:1|"
+    },
+    {
+        "name": "Grand Lizard - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:2|"
+    },
+    {
+        "name": "Grand Lizard - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:2|"
+    },
+    {
+        "name": "Grand Lizard - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:2|"
+    },
+    {
+        "name": "Grand Lizard - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:3|"
+    },
+    {
+        "name": "Grand Lizard - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:3|"
+    },
+    {
+        "name": "Grand Lizard - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:3|"
+    },
+    {
+        "name": "Jokerz - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Jokerz:1|"
+    },
+    {
+        "name": "Jokerz - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Jokerz:1|"
+    },
+    {
+        "name": "Jokerz - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Jokerz:1|"
+    },
+    {
+        "name": "Jokerz - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Jokerz:2|"
+    },
+    {
+        "name": "Jokerz - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Jokerz:2|"
+    },
+    {
+        "name": "Jokerz - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Jokerz:2|"
+    },
+    {
+        "name": "Jokerz - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Jokerz:3|"
+    },
+    {
+        "name": "Jokerz - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Jokerz:3|"
+    },
+    {
+        "name": "Jokerz - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Jokerz:3|"
+    },
+    {
+        "name": "Bad Cats - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:1|"
+    },
+    {
+        "name": "Bad Cats - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:1|"
+    },
+    {
+        "name": "Bad Cats - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:1|"
+    },
+    {
+        "name": "Bad Cats - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:2|"
+    },
+    {
+        "name": "Bad Cats - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:2|"
+    },
+    {
+        "name": "Bad Cats - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:2|"
+    },
+    {
+        "name": "Bad Cats - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:3|"
+    },
+    {
+        "name": "Bad Cats - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:3|"
+    },
+    {
+        "name": "Bad Cats - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:3|"
+    },
+    {
+        "name": "Taxi - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Taxi:1|"
+    },
+    {
+        "name": "Taxi - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Taxi:1|"
+    },
+    {
+        "name": "Taxi - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Taxi:1|"
+    },
+    {
+        "name": "Taxi - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Taxi:2|"
+    },
+    {
+        "name": "Taxi - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Taxi:2|"
+    },
+    {
+        "name": "Taxi - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Taxi:2|"
+    },
+    {
+        "name": "Taxi - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Taxi:3|"
+    },
+    {
+        "name": "Taxi - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Taxi:3|"
+    },
+    {
+        "name": "Taxi - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Taxi:3|"
+    },
+    {
+        "name": "Bride of Pinbot - Easy Check 1",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:1|"
+    },
+    {
+        "name": "Bride of Pinbot - Easy Check 2",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:1|"
+    },
+    {
+        "name": "Bride of Pinbot - Easy Check 3",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:1|"
+    },
+    {
+        "name": "Bride of Pinbot - Medium Check 1",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:2|"
+    },
+    {
+        "name": "Bride of Pinbot - Medium Check 2",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:2|"
+    },
+    {
+        "name": "Bride of Pinbot - Medium Check 3",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:2|"
+    },
+    {
+        "name": "Bride of Pinbot - Hard Check 1",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:3|"
+    },
+    {
+        "name": "Bride of Pinbot - Hard Check 2",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:3|"
+    },
+    {
+        "name": "Bride of Pinbot - Hard Check 3",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:3|"
+    },
+    {
+        "name": "Boss Moment - Rip a Spinner",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Make a 2-Shot Combo",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Make a 3-Shot Combo",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Shoot Left Orbit/Loop/Lane",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Shoot Right Orbit/Loop/Lane",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Shoot Any Ramp",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Hit Any Scoop or Saucer",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Complete Top Lanes",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Complete a Standup Target Bank",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Complete a Drop Target Bank",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Hit Captive Ball or Bash Toy",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Hit Pop Bumpers 25 Times",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Raise Bonus Multiplier",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Start Any Timed Mode",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Light or Collect Extra Ball",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Lock a Ball",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Start Any Multiball",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Collect Any Jackpot",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Collect Any Super Jackpot",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Moment - Complete Any Lit Objective",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Moment"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage Segment"
+        ]
+    },
+    {
+        "name": "Boss Victory",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Victory"
+        ],
+        "requires": "",
+        "victory": true
+    }
+]
