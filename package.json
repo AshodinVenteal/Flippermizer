@@ -1,0 +1,64 @@
+{
+  "name": "flippermizer-standalone-client",
+  "version": "0.1.0",
+  "description": "Standalone Flippermizer AP client for multiworld and singleplayer seeds.",
+  "main": "electron/main.js",
+  "private": true,
+  "author": "Ashodin",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check electron/main.js && node --check electron/standalone-overlay-bridge.js && node --check flippermizer_table_repository.js && node --check flippermizer_task_explanations.js",
+    "dist:dir": "electron-builder --dir && node tools/stamp_unpacked_icon.js",
+    "dist:portable": "npm run dist:dir && electron-builder --win portable --prepackaged dist/win-unpacked",
+    "dist": "npm run dist:portable"
+  },
+  "devDependencies": {
+    "electron": "^36.2.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "net.flippermizer.standalone",
+    "productName": "Flippermizer Standalone",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "files": [
+      "electron/main.js",
+      "electron/standalone-overlay-bridge.js",
+      "flippermizer_overlay_tower_v3.html",
+      "flippermizer_table_repository.js",
+      "flippermizer_task_explanations.js",
+      "vendor/**/*",
+      "build/icon.ico",
+      "build/icon.png",
+      "sounds/**/*",
+      "WorldsBanners/**/*",
+      "Flippermizer Images/**/*",
+      "LICENSE",
+      "README.md"
+    ],
+    "asar": false,
+    "win": {
+      "signAndEditExecutable": false,
+      "icon": "icon.ico",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "installerHeaderIcon": "icon.ico"
+    },
+    "portable": {
+      "artifactName": "Flippermizer-Standalone-${version}-portable.exe"
+    }
+  }
+}
