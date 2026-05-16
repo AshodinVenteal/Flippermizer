@@ -26,7 +26,8 @@
             "Progression",
             "Key"
         ],
-        "progression": true
+        "progression": true,
+        "local": true
     },
     {
         "count": "0",
@@ -47,7 +48,7 @@
         "trap": true
     },
     {
-        "count": "11",
+        "count": "19",
         "name": "Easy Junk Piece (1 of 3)",
         "category": [
             "Filler",
@@ -66,7 +67,7 @@
         "trap": true
     },
     {
-        "count": "10",
+        "count": "0",
         "name": "Hint: Ball Location",
         "category": [
             "Filler",
@@ -75,7 +76,7 @@
         "useful": true
     },
     {
-        "count": "12",
+        "count": "7",
         "name": "Hint: Boss Key",
         "category": [
             "Filler",
@@ -93,7 +94,7 @@
         "trap": true
     },
     {
-        "count": "11",
+        "count": "18",
         "name": "Medium Junk Piece (1 of 3)",
         "category": [
             "Filler",
