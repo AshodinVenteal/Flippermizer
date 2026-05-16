@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boss Key Animation Standalone</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#020812;
+  --panel:#06101b;
+  --cyan:#00d9ff;
+  --green:#22ff88;
+  --gold:#ffd842;
+  --text:#e8faff;
+  --danger:#ff4d6d;
+  --mono:"Press Start 2P", monospace;
+}
+*{ box-sizing:border-box; }
+html,body{
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(0,217,255,.14), transparent 0 28%, rgba(0,0,0,0) 42%),
+    linear-gradient(180deg, #04121f, #01040a 72%, #000);
+  color:var(--text);
+  font-family:var(--mono);
+}
+.demoStage{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  isolation:isolate;
+  background:
+    repeating-linear-gradient(180deg, rgba(255,255,255,.018) 0 2px, transparent 2px 7px),
+    radial-gradient(90% 70% at 50% 38%, rgba(0,217,255,.10), transparent 62%);
+}
+.demoStage::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(0,217,255,.10) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(0,217,255,.07) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(circle at 50% 42%, black, transparent 78%);
+  opacity:.28;
+}
+.demoToolbar{
+  position:absolute;
+  z-index:40;
+  top:18px;
+  left:18px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.demoButton,
+.demoToggle{
+  border:2px solid rgba(0,217,255,.58);
+  border-radius:12px;
+  background:
+    linear-gradient(180deg, rgba(7,26,44,.92), rgba(3,16,26,.92));
+  color:var(--text);
+  box-shadow:0 0 0 1px rgba(0,217,255,.12) inset, 0 10px 18px rgba(0,0,0,.28);
+  font-family:var(--mono);
+  font-size:9px;
+  line-height:1;
+}
+.demoButton{
+  min-height:40px;
+  padding:0 14px;
+  cursor:pointer;
+}
+.demoButton:hover{
+  border-color:rgba(34,255,136,.82);
+  color:rgba(34,255,136,.96);
+  filter:brightness(1.08);
+}
+.demoToggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:40px;
+  padding:0 12px;
+  cursor:pointer;
+  user-select:none;
+}
+.demoToggle input{
+  width:18px;
+  height:18px;
+  accent-color:var(--green);
+}
+.bossDock{
+  position:absolute;
+  z-index:16;
+  left:50%;
+  bottom:44px;
+  transform:translateX(-50%);
+  width:min(620px, calc(100vw - 40px));
+}
+.bossDockInner{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+  padding:18px 20px;
+  border:2px solid rgba(0,217,255,.36);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0,217,255,.12), transparent 52%),
+    linear-gradient(180deg, rgba(5,18,32,.92), rgba(2,8,16,.95));
+  box-shadow:
+    0 0 0 1px rgba(0,217,255,.10) inset,
+    0 18px 34px rgba(0,0,0,.44),
+    0 0 28px rgba(0,217,255,.12);
+}
+.bossDockTitle{
+  position:absolute;
+  left:50%;
+  top:-30px;
+  transform:translateX(-50%);
+  color:rgba(183,255,232,.78);
+  font-size:10px;
+  text-shadow:0 0 12px rgba(0,255,213,.34);
+}
+.bossKeyCard{
+  position:relative;
+  width:150px;
+  min-height:168px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:14px 12px 12px;
+  border:2px solid rgba(0,166,255,.42);
+  border-radius:16px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0,217,255,.16), transparent 55%),
+    linear-gradient(180deg, rgba(7,26,44,.92), rgba(2,10,18,.96));
+  box-shadow:0 0 0 1px rgba(0,217,255,.10) inset, 0 12px 24px rgba(0,0,0,.35);
+  transition:filter 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+.bossKeyFrame{
+  position:relative;
+  width:112px;
+  height:112px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:18px;
+  background:
+    radial-gradient(circle, rgba(0,217,255,.16), rgba(0,0,0,.20) 62%),
+    linear-gradient(180deg, rgba(0,217,255,.10), rgba(0,0,0,.18));
+  border:1px solid rgba(0,217,255,.32);
+  overflow:hidden;
+}
+.bossKeySquare{
+  position:relative;
+  width:92px;
+  height:92px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  border:2px solid rgba(0,217,255,.32);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(0,255,213,.10), rgba(0,0,0,.32) 70%),
+    linear-gradient(180deg, rgba(1,12,22,.94), rgba(0,0,0,.92));
+  box-shadow:inset 0 0 24px rgba(0,217,255,.10);
+}
+.slotKey{
+  width:82px;
+  height:82px;
+  opacity:0;
+  transform:scale(.62);
+  transition:opacity 120ms ease, transform 120ms ease;
+}
+.slotLabel{
+  font-size:8px;
+  color:rgba(232,250,255,.58);
+}
+.bkBurst{
+  position:absolute;
+  inset:-20px;
+  pointer-events:none;
+  border-radius:50%;
+  opacity:0;
+}
+.bkBurst.on{
+  animation:bkBurstKF 620ms ease-out forwards;
+}
+.bkBurst::before,
+.bkBurst::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.80);
+  box-shadow:0 0 20px rgba(0,255,213,.46);
+}
+.bkBurst::after{
+  inset:14px;
+  border-color:rgba(255,216,66,.78);
+}
+@keyframes bkBurstKF{
+  0%{ opacity:0; transform:scale(.28) rotate(0deg); filter:brightness(1.2); }
+  18%{ opacity:1; }
+  100%{ opacity:0; transform:scale(1.22) rotate(160deg); filter:brightness(1.8); }
+}
+.bossDock.bossKeySectionCharge .bossDockInner{
+  animation:bossKeyDockQuakeKF 90ms steps(2, end) infinite;
+  filter:
+    drop-shadow(0 0 10px rgba(0,255,213,.32))
+    drop-shadow(0 0 24px rgba(29,214,255,.20));
+}
+.bossKeyCard.bossKeyReceivingSlot{
+  border-color:rgba(180,255,244,.96);
+  box-shadow:
+    0 0 0 2px rgba(180,255,244,.18) inset,
+    0 0 26px rgba(0,255,213,.42),
+    0 0 62px rgba(29,214,255,.28);
+}
+.bossKeyCard.bossKeyReceivingSlot .bossKeyFrame{
+  animation:bossKeySlotChargeKF 130ms steps(2, end) infinite;
+}
+.bossKeyCard.bossKeyImpact{
+  animation:bossKeySlotImpactKF 560ms cubic-bezier(.18,.9,.18,1) 1;
+}
+.bossKeyCard.bossKeyImpact .slotKey{
+  opacity:1;
+  transform:scale(1);
+  animation:bossKeySlotKeyImpactKF 560ms cubic-bezier(.18,.9,.18,1) 1;
+}
+.demoStage.bossKeyScreenShake{
+  animation:bossKeyScreenShakeKF 420ms linear 1;
+}
+.bossKeyCinematic{
+  position:absolute;
+  inset:0;
+  z-index:12;
+  pointer-events:none;
+  overflow:hidden;
+  opacity:0;
+  background:
+    radial-gradient(82% 58% at 50% 42%, rgba(20,70,92,.12), rgba(0,0,0,.10) 44%, rgba(0,0,0,.74) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.74), rgba(1,7,14,.84));
+  transition:opacity 190ms ease;
+}
+.bossKeyCinematic.show{ opacity:1; }
+.bossKeyCinematic.hide{
+  opacity:0;
+  transition-duration:420ms;
+}
+.bossKeyCinematic::before{
+  content:"";
+  position:absolute;
+  inset:-8%;
+  background:
+    radial-gradient(58% 42% at 50% 40%, rgba(151,255,242,.22), transparent 62%),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.035) 0 2px, transparent 2px 7px);
+  opacity:.36;
+  mix-blend-mode:screen;
+  animation:bossKeyStormPulseKF 420ms steps(2, end) infinite;
+}
+.bossKeyCinematic::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,.20), transparent 0 17%, rgba(0,255,213,.10) 18%, transparent 36%),
+    radial-gradient(circle at 50% 42%, rgba(29,214,255,.20), transparent 0 34%, rgba(0,0,0,0) 56%);
+  opacity:0;
+  animation:bossKeyCenterFlashKF 1200ms ease-out 90ms both;
+}
+.bossKeyCinematicBackdrop{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(120% 84% at 50% 44%, rgba(6,38,58,.24), rgba(0,0,0,.58) 58%, rgba(0,0,0,.88) 100%);
+}
+.bossKeyCinematicLightning{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  mix-blend-mode:screen;
+  filter:drop-shadow(0 0 9px rgba(126,246,255,.72));
+}
+.bossKeyCinematicBolt{
+  position:absolute;
+  left:var(--bolt-x, 50%);
+  top:var(--bolt-y, 50%);
+  width:var(--bolt-w, 7px);
+  height:var(--bolt-h, 160px);
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.96) 8%, rgba(117,247,255,.92) 42%, rgba(255,255,255,.80) 60%, rgba(0,255,213,0));
+  box-shadow:0 0 8px rgba(255,255,255,.70), 0 0 18px rgba(29,214,255,.74), 0 0 34px rgba(0,255,213,.42);
+  opacity:0;
+  transform:translate(-50%, -50%) rotate(var(--bolt-r, 0deg)) scaleY(.74);
+  transform-origin:50% 50%;
+  animation:bossKeyBoltFlashKF var(--bolt-dur, 760ms) steps(2, end) var(--bolt-delay, 0ms) both;
+}
+.bossKeyCinematicBolt::before,
+.bossKeyCinematicBolt::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  width:72%;
+  height:42%;
+  border-radius:999px;
+  background:inherit;
+  box-shadow:inherit;
+}
+.bossKeyCinematicBolt::before{
+  top:20%;
+  transform:translateX(-50%) rotate(34deg);
+}
+.bossKeyCinematicBolt::after{
+  top:48%;
+  transform:translateX(-50%) rotate(-42deg);
+}
+.bossKeyCinematicStage{
+  position:absolute;
+  inset:0;
+  z-index:4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.bossKeyCinematicFlyer{
+  position:absolute;
+  left:var(--bk-center-x, 50%);
+  top:var(--bk-center-y, 43%);
+  width:min(27vw, 260px);
+  aspect-ratio:1 / 1;
+  transform:translate(-50%, -50%) scale(.88);
+  opacity:0;
+  z-index:4;
+  filter:drop-shadow(0 0 18px rgba(0,255,213,.38)) drop-shadow(0 0 48px rgba(29,214,255,.26));
+  animation:bossKeyMaterializeCoreKF 1850ms cubic-bezier(.2,.84,.16,1) 250ms forwards;
+}
+.bossKeyCinematic.charging .bossKeyCinematicFlyer{
+  animation:bossKeyCenterChargeKF 105ms steps(2, end) infinite, bossKeyChargeGlowKF 720ms ease-in-out infinite;
+  opacity:1;
+  transform:translate(-50%, -50%) scale(1);
+}
+.bossKeyCinematic.flying .bossKeyCinematicFlyer{
+  animation:bossKeyFlyToSlotKF 720ms cubic-bezier(.16,.92,.18,1) forwards;
+  opacity:1;
+}
+.bossKeyCinematic.impact .bossKeyCinematicFlyer{
+  opacity:0;
+  transition:opacity 90ms ease-out;
+}
+.bossKeyCinematicKeyCore{
+  position:absolute;
+  inset:4%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:22px;
+}
+.bossKeyCinematicKeyCore::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.28), rgba(119,252,255,.18) 28%, rgba(0,255,213,.08) 46%, transparent 68%);
+  filter:blur(7px);
+  animation:bossKeyAuraSpinKF 1600ms linear infinite;
+}
+.bossKeySvg{
+  position:relative;
+  z-index:2;
+  width:100%;
+  height:100%;
+  overflow:visible;
+  filter:drop-shadow(0 0 12px rgba(0,0,0,.52)) drop-shadow(0 0 20px rgba(0,255,213,.34));
+}
+.keyRevealPath{
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  animation:bossKeySpiralRevealPathKF 1680ms cubic-bezier(.18,.86,.22,1) 260ms forwards;
+}
+.bossKeyCinematicShard{
+  position:absolute;
+  left:calc(50% + var(--sx, 0px));
+  top:calc(50% + var(--sy, 0px));
+  width:var(--sw, 42px);
+  height:var(--sh, 9px);
+  border-radius:999px;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(222,255,250,.96), rgba(29,214,255,.70), rgba(255,255,255,0));
+  box-shadow:0 0 12px rgba(0,255,213,.58), 0 0 24px rgba(29,214,255,.30);
+  opacity:0;
+  transform:translate(-50%, -50%) rotate(var(--sr, 0deg)) scaleX(.24);
+  animation:bossKeyShardFadeKF 920ms ease-out var(--sd, 0ms) both;
+  mix-blend-mode:screen;
+}
+.bossKeyCinematicAetherSpiral{
+  position:absolute;
+  left:var(--bk-center-x, 50%);
+  top:var(--bk-center-y, 43%);
+  z-index:2;
+  width:min(72vw, 780px);
+  aspect-ratio:1 / 1;
+  transform:translate(-50%, -50%);
+  pointer-events:none;
+  mix-blend-mode:screen;
+  filter:drop-shadow(0 0 16px rgba(126,246,255,.48)) drop-shadow(0 0 42px rgba(0,255,213,.28));
+  opacity:0;
+  animation:bossKeyAetherSpiralShellKF 2480ms cubic-bezier(.18,.86,.22,1) 40ms both;
+}
+.bossKeyCinematicAetherSpiral::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:28%;
+  aspect-ratio:1 / 1;
+  transform:translate(-50%, -50%) scale(.54);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.96), rgba(175,255,248,.58) 21%, rgba(0,255,213,.20) 44%, transparent 72%);
+  filter:blur(7px);
+  opacity:0;
+  animation:bossKeyAetherCoreBloomKF 2200ms ease-out 210ms both;
+}
+.bossKeyCinematic.charging .bossKeyCinematicAetherSpiral,
+.bossKeyCinematic.flying .bossKeyCinematicAetherSpiral{
+  opacity:0;
+  transition:opacity 260ms ease-out;
+}
+.bossKeyCinematic.snapped .bossKeyCinematicAetherSpiral{
+  animation:bossKeyAetherSwirlAbsorbKF 380ms cubic-bezier(.16,.92,.18,1) both;
+}
+.bossKeyCinematicAetherSvg{
+  position:absolute;
+  inset:-4%;
+  width:108%;
+  height:108%;
+  overflow:visible;
+  transform-origin:50% 50%;
+  animation:bossKeyAetherSvgDriftKF 2480ms cubic-bezier(.18,.86,.22,1) both;
+}
+.bossKeyCinematicAetherArm{
+  fill:none;
+  stroke:rgba(209,255,250,.92);
+  stroke-width:var(--arm-w, 5);
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  stroke-dasharray:1;
+  stroke-dashoffset:1;
+  opacity:0;
+  filter:blur(var(--arm-blur, 0px)) drop-shadow(0 0 9px rgba(219,255,252,.44)) drop-shadow(0 0 26px rgba(0,255,213,.30));
+  animation:bossKeyAetherArmFlowKF var(--arm-dur, 1700ms) cubic-bezier(.17,.86,.24,1) var(--arm-delay, 0ms) both;
+}
+.bossKeyCinematicAetherArm.mist{
+  stroke:rgba(65,220,255,.28);
+  stroke-width:var(--arm-mist-w, 28);
+  filter:blur(var(--arm-mist-blur, 8px)) drop-shadow(0 0 26px rgba(0,178,255,.22));
+  animation-duration:var(--arm-mist-dur, 2100ms);
+}
+.bossKeyCinematicAetherArm.hot{
+  stroke:rgba(255,255,255,.98);
+  stroke-width:var(--arm-hot-w, 2.6);
+  filter:blur(.2px) drop-shadow(0 0 7px rgba(255,255,255,.74)) drop-shadow(0 0 20px rgba(114,251,255,.44));
+  animation-duration:var(--arm-hot-dur, 1280ms);
+  animation-delay:calc(var(--arm-delay, 0ms) + 180ms);
+}
+.bossKeyCinematicSpiralMote{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:var(--mote-size, 8px);
+  height:var(--mote-size, 8px);
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.98), rgba(181,255,247,.92) 35%, rgba(0,255,213,.20) 100%);
+  box-shadow:0 0 10px rgba(255,255,255,.72), 0 0 24px rgba(0,255,213,.48);
+  opacity:0;
+  transform:translate(-50%, -50%) rotate(var(--mote-a, 0deg)) translateX(var(--mote-r0, 180px)) scale(.35);
+  animation:bossKeyAetherMoteKF var(--mote-dur, 1700ms) cubic-bezier(.17,.86,.24,1) var(--mote-delay, 0ms) both;
+}
+.bossKeyCinematicSpiralMote::after{
+  content:"";
+  position:absolute;
+  right:48%;
+  top:50%;
+  width:var(--mote-tail, 46px);
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg, transparent, rgba(166,255,248,.82), rgba(255,255,255,.92));
+  transform:translateY(-50%);
+  transform-origin:100% 50%;
+  opacity:.76;
+}
+.bossKeyCinematicEnergySnap{
+  position:absolute;
+  left:var(--bk-center-x, 50%);
+  top:var(--bk-center-y, 43%);
+  z-index:3;
+  width:min(34vw, 360px);
+  aspect-ratio:1 / 1;
+  transform:translate(-50%, -50%) scale(.3);
+  pointer-events:none;
+  mix-blend-mode:screen;
+  opacity:0;
+}
+.bossKeyCinematicEnergySnap::before,
+.bossKeyCinematicEnergySnap::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  opacity:0;
+}
+.bossKeyCinematicEnergySnap::before{
+  background:
+    radial-gradient(circle, rgba(255,255,255,.98) 0 4%, rgba(197,255,249,.68) 8%, rgba(0,255,213,.24) 21%, transparent 48%),
+    conic-gradient(from 12deg, transparent 0 20deg, rgba(255,255,255,.90) 28deg, rgba(0,255,213,.32) 38deg, transparent 54deg 88deg, rgba(175,255,248,.70) 98deg, transparent 118deg 360deg);
+  filter:blur(1px) drop-shadow(0 0 18px rgba(255,255,255,.58)) drop-shadow(0 0 38px rgba(0,255,213,.42));
+}
+.bossKeyCinematicEnergySnap::after{
+  inset:18%;
+  border:2px solid rgba(224,255,251,.92);
+  box-shadow:0 0 18px rgba(255,255,255,.54), 0 0 36px rgba(0,255,213,.42), inset 0 0 24px rgba(0,255,213,.20);
+}
+.bossKeyCinematicEnergySnap.on{
+  animation:bossKeyEnergySnapShellKF 420ms cubic-bezier(.16,.92,.18,1) both;
+}
+.bossKeyCinematicEnergySnap.on::before{
+  animation:bossKeyEnergySnapFlashKF 360ms ease-out both;
+}
+.bossKeyCinematicEnergySnap.on::after{
+  animation:bossKeyEnergySnapRingKF 420ms cubic-bezier(.16,.92,.18,1) both;
+}
+.bossKeyCinematicTitle{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:5;
+  width:min(92%, 920px);
+  text-align:center;
+  font-weight:900;
+  line-height:.94;
+  text-transform:uppercase;
+  letter-spacing:4px;
+  color:rgba(235,255,252,.98);
+  text-shadow:0 0 12px rgba(255,255,255,.68), 0 0 28px rgba(0,255,213,.58), 0 4px 0 rgba(0,0,0,.72);
+  opacity:0;
+  animation:bossKeyWordsKF 1900ms ease-in-out 1740ms both;
+}
+.bossKeyCinematicTitle.top{
+  top:calc(var(--bk-center-y, 43%) - 190px);
+  font-size:clamp(22px, 4.1vw, 58px);
+}
+.bossKeyCinematicTitle.bottom{
+  top:calc(var(--bk-center-y, 43%) + 150px);
+  font-size:clamp(20px, 3.3vw, 46px);
+  color:rgba(183,255,232,.98);
+}
+.bossKeyCinematicRing{
+  position:absolute;
+  left:var(--bk-center-x, 50%);
+  top:var(--bk-center-y, 43%);
+  z-index:3;
+  width:min(41vw, 430px);
+  aspect-ratio:1 / 1;
+  border-radius:50%;
+  transform:translate(-50%, -50%) scale(.62);
+  border:2px solid rgba(180,255,244,.58);
+  box-shadow:0 0 18px rgba(0,255,213,.44), 0 0 54px rgba(29,214,255,.25), inset 0 0 34px rgba(0,255,213,.12);
+  opacity:0;
+  animation:bossKeyRingKF 1700ms ease-out 190ms both;
+}
+.bossKeyCinematicSparks{
+  position:absolute;
+  inset:0;
+  z-index:6;
+  pointer-events:none;
+  overflow:hidden;
+}
+.bossKeyCinematicSpark{
+  position:absolute;
+  left:var(--spark-x, 50%);
+  top:var(--spark-y, 50%);
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,.98), rgba(255,242,174,.88) 38%, rgba(0,255,213,.32) 100%);
+  box-shadow:0 0 11px rgba(255,238,170,.72), 0 0 22px rgba(0,255,213,.48);
+  animation:bossKeyCinematicSparkKF var(--spark-dur, 760ms) ease-out forwards;
+}
+@keyframes bossKeySpiralRevealPathKF{
+  0%{ stroke-dashoffset:1; }
+  100%{ stroke-dashoffset:0; }
+}
+@keyframes bossKeyStormPulseKF{
+  0%,100%{ opacity:.24; filter:brightness(.96); }
+  44%{ opacity:.48; filter:brightness(1.45); }
+  66%{ opacity:.18; filter:brightness(.82); }
+}
+@keyframes bossKeyCenterFlashKF{
+  0%{ opacity:0; transform:scale(.78); }
+  12%{ opacity:.92; }
+  100%{ opacity:0; transform:scale(1.42); }
+}
+@keyframes bossKeyBoltFlashKF{
+  0%,100%{ opacity:0; transform:translate(-50%, -50%) rotate(var(--bolt-r, 0deg)) scaleY(.48); }
+  8%,24%,54%{ opacity:1; transform:translate(-50%, -50%) rotate(var(--bolt-r, 0deg)) scaleY(1); }
+  16%,42%,68%{ opacity:.16; transform:translate(-50%, -50%) rotate(var(--bolt-r, 0deg)) scaleY(.86); }
+}
+@keyframes bossKeyMaterializeCoreKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.62) rotate(-7deg); filter:blur(6px) brightness(1.8); }
+  18%{ opacity:.32; }
+  44%{ opacity:.78; filter:blur(2px) brightness(1.35); }
+  74%{ opacity:1; transform:translate(-50%, -50%) scale(1.04) rotate(1deg); filter:blur(0) brightness(1.18); }
+  100%{ opacity:1; transform:translate(-50%, -50%) scale(1) rotate(0deg); filter:blur(0) brightness(1); }
+}
+@keyframes bossKeyShardFadeKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) rotate(var(--sr, 0deg)) scaleX(.14); }
+  20%,68%{ opacity:1; }
+  100%{ opacity:0; transform:translate(-50%, -50%) rotate(var(--sr, 0deg)) scaleX(1.2); }
+}
+@keyframes bossKeyAetherSpiralShellKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(1.14) rotate(-18deg); filter:blur(8px) brightness(1.08); }
+  12%{ opacity:.82; }
+  38%{ opacity:1; transform:translate(-50%, -50%) scale(.99) rotate(20deg); filter:blur(2px) brightness(1.34); }
+  54%{ opacity:.62; transform:translate(-50%, -50%) scale(.90) rotate(42deg); filter:blur(1px) brightness(1.48); }
+  68%{ opacity:.28; transform:translate(-50%, -50%) scale(.78) rotate(76deg); filter:blur(2px) brightness(1.72); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(.46) rotate(108deg); filter:blur(6px) brightness(2.1); }
+}
+@keyframes bossKeyAetherSwirlAbsorbKF{
+  0%{ opacity:.34; transform:translate(-50%, -50%) scale(.76) rotate(72deg); filter:blur(2px) brightness(1.7); }
+  44%{ opacity:.28; transform:translate(-50%, -50%) scale(.36) rotate(118deg); filter:blur(1px) brightness(2.05); }
+  72%{ opacity:.16; transform:translate(-50%, -50%) scale(.18) rotate(146deg); filter:blur(2px) brightness(2.35); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(.06) rotate(174deg); filter:blur(7px) brightness(2.65); }
+}
+@keyframes bossKeyAetherCoreBloomKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.22); filter:blur(14px) brightness(1.1); }
+  34%{ opacity:.42; }
+  56%{ opacity:.88; transform:translate(-50%, -50%) scale(.72); filter:blur(6px) brightness(1.7); }
+  74%{ opacity:.24; transform:translate(-50%, -50%) scale(.92); filter:blur(9px) brightness(2.0); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.14); filter:blur(12px) brightness(2.3); }
+}
+@keyframes bossKeyAetherSvgDriftKF{
+  0%{ transform:rotate(-10deg) scale(1.08); }
+  64%{ transform:rotate(34deg) scale(.92); }
+  100%{ transform:rotate(58deg) scale(.72); }
+}
+@keyframes bossKeyAetherArmFlowKF{
+  0%{ opacity:0; stroke-dashoffset:1; }
+  10%{ opacity:var(--arm-opacity, .74); }
+  46%{ opacity:var(--arm-opacity, .92); stroke-dashoffset:.24; }
+  62%{ opacity:var(--arm-fade-opacity, .38); stroke-dashoffset:.06; }
+  78%{ opacity:.14; stroke-dashoffset:0; }
+  100%{ opacity:0; stroke-dashoffset:-.09; }
+}
+@keyframes bossKeyAetherMoteKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) rotate(var(--mote-a, 0deg)) translateX(var(--mote-r0, 250px)) scale(.26); filter:blur(4px); }
+  12%{ opacity:.92; }
+  48%{ opacity:1; transform:translate(-50%, -50%) rotate(calc(var(--mote-a, 0deg) + var(--mote-spin, 360deg))) translateX(var(--mote-r1, 72px)) scale(1); filter:blur(.3px); }
+  70%{ opacity:.24; transform:translate(-50%, -50%) rotate(calc(var(--mote-a, 0deg) + var(--mote-spin, 360deg) + 54deg)) translateX(34px) scale(.58); filter:blur(1.4px); }
+  100%{ opacity:0; transform:translate(-50%, -50%) rotate(calc(var(--mote-a, 0deg) + var(--mote-spin, 360deg) + 88deg)) translateX(14px) scale(.34); filter:blur(3px); }
+}
+@keyframes bossKeyEnergySnapShellKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.18) rotate(-18deg); }
+  12%{ opacity:1; }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.1) rotate(42deg); }
+}
+@keyframes bossKeyEnergySnapFlashKF{
+  0%{ opacity:0; transform:scale(.18); filter:blur(8px) brightness(1.1); }
+  16%{ opacity:1; transform:scale(.48); filter:blur(1px) brightness(2.6); }
+  100%{ opacity:0; transform:scale(1.08); filter:blur(7px) brightness(1.4); }
+}
+@keyframes bossKeyEnergySnapRingKF{
+  0%{ opacity:0; transform:scale(.22); }
+  18%{ opacity:.92; }
+  100%{ opacity:0; transform:scale(1.42); }
+}
+@keyframes bossKeyWordsKF{
+  0%{ opacity:0; transform:translateX(-50%) translateY(14px) scale(.96); filter:blur(5px); }
+  20%,72%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); filter:blur(0); }
+  100%{ opacity:0; transform:translateX(-50%) translateY(-8px) scale(1.02); filter:blur(3px); }
+}
+@keyframes bossKeyRingKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.34) rotate(0deg); }
+  14%{ opacity:1; }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.38) rotate(240deg); }
+}
+@keyframes bossKeyAuraSpinKF{
+  0%{ transform:rotate(0deg) scale(.96); opacity:.82; }
+  50%{ transform:rotate(180deg) scale(1.06); opacity:1; }
+  100%{ transform:rotate(360deg) scale(.96); opacity:.82; }
+}
+@keyframes bossKeyCenterChargeKF{
+  0%,100%{ transform:translate(calc(-50% - 2px), calc(-50% + 1px)) scale(1.02) rotate(-1deg); }
+  50%{ transform:translate(calc(-50% + 3px), calc(-50% - 2px)) scale(1.04) rotate(1.2deg); }
+}
+@keyframes bossKeyChargeGlowKF{
+  0%,100%{ filter:drop-shadow(0 0 20px rgba(0,255,213,.40)) drop-shadow(0 0 44px rgba(29,214,255,.24)); }
+  50%{ filter:drop-shadow(0 0 30px rgba(255,255,255,.70)) drop-shadow(0 0 72px rgba(0,255,213,.46)); }
+}
+@keyframes bossKeyFlyToSlotKF{
+  0%{ transform:translate(-50%, -50%) scale(1.02) rotate(-1deg); filter:brightness(1.45) drop-shadow(0 0 28px rgba(0,255,213,.58)); }
+  72%{ transform:translate(calc(-50% + var(--bk-fly-x, 0px)), calc(-50% + var(--bk-fly-y, 0px) - 34px)) scale(var(--bk-slot-scale-pop, .40)) rotate(-7deg); filter:brightness(1.7) drop-shadow(0 0 38px rgba(255,255,255,.82)); }
+  100%{ transform:translate(calc(-50% + var(--bk-fly-x, 0px)), calc(-50% + var(--bk-fly-y, 0px))) scale(var(--bk-slot-scale, .34)) rotate(0deg); filter:brightness(2.05) drop-shadow(0 0 42px rgba(255,255,255,.94)); }
+}
+@keyframes bossKeyDockQuakeKF{
+  0%,100%{ transform:translate3d(-1px, 0, 0); }
+  50%{ transform:translate3d(2px, -1px, 0); }
+}
+@keyframes bossKeySlotChargeKF{
+  0%,100%{ filter:brightness(1.08) saturate(1.12); transform:translate3d(-1px,0,0); }
+  50%{ filter:brightness(1.48) saturate(1.35); transform:translate3d(2px,-1px,0); }
+}
+@keyframes bossKeySlotImpactKF{
+  0%{ transform:translate3d(0,0,0) scale(1); filter:brightness(1); }
+  14%{ transform:translate3d(0,6px,0) scale(1.08); filter:brightness(2.05); }
+  34%{ transform:translate3d(-5px,-2px,0) scale(1.02); }
+  54%{ transform:translate3d(4px,2px,0) scale(1.01); }
+  100%{ transform:translate3d(0,0,0) scale(1); filter:brightness(1.08); }
+}
+@keyframes bossKeySlotKeyImpactKF{
+  0%{ transform:scale(.58); filter:brightness(2.4) drop-shadow(0 0 18px rgba(255,255,255,.84)); }
+  52%{ transform:scale(1.16); }
+  100%{ transform:scale(1); filter:brightness(1) drop-shadow(0 0 14px rgba(0,255,213,.22)); }
+}
+@keyframes bossKeyScreenShakeKF{
+  0%,100%{ transform:translate3d(0,0,0); }
+  12%{ transform:translate3d(-6px,2px,0); }
+  24%{ transform:translate3d(5px,-3px,0); }
+  36%{ transform:translate3d(-4px,-2px,0); }
+  48%{ transform:translate3d(6px,3px,0); }
+  62%{ transform:translate3d(-3px,2px,0); }
+  78%{ transform:translate3d(3px,-1px,0); }
+}
+@keyframes bossKeyCinematicSparkKF{
+  0%{ opacity:1; transform:translate3d(0,0,0) scale(1.15); }
+  100%{ opacity:0; transform:translate3d(var(--dx,0px), var(--dy,-120px), 0) scale(.22); }
+}
+@media (max-width: 720px){
+  .demoToolbar{
+    left:12px;
+    right:12px;
+    top:12px;
+  }
+  .demoButton,
+  .demoToggle{
+    font-size:8px;
+  }
+  .bossKeyCinematicTitle.top{
+    top:calc(var(--bk-center-y, 43%) - 132px);
+  }
+  .bossKeyCinematicTitle.bottom{
+    top:calc(var(--bk-center-y, 43%) + 112px);
+  }
+  .bossDock{
+    bottom:28px;
+  }
+}
+</style>
+</head>
+<body>
+<main class="demoStage" id="stage">
+  <div class="demoToolbar">
+    <button class="demoButton" id="replayBtn" type="button">REPLAY</button>
+    <label class="demoToggle"><input id="sfxToggle" type="checkbox" checked> SFX</label>
+  </div>
+  <section class="bossDock" id="bossDock" aria-label="Boss key slot">
+    <div class="bossDockTitle">BOSS KEY SLOT</div>
+    <div class="bossDockInner">
+      <div class="bossKeyCard" id="bossKeyCard" data-bk-slot="1">
+        <div class="bossKeyFrame">
+          <div class="bossKeySquare" id="bossKeySlot">
+            <div class="slotKey" id="slotKey"></div>
+            <div class="bkBurst" id="slotBurst"></div>
+          </div>
+        </div>
+        <div class="slotLabel">AWAITING KEY</div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  const TOTAL_MS = 5450;
+  const SNAP_AT_MS = 1540;
+  const WORDS_AT_MS = 1740;
+  const FLY_AT_MS = 3660;
+  const IMPACT_AT_MS = 4360;
+  const sfx = { enabled:true, vol:0.58, ctx:null };
+  let timers = [];
+  let maskId = 0;
+
+  const stage = document.getElementById("stage");
+  const replayBtn = document.getElementById("replayBtn");
+  const sfxToggle = document.getElementById("sfxToggle");
+  const card = document.getElementById("bossKeyCard");
+  const slot = document.getElementById("bossKeySlot");
+  const slotKey = document.getElementById("slotKey");
+  const bossDock = document.getElementById("bossDock");
+
+  function later(fn, ms){
+    const id = setTimeout(fn, ms);
+    timers.push(id);
+    return id;
+  }
+
+  function clearTimers(){
+    timers.forEach(clearTimeout);
+    timers = [];
+  }
+
+  function ensureAudio(){
+    if(!sfx.enabled) return null;
+    if(!sfx.ctx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return null;
+      sfx.ctx = new AC();
+    }
+    if(sfx.ctx.state === "suspended") sfx.ctx.resume().catch(()=>{});
+    return sfx.ctx;
+  }
+
+  function playTone({freq=600, dur=0.06, type="sine", gain=0.25, sweepTo=null, sweepDur=0.06}){
+    const ctx = ensureAudio();
+    if(!ctx) return;
+    const t0 = ctx.currentTime;
+    const oscillator = ctx.createOscillator();
+    const volume = ctx.createGain();
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(freq, t0);
+    if(sweepTo != null){
+      oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, sweepTo), t0 + Math.max(0.01, sweepDur));
+    }
+    const v = Math.max(0, Math.min(1, sfx.vol)) * gain;
+    volume.gain.setValueAtTime(0.0001, t0);
+    volume.gain.exponentialRampToValueAtTime(Math.max(0.0002, v), t0 + 0.01);
+    volume.gain.exponentialRampToValueAtTime(0.0001, t0 + Math.max(0.03, dur));
+    oscillator.connect(volume);
+    volume.connect(ctx.destination);
+    oscillator.start(t0);
+    oscillator.stop(t0 + Math.max(0.03, dur) + 0.02);
+  }
+
+  function playSfx(kind){
+    if(!sfx.enabled) return;
+    if(kind === "click"){
+      playTone({freq:820, dur:0.05, type:"triangle", gain:0.12, sweepTo:650, sweepDur:0.05});
+    }else if(kind === "bossKeyLightning"){
+      playTone({freq:96, dur:0.34, type:"sawtooth", gain:0.17, sweepTo:54, sweepDur:0.32});
+      setTimeout(()=>playTone({freq:1420, dur:0.05, type:"square", gain:0.12, sweepTo:2200, sweepDur:0.04}), 38);
+      setTimeout(()=>playTone({freq:920, dur:0.06, type:"triangle", gain:0.10, sweepTo:1840, sweepDur:0.05}), 112);
+      setTimeout(()=>playTone({freq:70, dur:0.28, type:"triangle", gain:0.11, sweepTo:42, sweepDur:0.24}), 210);
+      setTimeout(()=>playTone({freq:1760, dur:0.045, type:"square", gain:0.10, sweepTo:2480, sweepDur:0.04}), 420);
+      setTimeout(()=>playTone({freq:1180, dur:0.055, type:"square", gain:0.09, sweepTo:760, sweepDur:0.05}), 610);
+    }else if(kind === "bossKeyAcquiredDing"){
+      playTone({freq:1568, dur:0.08, type:"sine", gain:0.16, sweepTo:1760, sweepDur:0.06});
+      setTimeout(()=>playTone({freq:2352, dur:0.12, type:"triangle", gain:0.13, sweepTo:2637, sweepDur:0.10}), 74);
+      setTimeout(()=>playTone({freq:1175, dur:0.22, type:"sine", gain:0.09, sweepTo:1320, sweepDur:0.18}), 154);
+    }else if(kind === "bossKeyEnergySnap"){
+      playTone({freq:1840, dur:0.042, type:"square", gain:0.11, sweepTo:2860, sweepDur:0.032});
+      setTimeout(()=>playTone({freq:520, dur:0.055, type:"triangle", gain:0.08, sweepTo:320, sweepDur:0.045}), 28);
+      setTimeout(()=>playTone({freq:2460, dur:0.040, type:"sine", gain:0.075, sweepTo:1680, sweepDur:0.034}), 62);
+    }else if(kind === "bossKeyTravelSizzle"){
+      playTone({freq:240, dur:0.72, type:"sawtooth", gain:0.08, sweepTo:420, sweepDur:0.68});
+      setTimeout(()=>playTone({freq:940, dur:0.06, type:"square", gain:0.08, sweepTo:1480, sweepDur:0.05}), 20);
+      setTimeout(()=>playTone({freq:1320, dur:0.05, type:"square", gain:0.075, sweepTo:860, sweepDur:0.045}), 118);
+      setTimeout(()=>playTone({freq:1760, dur:0.055, type:"square", gain:0.085, sweepTo:2400, sweepDur:0.05}), 224);
+      setTimeout(()=>playTone({freq:1120, dur:0.05, type:"square", gain:0.075, sweepTo:700, sweepDur:0.045}), 350);
+      setTimeout(()=>playTone({freq:2080, dur:0.06, type:"square", gain:0.08, sweepTo:2840, sweepDur:0.05}), 486);
+      setTimeout(()=>playTone({freq:820, dur:0.08, type:"triangle", gain:0.07, sweepTo:540, sweepDur:0.07}), 626);
+    }else if(kind === "bossKeySlamBoom"){
+      playTone({freq:58, dur:0.30, type:"square", gain:0.22, sweepTo:34, sweepDur:0.28});
+      setTimeout(()=>playTone({freq:112, dur:0.22, type:"sawtooth", gain:0.17, sweepTo:62, sweepDur:0.20}), 28);
+      setTimeout(()=>playTone({freq:250, dur:0.12, type:"triangle", gain:0.14, sweepTo:136, sweepDur:0.11}), 64);
+      setTimeout(()=>playTone({freq:1320, dur:0.09, type:"triangle", gain:0.11, sweepTo:2100, sweepDur:0.08}), 112);
+      setTimeout(()=>playTone({freq:1820, dur:0.12, type:"sine", gain:0.08, sweepTo:1160, sweepDur:0.11}), 210);
+    }
+  }
+
+  function makeKeySvg(masked){
+    const id = `bossKeyRevealMask${++maskId}`;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "bossKeySvg");
+    svg.setAttribute("viewBox", "0 0 240 140");
+    svg.setAttribute("aria-hidden", "true");
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="${id}Gold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#fff18a"/>
+          <stop offset="0.45" stop-color="#ffd842"/>
+          <stop offset="1" stop-color="#f49b24"/>
+        </linearGradient>
+        <filter id="${id}Glow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0 0 0 0 0 0.92 0 0 0 0 1 0 0 0 .72 0"/>
+          <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <mask id="${id}" maskUnits="userSpaceOnUse">
+          <rect x="-20" y="-20" width="280" height="180" fill="${masked ? "black" : "white"}"/>
+          ${masked ? `<path class="keyRevealPath" d="M219 21 C155 -11 50 11 35 70 C21 128 108 145 158 103 C198 70 164 36 113 48 C73 58 77 96 111 99 C138 101 154 82 142 64" pathLength="1" fill="none" stroke="white" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
+        </mask>
+      </defs>
+      <g mask="url(#${id})" filter="url(#${id}Glow)">
+        <path d="M70 31a39 39 0 1 0 26 68l21-21h91l8-10-8-10h-18l-9-12-12 12h-19l-9-12-12 12h-13L96 38A38.9 38.9 0 0 0 70 31Zm0 24a15 15 0 1 1 0 30 15 15 0 0 1 0-30Z" fill="url(#${id}Gold)" stroke="#06101b" stroke-width="7" stroke-linejoin="round"/>
+        <circle cx="70" cy="70" r="14" fill="#073047" stroke="#9efcff" stroke-width="5"/>
+        <path d="M112 70h94" stroke="#fff6a8" stroke-width="7" stroke-linecap="round" opacity=".65"/>
+      </g>`;
+    return svg;
+  }
+
+  function makeKeyCore(){
+    const core = document.createElement("div");
+    core.className = "bossKeyCinematicKeyCore";
+    core.appendChild(makeKeySvg(true));
+    return core;
+  }
+
+  function spawnLightning(layer, count){
+    const n = Math.max(8, Math.min(34, Number(count) || 20));
+    for(let i = 0; i < n; i++){
+      const bolt = document.createElement("div");
+      bolt.className = "bossKeyCinematicBolt";
+      const nearCenter = i < Math.ceil(n * 0.55);
+      const x = nearCenter ? (38 + Math.random() * 24) : (4 + Math.random() * 92);
+      const y = nearCenter ? (26 + Math.random() * 34) : (5 + Math.random() * 86);
+      bolt.style.setProperty("--bolt-x", `${x.toFixed(1)}%`);
+      bolt.style.setProperty("--bolt-y", `${y.toFixed(1)}%`);
+      bolt.style.setProperty("--bolt-r", `${(Math.random() * 150 - 75).toFixed(1)}deg`);
+      bolt.style.setProperty("--bolt-h", `${(84 + Math.random() * 260).toFixed(0)}px`);
+      bolt.style.setProperty("--bolt-w", `${(3 + Math.random() * 7).toFixed(1)}px`);
+      bolt.style.setProperty("--bolt-delay", `${(Math.random() * 1180).toFixed(0)}ms`);
+      bolt.style.setProperty("--bolt-dur", `${(420 + Math.random() * 760).toFixed(0)}ms`);
+      layer.appendChild(bolt);
+    }
+  }
+
+  function spawnShards(flyer, count){
+    const n = Math.max(10, Math.min(28, Number(count) || 18));
+    for(let i = 0; i < n; i++){
+      const shard = document.createElement("div");
+      shard.className = "bossKeyCinematicShard";
+      shard.style.setProperty("--sx", `${(Math.random() * 160 - 80).toFixed(1)}px`);
+      shard.style.setProperty("--sy", `${(Math.random() * 150 - 75).toFixed(1)}px`);
+      shard.style.setProperty("--sw", `${(24 + Math.random() * 72).toFixed(1)}px`);
+      shard.style.setProperty("--sh", `${(4 + Math.random() * 10).toFixed(1)}px`);
+      shard.style.setProperty("--sr", `${(Math.random() * 180 - 90).toFixed(1)}deg`);
+      shard.style.setProperty("--sd", `${(150 + Math.random() * 1180).toFixed(0)}ms`);
+      flyer.appendChild(shard);
+    }
+  }
+
+  function spawnAetherSpiral(layer, count){
+    const svgNs = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNs, "svg");
+    svg.classList.add("bossKeyCinematicAetherSvg");
+    svg.setAttribute("viewBox", "-320 -320 640 640");
+    svg.setAttribute("aria-hidden", "true");
+    layer.appendChild(svg);
+
+    const polar = (r, deg) => {
+      const rad = deg * Math.PI / 180;
+      return { x:Math.cos(rad) * r, y:Math.sin(rad) * r };
+    };
+    const fmt = p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`;
+    const armPath = (angle, turn, jitter) => {
+      const p0 = polar(304 + jitter * 18, angle);
+      const c1 = polar(292 + jitter * 12, angle + turn * (22 + jitter * 6));
+      const c2 = polar(246 + jitter * 12, angle + turn * (66 + jitter * 10));
+      const p1 = polar(214 + jitter * 10, angle + turn * (106 + jitter * 8));
+      const c3 = polar(174 + jitter * 8, angle + turn * (146 + jitter * 9));
+      const c4 = polar(134 + jitter * 6, angle + turn * (190 + jitter * 8));
+      const p2 = polar(96 + jitter * 5, angle + turn * (236 + jitter * 7));
+      const c5 = polar(64 + jitter * 4, angle + turn * (278 + jitter * 6));
+      const c6 = polar(34 + jitter * 3, angle + turn * (318 + jitter * 6));
+      const p3 = polar(8 + Math.random() * 10, angle + turn * (350 + jitter * 4));
+      return `M ${fmt(p0)} C ${fmt(c1)} ${fmt(c2)} ${fmt(p1)} C ${fmt(c3)} ${fmt(c4)} ${fmt(p2)} C ${fmt(c5)} ${fmt(c6)} ${fmt(p3)}`;
+    };
+    const appendPath = (d, className, opts) => {
+      const path = document.createElementNS(svgNs, "path");
+      path.setAttribute("d", d);
+      path.setAttribute("pathLength", "1");
+      path.setAttribute("class", className);
+      path.style.setProperty("--arm-delay", `${Math.max(0, opts.delay || 0).toFixed(0)}ms`);
+      path.style.setProperty("--arm-dur", `${Math.max(300, opts.dur || 1600).toFixed(0)}ms`);
+      path.style.setProperty("--arm-opacity", String(opts.opacity || ".82"));
+      path.style.setProperty("--arm-fade-opacity", String(opts.fadeOpacity || ".38"));
+      path.style.setProperty("--arm-w", `${(opts.w || 5).toFixed(1)}px`);
+      path.style.setProperty("--arm-hot-w", `${(opts.hotW || 2.2).toFixed(1)}px`);
+      path.style.setProperty("--arm-hot-dur", `${Math.max(300, opts.hotDur || 1180).toFixed(0)}ms`);
+      path.style.setProperty("--arm-mist-w", `${(opts.mistW || 28).toFixed(1)}px`);
+      path.style.setProperty("--arm-mist-blur", `${(opts.mistBlur || 8).toFixed(1)}px`);
+      path.style.setProperty("--arm-mist-dur", `${Math.max(300, opts.mistDur || 2100).toFixed(0)}ms`);
+      svg.appendChild(path);
+    };
+
+    const armCount = Math.max(7, Math.min(13, Math.floor((Number(count) || 26) * 0.34)));
+    for(let i = 0; i < armCount; i++){
+      const angle = (i * (360 / armCount)) + (Math.random() * 20 - 10);
+      const jitter = Math.random() * 2 - 1;
+      const d = armPath(angle, 1, jitter);
+      const delay = i * 58 + Math.random() * 140;
+      appendPath(d, "bossKeyCinematicAetherArm mist", {
+        delay,
+        dur:1980 + Math.random() * 520,
+        mistDur:2140 + Math.random() * 620,
+        mistW:30 + Math.random() * 28,
+        mistBlur:7 + Math.random() * 7,
+        opacity:.42,
+        fadeOpacity:.22
+      });
+      appendPath(d, "bossKeyCinematicAetherArm", {
+        delay:delay + 90,
+        dur:1480 + Math.random() * 420,
+        w:4.2 + Math.random() * 4.8,
+        opacity:.86,
+        fadeOpacity:.44
+      });
+      appendPath(d, "bossKeyCinematicAetherArm hot", {
+        delay:delay + 230,
+        dur:1040 + Math.random() * 360,
+        hotDur:980 + Math.random() * 320,
+        hotW:1.4 + Math.random() * 2.2,
+        opacity:.95,
+        fadeOpacity:.54
+      });
+    }
+
+    const moteCount = Math.max(12, Math.min(34, Number(count) || 24));
+    for(let i = 0; i < moteCount; i++){
+      const mote = document.createElement("div");
+      mote.className = "bossKeyCinematicSpiralMote";
+      const angle = (i * (360 / moteCount)) + (Math.random() * 32 - 16);
+      mote.style.setProperty("--mote-a", `${angle.toFixed(1)}deg`);
+      mote.style.setProperty("--mote-spin", `${(300 + Math.random() * 180).toFixed(1)}deg`);
+      mote.style.setProperty("--mote-r0", `${(230 + Math.random() * 110).toFixed(1)}px`);
+      mote.style.setProperty("--mote-r1", `${(42 + Math.random() * 62).toFixed(1)}px`);
+      mote.style.setProperty("--mote-size", `${(3 + Math.random() * 7).toFixed(1)}px`);
+      mote.style.setProperty("--mote-tail", `${(42 + Math.random() * 82).toFixed(1)}px`);
+      mote.style.setProperty("--mote-delay", `${(Math.random() * 520).toFixed(0)}ms`);
+      mote.style.setProperty("--mote-dur", `${(1250 + Math.random() * 820).toFixed(0)}ms`);
+      layer.appendChild(mote);
+    }
+  }
+
+  function spawnSparks(layer, x, y, count){
+    const n = Math.max(16, Math.min(58, Number(count) || 34));
+    for(let i = 0; i < n; i++){
+      const spark = document.createElement("div");
+      spark.className = "bossKeyCinematicSpark";
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 48 + Math.random() * 160;
+      spark.style.setProperty("--spark-x", `${x}px`);
+      spark.style.setProperty("--spark-y", `${y}px`);
+      spark.style.setProperty("--dx", `${(Math.cos(angle) * dist).toFixed(1)}px`);
+      spark.style.setProperty("--dy", `${(Math.sin(angle) * dist - Math.random() * 38).toFixed(1)}px`);
+      spark.style.setProperty("--spark-dur", `${(620 + Math.random() * 680).toFixed(0)}ms`);
+      layer.appendChild(spark);
+      setTimeout(() => spark.remove(), 1500);
+    }
+  }
+
+  function triggerSlotBurst(){
+    const burst = document.getElementById("slotBurst");
+    burst.classList.remove("on");
+    void burst.offsetWidth;
+    burst.classList.add("on");
+  }
+
+  function clearCinematic(){
+    clearTimers();
+    document.querySelectorAll(".bossKeyCinematic").forEach(el => el.remove());
+    stage.classList.remove("bossKeyScreenShake");
+    bossDock.classList.remove("bossKeySectionCharge");
+    card.classList.remove("bossKeyReceivingSlot", "bossKeyAwaitingSlam", "bossKeyImpact");
+    slotKey.innerHTML = "";
+    slotKey.style.opacity = "0";
+    slotKey.style.transform = "scale(.62)";
+  }
+
+  function runBossKeyCinematic(){
+    clearCinematic();
+
+    const stageRect = stage.getBoundingClientRect();
+    const slotRect = slot.getBoundingClientRect();
+    const centerX = stageRect.width * 0.5;
+    const centerY = stageRect.height * 0.43;
+    const targetX = slotRect.left + slotRect.width * 0.5 - stageRect.left;
+    const targetY = slotRect.top + slotRect.height * 0.5 - stageRect.top;
+    const flyerW = Math.min(stageRect.width * 0.27, 260);
+    const slotScale = Math.max(0.18, Math.min(0.56, (slotRect.width / Math.max(1, flyerW)) * 0.98));
+    const slotScalePop = Math.min(0.66, slotScale * 1.18);
+
+    card.classList.add("bossKeyReceivingSlot", "bossKeyAwaitingSlam");
+
+    const wrap = document.createElement("div");
+    wrap.className = "bossKeyCinematic";
+    wrap.setAttribute("aria-hidden", "true");
+    wrap.style.setProperty("--bk-center-x", `${centerX}px`);
+    wrap.style.setProperty("--bk-center-y", `${centerY}px`);
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "bossKeyCinematicBackdrop";
+    wrap.appendChild(backdrop);
+
+    const lightning = document.createElement("div");
+    lightning.className = "bossKeyCinematicLightning";
+    wrap.appendChild(lightning);
+
+    const spiral = document.createElement("div");
+    spiral.className = "bossKeyCinematicAetherSpiral";
+    wrap.appendChild(spiral);
+
+    const ring = document.createElement("div");
+    ring.className = "bossKeyCinematicRing";
+    wrap.appendChild(ring);
+
+    const snap = document.createElement("div");
+    snap.className = "bossKeyCinematicEnergySnap";
+    wrap.appendChild(snap);
+
+    const stageLayer = document.createElement("div");
+    stageLayer.className = "bossKeyCinematicStage";
+    wrap.appendChild(stageLayer);
+
+    const top = document.createElement("div");
+    top.className = "bossKeyCinematicTitle top";
+    top.textContent = "BOSS KEY";
+    wrap.appendChild(top);
+
+    const bottom = document.createElement("div");
+    bottom.className = "bossKeyCinematicTitle bottom";
+    bottom.textContent = "ACQUIRED";
+    wrap.appendChild(bottom);
+
+    const flyer = document.createElement("div");
+    flyer.className = "bossKeyCinematicFlyer";
+    flyer.style.setProperty("--bk-fly-x", `${(targetX - centerX).toFixed(1)}px`);
+    flyer.style.setProperty("--bk-fly-y", `${(targetY - centerY).toFixed(1)}px`);
+    flyer.style.setProperty("--bk-slot-scale", slotScale.toFixed(3));
+    flyer.style.setProperty("--bk-slot-scale-pop", slotScalePop.toFixed(3));
+    flyer.appendChild(makeKeyCore());
+    stageLayer.appendChild(flyer);
+
+    const sparks = document.createElement("div");
+    sparks.className = "bossKeyCinematicSparks";
+    wrap.appendChild(sparks);
+
+    spawnLightning(lightning, 24);
+    spawnAetherSpiral(spiral, 26);
+    spawnShards(flyer, 20);
+
+    stage.appendChild(wrap);
+    requestAnimationFrame(() => wrap.classList.add("show"));
+
+    playSfx("bossKeyLightning");
+
+    later(() => {
+      wrap.classList.add("snapped");
+      snap.classList.remove("on");
+      void snap.offsetWidth;
+      snap.classList.add("on");
+      playSfx("bossKeyEnergySnap");
+    }, SNAP_AT_MS);
+
+    later(() => playSfx("bossKeyAcquiredDing"), WORDS_AT_MS);
+
+    later(() => {
+      wrap.classList.add("charging");
+      bossDock.classList.add("bossKeySectionCharge");
+    }, 3040);
+
+    later(() => {
+      wrap.classList.add("flying");
+      playSfx("bossKeyTravelSizzle");
+    }, FLY_AT_MS);
+
+    later(() => {
+      wrap.classList.add("impact");
+      card.classList.remove("bossKeyAwaitingSlam");
+      card.classList.add("bossKeyImpact");
+      slotKey.innerHTML = "";
+      slotKey.appendChild(makeKeySvg(false));
+      slotKey.style.opacity = "1";
+      slotKey.style.transform = "scale(1)";
+      triggerSlotBurst();
+      stage.classList.add("bossKeyScreenShake");
+      spawnSparks(sparks, targetX, targetY, 42);
+      playSfx("bossKeySlamBoom");
+    }, IMPACT_AT_MS);
+
+    later(() => {
+      wrap.classList.add("hide");
+      bossDock.classList.remove("bossKeySectionCharge");
+      stage.classList.remove("bossKeyScreenShake");
+    }, TOTAL_MS - 520);
+
+    later(() => {
+      wrap.remove();
+      card.classList.remove("bossKeyReceivingSlot", "bossKeyAwaitingSlam", "bossKeyImpact");
+    }, TOTAL_MS);
+  }
+
+  replayBtn.addEventListener("click", () => {
+    ensureAudio();
+    playSfx("click");
+    runBossKeyCinematic();
+  });
+
+  sfxToggle.addEventListener("change", () => {
+    sfx.enabled = sfxToggle.checked;
+    if(sfx.enabled) ensureAudio();
+  });
+
+  slotKey.appendChild(makeKeySvg(false));
+  setTimeout(runBossKeyCinematic, 420);
+})();
+</script>
+</body>
+</html>

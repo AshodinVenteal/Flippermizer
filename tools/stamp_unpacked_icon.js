@@ -5,7 +5,7 @@ const { spawnSync } = require("child_process");
 const root = path.resolve(__dirname, "..");
 const iconPath = path.join(root, "build", "icon.ico");
 const rceditPath = path.join(root, "node_modules", "electron-winstaller", "vendor", "rcedit.exe");
-const unpackedExe = path.join(root, "dist", "win-unpacked", "Flippermizer Standalone.exe");
+const unpackedExe = path.join(root, "dist", "win-unpacked", "Flippermizer Home Edition.exe");
 
 function requireFile(filePath, label){
   if(!fs.existsSync(filePath)){
@@ -31,4 +31,3 @@ if(result.status !== 0){
 }
 
 console.log(`Stamped FM icon: ${path.relative(root, unpackedExe)}`);
-

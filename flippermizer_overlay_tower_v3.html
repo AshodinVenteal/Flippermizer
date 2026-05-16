@@ -2,7 +2,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Flippermizer Tower + Overview (2x; World Subtitles; Table Reveal; Banners)</title>
+<title>Flippermizer! Pinball Randomized!</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <script>
 (() => {
@@ -130,6 +130,13 @@
   --controlsW: 1280px;  /* 15% reduced */
   --bonusLeaderboardW: 306px;
   --gutter: 16px;
+  --flprScrollbarTrack: rgba(0,18,31,.96);
+  --flprScrollbarTrackEdge: rgba(0,217,255,.18);
+  --flprScrollbarThumbTop: rgba(132,248,255,.96);
+  --flprScrollbarThumbMid: rgba(0,166,255,.92);
+  --flprScrollbarThumbBottom: rgba(0,255,213,.78);
+  --flprScrollbarThumbBorder: rgba(150,248,255,.72);
+  --flprScrollbarThumbGlow: rgba(0,217,255,.42);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -14395,6 +14402,99 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   overflow: auto;
   padding-right: 2px;
 }
+/* Flippermizer-themed scrollbars for Controls panel scroll regions. */
+.controlsTabPanel,
+.controlsTabPanel .tabSectionStack,
+.controlsTabPanel .connectCol,
+.controlsTabPanel .visualsCol,
+.controlsTabPanel .testingCol,
+.controlsTabPanel .tableBannerGalleryScroll,
+.controlsTabPanel .recvWrap,
+.controlsTabPanel .recvBody,
+.controlsTabPanel .apConnLogBody,
+.controlsTabPanel #apConnLogBody,
+.controlsTabPanel .achList,
+.controlsTabPanel .achGroupedList{
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--flprScrollbarThumbTop) var(--flprScrollbarTrack);
+}
+.controlsTabPanel::-webkit-scrollbar,
+.controlsTabPanel .tabSectionStack::-webkit-scrollbar,
+.controlsTabPanel .connectCol::-webkit-scrollbar,
+.controlsTabPanel .visualsCol::-webkit-scrollbar,
+.controlsTabPanel .testingCol::-webkit-scrollbar,
+.controlsTabPanel .tableBannerGalleryScroll::-webkit-scrollbar,
+.controlsTabPanel .recvWrap::-webkit-scrollbar,
+.controlsTabPanel .recvBody::-webkit-scrollbar,
+.controlsTabPanel .apConnLogBody::-webkit-scrollbar,
+.controlsTabPanel #apConnLogBody::-webkit-scrollbar,
+.controlsTabPanel .achList::-webkit-scrollbar,
+.controlsTabPanel .achGroupedList::-webkit-scrollbar{
+  width: 8px;
+  height: 8px;
+}
+.controlsTabPanel::-webkit-scrollbar-track,
+.controlsTabPanel .tabSectionStack::-webkit-scrollbar-track,
+.controlsTabPanel .connectCol::-webkit-scrollbar-track,
+.controlsTabPanel .visualsCol::-webkit-scrollbar-track,
+.controlsTabPanel .testingCol::-webkit-scrollbar-track,
+.controlsTabPanel .tableBannerGalleryScroll::-webkit-scrollbar-track,
+.controlsTabPanel .recvWrap::-webkit-scrollbar-track,
+.controlsTabPanel .recvBody::-webkit-scrollbar-track,
+.controlsTabPanel .apConnLogBody::-webkit-scrollbar-track,
+.controlsTabPanel #apConnLogBody::-webkit-scrollbar-track,
+.controlsTabPanel .achList::-webkit-scrollbar-track,
+.controlsTabPanel .achGroupedList::-webkit-scrollbar-track{
+  border-left: 1px solid var(--flprScrollbarTrackEdge);
+  background: linear-gradient(180deg, var(--flprScrollbarTrack), rgba(0,6,12,.98));
+  box-shadow: inset 0 0 8px rgba(0,0,0,.62);
+}
+.controlsTabPanel::-webkit-scrollbar-thumb,
+.controlsTabPanel .tabSectionStack::-webkit-scrollbar-thumb,
+.controlsTabPanel .connectCol::-webkit-scrollbar-thumb,
+.controlsTabPanel .visualsCol::-webkit-scrollbar-thumb,
+.controlsTabPanel .testingCol::-webkit-scrollbar-thumb,
+.controlsTabPanel .tableBannerGalleryScroll::-webkit-scrollbar-thumb,
+.controlsTabPanel .recvWrap::-webkit-scrollbar-thumb,
+.controlsTabPanel .recvBody::-webkit-scrollbar-thumb,
+.controlsTabPanel .apConnLogBody::-webkit-scrollbar-thumb,
+.controlsTabPanel #apConnLogBody::-webkit-scrollbar-thumb,
+.controlsTabPanel .achList::-webkit-scrollbar-thumb,
+.controlsTabPanel .achGroupedList::-webkit-scrollbar-thumb{
+  border-radius: 0;
+  border: 1px solid var(--flprScrollbarThumbBorder);
+  background: linear-gradient(180deg, var(--flprScrollbarThumbTop), var(--flprScrollbarThumbMid) 52%, var(--flprScrollbarThumbBottom));
+  box-shadow: 0 0 8px var(--flprScrollbarThumbGlow), inset 0 0 4px rgba(255,255,255,.22);
+}
+.controlsTabPanel::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .tabSectionStack::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .connectCol::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .visualsCol::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .testingCol::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .tableBannerGalleryScroll::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .recvWrap::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .recvBody::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .apConnLogBody::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel #apConnLogBody::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .achList::-webkit-scrollbar-thumb:hover,
+.controlsTabPanel .achGroupedList::-webkit-scrollbar-thumb:hover{
+  filter: brightness(1.15);
+}
+.controlsTabPanel::-webkit-scrollbar-corner,
+.controlsTabPanel .tabSectionStack::-webkit-scrollbar-corner,
+.controlsTabPanel .connectCol::-webkit-scrollbar-corner,
+.controlsTabPanel .visualsCol::-webkit-scrollbar-corner,
+.controlsTabPanel .testingCol::-webkit-scrollbar-corner,
+.controlsTabPanel .tableBannerGalleryScroll::-webkit-scrollbar-corner,
+.controlsTabPanel .recvWrap::-webkit-scrollbar-corner,
+.controlsTabPanel .recvBody::-webkit-scrollbar-corner,
+.controlsTabPanel .apConnLogBody::-webkit-scrollbar-corner,
+.controlsTabPanel #apConnLogBody::-webkit-scrollbar-corner,
+.controlsTabPanel .achList::-webkit-scrollbar-corner,
+.controlsTabPanel .achGroupedList::-webkit-scrollbar-corner{
+  background: rgba(0,8,16,.98);
+}
 .controlsTabPanel[data-ctrl-panel="visuals"] .connectPanelSection,
 .controlsTabPanel[data-ctrl-panel="testing"] .connectPanelSection{
   flex: 0 0 auto;
@@ -14427,6 +14527,42 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 .controlsTabPanel[data-ctrl-panel="visuals"] .connectPanelSection .cRow,
 .controlsTabPanel[data-ctrl-panel="testing"] .connectPanelSection .cRow{
   flex-wrap: wrap;
+}
+.flprLauncherRendererGrid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+}
+.flprLauncherRendererRow{
+  display:grid;
+  grid-template-columns:auto minmax(0, 1fr);
+  gap:8px;
+  align-items:center;
+  padding:8px;
+  border:1px solid rgba(0,217,255,.18);
+  border-radius:10px;
+  background:rgba(0,18,31,.42);
+}
+.flprLauncherRendererRow input[type="checkbox"]{
+  width:18px;
+  height:18px;
+  min-height:0;
+  accent-color:rgba(0,255,213,.95);
+}
+.flprLauncherRendererRow select{
+  width:100%;
+}
+.flprLauncherRendererActions{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+  margin:0;
+}
+.flprLauncherRendererStatus.restartRequired{
+  color:rgba(255,224,122,.95);
+}
+body.flprStandaloneOriginalClient #flprLauncherRendererDock{
+  display:none !important;
 }
 .controlsTabPanel[data-ctrl-panel="connect"] .connectCompactLayout{
   height: 100%;
@@ -47322,6 +47458,184 @@ function buildControlsNote(text){
   note.textContent = msg;
   return note;
 }
+const flprLauncherRendererState = {
+  loaded: false,
+  response: null
+};
+function flprLauncherRendererApi(){
+  try{
+    const api = window.flprElectron || window.flprStandaloneElectron;
+    if(api && typeof api.getRendererSettings === "function" && typeof api.setRendererSettings === "function") return api;
+  }catch(_){}
+  return null;
+}
+function buildFlprLauncherRendererDock(){
+  const dock = document.createElement("div");
+  dock.id = "flprLauncherRendererDock";
+  dock.className = "flprLauncherRendererDock";
+  dock.innerHTML = `
+    <div class="flprLauncherRendererGrid">
+      <label class="flprLauncherRendererRow">
+        <input id="flprLauncherHardwareAccelToggle" type="checkbox" checked>
+        <span class="cLabel">HARDWARE ACCELERATION</span>
+      </label>
+      <label class="flprLauncherRendererRow">
+        <span class="cLabel">BACKEND</span>
+        <select id="flprLauncherRendererBackend" class="cInput">
+          <option value="default">AUTO / DIRECT3D</option>
+          <option value="vulkan">VULKAN / ANGLE</option>
+        </select>
+      </label>
+    </div>
+    <div class="apHint flprLauncherRendererStatus" id="flprLauncherRendererStatus">Renderer settings loading.</div>
+    <div class="flprLauncherRendererActions">
+      <button class="cBtn" id="flprLauncherRendererSaveBtn" type="button">SAVE RENDERER</button>
+      <button class="cBtn danger" id="flprLauncherRendererRelaunchBtn" type="button">RELAUNCH APP</button>
+    </div>
+  `;
+  return dock;
+}
+function flprLauncherRendererFormValues(){
+  const hardware = document.getElementById("flprLauncherHardwareAccelToggle");
+  const backend = document.getElementById("flprLauncherRendererBackend");
+  return {
+    hardwareAcceleration: hardware ? !!hardware.checked : true,
+    renderer: String(backend?.value || "vulkan") === "default" ? "default" : "vulkan"
+  };
+}
+function flprLauncherSetRendererStatus(message, restartRequired){
+  const status = document.getElementById("flprLauncherRendererStatus");
+  if(!status) return;
+  status.textContent = String(message || "");
+  status.classList.toggle("restartRequired", !!restartRequired);
+}
+function flprLauncherRendererApplyResponse(response){
+  flprLauncherRendererState.loaded = true;
+  flprLauncherRendererState.response = response || null;
+  const settings = response?.settings || {};
+  const applied = response?.applied || settings;
+  const hardware = document.getElementById("flprLauncherHardwareAccelToggle");
+  const backend = document.getElementById("flprLauncherRendererBackend");
+  if(hardware) hardware.checked = settings.hardwareAcceleration !== false;
+  if(backend) backend.value = String(settings.renderer || "vulkan") === "default" ? "default" : "vulkan";
+  const appliedAccel = applied.hardwareAcceleration === false ? "GPU OFF" : "GPU ON";
+  const appliedRenderer = applied.renderer === "default" ? "AUTO" : "VULKAN";
+  const pending = !!response?.restartRequired;
+  flprLauncherSetRendererStatus(
+    pending
+      ? `Restart required. Active now: ${appliedAccel}, ${appliedRenderer}.`
+      : `Active now: ${appliedAccel}, ${appliedRenderer}.`,
+    pending
+  );
+}
+function flprLauncherRendererMarkDirty(){
+  const values = flprLauncherRendererFormValues();
+  const applied = flprLauncherRendererState.response?.applied || flprLauncherRendererState.response?.settings || {};
+  const pending = (
+    values.hardwareAcceleration !== (applied.hardwareAcceleration !== false) ||
+    values.renderer !== (String(applied.renderer || "vulkan") === "default" ? "default" : "vulkan")
+  );
+  flprLauncherSetRendererStatus(
+    pending ? "Unsaved renderer change. Save, then relaunch to apply." : "Renderer settings match the active launch.",
+    pending
+  );
+}
+function flprLauncherLoadRendererSettings(){
+  const api = flprLauncherRendererApi();
+  if(!api){
+    flprLauncherSetRendererStatus("Renderer controls are available in the Electron launcher only.", false);
+    return;
+  }
+  api.getRendererSettings()
+    .then((response)=>flprLauncherRendererApplyResponse(response))
+    .catch((err)=>{
+      flprLauncherSetRendererStatus("Renderer settings unavailable: " + (err?.message || err), false);
+    });
+}
+function flprLauncherSaveRendererSettings(){
+  const api = flprLauncherRendererApi();
+  if(!api){
+    flprLauncherSetRendererStatus("Renderer controls are available in the Electron launcher only.", false);
+    return;
+  }
+  api.setRendererSettings(flprLauncherRendererFormValues())
+    .then((response)=>{
+      flprLauncherRendererApplyResponse(response);
+      try{ if(typeof toast === "function") toast("good", "RENDERER SAVED", response?.restartRequired ? "Relaunch to apply renderer settings." : "Renderer settings already active.", 2200); }catch(_){}
+    })
+    .catch((err)=>{
+      flprLauncherSetRendererStatus("Renderer save failed: " + (err?.message || err), false);
+      try{ if(typeof toast === "function") toast("bad", "RENDERER SAVE FAILED", String(err?.message || err), 2600); }catch(_){}
+    });
+}
+function flprLauncherRelaunchForRendererSettings(){
+  const api = flprLauncherRendererApi();
+  if(!api || typeof api.relaunch !== "function"){
+    flprLauncherSetRendererStatus("Relaunch from the app menu or restart manually.", true);
+    return;
+  }
+  flprLauncherSetRendererStatus("Relaunching with saved renderer settings.", true);
+  api.relaunch().catch((err)=>{
+    flprLauncherSetRendererStatus("Relaunch failed: " + (err?.message || err), true);
+  });
+}
+function bindFlprLauncherRendererControls(){
+  const hardware = document.getElementById("flprLauncherHardwareAccelToggle");
+  const backend = document.getElementById("flprLauncherRendererBackend");
+  const save = document.getElementById("flprLauncherRendererSaveBtn");
+  const relaunch = document.getElementById("flprLauncherRendererRelaunchBtn");
+  if(hardware && !hardware.__flprLauncherRendererBound){
+    hardware.__flprLauncherRendererBound = true;
+    hardware.addEventListener("change", ()=>{
+      try{ playSfx("click"); }catch(_){}
+      flprLauncherRendererMarkDirty();
+    });
+  }
+  if(backend && !backend.__flprLauncherRendererBound){
+    backend.__flprLauncherRendererBound = true;
+    backend.addEventListener("change", ()=>{
+      try{ playSfx("click"); }catch(_){}
+      flprLauncherRendererMarkDirty();
+    });
+  }
+  if(save && !save.__flprLauncherRendererBound){
+    save.__flprLauncherRendererBound = true;
+    save.addEventListener("click", (event)=>{
+      event.preventDefault();
+      try{ playSfx("click"); }catch(_){}
+      flprLauncherSaveRendererSettings();
+    });
+  }
+  if(relaunch && !relaunch.__flprLauncherRendererBound){
+    relaunch.__flprLauncherRendererBound = true;
+    relaunch.addEventListener("click", (event)=>{
+      event.preventDefault();
+      try{ playSfx("click"); }catch(_){}
+      flprLauncherRelaunchForRendererSettings();
+    });
+  }
+}
+function ensureFlprLauncherRendererDock(parent){
+  if(document.body?.classList?.contains("flprStandaloneOriginalClient")) return null;
+  if(!flprLauncherRendererApi()) return null;
+  let dock = document.getElementById("flprLauncherRendererDock");
+  if(!dock) dock = buildFlprLauncherRendererDock();
+  if(parent && dock.parentElement !== parent) parent.appendChild(dock);
+  bindFlprLauncherRendererControls();
+  if(!flprLauncherRendererState.loaded) flprLauncherLoadRendererSettings();
+  else if(flprLauncherRendererState.response) flprLauncherRendererApplyResponse(flprLauncherRendererState.response);
+  return dock;
+}
+function ensureFlprLauncherRendererInVisuals(panelVisuals){
+  if(!panelVisuals) return null;
+  const dock = ensureFlprLauncherRendererDock(panelVisuals);
+  if(!dock) return null;
+  const existingSection = dock.closest(".connectPanelSection");
+  if(existingSection && panelVisuals.contains(existingSection)) return dock;
+  const leftCol = panelVisuals.querySelector(".visualsColLeft") || panelVisuals.querySelector(".visualsCol") || panelVisuals.querySelector(".tabSectionStack") || panelVisuals;
+  makeControlsPanelSection(leftCol, "Electron Renderer", [dock], { accent:"gold", mini:"vulkan / relaunch" });
+  return dock;
+}
 function buildMusicScenarioGroup(scenarios, noteText){
   const ids = Array.from(new Set((scenarios || []).map((s)=>String(s || "").trim()).filter(Boolean)));
   const rows = ids.map((id)=>document.querySelector(`.musicScenarioRow[data-music-scenario="${id}"]`)).filter(Boolean);
@@ -47354,7 +47668,10 @@ function compactVisualsControlsLayout(panelVisuals){
     panelVisuals.appendChild(stack);
     existing.forEach((node)=>stack.appendChild(node));
   }
-  if(stack.querySelector(":scope > .connectPanelSection")) return;
+  if(stack.querySelector(":scope > .connectPanelSection")){
+    ensureFlprLauncherRendererInVisuals(panelVisuals);
+    return;
+  }
   const moveTo = (parent, node)=>{ if(parent && node && node.parentElement !== parent) parent.appendChild(node); };
   const existing = Array.from(stack.children);
   const staging = document.createElement("div");
@@ -47380,6 +47697,7 @@ function compactVisualsControlsLayout(panelVisuals){
   const tableBannerTitle = findControlsSectionTitle(staging, "TABLE BANNERS");
   const tableBannerWrap = document.getElementById("tableBannersWrap");
   const tableBannerModal = document.getElementById("tableBannerModal");
+  const rendererDock = ensureFlprLauncherRendererDock(staging);
   const bossMusicGroup = buildMusicScenarioGroup([
     "boss_battle_beginning",
     "boss_battle_phase2"
@@ -47403,6 +47721,7 @@ function compactVisualsControlsLayout(panelVisuals){
   stack.appendChild(layout);
 
   makeControlsPanelSection(leftCol, "Display Controls", [topRow, checksBgTitle, checksBgNote, checksBgRow, swapRow], { accent:"green", mini:"chroma / checks bg / auto swap" });
+  makeControlsPanelSection(leftCol, "Electron Renderer", [rendererDock], { accent:"gold", mini:"vulkan / relaunch" });
   makeControlsPanelSection(leftCol, "Boss Card + Audio", [hpTestCard, soundTitle, soundRow], { accent:"blue", mini:"boss card / overlay sound" });
   makeControlsPanelSection(leftCol, "Boss Battle Music", [bossMusicGroup], { accent:"red", mini:"phase 1 / phase 2 handoff" });
   makeControlsPanelSection(rightCol, "Run Music", [runMusicGroup], { accent:"gold", mini:"bonus / opening / victory / stats" });

@@ -2,7 +2,7 @@ from base64 import b64encode
 import logging
 import os
 import json
-from typing import Callable, Optional, Counter
+from typing import Any, Callable, Optional, Counter
 import webbrowser
 
 import Utils
@@ -68,25 +68,74 @@ class ManualWorld(World):
     location_name_groups = location_name_groups
     victory_names = victory_names
 
-    # UT (the universal-est of trackers) can now generate without a YAML
-    ut_can_gen_without_yaml = False  # Temporary disable until we fix the bugs with it
+    # Universal Tracker can rebuild this world from the server-provided slot_data.
+    ut_can_gen_without_yaml = True
+
+    def _apply_slot_data_options(self, slot_data: dict[str, Any] | None) -> bool:
+        if not isinstance(slot_data, dict):
+            return False
+
+        applied = False
+        for key, value in slot_data.items():
+            option_type = self.options_dataclass.type_hints.get(key)
+            if option_type is None:
+                continue
+
+            try:
+                if isinstance(value, option_type):
+                    setattr(self.options, key, value)
+                else:
+                    parsed_value = option_type.from_any(value)
+                    if isinstance(parsed_value, option_type):
+                        setattr(self.options, key, parsed_value)
+                    else:
+                        getattr(self.options, key).value = value
+                applied = True
+            except Exception:
+                try:
+                    getattr(self.options, key).value = value
+                    applied = True
+                except Exception:
+                    logging.warning("Manual Pinball: could not apply slot_data option %s=%r for Universal Tracker.", key, value)
+
+        if applied:
+            self._flpr_ut_slot_data = dict(slot_data)
+        return applied
+
+    def _get_regen_slot_data(self) -> dict[str, Any] | None:
+        passthrough = getattr(self.multiworld, "re_gen_passthrough", None)
+        if not isinstance(passthrough, dict):
+            return None
+
+        slot_data = passthrough.get(self.game)
+        if isinstance(slot_data, dict):
+            return slot_data
+
+        for value in passthrough.values():
+            if isinstance(value, dict) and (
+                "base_game_table_set" in value
+                or "generic_checks" in value
+                or "task_shuffle" in value
+            ):
+                return value
+        return None
+
+    def generate_early(self) -> None:
+        self._apply_slot_data_options(self._get_regen_slot_data())
 
     def get_filler_item_name(self) -> str:
         return hook_get_filler_item_name(self, self.multiworld, self.player) or self.filler_item_name
 
-    def interpret_slot_data(self, slot_data: dict[str, any]):
+    def interpret_slot_data(self, slot_data: dict[str, Any]):
         #this is called by tools like UT
         if not slot_data:
-            return False
+            return None
 
-        regen = False
-        for key, value in slot_data.items():
-            if key in self.options_dataclass.type_hints:
-                getattr(self.options, key).value = value
-                regen = True
-
-        regen = hook_interpret_slot_data(self, self.player, slot_data) or regen
-        return regen
+        self._apply_slot_data_options(slot_data)
+        hook_passthrough = hook_interpret_slot_data(self, self.player, slot_data)
+        if isinstance(hook_passthrough, dict):
+            return hook_passthrough
+        return dict(slot_data)
 
     @classmethod
     def stage_assert_generate(cls, multiworld) -> None:

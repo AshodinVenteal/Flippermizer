@@ -25,6 +25,7 @@ GENERIC_CHECKS_SLOT_KEY = "generic_checks"
 PROGRESSIVE_BALL_STARTS_SLOT_KEY = "progressive_ball_starts"
 BASE_GAME_TABLE_SET_SLOT_KEY = "base_game_table_set"
 LEGACY_METASIZER_TABLE_SET_SLOT_KEY = "metasizer_table_set"
+FORCED_EASY_BOSS_KEY_SLOT_KEY = "forced_easy_boss_key_location"
 GENERIC_TASK_RE = re.compile(r"^(?P<table>.+?)\s-\s(?P<difficulty>Easy|Medium|Hard)\sTask$", re.IGNORECASE)
 METASIZER_SELECTION_MODES = {
     0: "random_catalog_pool",
@@ -37,6 +38,42 @@ HARD_TASK_FORBIDDEN_OBJECTIVE_RE = re.compile(
     r"\b(?:start|begin|qualify|reach|complete|play|light)\b.*\b(?:wizard\s*mode|wizard|grand\s*finale|join\s*the\s*cirqus|battle\s*for\s*the\s*kingdom|final\s*battle|final\s*frontier|champion\s*challenge)\b",
     re.IGNORECASE,
 )
+
+
+def _get_ut_regen_slot_data(world: World) -> dict[str, Any]:
+    direct_slot_data = getattr(world, "_flpr_ut_slot_data", None)
+    if isinstance(direct_slot_data, dict):
+        return direct_slot_data
+
+    multiworld = getattr(world, "multiworld", None)
+    passthrough = getattr(multiworld, "re_gen_passthrough", None)
+    if not isinstance(passthrough, dict):
+        return {}
+
+    game_key = str(getattr(world, "game", "") or "").strip()
+    if game_key and isinstance(passthrough.get(game_key), dict):
+        slot_data = passthrough[game_key]
+        setattr(world, "_flpr_ut_slot_data", dict(slot_data))
+        return slot_data
+
+    for slot_data in passthrough.values():
+        if isinstance(slot_data, dict) and (
+            BASE_GAME_TABLE_SET_SLOT_KEY in slot_data
+            or LEGACY_METASIZER_TABLE_SET_SLOT_KEY in slot_data
+            or GENERIC_CHECKS_SLOT_KEY in slot_data
+            or TASK_SHUFFLE_SLOT_KEY in slot_data
+        ):
+            setattr(world, "_flpr_ut_slot_data", dict(slot_data))
+            return slot_data
+
+    return {}
+
+
+def _get_ut_slot_payload(world: World, key: str) -> dict[str, Any] | None:
+    payload = _get_ut_regen_slot_data(world).get(key)
+    if isinstance(payload, dict):
+        return dict(payload)
+    return None
 
 
 def _location_categories(location: dict[str, Any]) -> list[str]:
@@ -953,6 +990,13 @@ def _get_metasizer_table_set_payload(world: World, multiworld: MultiWorld, playe
     cached = getattr(world, "_metasizer_table_set_payload", None)
     if isinstance(cached, dict):
         return cached
+    ut_payload = (
+        _get_ut_slot_payload(world, BASE_GAME_TABLE_SET_SLOT_KEY)
+        or _get_ut_slot_payload(world, LEGACY_METASIZER_TABLE_SET_SLOT_KEY)
+    )
+    if isinstance(ut_payload, dict):
+        setattr(world, "_metasizer_table_set_payload", ut_payload)
+        return ut_payload
     payload = _build_metasizer_table_set_payload(world, multiworld, player)
     setattr(world, "_metasizer_table_set_payload", payload)
     return payload
@@ -1044,6 +1088,10 @@ def _get_task_shuffle_payload(world: World, multiworld: MultiWorld, player: int)
     cached = getattr(world, "_task_shuffle_payload", None)
     if isinstance(cached, dict):
         return cached
+    ut_payload = _get_ut_slot_payload(world, TASK_SHUFFLE_SLOT_KEY)
+    if isinstance(ut_payload, dict):
+        setattr(world, "_task_shuffle_payload", ut_payload)
+        return ut_payload
     payload = _build_task_shuffle_payload(world, multiworld, player)
     setattr(world, "_task_shuffle_payload", payload)
     return payload
@@ -1311,6 +1359,19 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
     payload["by_location"] = by_location
     return payload
 
+
+def _get_generic_checks_payload(world: World, multiworld: MultiWorld, player: int) -> dict[str, Any]:
+    cached = getattr(world, "_generic_checks_payload", None)
+    if isinstance(cached, dict):
+        return cached
+    ut_payload = _get_ut_slot_payload(world, GENERIC_CHECKS_SLOT_KEY)
+    if isinstance(ut_payload, dict):
+        setattr(world, "_generic_checks_payload", ut_payload)
+        return ut_payload
+    payload = _build_generic_checks_payload(world, multiworld, player)
+    setattr(world, "_generic_checks_payload", payload)
+    return payload
+
 ########################################################################################
 ## Order of method calls when the world generates:
 ##    1. create_regions - Creates regions and locations
@@ -1498,7 +1559,13 @@ def before_generate_basic(world: World, multiworld: MultiWorld, player: int):
         logging.warning("Manual Pinball: No Easy (Ball 1 Sphere) locations found for Boss Key placement.")
         return
 
-    chosen = world.random.choice(easy_candidates)
+    forced_location_name = str(_get_ut_regen_slot_data(world).get(FORCED_EASY_BOSS_KEY_SLOT_KEY, "") or "").strip()
+    chosen = None
+    if forced_location_name:
+        chosen = next((location for location in easy_candidates if str(location.get("name", "")).strip() == forced_location_name), None)
+    if chosen is None:
+        chosen = world.random.choice(easy_candidates)
+    world._forced_easy_boss_key_location = str(chosen.get("name", "") or "").strip()
 
     # Remove any explicit Boss Key forbids on the chosen Easy location.
     dont_place_item = chosen.get("dont_place_item")
@@ -1549,7 +1616,7 @@ def before_fill_slot_data(slot_data: dict, world: World, multiworld: MultiWorld,
 # This is called after slot data is set and provides the slot data at the time, in case you want to check and modify it after Manual is done with it
 def after_fill_slot_data(slot_data: dict, world: World, multiworld: MultiWorld, player: int) -> dict:
     metasizer_payload = _get_metasizer_table_set_payload(world, multiworld, player)
-    generic_checks_payload = _build_generic_checks_payload(world, multiworld, player)
+    generic_checks_payload = _get_generic_checks_payload(world, multiworld, player)
     task_shuffle_payload = _get_task_shuffle_payload(world, multiworld, player)
     slot_data["task_shuffle_enabled"] = 1 if task_shuffle_payload.get("enabled") else 0
     if metasizer_payload.get("enabled"):
@@ -1578,6 +1645,8 @@ def after_fill_slot_data(slot_data: dict, world: World, multiworld: MultiWorld, 
     slot_data[GENERIC_CHECKS_SLOT_KEY] = generic_checks_payload
     slot_data[TASK_SHUFFLE_SLOT_KEY] = task_shuffle_payload
     slot_data[PROGRESSIVE_BALL_STARTS_SLOT_KEY] = _get_progressive_ball_start_payload(world)
+    if getattr(world, "_forced_easy_boss_key_location", None):
+        slot_data[FORCED_EASY_BOSS_KEY_SLOT_KEY] = str(world._forced_easy_boss_key_location)
     if metasizer_payload.get("enabled"):
         world_groups = metasizer_payload.get("selected_group_keys", [])
         logging.info(
@@ -1639,7 +1708,7 @@ def before_write_spoiler(world: World, multiworld: MultiWorld, spoiler_handle) -
             + "\n"
         )
 
-    generic_checks_payload = _build_generic_checks_payload(world, multiworld, world.player)
+    generic_checks_payload = _get_generic_checks_payload(world, multiworld, world.player)
     if generic_checks_payload.get("enabled"):
         spoiler_handle.write("\nGeneric Task Assignments:\n")
         for entry in generic_checks_payload.get("entries", []):

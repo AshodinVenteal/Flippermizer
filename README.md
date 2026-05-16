@@ -28,6 +28,7 @@ Streams utilizing Flippermizer can be seen at http://twitch.tv/ashodin on Tuesda
 - This publish copy removes local absolute file paths.
 - The local FLPR bot bridge is disabled by default in the published overlay copy.
 - JSZip is vendored locally at `vendor/jszip.min.js`.
+- Shared Stream/Home Edition UI and integration expectations live in `STYLE_GUIDE.md`.
 
 ## Run
 
@@ -35,15 +36,15 @@ Open `flippermizer_overlay_tower_v3.html` in a browser or OBS browser source.
 
 For the built-in bestiary link, keep `flippermizer_table_repository_library.html` in the same folder as the overlay file.
 
-For the standalone AP client, open `flippermizer_standalone_client.html` in a browser. It provides a pared-back Multiworld/Singleplayer interface without stream integrations, traps, or bonus pinball.
+For the standalone AP client, use **Flippermizer! Pinball Randomized! | Home Edition**. It provides a pared-back Multiworld/Singleplayer interface without stream integrations, traps, or bonus pinball.
 
-## Standalone EXE
+## Home Edition
 
-The standalone client can also be packaged as a Windows executable:
+Flippermizer! Pinball Randomized! | Home Edition can be packaged as a Windows executable:
 
 ```powershell
 npm install
 npm run dist:portable
 ```
 
-The portable build is written to `dist/`.
+The unpacked app and portable build are written to `dist/`.

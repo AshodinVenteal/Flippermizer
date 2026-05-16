@@ -2,6 +2,23 @@
   "use strict";
 
   const SETTINGS_KEY = "flpr_standalone_original_controls_v1";
+  const STANDALONE_AP_LOG_KEY = "flpr_standalone_ap_text_log_v1";
+  const STANDALONE_SENT_ITEMS_KEY = "flpr_standalone_ap_sent_items_v1";
+  const STANDALONE_AP_REWARD_STATE_KEY = "flpr_standalone_ap_reward_state_v1";
+  const STANDALONE_KNOWN_AP_ITEM_NAMES = Object.freeze({
+    "370001": "Ethereal Crossbow",
+    "heretic|370001": "Ethereal Crossbow"
+  });
+  const STANDALONE_OVERLAY_SETTINGS_KEY = "flpr_settings_v1";
+  const STANDALONE_OVERLAY_LEGACY_SETTINGS_KEYS = Object.freeze(["flpr_settings_v2", "flpr_settings_v21", "flpr_settings_v20", "flpr_settings_v19"]);
+  const STANDALONE_CHECKS_BG_OPTIONS = Object.freeze([
+    { value:"classic", label:"CLASSIC CHECKS", className:"" },
+    { value:"circuit", label:"CIRCUIT RED/BLUE", className:"checksBgCircuit" },
+    { value:"lattice", label:"NEON LATTICE", className:"checksBgNeonLattice" },
+    { value:"blueprint", label:"BLUEPRINT GRID", className:"checksBgBlueprint" },
+    { value:"stars", label:"VECTOR STARS", className:"checksBgVectorStars" },
+    { value:"radar", label:"RADAR SWEEP", className:"checksBgRadar" }
+  ]);
   const DEFAULT_SETTINGS = {
     controlsOffset: 0
   };
@@ -19,6 +36,42 @@
   }
 
   const standaloneSettings = readSettings();
+  const standaloneRendererControls = {
+    loaded: false,
+    response: null,
+    saveTimer: null
+  };
+  const standaloneSlotTaskPayload = {
+    byLocation: new Map(),
+    byLocationNormalized: new Map(),
+    bySlot: new Map()
+  };
+  const standaloneApPlayerMeta = {
+    nameById: new Map(),
+    gameById: new Map(),
+    gameByName: new Map()
+  };
+
+  function disableStandaloneFlprBotSync(){
+    try{ window.FLPR_BOT_SYNC_ENABLED = false; }catch(_){}
+    try{ window.FLPR_BOT_SYNC_URL = ""; }catch(_){}
+    try{ window.FLPR_BOT_SYNC_TOKEN = ""; }catch(_){}
+    try{ localStorage.setItem("flpr_bot_sync_cfg_v1", JSON.stringify({ enabled:false, url:"http://127.0.0.1:8787", token:"change_me" })); }catch(_){}
+    try{ flprBotSyncEnabled = function(){ return false; }; }catch(_){}
+    try{ flprBotSyncBaseUrl = function(){ return ""; }; }catch(_){}
+    try{ flprBotSyncToken = function(){ return ""; }; }catch(_){}
+    try{ flprBotSyncReportError = function(){}; }catch(_){}
+    try{ postFlprBotSync = async function(){ return false; }; }catch(_){}
+    try{ getFlprBotSync = async function(){ return null; }; }catch(_){}
+    try{ syncFlprBotTableFromNowPlaying = function(){}; }catch(_){}
+    try{ syncFlprBotCurrentTableSnapshot = function(){ return null; }; }catch(_){}
+    try{ syncFlprBotCurrentTable = function(){}; }catch(_){}
+    try{ syncFlprBotBossKeys = function(){}; }catch(_){}
+    try{ syncFlprBotBossStatus = function(){}; }catch(_){}
+    try{ syncFlprBotEpisodeState = function(){}; }catch(_){}
+  }
+
+  disableStandaloneFlprBotSync();
 
   function clamp(value, min, max){
     const n = Number(value);
@@ -95,6 +148,97 @@
       body.flprStandaloneOriginalClient .controlsTabPanel[data-ctrl-panel="testing"]{
         display:none !important;
       }
+      body.flprStandaloneOriginalClient #hintBallLocationBtn,
+      body.flprStandaloneOriginalClient .hintPoolItem:has(#hintPoolBall){
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks{
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks .checksFancyDivider.snapFx,
+      body.flprStandaloneOriginalClient #viewChecks .checksFancyDivider.tableGlowFx{
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient.checksBgNeonLattice #viewChecks .checksWrap:not(.bossBannerMode)::before{
+        opacity:.52 !important;
+        background:
+          repeating-linear-gradient(45deg, rgba(0,255,213,.16) 0 2px, transparent 2px 24px),
+          repeating-linear-gradient(-45deg, rgba(255,86,214,.13) 0 2px, transparent 2px 28px),
+          linear-gradient(90deg, rgba(0,217,255,.09) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255,224,122,.07) 1px, transparent 1px),
+          radial-gradient(110% 90% at 50% 18%, rgba(0,166,255,.20), rgba(0,0,0,.74)) !important;
+        background-size:96px 96px, 112px 112px, 48px 48px, 48px 48px, 100% 100% !important;
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient.checksBgNeonLattice #viewChecks .checksWrap:not(.bossBannerMode)::after{
+        opacity:.22 !important;
+        background:
+          linear-gradient(90deg, transparent, rgba(0,255,213,.24), transparent),
+          repeating-linear-gradient(90deg, rgba(255,86,214,.11) 0 1px, transparent 1px 18px) !important;
+        background-size:180px 100%, 72px 72px !important;
+        mix-blend-mode:screen !important;
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient.checksBgBlueprint #viewChecks .checksWrap:not(.bossBannerMode)::before{
+        opacity:.58 !important;
+        background:
+          linear-gradient(90deg, rgba(128,214,255,.16) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(128,214,255,.13) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,224,122,.08) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255,224,122,.07) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(4,32,58,.92), rgba(2,10,24,.92)) !important;
+        background-size:34px 34px, 34px 34px, 170px 170px, 170px 170px, 100% 100% !important;
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient.checksBgBlueprint #viewChecks .checksWrap:not(.bossBannerMode)::after{
+        opacity:.18 !important;
+        background:
+          repeating-linear-gradient(135deg, rgba(0,255,213,.12) 0 1px, transparent 1px 32px),
+          linear-gradient(120deg, transparent 0 42%, rgba(255,224,122,.16) 48%, transparent 54%) !important;
+        background-size:120px 120px, 100% 100% !important;
+        mix-blend-mode:screen !important;
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient.checksBgVectorStars #viewChecks .checksWrap:not(.bossBannerMode)::before{
+        opacity:.62 !important;
+        background:
+          radial-gradient(circle at 12% 18%, rgba(235,250,255,.80) 0 1px, transparent 2.4px),
+          radial-gradient(circle at 74% 28%, rgba(0,255,213,.72) 0 1px, transparent 2.8px),
+          radial-gradient(circle at 34% 72%, rgba(255,224,122,.70) 0 1px, transparent 2.6px),
+          radial-gradient(circle at 88% 84%, rgba(95,183,255,.74) 0 1px, transparent 2.8px),
+          linear-gradient(180deg, rgba(4,10,24,.96), rgba(0,0,0,.88)) !important;
+        background-size:170px 150px, 220px 190px, 190px 180px, 250px 220px, 100% 100% !important;
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient.checksBgVectorStars #viewChecks .checksWrap:not(.bossBannerMode)::after{
+        opacity:.20 !important;
+        background:
+          linear-gradient(26deg, transparent 0 48%, rgba(0,217,255,.18) 49%, transparent 51%),
+          linear-gradient(-34deg, transparent 0 49%, rgba(255,224,122,.13) 50%, transparent 52%) !important;
+        background-size:180px 160px, 240px 220px !important;
+        mix-blend-mode:screen !important;
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient.checksBgRadar #viewChecks .checksWrap:not(.bossBannerMode)::before{
+        opacity:.56 !important;
+        background:
+          repeating-radial-gradient(circle at 50% 50%, rgba(0,255,153,.11) 0 2px, transparent 2px 42px),
+          conic-gradient(from 260deg at 50% 50%, transparent 0 74%, rgba(0,255,153,.18) 82%, transparent 90% 100%),
+          linear-gradient(90deg, rgba(0,217,255,.10) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255,224,122,.07) 1px, transparent 1px),
+          radial-gradient(120% 100% at 50% 50%, rgba(0,80,58,.38), rgba(0,0,0,.86)) !important;
+        background-size:100% 100%, 100% 100%, 52px 52px, 52px 52px, 100% 100% !important;
+        animation:none !important;
+      }
+      body.flprStandaloneOriginalClient.checksBgRadar #viewChecks .checksWrap:not(.bossBannerMode)::after{
+        opacity:.18 !important;
+        background:
+          linear-gradient(90deg, transparent 0 49%, rgba(0,255,153,.22) 50%, transparent 51%),
+          linear-gradient(180deg, transparent 0 49%, rgba(0,217,255,.16) 50%, transparent 51%) !important;
+        background-size:100% 100%, 100% 100% !important;
+        mix-blend-mode:screen !important;
+        animation:none !important;
+      }
       body.flprStandaloneOriginalClient .bossDock{
         --bkIdleOpacity:1 !important;
       }
@@ -155,17 +299,73 @@
         grid-column:1 / -1 !important;
         margin-bottom:0 !important;
       }
+      body.flprStandaloneOriginalClient .standaloneConnectionModeShell{
+        grid-column:1 / -1 !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+        min-width:0 !important;
+        pointer-events:auto !important;
+        position:relative !important;
+        z-index:36 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneConnectionModeTabs{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneConnectionModeTab{
+        min-height:calc(26px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(0,166,255,.42) !important;
+        border-radius:8px !important;
+        background:linear-gradient(180deg, rgba(0,34,62,.88), rgba(0,12,24,.94)) !important;
+        color:rgba(222,246,255,.78) !important;
+        box-shadow:0 0 0 1px rgba(0,217,255,.10) inset !important;
+        font-size:calc(7.5px * var(--flprStandaloneControlFontScale)) !important;
+        line-height:1.18 !important;
+        white-space:normal !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneConnectionModeTab.active{
+        border-color:rgba(0,255,213,.92) !important;
+        color:rgba(238,255,252,.98) !important;
+        background:linear-gradient(180deg, rgba(0,92,118,.94), rgba(0,25,46,.96)) !important;
+        box-shadow:
+          0 0 calc(8px * var(--flprStandaloneControlFontScale)) rgba(0,217,255,.26),
+          0 0 0 1px rgba(0,255,213,.18) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneConnectionModePanels{
+        min-width:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneConnectionModePanel{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneConnectionModePanel.active{
+        display:block !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneConnectionModePanel .standaloneControlSection{
+        margin-bottom:0 !important;
+      }
       body.flprStandaloneOriginalClient .standaloneArchipelagoSection .apSettingsGrid{
         grid-template-columns:minmax(220px, 1.25fr) minmax(160px, .8fr) minmax(220px, 1fr) minmax(160px, .8fr) !important;
       }
       body.flprStandaloneOriginalClient .standaloneArchipelagoFooter{
-        display:grid !important;
-        grid-template-columns:minmax(0, 1fr) auto !important;
+        display:flex !important;
+        flex-direction:column !important;
         gap:calc(4px * var(--flprStandaloneControlFontScale)) !important;
-        align-items:center !important;
+        align-items:stretch !important;
       }
-      body.flprStandaloneOriginalClient .standaloneArchipelagoFooter .connectActionRow{
-        justify-content:flex-end !important;
+      body.flprStandaloneOriginalClient .standaloneArchipelagoButtons{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        width:100% !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneArchipelagoButtons .cBtn{
+        width:100% !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSaveApCfgBtn{
+        align-self:flex-end !important;
+        width:min(220px, 100%) !important;
       }
       body.flprStandaloneOriginalClient .standaloneSecondaryStack,
       body.flprStandaloneOriginalClient .standaloneLogStack{
@@ -282,10 +482,137 @@
         min-width:0 !important;
         overflow:hidden !important;
       }
+      body.flprStandaloneOriginalClient .recvWrap{
+        display:flex !important;
+        flex-direction:column !important;
+      }
       body.flprStandaloneOriginalClient .recvBody,
       body.flprStandaloneOriginalClient #apConnLogBody{
         max-height:none !important;
         min-height:160px !important;
+        scrollbar-gutter:stable !important;
+        scrollbar-width:thin !important;
+        scrollbar-color:rgba(0,217,255,.84) rgba(0,18,31,.96) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody::-webkit-scrollbar,
+      body.flprStandaloneOriginalClient #apConnLogBody::-webkit-scrollbar,
+      body.flprStandaloneOriginalClient .connectCol::-webkit-scrollbar,
+      body.flprStandaloneOriginalClient .controlsTabPanel::-webkit-scrollbar{
+        width:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        height:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody::-webkit-scrollbar-track,
+      body.flprStandaloneOriginalClient #apConnLogBody::-webkit-scrollbar-track,
+      body.flprStandaloneOriginalClient .connectCol::-webkit-scrollbar-track,
+      body.flprStandaloneOriginalClient .controlsTabPanel::-webkit-scrollbar-track{
+        background:
+          linear-gradient(180deg, rgba(0,18,31,.98), rgba(0,6,12,.98)) !important;
+        border-left:1px solid rgba(0,217,255,.18) !important;
+        box-shadow:inset 0 0 calc(6px * var(--flprStandaloneControlFontScale)) rgba(0,0,0,.62) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody::-webkit-scrollbar-thumb,
+      body.flprStandaloneOriginalClient #apConnLogBody::-webkit-scrollbar-thumb,
+      body.flprStandaloneOriginalClient .connectCol::-webkit-scrollbar-thumb,
+      body.flprStandaloneOriginalClient .controlsTabPanel::-webkit-scrollbar-thumb{
+        border-radius:0 !important;
+        border:1px solid rgba(150,248,255,.72) !important;
+        background:
+          linear-gradient(180deg, rgba(132,248,255,.96), rgba(0,166,255,.92) 52%, rgba(0,255,213,.78)) !important;
+        box-shadow:
+          0 0 calc(6px * var(--flprStandaloneControlFontScale)) rgba(0,217,255,.42),
+          inset 0 0 calc(3px * var(--flprStandaloneControlFontScale)) rgba(255,255,255,.22) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody::-webkit-scrollbar-corner,
+      body.flprStandaloneOriginalClient #apConnLogBody::-webkit-scrollbar-corner,
+      body.flprStandaloneOriginalClient .connectCol::-webkit-scrollbar-corner,
+      body.flprStandaloneOriginalClient .controlsTabPanel::-webkit-scrollbar-corner{
+        background:rgba(0,8,16,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody{
+        flex:1 1 auto !important;
+        min-height:0 !important;
+        overflow-y:scroll !important;
+        overflow-x:hidden !important;
+        padding:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        font-size:calc(5.4px * var(--flprStandaloneControlFontScale)) !important;
+        line-height:1.46 !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow,
+      body.flprStandaloneOriginalClient .recvBody .recvText,
+      body.flprStandaloneOriginalClient .recvBody .recvTime{
+        font-size:inherit !important;
+        line-height:1.46 !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvBadge{
+        font-size:calc(4.8px * var(--flprStandaloneControlFontScale)) !important;
+        line-height:1.25 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneItemTabs{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:calc(3px * var(--flprStandaloneControlFontScale)) !important;
+        margin:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneItemTab{
+        min-height:calc(24px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(0,166,255,.55) !important;
+        border-radius:8px !important;
+        background:linear-gradient(180deg, rgba(0,40,72,.86), rgba(0,16,30,.92)) !important;
+        color:rgba(222,246,255,.86) !important;
+        box-shadow:0 0 0 1px rgba(0,217,255,.12) inset !important;
+        cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneItemTab.active{
+        border-color:rgba(0,255,213,.92) !important;
+        color:rgba(238,255,252,.98) !important;
+        background:linear-gradient(180deg, rgba(0,107,128,.92), rgba(0,34,54,.96)) !important;
+        box-shadow:
+          0 0 calc(8px * var(--flprStandaloneControlFontScale)) rgba(0,217,255,.28),
+          0 0 0 1px rgba(0,255,213,.18) inset !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow{
+        cursor:pointer !important;
+        border:1px solid rgba(0,166,255,.18) !important;
+        border-radius:8px !important;
+        padding:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        margin-bottom:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        background:rgba(0,18,31,.42) !important;
+        user-select:text !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow:hover{
+        border-color:rgba(0,217,255,.48) !important;
+        background:rgba(0,50,82,.48) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow.is-selected{
+        border-color:rgba(255,224,122,.96) !important;
+        background:
+          linear-gradient(180deg, rgba(58,48,0,.62), rgba(0,33,48,.72)) !important;
+        box-shadow:
+          0 0 calc(10px * var(--flprStandaloneControlFontScale)) rgba(255,224,122,.26),
+          0 0 0 1px rgba(255,247,184,.18) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneItemCopyMenu{
+        position:fixed !important;
+        z-index:2147483647 !important;
+        pointer-events:auto !important;
+        min-width:calc(68px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(0,217,255,.72) !important;
+        border-radius:8px !important;
+        padding:calc(3px * var(--flprStandaloneControlFontScale)) !important;
+        background:
+          linear-gradient(180deg, rgba(0,32,52,.98), rgba(0,8,16,.98)) !important;
+        box-shadow:
+          0 0 calc(14px * var(--flprStandaloneControlFontScale)) rgba(0,217,255,.24),
+          0 12px 24px rgba(0,0,0,.48) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneItemCopyMenu button{
+        width:100% !important;
+        border:1px solid rgba(0,255,213,.55) !important;
+        border-radius:6px !important;
+        background:rgba(0,166,255,.14) !important;
+        color:rgba(235,255,252,.96) !important;
+        padding:calc(4px * var(--flprStandaloneControlFontScale)) calc(6px * var(--flprStandaloneControlFontScale)) !important;
+        cursor:pointer !important;
       }
       body.flprStandaloneOriginalClient .apConnLogHead{
         position:relative !important;
@@ -368,12 +695,421 @@
         white-space:pre-wrap !important;
         overflow-wrap:anywhere !important;
         word-break:break-word !important;
-        font-size:calc(4.6px * var(--flprStandaloneControlFontScale)) !important;
-        line-height:1.36 !important;
+        overflow-y:scroll !important;
+        overflow-x:hidden !important;
+        padding:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+        font-size:calc(5.6px * var(--flprStandaloneControlFontScale)) !important;
+        line-height:1.45 !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogLine{
+        display:block !important;
+        padding:calc(1px * var(--flprStandaloneControlFontScale)) 0 !important;
+        color:rgba(235,248,255,.94) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogLine + .apLogLine{
+        border-top:1px solid rgba(0,217,255,.08) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogEmpty{
+        color:rgba(232,250,255,.64) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogTimestamp{
+        color:rgba(135,220,255,.72) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogSource{
+        color:rgba(118,248,255,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogPlayer{
+        color:rgba(0,217,255,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogItem{
+        color:rgba(255,177,66,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogItem.apItem-progression{
+        color:rgba(255,154,24,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogItem.apItem-useful{
+        color:rgba(0,148,255,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogItem.apItem-trap{
+        color:rgba(255,75,118,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogItem.apItem-filler{
+        color:rgba(228,240,246,.9) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogLocation{
+        color:rgba(0,255,153,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogEvent{
+        color:rgba(255,231,126,.96) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogHint{
+        color:rgba(255,142,255,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apLogMuted{
+        color:rgba(188,212,224,.68) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal{
+        border-color:rgba(0,217,255,.74) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal.apItem-progression{
+        border-color:rgba(199,125,255,.92) !important;
+        box-shadow:0 22px 70px rgba(0,0,0,.62), 0 0 52px rgba(199,125,255,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal.apItem-useful{
+        border-color:rgba(83,183,255,.92) !important;
+        box-shadow:0 22px 70px rgba(0,0,0,.62), 0 0 52px rgba(83,183,255,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal.apItem-filler{
+        border-color:rgba(199,208,216,.72) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal.apItem-trap{
+        border-color:rgba(255,77,109,.92) !important;
+        box-shadow:0 22px 70px rgba(0,0,0,.62), 0 0 52px rgba(255,77,109,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal .ovModalBig.apLogItem.apItem-progression{
+        color:rgba(255,154,24,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal .ovModalBig.apLogItem.apItem-useful{
+        color:rgba(0,148,255,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal .ovModalBig.apLogItem.apItem-filler{
+        color:rgba(228,240,246,.92) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal .ovModalBig.apLogItem.apItem-trap{
+        color:rgba(255,75,118,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal .apLogPlayer{
+        color:rgba(0,217,255,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal .apLogLocation{
+        color:rgba(0,255,153,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal .apLogSource{
+        color:rgba(118,248,255,.94) !important;
+      }
+      body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSiegeQueued{
+        overflow:visible !important;
+        position:relative !important;
+        border-color:rgba(255,224,122,.90) !important;
+        box-shadow:
+          0 22px 70px rgba(0,0,0,.62),
+          0 0 44px rgba(255,224,122,.20),
+          0 0 78px rgba(255,77,109,.15) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeIncoming{
+        position:absolute !important;
+        left:50% !important;
+        top:-42px !important;
+        transform:translateX(-50%) !important;
+        z-index:5 !important;
+        pointer-events:none !important;
+        white-space:nowrap !important;
+        font-family:'Press Start 2P', monospace !important;
+        font-size:20px !important;
+        line-height:1 !important;
+        letter-spacing:0 !important;
+        color:rgba(255,238,129,.98) !important;
+        text-shadow:
+          0 0 8px rgba(255,224,122,.95),
+          0 0 18px rgba(255,77,109,.65),
+          0 0 34px rgba(0,217,255,.42) !important;
+        animation:flprStandaloneSiegeIncomingPulse .78s ease-in-out infinite alternate !important;
+      }
+      @keyframes flprStandaloneSiegeIncomingPulse{
+        from{
+          opacity:.82;
+          filter:drop-shadow(0 0 6px rgba(255,224,122,.55));
+          transform:translateX(-50%) translateY(2px) scale(.985);
+        }
+        to{
+          opacity:1;
+          filter:drop-shadow(0 0 18px rgba(255,77,109,.76));
+          transform:translateX(-50%) translateY(-2px) scale(1.015);
+        }
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard{
+        transition:
+          opacity 980ms ease,
+          filter 980ms ease !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard:not(.flprStandaloneSiegeIntroTarget){
+        opacity:.10 !important;
+        filter:grayscale(.75) brightness(.36) saturate(.58) !important;
+        pointer-events:none !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard.flprStandaloneSiegeIntroTarget{
+        z-index:1600 !important;
+        scale:.76 !important;
+        animation:flprStandaloneSiegeTargetGrow 1450ms cubic-bezier(.18,.92,.18,1) forwards !important;
+        pointer-events:none !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard.flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroReady{
+        pointer-events:auto !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleAura,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleKeep,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleCrown,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleGate,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleTower,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleFlag,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleWindows{
+        opacity:0 !important;
+        animation:flprStandaloneSiegeCastleIntro 980ms cubic-bezier(.16,.9,.18,1) 420ms forwards !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedArmyBadge,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedStory,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedArmyField,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedSiegeFx,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedAttackerBanner,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedStatusRail,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedDamageFx,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedRubbleFx{
+        opacity:0 !important;
+        transform:translateY(16px) scale(.94) !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedArmyBadge,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedStory,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedArmyField,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedSiegeFx,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedAttackerBanner,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedStatusRail,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedDamageFx,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedRubbleFx{
+        animation:flprStandaloneSiegeArmyIntro 820ms cubic-bezier(.18,.9,.18,1) forwards !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedDefenseHud,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedTargetBtn{
+        opacity:0 !important;
+        pointer-events:none !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroReady .besiegedDefenseHud,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroReady .besiegedTargetBtn{
+        animation:flprStandaloneSiegeControlsIntro 720ms ease-out forwards !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroReady .besiegedTargetBtn{
+        pointer-events:auto !important;
+      }
+      @keyframes flprStandaloneSiegeTargetGrow{
+        0%{ scale:.76; filter:brightness(.72) saturate(.74); }
+        68%{ scale:1.035; filter:brightness(1.14) saturate(1.18); }
+        100%{ scale:1; filter:brightness(1) saturate(1); }
+      }
+      @keyframes flprStandaloneSiegeCastleIntro{
+        0%{ opacity:0; transform:translateY(-24px) scale(.92); filter:brightness(.6); }
+        72%{ opacity:1; transform:translateY(5px) scale(1.025); filter:brightness(1.18); }
+        100%{ opacity:1; transform:translateY(0) scale(1); filter:brightness(1); }
+      }
+      @keyframes flprStandaloneSiegeArmyIntro{
+        0%{ opacity:0; transform:translateY(22px) scale(.90); filter:brightness(.62); }
+        65%{ opacity:1; transform:translateY(-3px) scale(1.035); filter:brightness(1.18); }
+        100%{ opacity:1; transform:translateY(0) scale(1); filter:brightness(1); }
+      }
+      @keyframes flprStandaloneSiegeControlsIntro{
+        from{ opacity:0; filter:brightness(.55); }
+        to{ opacity:1; filter:brightness(1); }
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryOverlay{
+        position:fixed !important;
+        inset:0 !important;
+        z-index:2147483647 !important;
+        pointer-events:auto !important;
+        overflow:hidden !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        isolation:isolate !important;
+        background:
+          radial-gradient(circle at 50% 42%, rgba(255,224,122,.24), rgba(0,217,255,.15) 26%, transparent 48%),
+          radial-gradient(circle at 50% 100%, rgba(34,255,136,.20), transparent 48%),
+          linear-gradient(180deg, rgba(0,6,14,.80), rgba(0,0,0,.92)) !important;
+        backdrop-filter:blur(3px) saturate(1.12) !important;
+        opacity:0 !important;
+        animation:flprStandaloneSiegeVictoryIn 260ms ease-out forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryOverlay.leaving{
+        animation:flprStandaloneSiegeVictoryOut 680ms ease-in forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryOverlay::before,
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryOverlay::after{
+        content:"" !important;
+        position:absolute !important;
+        top:-32% !important;
+        width:260px !important;
+        height:170% !important;
+        pointer-events:none !important;
+        opacity:.36 !important;
+        background:linear-gradient(180deg, rgba(255,247,190,.58), rgba(0,217,255,.16) 44%, transparent 78%) !important;
+        mix-blend-mode:screen !important;
+        animation:flprStandaloneSiegeVictorySpotlight 2300ms ease-in-out infinite !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryOverlay::before{
+        left:9% !important;
+        transform-origin:50% 4% !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryOverlay::after{
+        right:9% !important;
+        transform-origin:50% 4% !important;
+        animation-delay:260ms !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCard{
+        position:relative !important;
+        z-index:3 !important;
+        width:min(1120px, calc(100vw - 120px)) !important;
+        min-height:280px !important;
+        padding:38px 44px 34px !important;
+        border:3px solid rgba(255,224,122,.92) !important;
+        border-radius:22px !important;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(255,224,122,.20), transparent 40%),
+          radial-gradient(circle at 16% 100%, rgba(0,255,213,.16), transparent 46%),
+          linear-gradient(180deg, rgba(5,32,44,.92), rgba(2,9,18,.88)) !important;
+        box-shadow:
+          0 28px 84px rgba(0,0,0,.66),
+          0 0 52px rgba(255,224,122,.24),
+          0 0 90px rgba(0,217,255,.18),
+          0 0 0 2px rgba(255,255,255,.08) inset !important;
+        text-align:center !important;
+        transform:translateY(12px) scale(.96) !important;
+        animation:flprStandaloneSiegeVictoryCardIn 420ms cubic-bezier(.18,.9,.18,1) forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryKicker{
+        font-size:18px !important;
+        line-height:1.25 !important;
+        color:rgba(255,224,122,.98) !important;
+        text-shadow:
+          0 0 10px rgba(255,224,122,.82),
+          0 0 22px rgba(255,77,109,.38) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryTable{
+        margin-top:24px !important;
+        font-size:42px !important;
+        line-height:1.18 !important;
+        color:rgba(232,250,255,.98) !important;
+        text-shadow:
+          0 0 12px rgba(0,217,255,.62),
+          0 0 26px rgba(0,217,255,.30) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryEnemy{
+        margin-top:24px !important;
+        font-size:28px !important;
+        line-height:1.26 !important;
+        color:rgba(34,255,136,.98) !important;
+        text-shadow:
+          0 0 10px rgba(34,255,136,.70),
+          0 0 24px rgba(0,217,255,.34) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryFireworks{
+        position:absolute !important;
+        inset:0 !important;
+        z-index:2 !important;
+        pointer-events:none !important;
+        overflow:hidden !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeFirework{
+        position:absolute !important;
+        width:0 !important;
+        height:0 !important;
+        left:50% !important;
+        top:50% !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeFirework::before{
+        content:"" !important;
+        position:absolute !important;
+        width:14px !important;
+        height:14px !important;
+        left:-7px !important;
+        top:-7px !important;
+        border:2px solid var(--fw-color, rgba(255,224,122,.95)) !important;
+        border-radius:999px !important;
+        box-shadow:0 0 24px var(--fw-color, rgba(255,224,122,.95)) !important;
+        animation:flprStandaloneSiegeFireworkRing 760ms ease-out forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeSpark{
+        position:absolute !important;
+        left:-3px !important;
+        top:-3px !important;
+        width:6px !important;
+        height:6px !important;
+        border-radius:999px !important;
+        background:var(--fw-color, rgba(255,224,122,.95)) !important;
+        box-shadow:0 0 12px var(--fw-color, rgba(255,224,122,.95)) !important;
+        transform:translate(0,0) scale(1) !important;
+        animation:flprStandaloneSiegeSpark 860ms ease-out forwards !important;
+      }
+      @keyframes flprStandaloneSiegeVictoryIn{
+        from{ opacity:0; }
+        to{ opacity:1; }
+      }
+      @keyframes flprStandaloneSiegeVictoryOut{
+        from{ opacity:1; }
+        to{ opacity:0; }
+      }
+      @keyframes flprStandaloneSiegeVictoryCardIn{
+        to{ transform:translateY(0) scale(1); }
+      }
+      @keyframes flprStandaloneSiegeVictorySpotlight{
+        0%,100%{ transform:rotate(-18deg) scaleX(1); opacity:.26; }
+        50%{ transform:rotate(18deg) scaleX(1.08); opacity:.54; }
+      }
+      @keyframes flprStandaloneSiegeFireworkRing{
+        0%{ opacity:1; transform:scale(.25); }
+        100%{ opacity:0; transform:scale(5.8); }
+      }
+      @keyframes flprStandaloneSiegeSpark{
+        0%{ opacity:1; transform:translate(0,0) scale(1); }
+        100%{ opacity:0; transform:translate(var(--dx), var(--dy)) scale(.18); }
+      }
+      body.flprStandaloneOriginalClient .standaloneRendererDock{
+        margin:10px 2px 0 !important;
+        padding:10px !important;
+        gap:8px !important;
+        border-radius:14px !important;
+        background:
+          linear-gradient(180deg, rgba(5,18,32,.98), rgba(3,10,18,.98)),
+          radial-gradient(circle at 0% 0%, rgba(255,224,122,.12), transparent 46%) !important;
+        box-shadow:0 0 0 1px rgba(255,224,122,.16) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRendererGrid{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRendererRow{
+        display:grid !important;
+        grid-template-columns:auto minmax(0, 1fr) !important;
+        gap:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+        align-items:center !important;
+        padding:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(0,217,255,.18) !important;
+        border-radius:10px !important;
+        background:rgba(0,18,31,.42) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRendererRow input[type="checkbox"]{
+        width:calc(14px * var(--flprStandaloneControlFontScale)) !important;
+        height:calc(14px * var(--flprStandaloneControlFontScale)) !important;
+        min-height:0 !important;
+        accent-color:rgba(0,255,213,.95) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRendererRow select{
+        width:100% !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRendererActions{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRendererStatus{
+        min-height:calc(18px * var(--flprStandaloneControlFontScale)) !important;
+        color:rgba(232,250,255,.72) !important;
+        line-height:1.35 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRendererStatus.restartRequired{
+        color:rgba(255,224,122,.95) !important;
       }
       body.flprStandaloneOriginalClient .apConnLog *,
       body.flprStandaloneOriginalClient .standaloneLogStack *,
       body.flprStandaloneOriginalClient .standaloneArchipelagoSection *,
+      body.flprStandaloneOriginalClient .standaloneConnectionModeShell *,
       body.flprStandaloneOriginalClient .standaloneSecondaryStack *{
         pointer-events:auto !important;
       }
@@ -444,6 +1180,19 @@
       body.flprStandaloneOriginalClient #achievementsControlsPanel .ttl,
       body.flprStandaloneOriginalClient #achievementsControlsPanel .achCtlHd{
         font-size:calc(8px * var(--flprStandaloneControlFontScale)) !important;
+      }
+      body.flprStandaloneOriginalClient .checkTaskHoverCard{
+        white-space:normal !important;
+      }
+      body.flprStandaloneOriginalClient .checkTaskHoverCard .standaloneStrategyGuideHeader{
+        color:rgba(255,224,122,.98) !important;
+        margin-bottom:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        padding-bottom:calc(3px * var(--flprStandaloneControlFontScale)) !important;
+        border-bottom:1px solid rgba(255,224,122,.38) !important;
+        text-shadow:0 0 calc(8px * var(--flprStandaloneControlFontScale)) rgba(255,224,122,.28) !important;
+      }
+      body.flprStandaloneOriginalClient .checkTaskHoverCard .standaloneStrategyGuideBody{
+        color:rgba(232,250,255,.98) !important;
       }
     `;
     document.head.appendChild(style);
@@ -565,24 +1314,567 @@
     return pool[idx] || fallback;
   }
 
+  function standaloneStrategyKey(value){
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[\u2012\u2013\u2014]/g, "-")
+      .replace(/[^a-z0-9%+ ]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  const STANDALONE_PIXEL_TASK_GUIDES = Object.freeze({
+    "super mario bros": Object.freeze({
+      "spell s u p e r once": "Hit the S-U-P-E-R letter targets/lanes until all five letters are complete. Use controlled shots to the lit letters and let the table confirm the full SUPER spelling.",
+      "light the key": "Build shell/key progress until the Key insert is lit. Focus the key/shell lane sequence, then verify the Key light is active before taking the check.",
+      "start any bonus round": "Qualify a bonus round through the lit key/shell or castle feature path, then shoot the lit bonus-round start shot once it appears.",
+      "shoot the castle once": "Aim for the castle entrance and land one clean castle hit. A single registered castle shot is enough for this objective.",
+      "light 1 2 3 4 for multiball": "Complete the numbered 1-2-3-4 sequence to qualify multiball. Watch the inserts and keep shooting whichever number is currently unlit.",
+      "start multiball": "Finish the numbered multiball qualifier, then shoot the lit multiball start/lock shot to put multiball into play.",
+      "destroy 1 castle": "Keep shooting the castle entrance until the castle destruction sequence completes once. Count only a full castle clear, not a single castle hit.",
+      "complete one bonus round": "Light and start a bonus round, then finish its required lit shots before the round ends. The objective clears when the bonus round completion is awarded.",
+      "collect a castle jackpot": "Start castle or castle-related multiball, then shoot the lit castle jackpot shot while jackpot is active.",
+      "complete video mode": "Qualify and start video mode, then play it through to a successful completion rather than only starting it.",
+      "start 3 ball multiball": "Qualify the full multiball path and start it with three balls available. If only a smaller multiball starts, rebuild the lock/numbered progress.",
+      "destroy 2 castles in one game": "Destroy the first castle, then rebuild castle progress and destroy a second one before the game ends.",
+      "complete 2 bonus rounds in one game": "Complete one bonus round, then relight/start another and finish it before game over.",
+      "collect three castle jackpots": "Start castle jackpot play and collect three lit jackpot awards total. If multiball ends early, requalify and continue in the same game.",
+      "complete video mode for 30 000 000": "Qualify video mode and finish the high-value route worth 30,000,000. Do not count a partial or failed video mode."
+    }),
+    "street fighter ii": Object.freeze({
+      "defeat 1 opponent": "Start an opponent battle and finish the required lit shots until one opponent is defeated.",
+      "light a multiball start": "Advance lock/multiball qualification until the start shot is lit. Confirm the start insert before taking the check.",
+      "collect a car crash award": "Shoot into the car-crash award path when it is lit and collect the award from the table.",
+      "spell t o r p e d o once": "Hit TORPEDO letter shots until the full word is completed once.",
+      "collect a 10 000 000+ hurry up or mode award": "Start a hurry-up or mode, then cash a lit award while its value is at least 10,000,000.",
+      "start 2 ball multiball": "Qualify the two-ball multiball and shoot the lit start shot once it is ready.",
+      "defeat 3 opponents": "Start and complete three separate opponent battles in the same game.",
+      "spell torpedo completely": "Complete every TORPEDO letter in the sequence and let the table award the full completion.",
+      "collect a multiball jackpot": "Start multiball, then shoot any lit jackpot shot before multiball ends.",
+      "collect two mystery awards": "Light and collect two separate Mystery awards from the lit award shot.",
+      "defeat 6 opponents": "Keep cycling opponent battles and defeat six total before game over.",
+      "collect 3 multiball jackpots": "Start multiball and collect three lit jackpot shots total.",
+      "start both multiballs in one game": "Qualify and start each available multiball type before the game ends.",
+      "collect a super jackpot": "Build through regular jackpot progress until Super Jackpot lights, then shoot the flashing Super Jackpot shot.",
+      "score 100 000 000+ in torpedo multiball": "Start TORPEDO Multiball and prioritize jackpot/super-jackpot shots until the mode total reaches 100,000,000."
+    }),
+    "q bert s quest": Object.freeze({
+      "add 1 qube to the pyramid": "Build the pyramid by completing one Qube. A pyramid is made from six Qubes, so focus the lit pyramid/Qube rollover or target path until one cube is added and confirmed.",
+      "complete one 2 target drop bank": "Pick either two-target drop bank and clear both targets in that bank. Stay controlled after the second drop because the rebounds can be rude on this layout.",
+      "stop 1 villain": "Watch the active villain lamp, then use the stop-villain route before it reaches the pyramid. The figure-eight rollunder sequence is the key route: three rollunders in order erases the attacking villain.",
+      "make a 3 rollunder loop sequence": "Shoot the figure-eight/rollunder path and complete three rollunders in sequence. This is the core loop route and also feeds villain control, so keep repeating the loop while it is lit.",
+      "score the top rollover pyramid award": "Aim for the top rollover lanes when the pyramid award is available. Use nudging or lane-change timing if available to line up the lit rollover and collect the pyramid award.",
+      "complete 1 pyramid": "Add all six Qubes to finish one full pyramid. Keep villains pushed back or stopped so they do not steal pyramid progress while you build.",
+      "stop all 3 villains once": "Stop each villain type once. Cycle the active villain, use the figure-eight rollunder sequence to erase it, then repeat until all three villain lamps have been handled.",
+      "add 3 qubes in one ball": "Stay on pyramid-building shots for one ball and add three Qubes before draining. Use villain-control shots only when a villain is threatening to remove progress.",
+      "complete both drop banks": "Clear one two-target drop bank, regain control, then clear the other bank. Treat this as a precision target task instead of a scoring race.",
+      "collect a 100 000+ end of ball bonus": "Build pyramid progress, stop villains, and collect drop-bank/loop progress before draining. Preserve the ball until the displayed end-of-ball bonus is at least 100,000.",
+      "complete 2 pyramids": "Finish one six-Qube pyramid, then immediately rebuild the next pyramid. Prioritize safe Qube-building shots and keep villains from undoing the pyramid.",
+      "complete 3 pyramids": "Complete three six-Qube pyramids in one game. This is a long-route objective: build Qubes first, use rollunder villain stops when threatened, and avoid risky drop-bank rebounds unless needed.",
+      "light extra ball from villain lamps": "Light the villain lamps toward Extra Ball by stopping villains, especially through the three-rollunder figure-eight route. Once the villain lamp progress is complete, confirm Extra Ball is lit.",
+      "collect a 200 000+ end of ball bonus": "Stack pyramid completion, villain stops, and controlled feature progress until the end-of-ball bonus reaches 200,000 or more. Do not drain early just after lighting progress.",
+      "stop 5 villains in one game": "Keep cycling villain attacks and stop five total before game over. The repeatable route is to shoot the figure-eight rollunder sequence whenever a villain advances."
+    }),
+    "mr mrs pac man": Object.freeze({
+      "collect 5 pac maze moves": "Collect five maze-move awards from lit lanes, saucers, or target progress.",
+      "enter the pac maze": "Light Pac-Maze entry, then shoot the entry/start shot to enter the maze.",
+      "complete one drop target bank": "Clear one full drop target bank and let it register as completed.",
+      "collect a saucer award": "Shoot a lit saucer and take the award shown by the table.",
+      "light one pac man grid row or column": "Advance grid inserts until any complete row or column is lit.",
+      "complete 1 pac maze": "Enter Pac-Maze and finish the maze objective successfully.",
+      "enter aggressive mode": "Build maze/grid progress until Aggressive mode is available, then start it.",
+      "collect 10 pac maze moves": "Keep collecting maze-move awards until the total reaches ten.",
+      "complete two target banks": "Clear two target banks in one game.",
+      "score a completed maze end bonus": "Complete a Pac-Maze, then preserve the bonus through the ball drain so it is paid.",
+      "complete 2 pac mazes": "Finish two Pac-Maze runs before game over.",
+      "complete a pac maze in aggressive mode": "Enter Aggressive mode, then complete the Pac-Maze during that mode.",
+      "collect 20 pac maze moves": "Collect twenty total maze-move awards in the same game.",
+      "complete 3 target banks in one game": "Clear three target-bank completions before the game ends.",
+      "score 250 000+ maze bonus": "Build maze bonus through completed Pac-Maze progress until the bonus is worth at least 250,000."
+    }),
+    "space invaders": Object.freeze({
+      "light the right spinner": "Complete the spinner qualifier so the right spinner is lit for value.",
+      "hit the captive ball 3 times": "Shoot the captive ball three times hard enough for each hit to register.",
+      "complete the three top blue invaders": "Hit or roll through the top blue invader targets until all three are complete.",
+      "knock down the right side drop target": "Hit the right-side drop target and confirm it drops/registers.",
+      "collect a 50 000 right side drop award": "Build the right-side drop award to 50,000, then knock the drop target down to collect it.",
+      "max the captive ball value": "Keep hitting the captive ball until its value reaches the maximum.",
+      "complete all five blue invaders": "Complete the full five-invader blue target set.",
+      "collect bonus through the right side gap": "Light the bonus collect, then send the ball through the right-side gap to collect it.",
+      "reach 3x bonus multiplier": "Advance bonus multiplier through lanes/targets until 3X is lit.",
+      "collect the clone chamber value": "Light or build Clone Chamber, then shoot the collect path while the value is active.",
+      "collect bonus at 3x or better": "Raise bonus multiplier to at least 3X, light bonus collect, then collect it.",
+      "collect a 50 000 clone chamber value": "Build Clone Chamber to 50,000 and collect it before it changes or times out.",
+      "reach 5x bonus multiplier": "Continue advancing bonus multiplier until 5X is reached.",
+      "light both return lane extra balls": "Advance return-lane awards until both extra-ball lights are active.",
+      "score a 300 000+ bonus collect": "Build base bonus and multiplier, then collect the bonus when its value is at least 300,000."
+    })
+  });
+
+  function standaloneSourceTableForTask(tableName, entry, node){
+    return String(
+      entry?.source_table ||
+      entry?.sourceTable ||
+      entry?.target_table ||
+      entry?.targetTable ||
+      entry?.table ||
+      node?.source_table ||
+      node?.sourceTable ||
+      node?.target_table ||
+      node?.targetTable ||
+      node?.tableName ||
+      node?.table ||
+      tableName ||
+      ""
+    ).trim();
+  }
+
+  function standaloneStripGuidePrefix(value){
+    return String(value || "")
+      .replace(/^strategy\s+guide\s*:?\s*/i, "")
+      .replace(/^how\s+to\s+achieve\s*:?\s*/i, "")
+      .replace(/^guide\s*:?\s*/i, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function standaloneIsGenericStrategyText(value, tableName){
+    const text = standaloneStripGuidePrefix(value);
+    if(!text) return true;
+    if(/^generic ap summary\b/i.test(text)) return true;
+    if(/these are table-specific .* objectives/i.test(text)) return true;
+    if(/^use .* progress\.$/i.test(text) && text.length < 120) return true;
+    if(tableName && new RegExp(`^use .+ ${String(tableName).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} objectives\\.?$`, "i").test(text)) return true;
+    return false;
+  }
+
+  function standaloneFormatStrategyGuide(value){
+    const body = standaloneStripGuidePrefix(value);
+    if(!body) return "";
+    return `Strategy Guide\n${body}`;
+  }
+
+  function standaloneStrategyTableKeys(tableName){
+    const out = [];
+    const push = (value)=>{
+      const key = standaloneStrategyKey(value);
+      if(key && !out.includes(key)) out.push(key);
+    };
+    const raw = String(tableName || "").trim();
+    push(raw);
+    try{ push(getRepoCanonicalTableName(raw)); }catch(_){}
+    try{ push(achResolveTableName(raw, "")); }catch(_){}
+    const compact = raw.toLowerCase().replace(/[^a-z0-9]+/g, "");
+    if(compact === "qbertsquest" || compact === "qbertquest" || compact === "qbert" || compact === "qbertstable" || compact.includes("qbertsquest") || compact.includes("qbertquest")){
+      push("Q*bert's Quest");
+      push("Qberts Quest");
+      push("Q Bert's Quest");
+    }
+    if(/\bq\s*bert\b/i.test(raw) || /q\W*bert/i.test(raw) || compact.includes("qbertsquest") || compact.includes("qbertquest")){
+      push("Q*bert's Quest");
+    }
+    return out;
+  }
+
+  function standaloneExactStrategyGuide(tableName, taskName){
+    const taskKey = standaloneStrategyKey(taskName);
+    for(const tableKey of standaloneStrategyTableKeys(tableName)){
+      const guide = STANDALONE_PIXEL_TASK_GUIDES[tableKey]?.[taskKey];
+      if(guide) return guide;
+    }
+    return "";
+  }
+
+  function standalonePatternStrategyGuide(tableName, taskName){
+    const task = String(taskName || "").trim();
+    const key = standaloneStrategyKey(task);
+    if(!key) return "";
+    const score = task.match(/(?:score(?: target)?(?: of)?|score)\s*\(?([\d,]+\+?)\)?/i);
+    if(score) return `Build score to at least ${score[1]} before draining. Prioritize safe repeatable scoring, lit modes, jackpots, and bonus multiplier progress on ${tableName || "this table"}.`;
+    const count = key.match(/\b(\d+)\b/);
+    const countText = count ? count[1] : "";
+    if(/\bcastle jackpots?\b/.test(key)) return `${countText ? `Collect ${countText} castle jackpots` : "Collect the castle jackpot"} by starting the castle jackpot mode or multiball, then shooting the lit castle jackpot shot while it is active.`;
+    if(/\bdestroy\b.*\bcastles?\b/.test(key)) return `${countText ? `Destroy ${countText} castles` : "Destroy the castle"} by repeatedly shooting the castle entrance until each full castle-destruction sequence completes.`;
+    if(/\bbonus rounds?\b/.test(key)) return `${countText ? `Complete ${countText} bonus rounds` : "Complete the bonus round"} by lighting and starting the bonus-round feature, then finishing its lit shots before the timer or mode ends.`;
+    if(/\bvideo mode\b/.test(key)) return "Qualify and start Video Mode, then complete its full objective successfully. For score-specific video tasks, keep the mode alive until the required value is awarded.";
+    if(/\bmultiball\b/.test(key) && /\bjackpot\b/.test(key)) return "Start the relevant multiball first, then shoot the flashing jackpot shot before multiball ends.";
+    if(/\bmultiball\b/.test(key)) return "Complete the table's lock or numbered qualifier, then shoot the lit multiball start shot once it is ready.";
+    if(/^spell\b/.test(key)) return "Hit the named letter lanes or targets until the whole word is complete, using lane changes where the table allows it.";
+    if(/^light\b/.test(key)) return "Advance the named feature through its specific lanes, targets, or awards until its insert is visibly lit, then confirm the table has registered it.";
+    if(/^start\b/.test(key)) return "Qualify the named feature first, then shoot the lit start shot once to begin it.";
+    if(/^complete\b/.test(key)) return "Follow the table's lit shots for this objective until the table awards the full completion, not just the start.";
+    if(/^collect\b/.test(key)) return "Light the named award, then shoot its collect shot while the award is active.";
+    if(/^shoot\b/.test(key) || /^hit\b/.test(key)) return "Make the named shot cleanly enough for the switch or feature to register on the table.";
+    if(/^reach\b/.test(key) || /^advance\b/.test(key)) return "Keep building the named feature one step at a time until the requested threshold is shown or awarded.";
+    return "Complete the objective as written, using the lit inserts and table display to confirm each required step registers.";
+  }
+
+  function standaloneTaskStrategyGuide(tableName, taskName, entry, node){
+    const targetTable = standaloneSourceTableForTask(tableName, entry, node);
+    const exact = standaloneExactStrategyGuide(targetTable, taskName) || standaloneExactStrategyGuide(tableName, taskName);
+    if(exact) return exact;
+    const sourceExplanation = String(entry?.strategy_guide || entry?.strategyGuide || entry?.standalone_source_explanation || entry?.explanation || "").trim();
+    if(sourceExplanation && !standaloneIsGenericStrategyText(sourceExplanation, targetTable)){
+      return sourceExplanation;
+    }
+    try{
+      const getter = window.flprGetTaskExplanationMeta || window.FLPR_TASK_EXPLANATIONS?.resolveTaskExplanationMeta;
+      if(typeof getter === "function"){
+        const meta = getter(taskName, node || standaloneTaskTooltipNode(targetTable, taskName, entry));
+        const text = String(meta?.text || "").trim();
+        if(text && !standaloneIsGenericStrategyText(text, targetTable)){
+          return text;
+        }
+      }
+    }catch(_){}
+    return standalonePatternStrategyGuide(targetTable || tableName, taskName);
+  }
+
   function standaloneTaskExplanationFor(tableName, objective){
     const taskName = String(objective || "").trim();
     const targetTable = String(tableName || "").trim();
     if(!taskName) return "";
+    const node = {
+      tableName: targetTable,
+      table: targetTable,
+      target_table: targetTable,
+      full: targetTable ? `${targetTable} - ${taskName}` : taskName,
+      location: targetTable ? `${targetTable} - ${taskName}` : taskName
+    };
+    return standaloneFormatStrategyGuide(standaloneTaskStrategyGuide(targetTable, taskName, null, node));
+  }
+
+  function standaloneTaskTooltipNode(tableName, objective, entry){
+    const taskName = String(objective || entry?.objective || entry?.display_name || entry?.title || "").trim();
+    const targetTable = String(
+      tableName ||
+      entry?.source_table ||
+      entry?.sourceTable ||
+      entry?.target_table ||
+      entry?.table ||
+      ""
+    ).trim();
+    const locationName = String(
+      entry?.source_location ||
+      entry?.sourceLocation ||
+      entry?.location ||
+      (targetTable && taskName ? `${targetTable} - ${taskName}` : taskName)
+    ).trim();
+    const cleanEntry = entry && typeof entry === "object" ? standaloneSanitizeTaskEntry(entry) : null;
+    return {
+      id: Number(entry?.id || entry?.location_id || entry?.locationId || 0) || 0,
+      full: locationName || (targetTable && taskName ? `${targetTable} - ${taskName}` : taskName),
+      short: taskName,
+      baseShort: taskName,
+      location: locationName,
+      locationName,
+      tableName: targetTable,
+      table: targetTable,
+      target_table: targetTable,
+      source_table: String(entry?.source_table || entry?.sourceTable || targetTable || "").trim(),
+      source_location: locationName,
+      taskShuffleEntry: cleanEntry,
+      genericEntry: cleanEntry
+    };
+  }
+
+  function standaloneResolveTaskTooltip(tableName, objective, entry){
+    const taskName = String(objective || entry?.objective || entry?.display_name || entry?.title || "").trim();
+    if(!taskName) return "";
+    const node = standaloneTaskTooltipNode(tableName, taskName, entry);
+    return standaloneFormatStrategyGuide(standaloneTaskStrategyGuide(tableName, taskName, entry, node));
+  }
+
+  function standaloneSanitizeTaskEntry(entry){
+    if(!entry || typeof entry !== "object") return entry;
+    const copy = { ...entry };
+    const originalExplanation = String(copy.explanation || "").trim();
+    if(originalExplanation && !copy.standalone_source_explanation){
+      copy.standalone_source_explanation = originalExplanation;
+    }
+    delete copy.explanation;
+    return copy;
+  }
+
+  function standaloneSanitizeByLocation(byLocation){
+    if(!byLocation || typeof byLocation !== "object" || Array.isArray(byLocation)) return byLocation;
+    const out = {};
+    Object.entries(byLocation).forEach(([locationName, entry])=>{
+      out[locationName] = standaloneSanitizeTaskEntry(entry);
+    });
+    return out;
+  }
+
+  function standaloneSanitizeTaskPayload(payload){
+    if(!payload || typeof payload !== "object") return payload;
+    const out = { ...payload };
+    if(Array.isArray(payload.entries)){
+      out.entries = payload.entries.map((entry)=>standaloneSanitizeTaskEntry(entry));
+    }else if(payload.entries && typeof payload.entries === "object"){
+      out.entries = {};
+      Object.entries(payload.entries).forEach(([key, entry])=>{
+        out.entries[key] = standaloneSanitizeTaskEntry(entry);
+      });
+    }
+    if(payload.by_location && typeof payload.by_location === "object"){
+      out.by_location = standaloneSanitizeByLocation(payload.by_location);
+    }
+    return out;
+  }
+
+  function standaloneSanitizeSlotTaskExplanations(slotData){
+    if(!slotData || typeof slotData !== "object") return slotData;
+    const out = { ...slotData };
+    out.generic_checks = standaloneSanitizeTaskPayload(slotData.generic_checks);
+    out.task_shuffle = standaloneSanitizeTaskPayload(slotData.task_shuffle);
+    return out;
+  }
+
+  function standaloneNormalizeTaskLocationKey(value){
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[\u2012\u2013\u2014]/g, "-")
+      .replace(/\s+/g, " ");
+  }
+
+  function standaloneTaskLookupTableKey(value){
     try{
-      const getter = window.flprGetTaskExplanationMeta || window.FLPR_TASK_EXPLANATIONS?.resolveTaskExplanationMeta;
-      if(typeof getter === "function"){
-        const meta = getter(taskName, {
-          tableName: targetTable,
-          table: targetTable,
-          target_table: targetTable,
-          full: targetTable ? `${targetTable} - ${taskName}` : taskName,
-          location: targetTable ? `${targetTable} - ${taskName}` : taskName
+      if(typeof canonicalTableMapKey === "function") return String(canonicalTableMapKey(value) || "").trim();
+    }catch(_){}
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+  }
+
+  function standaloneTaskEntryObjective(entry){
+    return String(entry?.objective || entry?.display_name || entry?.displayName || entry?.title || entry?.task_name || "").trim();
+  }
+
+  function standaloneTaskEntrySlotKey(entry, locationName){
+    const split = standaloneSplitLocationName(locationName || entry?.location || entry?.source_location || "");
+    const tableName = String(entry?.target_table || entry?.targetTable || entry?.table || split.table || "").trim();
+    const difficulty = String(entry?.difficulty || split.rest?.match?.(/^(easy|medium|hard)\s+/i)?.[1] || "").trim().toLowerCase();
+    const kind = String(entry?.kind || entry?.task_type || entry?.taskType || entry?.type || (/\bscore\b/i.test(split.rest || "") ? "score" : "task")).trim().toLowerCase();
+    const tableKey = standaloneTaskLookupTableKey(tableName);
+    if(!tableKey || !difficulty || !kind) return "";
+    return `${tableKey}|${difficulty}|${kind}`;
+  }
+
+  function standaloneRememberSlotTaskEntry(locationName, entry){
+    if(!entry || typeof entry !== "object") return;
+    const objective = standaloneTaskEntryObjective(entry);
+    if(!objective || standaloneIsGenericSlotTaskName(objective)) return;
+    const loc = String(locationName || entry.location || entry.source_location || entry.sourceLocation || "").trim();
+    if(loc){
+      standaloneSlotTaskPayload.byLocation.set(loc, entry);
+      standaloneSlotTaskPayload.byLocationNormalized.set(standaloneNormalizeTaskLocationKey(loc), entry);
+    }
+    const slotKey = standaloneTaskEntrySlotKey(entry, loc);
+    if(slotKey) standaloneSlotTaskPayload.bySlot.set(slotKey, entry);
+  }
+
+  function standaloneRememberSlotTaskPayload(slotData){
+    standaloneSlotTaskPayload.byLocation.clear();
+    standaloneSlotTaskPayload.byLocationNormalized.clear();
+    standaloneSlotTaskPayload.bySlot.clear();
+    const src = (slotData && typeof slotData === "object") ? slotData : {};
+    [src.generic_checks, src.task_shuffle].forEach((payload)=>{
+      if(!payload || typeof payload !== "object") return;
+      const byLoc = payload.by_location || payload.byLocation || {};
+      if(byLoc && typeof byLoc === "object" && !Array.isArray(byLoc)){
+        Object.entries(byLoc).forEach(([locationName, entry])=>standaloneRememberSlotTaskEntry(locationName, entry));
+      }
+      const entries = Array.isArray(payload.entries)
+        ? payload.entries
+        : (payload.entries && typeof payload.entries === "object" ? Object.values(payload.entries) : []);
+      entries.forEach((entry)=>standaloneRememberSlotTaskEntry(entry?.location || entry?.source_location || "", entry));
+    });
+  }
+
+  function standaloneSlotTaskEntryForLocation(locationName){
+    const raw = String(locationName || "").trim();
+    if(!raw) return null;
+    const exact = standaloneSlotTaskPayload.byLocation.get(raw)
+      || standaloneSlotTaskPayload.byLocationNormalized.get(standaloneNormalizeTaskLocationKey(raw));
+    if(exact) return exact;
+    const slotKey = standaloneTaskEntrySlotKey({}, raw);
+    return slotKey ? (standaloneSlotTaskPayload.bySlot.get(slotKey) || null) : null;
+  }
+
+  function standaloneScrubLiveGenericTaskExplanations(){
+    try{
+      ["genericChecks", "taskShuffle"].forEach((bucketName)=>{
+        const bucket = ap?.[bucketName];
+        if(!bucket || typeof bucket !== "object") return;
+        if(Array.isArray(bucket.entries)){
+          bucket.entries = bucket.entries.map((entry)=>standaloneSanitizeTaskEntry(entry));
+        }
+        ["byLocation", "byLocationNormalized", "bySlot"].forEach((mapName)=>{
+          const map = bucket[mapName];
+          if(!(map instanceof Map)) return;
+          for(const [key, value] of map.entries()){
+            map.set(key, standaloneSanitizeTaskEntry(value));
+          }
         });
-        return String(meta?.text || "").trim();
+      });
+      if(typeof applyGenericCheckPayloadToLocations === "function") applyGenericCheckPayloadToLocations();
+    }catch(_){}
+  }
+
+  function installStandaloneTaskTooltipBridge(){
+    try{
+      window.flprStandaloneTaskTooltip = standaloneResolveTaskTooltip;
+      window.flprStandaloneTaskTooltipForTest = standaloneResolveTaskTooltip;
+      window.flprStandaloneTaskTooltipForNodeForTest = standaloneResolveTaskTooltipForNode;
+      window.__flprStandaloneSanitizeSlotDataForTest = standaloneSanitizeSlotTaskExplanations;
+    }catch(_){}
+    let original = null;
+    try{
+      original = window.setGenericCheckPayload || (typeof setGenericCheckPayload === "function" ? setGenericCheckPayload : null);
+    }catch(_){}
+    if(!original || original.__flprStandaloneTaskTooltipBridge){
+      try{ standaloneRememberSlotTaskPayload(ap?.slotData); }catch(_){}
+      standaloneScrubLiveGenericTaskExplanations();
+      return;
+    }
+    const bridged = function(slotData){
+      standaloneRememberSlotTaskPayload(slotData);
+      const sanitized = standaloneSanitizeSlotTaskExplanations(slotData);
+      const result = original.call(this, sanitized);
+      standaloneScrubLiveGenericTaskExplanations();
+      return result;
+    };
+    bridged.__flprStandaloneTaskTooltipBridge = true;
+    bridged.__flprStandaloneOriginalSetGenericCheckPayload = original;
+    try{ window.setGenericCheckPayload = bridged; }catch(_){}
+    try{ setGenericCheckPayload = bridged; }catch(_){}
+    standaloneScrubLiveGenericTaskExplanations();
+  }
+
+  function standaloneTaskNameFromNode(node){
+    try{
+      if(typeof getTaskNameFromLocationNode === "function"){
+        const resolved = String(getTaskNameFromLocationNode(node) || "").trim();
+        if(resolved) return resolved;
       }
     }catch(_){}
-    return "";
+    return String(
+      node?.taskShuffleEntry?.objective ||
+      node?.taskShuffleEntry?.display_name ||
+      node?.taskShuffleEntry?.title ||
+      node?.genericEntry?.objective ||
+      node?.genericEntry?.display_name ||
+      node?.genericEntry?.title ||
+      node?.short ||
+      node?.full ||
+      ""
+    ).trim();
+  }
+
+  function standaloneResolveTaskTooltipForNode(node){
+    const taskName = standaloneTaskNameFromNode(node);
+    if(!taskName) return "";
+    const entry = node?.taskShuffleEntry || node?.genericEntry || null;
+    const tableName = standaloneSourceTableForTask(node?.tableName || node?.table || "", entry, node);
+    return standaloneFormatStrategyGuide(standaloneTaskStrategyGuide(tableName, taskName, entry, node));
+  }
+
+  function standaloneRenderStrategyTooltipCard(card, text){
+    if(!card) return;
+    const raw = String(text || "").trim();
+    const body = standaloneStripGuidePrefix(raw);
+    card.innerHTML = "";
+    const header = document.createElement("div");
+    header.className = "standaloneStrategyGuideHeader";
+    header.textContent = "Strategy Guide";
+    const content = document.createElement("div");
+    content.className = "standaloneStrategyGuideBody";
+    content.textContent = body || raw;
+    card.appendChild(header);
+    card.appendChild(content);
+  }
+
+  function standaloneShowCheckTaskHoverCard(btn, text){
+    const tip = String(text || "").trim();
+    if(!btn || !tip) return;
+    try{ if(typeof clearCheckTaskHoverTimer === "function") clearCheckTaskHoverTimer(); }catch(_){}
+    let card = null;
+    try{ card = (typeof ensureCheckTaskHoverCard === "function") ? ensureCheckTaskHoverCard() : null; }catch(_){}
+    if(!card) return;
+    try{ checkTaskHoverActiveBtn = btn; }catch(_){}
+    try{ checkTaskHoverActiveText = tip; }catch(_){}
+    standaloneRenderStrategyTooltipCard(card, tip);
+    card.classList.add("visible");
+    try{ if(typeof positionCheckTaskHoverCard === "function") positionCheckTaskHoverCard(btn, card); }catch(_){}
+  }
+
+  function standaloneScheduleCheckTaskHoverCard(btn, text){
+    const tip = String(text || "").trim();
+    if(!btn || !tip) return;
+    try{ if(typeof clearCheckTaskHoverTimer === "function") clearCheckTaskHoverTimer(); }catch(_){}
+    try{ checkTaskHoverPendingBtn = btn; }catch(_){}
+    try{ checkTaskHoverPendingText = tip; }catch(_){}
+    try{
+      checkTaskHoverShowTimer = setTimeout(()=>{
+        try{ checkTaskHoverShowTimer = 0; }catch(_){}
+        const pendingBtn = (()=>{ try{ return checkTaskHoverPendingBtn; }catch(_){ return btn; } })();
+        const pendingTip = (()=>{ try{ return checkTaskHoverPendingText; }catch(_){ return tip; } })();
+        try{ checkTaskHoverPendingBtn = null; }catch(_){}
+        try{ checkTaskHoverPendingText = ""; }catch(_){}
+        if(!pendingBtn || !pendingTip) return;
+        if(!document.body.contains(pendingBtn)) return;
+        standaloneShowCheckTaskHoverCard(pendingBtn, pendingTip);
+      }, Math.max(80, Number((typeof CHECK_TASK_HOVER_DELAY_MS !== "undefined" ? CHECK_TASK_HOVER_DELAY_MS : 1000)) || 1000));
+    }catch(_){}
+  }
+
+  function installStandaloneStrategyTooltipBridge(){
+    try{
+      window.flprStandaloneTaskTooltip = standaloneResolveTaskTooltip;
+      window.flprStandaloneTaskTooltipForTest = standaloneResolveTaskTooltip;
+      window.flprStandaloneTaskTooltipForNodeForTest = standaloneResolveTaskTooltipForNode;
+    }catch(_){}
+    try{
+      const originalGet = window.getTaskExplanationForNode || (typeof getTaskExplanationForNode === "function" ? getTaskExplanationForNode : null);
+      if(originalGet && !originalGet.__flprStandaloneStrategyGuideBridge){
+        const bridgedGet = function standaloneGetTaskExplanationForNodeBridge(node){
+          const tip = standaloneResolveTaskTooltipForNode(node);
+          if(tip) return tip;
+          try{ return originalGet.apply(this, arguments); }catch(_){ return ""; }
+        };
+        bridgedGet.__flprStandaloneStrategyGuideBridge = true;
+        bridgedGet.__flprStandaloneOriginalGetTaskExplanationForNode = originalGet;
+        try{ window.getTaskExplanationForNode = bridgedGet; }catch(_){}
+        try{ getTaskExplanationForNode = bridgedGet; }catch(_){}
+      }
+    }catch(_){}
+    try{
+      const originalBind = window.bindCheckTaskHover || (typeof bindCheckTaskHover === "function" ? bindCheckTaskHover : null);
+      if(originalBind && !originalBind.__flprStandaloneStrategyGuideBridge){
+        const bridgedBind = function standaloneBindCheckTaskHoverBridge(btn, text){
+          const tip = standaloneFormatStrategyGuide(text);
+          if(!btn || !tip) return;
+          if(btn.__flprStandaloneStrategyHoverBound === tip) return;
+          btn.__flprStandaloneStrategyHoverBound = tip;
+          const hoverShow = ()=>standaloneScheduleCheckTaskHoverCard(btn, tip);
+          const focusShow = ()=>standaloneShowCheckTaskHoverCard(btn, tip);
+          const hide = ()=>{
+            try{ if(typeof clearCheckTaskHoverTimer === "function") clearCheckTaskHoverTimer(); }catch(_){}
+            try{
+              if(checkTaskHoverActiveBtn === btn && typeof hideCheckTaskHoverCard === "function") hideCheckTaskHoverCard();
+            }catch(_){}
+          };
+          btn.addEventListener("mouseenter", hoverShow);
+          btn.addEventListener("focus", focusShow);
+          btn.addEventListener("mouseleave", hide);
+          btn.addEventListener("blur", hide);
+          btn.addEventListener("click", hide);
+        };
+        bridgedBind.__flprStandaloneStrategyGuideBridge = true;
+        bridgedBind.__flprStandaloneOriginalBindCheckTaskHover = originalBind;
+        try{ window.bindCheckTaskHover = bridgedBind; }catch(_){}
+        try{ bindCheckTaskHover = bridgedBind; }catch(_){}
+      }
+    }catch(_){}
   }
 
   function standaloneTaskSpecs(tableName, tableIndex){
@@ -661,9 +1953,9 @@
   function standaloneRewardFor(tableIndex, taskIndex, tableName, tables){
     const next = tables.length ? String(tables[(tableIndex + 1) % tables.length]?.tableName || tableName || "").trim() : String(tableName || "").trim();
     if(taskIndex === 0) return `Progressive Ball - ${next}`;
-    if(taskIndex === 1) return (tableIndex % 3 === 0) ? "Hint Ball Location" : "Easy Junk Item";
-    if(taskIndex === 2) return ([4, 12, 20].includes(tableIndex)) ? "Boss Key" : ((tableIndex % 4 === 1) ? "Hint Boss Key" : "Medium Junk Item");
-    if(taskIndex === 3) return (tableIndex % 5 === 2) ? "Pinball Fragment" : "Hint Ball Location";
+    if(taskIndex === 1) return "Easy Junk Item";
+    if(taskIndex === 2) return ([4, 12, 20].includes(tableIndex)) ? "Boss Key" : (([1, 9, 17].includes(tableIndex)) ? "Hint: Boss Key" : "Medium Junk Item");
+    if(taskIndex === 3) return (tableIndex % 5 === 2) ? "Pinball Fragment" : "Easy Junk Item";
     if(taskIndex === 4) return (tableIndex % 7 === 3) ? "Boss Key" : `Progressive Ball - ${tableName}`;
     return (tableIndex % 6 === 0) ? "Medium Junk Item" : "Easy Junk Item";
   }
@@ -823,50 +2115,65 @@
   function connectPanelHtml(cfg){
     return `
       <div class="connectCompactLayout flprStandaloneConnectLayout">
-        <section class="standaloneControlSection standaloneArchipelagoSection" data-accent="gold">
-          <div class="standaloneSectionTitle">ARCHIPELAGO <span class="mini">multiworld</span></div>
-          <div class="apSettingsGrid">
-            <div>
-              <div class="cLabel">SERVER</div>
-              <input class="cInput" id="apServer" autocomplete="off" placeholder="archipelago.gg:38281" value="${escapeAttr(cfg.server || "")}">
+        <div class="standaloneConnectionModeShell" data-standalone-connection-mode="archipelago">
+          <div class="standaloneConnectionModeTabs" role="tablist" aria-label="Connection mode">
+            <button class="standaloneConnectionModeTab active" type="button" role="tab" aria-selected="true" data-standalone-mode-tab="archipelago">ARCHIPELAGO CONNECTIONS</button>
+            <button class="standaloneConnectionModeTab" type="button" role="tab" aria-selected="false" data-standalone-mode-tab="singleplayer">SINGLEPLAYER</button>
+          </div>
+          <div class="standaloneConnectionModePanels">
+            <div class="standaloneConnectionModePanel active" role="tabpanel" data-standalone-mode-panel="archipelago">
+              <section class="standaloneControlSection standaloneArchipelagoSection" data-accent="gold">
+                <div class="standaloneSectionTitle">ARCHIPELAGO CONNECTIONS <span class="mini">multiworld</span></div>
+                <div class="apSettingsGrid">
+                  <div>
+                    <div class="cLabel">SERVER</div>
+                    <input class="cInput" id="apServer" autocomplete="off" placeholder="archipelago.gg:38281" value="${escapeAttr(cfg.server || "")}">
+                  </div>
+                  <div>
+                    <div class="cLabel">PLAYER</div>
+                    <input class="cInput" id="apPlayer" autocomplete="off" placeholder="Slot name" value="${escapeAttr(cfg.player || "Ashodin")}">
+                  </div>
+                  <div>
+                    <div class="cLabel">GAME</div>
+                    <input class="cInput" id="apGame" autocomplete="off" placeholder="Manual_FlippermizerBaseGame" value="${escapeAttr(cfg.game || "")}">
+                  </div>
+                  <div>
+                    <div class="cLabel">PASSWORD</div>
+                    <input class="cInput" id="apPass" type="password" autocomplete="off" placeholder="Optional" value="${escapeAttr(cfg.pass || "")}">
+                  </div>
+                </div>
+                <div class="standaloneArchipelagoFooter">
+                  <div class="apHint" id="apConnectedHost">CONNECTED; -</div>
+                  <div class="standaloneArchipelagoButtons">
+                    <button class="cBtn" id="apConnectBtn" type="button">CONNECT</button>
+                    <button class="cBtn danger" id="apDisconnectBtn" type="button">DISCONNECT</button>
+                  </div>
+                  <button class="cBtn standaloneSaveApCfgBtn" id="saveApCfgBtn" type="button">SAVE AP CFG</button>
+                </div>
+              </section>
             </div>
-            <div>
-              <div class="cLabel">PLAYER</div>
-              <input class="cInput" id="apPlayer" autocomplete="off" placeholder="Slot name" value="${escapeAttr(cfg.player || "Ashodin")}">
-            </div>
-            <div>
-              <div class="cLabel">GAME</div>
-              <input class="cInput" id="apGame" autocomplete="off" placeholder="Manual_FlippermizerBaseGame" value="${escapeAttr(cfg.game || "")}">
-            </div>
-            <div>
-              <div class="cLabel">PASSWORD</div>
-              <input class="cInput" id="apPass" type="password" autocomplete="off" placeholder="Optional" value="${escapeAttr(cfg.pass || "")}">
+            <div class="standaloneConnectionModePanel" role="tabpanel" data-standalone-mode-panel="singleplayer">
+              <section class="standaloneControlSection standaloneSingleplayerSection" data-accent="green">
+                <div class="standaloneSectionTitle">SINGLEPLAYER <span class="mini">local seed</span></div>
+                <div class="cRow connectActionRow">
+                  <button class="cBtn" id="standaloneStartSeedBtn" type="button">START SINGLEPLAYER SEED</button>
+                  <button class="cBtn danger" id="standaloneResetSeedBtn" type="button">RESET LOCAL RUN</button>
+                </div>
+              </section>
             </div>
           </div>
-          <div class="standaloneArchipelagoFooter">
-            <div class="apHint" id="apConnectedHost">CONNECTED; -</div>
-            <div class="cRow connectActionRow">
-              <button class="cBtn" id="apConnectBtn" type="button">CONNECT</button>
-              <button class="cBtn danger" id="apDisconnectBtn" type="button">DISCONNECT</button>
-              <button class="cBtn" id="saveApCfgBtn" type="button">SAVE AP CFG</button>
-            </div>
-          </div>
-        </section>
+        </div>
 
         <div class="connectCol connectColLeft standaloneSecondaryStack">
-          <section class="standaloneControlSection" data-accent="green">
-            <div class="standaloneSectionTitle">SINGLEPLAYER <span class="mini">local seed</span></div>
-            <div class="cRow connectActionRow">
-              <button class="cBtn" id="standaloneStartSeedBtn" type="button">START SINGLEPLAYER SEED</button>
-              <button class="cBtn danger" id="standaloneResetSeedBtn" type="button">RESET LOCAL RUN</button>
-            </div>
-          </section>
-
           <section class="standaloneControlSection grow" data-accent="gold">
-            <div class="standaloneSectionTitle" id="receivedHdr">RECEIVED ITEMS</div>
+            <div class="standaloneSectionTitle" id="receivedHdr">ITEM LOG</div>
             <div class="cRow">
               <button class="cBtn" id="apSyncReceivedBtn" type="button" onclick="return window.flprStandaloneSyncReceived ? window.flprStandaloneSyncReceived(event) : false;">SYNC RECEIVED</button>
               <button class="cBtn danger" id="apClearReceivedBtn" type="button">CLEAR LIST</button>
+            </div>
+            <div class="standaloneItemTabs" id="standaloneItemTabs">
+              <button class="standaloneItemTab active" type="button" data-standalone-item-tab="received">RECEIVED</button>
+              <button class="standaloneItemTab" type="button" data-standalone-item-tab="sent">SENT</button>
             </div>
             <div class="recvWrap">
               <div class="recvBody" id="receivedBody"></div>
@@ -881,8 +2188,7 @@
               <div class="apConnLogHead">
                 <div class="apConnLogTitle">AP CONNECTION LOG</div>
                 <div class="apConnLogTabs" id="apLogTabs">
-                  <button class="apLogTab" type="button" data-aplog-tab="status" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('status', event) : false;">STATUS</button>
-                  <button class="apLogTab active" type="button" data-aplog-tab="chat" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('chat', event) : false;">SERVER</button>
+                  <button class="apLogTab active" type="button" data-aplog-tab="status" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('status', event) : false;">STATUS</button>
                   <button class="apLogTab" type="button" data-aplog-tab="errors" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('errors', event) : false;">ERRORS</button>
                 </div>
               </div>
@@ -907,6 +2213,15 @@
       .replace(/"/g, "&quot;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
+  }
+
+  function standaloneEscapeHtml(value){
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function ensurePanel(panels, key){
@@ -936,6 +2251,35 @@
     return dock;
   }
 
+  function buildStandaloneRendererDock(){
+    const dock = document.createElement("section");
+    dock.id = "standaloneRendererDock";
+    dock.className = "standaloneRendererDock standaloneControlSection";
+    dock.dataset.accent = "gold";
+    dock.innerHTML = `
+      <div class="standaloneSectionTitle">RENDERER <span class="mini">restart required</span></div>
+      <div class="standaloneRendererGrid">
+        <label class="standaloneRendererRow">
+          <input id="standaloneHardwareAccelToggle" type="checkbox" checked>
+          <span class="cLabel">HARDWARE ACCELERATION</span>
+        </label>
+        <label class="standaloneRendererRow">
+          <span class="cLabel">BACKEND</span>
+          <select id="standaloneRendererBackend" class="cInput">
+            <option value="default">AUTO / DIRECT3D</option>
+            <option value="vulkan">VULKAN / ANGLE</option>
+          </select>
+        </label>
+      </div>
+      <div class="apHint standaloneRendererStatus" id="standaloneRendererStatus">Renderer settings loading.</div>
+      <div class="standaloneRendererActions">
+        <button class="cBtn" id="standaloneRendererSaveBtn" type="button">SAVE RENDERER SETTINGS</button>
+        <button class="cBtn danger" id="standaloneRendererRelaunchBtn" type="button">RELAUNCH APP</button>
+      </div>
+    `;
+    return dock;
+  }
+
   function ensureStandaloneTextSizeSlider(panel){
     if(!panel) return;
     try{
@@ -958,6 +2302,288 @@
     }catch(_){}
   }
 
+  function ensureStandaloneRendererControls(panel){
+    if(!panel) return;
+    try{
+      document.querySelectorAll("#standaloneRendererDock").forEach((dock)=>{
+        if(panel.contains(dock)) return;
+        dock.remove();
+      });
+      let dock = panel.querySelector("#standaloneRendererDock");
+      panel.querySelectorAll("#standaloneRendererDock").forEach((node, index)=>{
+        if(index === 0) dock = node;
+        else node.remove();
+      });
+      if(!dock) dock = buildStandaloneRendererDock();
+      const stack = panel.querySelector(":scope > .tabSectionStack") || panel;
+      if(dock.parentElement !== stack) stack.appendChild(dock);
+      else stack.insertBefore(dock, stack.firstChild || null);
+    }catch(_){}
+  }
+
+  function standaloneRendererApi(){
+    try{
+      const api = window.flprStandaloneElectron;
+      if(api && typeof api.getRendererSettings === "function" && typeof api.setRendererSettings === "function") return api;
+    }catch(_){}
+    return null;
+  }
+
+  function standaloneRendererFormValues(){
+    const hardware = document.getElementById("standaloneHardwareAccelToggle");
+    const backend = document.getElementById("standaloneRendererBackend");
+    return {
+      hardwareAcceleration: hardware ? !!hardware.checked : true,
+      renderer: String(backend?.value || "default") === "vulkan" ? "vulkan" : "default"
+    };
+  }
+
+  function standaloneSetRendererStatus(message, restartRequired){
+    const status = document.getElementById("standaloneRendererStatus");
+    if(!status) return;
+    status.textContent = String(message || "");
+    status.classList.toggle("restartRequired", !!restartRequired);
+  }
+
+  function standaloneApplyRendererResponse(response){
+    standaloneRendererControls.loaded = true;
+    standaloneRendererControls.response = response || null;
+    const settings = response?.settings || {};
+    const applied = response?.applied || settings;
+    const hardware = document.getElementById("standaloneHardwareAccelToggle");
+    const backend = document.getElementById("standaloneRendererBackend");
+    if(hardware) hardware.checked = settings.hardwareAcceleration !== false;
+    if(backend) backend.value = String(settings.renderer || "default") === "vulkan" ? "vulkan" : "default";
+    try{ document.getElementById("standaloneRendererDock")?.setAttribute("data-renderer-loaded", "1"); }catch(_){}
+    const appliedAccel = applied.hardwareAcceleration === false ? "GPU OFF" : "GPU ON";
+    const appliedRenderer = applied.renderer === "vulkan" ? "VULKAN" : "AUTO";
+    const pending = !!response?.restartRequired;
+    standaloneSetRendererStatus(
+      pending
+        ? `Restart required. Active now: ${appliedAccel}, ${appliedRenderer}.`
+        : `Active now: ${appliedAccel}, ${appliedRenderer}.`,
+      pending
+    );
+  }
+
+  function standaloneMarkRendererDirty(){
+    const values = standaloneRendererFormValues();
+    const applied = standaloneRendererControls.response?.applied || standaloneRendererControls.response?.settings || {};
+    const pending = (
+      values.hardwareAcceleration !== (applied.hardwareAcceleration !== false) ||
+      values.renderer !== (String(applied.renderer || "default") === "vulkan" ? "vulkan" : "default")
+    );
+    standaloneSetRendererStatus(
+      pending
+        ? "Unsaved renderer change. Save, then relaunch to apply."
+        : "Renderer settings match the active launch.",
+      pending
+    );
+  }
+
+  function standaloneLoadRendererSettings(){
+    const api = standaloneRendererApi();
+    if(!api){
+      standaloneSetRendererStatus("Renderer controls are available in the Electron launcher only.", false);
+      return;
+    }
+    api.getRendererSettings()
+      .then((response)=>standaloneApplyRendererResponse(response))
+      .catch((err)=>{
+        standaloneSetRendererStatus("Renderer settings unavailable: " + (err?.message || err), false);
+      });
+  }
+
+  function standaloneSaveRendererSettings(){
+    const api = standaloneRendererApi();
+    if(!api){
+      standaloneSetRendererStatus("Renderer controls are available in the Electron launcher only.", false);
+      return;
+    }
+    const values = standaloneRendererFormValues();
+    api.setRendererSettings(values)
+      .then((response)=>{
+        standaloneApplyRendererResponse(response);
+        try{ if(typeof toast === "function") toast("good", "RENDERER SAVED", response?.restartRequired ? "Relaunch to apply renderer settings." : "Renderer settings already active.", 2200); }catch(_){}
+      })
+      .catch((err)=>{
+        standaloneSetRendererStatus("Renderer save failed: " + (err?.message || err), false);
+        try{ if(typeof toast === "function") toast("bad", "RENDERER SAVE FAILED", String(err?.message || err), 2600); }catch(_){}
+      });
+  }
+
+  function standaloneRelaunchForRendererSettings(){
+    const api = standaloneRendererApi();
+    if(!api || typeof api.relaunch !== "function"){
+      standaloneSetRendererStatus("Relaunch from the app menu or restart manually.", true);
+      return;
+    }
+    standaloneSetRendererStatus("Relaunching with saved renderer settings.", true);
+    api.relaunch().catch((err)=>{
+      standaloneSetRendererStatus("Relaunch failed: " + (err?.message || err), true);
+    });
+  }
+
+  function bindStandaloneRendererControls(){
+    const hardware = document.getElementById("standaloneHardwareAccelToggle");
+    const backend = document.getElementById("standaloneRendererBackend");
+    const save = document.getElementById("standaloneRendererSaveBtn");
+    const relaunch = document.getElementById("standaloneRendererRelaunchBtn");
+    if(hardware && !hardware.__flprStandaloneRendererBound){
+      hardware.__flprStandaloneRendererBound = true;
+      hardware.addEventListener("change", ()=>{
+        try{ playClick(); }catch(_){}
+        standaloneMarkRendererDirty();
+      });
+    }
+    if(backend && !backend.__flprStandaloneRendererBound){
+      backend.__flprStandaloneRendererBound = true;
+      backend.addEventListener("change", ()=>{
+        try{ playClick(); }catch(_){}
+        standaloneMarkRendererDirty();
+      });
+    }
+    if(save && !save.__flprStandaloneRendererBound){
+      save.__flprStandaloneRendererBound = true;
+      save.addEventListener("click", (event)=>{
+        event.preventDefault();
+        try{ playClick(); }catch(_){}
+        standaloneSaveRendererSettings();
+      });
+    }
+    if(relaunch && !relaunch.__flprStandaloneRendererBound){
+      relaunch.__flprStandaloneRendererBound = true;
+      relaunch.addEventListener("click", (event)=>{
+        event.preventDefault();
+        try{ playClick(); }catch(_){}
+        standaloneRelaunchForRendererSettings();
+      });
+    }
+    const dock = document.getElementById("standaloneRendererDock");
+    if(standaloneRendererControls.loaded && standaloneRendererControls.response && dock?.dataset?.rendererLoaded !== "1"){
+      standaloneApplyRendererResponse(standaloneRendererControls.response);
+    }else if(!standaloneRendererControls.loaded){
+      standaloneLoadRendererSettings();
+    }
+  }
+
+  function standaloneNormalizeChecksBgMode(mode){
+    const value = String(mode || "").trim().toLowerCase();
+    return STANDALONE_CHECKS_BG_OPTIONS.some((opt)=>opt.value === value) ? value : "classic";
+  }
+
+  function standaloneChecksBgClassNames(){
+    return STANDALONE_CHECKS_BG_OPTIONS.map((opt)=>opt.className).filter(Boolean);
+  }
+
+  function standaloneReadOverlaySettings(){
+    try{
+      if(typeof window.loadSettings === "function"){
+        const loaded = window.loadSettings();
+        if(loaded && typeof loaded === "object") return loaded;
+      }
+    }catch(_){}
+    const keys = [STANDALONE_OVERLAY_SETTINGS_KEY].concat(Array.from(STANDALONE_OVERLAY_LEGACY_SETTINGS_KEYS || []));
+    for(const key of keys){
+      try{
+        const raw = localStorage.getItem(key);
+        if(raw) return JSON.parse(raw) || {};
+      }catch(_){}
+    }
+    return {};
+  }
+
+  function standaloneSaveOverlaySettings(patch){
+    const nextPatch = (patch && typeof patch === "object") ? patch : {};
+    try{
+      if(typeof window.saveSettings === "function"){
+        window.saveSettings(nextPatch);
+      }
+    }catch(_){}
+    try{
+      const cur = JSON.parse(localStorage.getItem(STANDALONE_OVERLAY_SETTINGS_KEY) || "{}") || {};
+      localStorage.setItem(STANDALONE_OVERLAY_SETTINGS_KEY, JSON.stringify({ ...cur, ...nextPatch }));
+    }catch(_){}
+  }
+
+  function standaloneEnsureChecksBgOptions(){
+    const select = document.getElementById("checksBgMode");
+    if(!select) return null;
+    try{
+      const wantedValues = new Set(STANDALONE_CHECKS_BG_OPTIONS.map((opt)=>opt.value));
+      Array.from(select.options || []).forEach((option)=>{
+        if(!wantedValues.has(String(option.value || ""))) option.remove();
+      });
+      STANDALONE_CHECKS_BG_OPTIONS.forEach((opt, index)=>{
+        let option = Array.from(select.options || []).find((node)=>String(node.value || "") === opt.value);
+        if(!option){
+          option = document.createElement("option");
+          option.value = opt.value;
+        }
+        option.textContent = opt.label;
+        const currentAtIndex = select.options[index] || null;
+        if(option !== currentAtIndex) select.insertBefore(option, currentAtIndex);
+      });
+      const note = document.getElementById("checksBgNote");
+      if(note) note.textContent = "Choose the Checks-page background style. Saved choices persist between Home Edition launches.";
+    }catch(_){}
+    return select;
+  }
+
+  function standaloneApplyChecksBgMode(mode, opts){
+    opts = opts || {};
+    const value = standaloneNormalizeChecksBgMode(mode);
+    const selected = STANDALONE_CHECKS_BG_OPTIONS.find((opt)=>opt.value === value) || STANDALONE_CHECKS_BG_OPTIONS[0];
+    try{
+      const original = window.applyChecksBgMode?.__flprStandaloneOriginalApplyChecksBgMode || null;
+      if(original){
+        original.call(window, value === "circuit" ? "circuit" : "classic", { save:false });
+      }
+    }catch(_){}
+    try{
+      document.body.classList.remove(...standaloneChecksBgClassNames());
+      if(selected.className) document.body.classList.add(selected.className);
+    }catch(_){}
+    try{
+      const select = standaloneEnsureChecksBgOptions();
+      if(select && select.value !== value) select.value = value;
+    }catch(_){}
+    if(opts.save !== false) standaloneSaveOverlaySettings({ checksBgMode:value });
+    return value;
+  }
+
+  function installStandaloneChecksBackgroundBridge(){
+    try{
+      const original = window.applyChecksBgMode || (typeof applyChecksBgMode === "function" ? applyChecksBgMode : null);
+      if(original && !original.__flprStandaloneChecksBackgroundBridge){
+        const bridged = function standaloneApplyChecksBgModeBridge(mode, opts){
+          return standaloneApplyChecksBgMode(mode, opts);
+        };
+        bridged.__flprStandaloneChecksBackgroundBridge = true;
+        bridged.__flprStandaloneOriginalApplyChecksBgMode = original;
+        window.applyChecksBgMode = bridged;
+        try{ applyChecksBgMode = bridged; }catch(_){}
+      }
+    }catch(_){}
+
+    try{
+      const select = standaloneEnsureChecksBgOptions();
+      if(select && select.__flprStandaloneChecksBgBound !== true){
+        select.__flprStandaloneChecksBgBound = true;
+        select.addEventListener("change", (event)=>{
+          event.preventDefault();
+          standaloneApplyChecksBgMode(select.value, { save:true });
+          try{ playClick(); }catch(_){}
+        }, true);
+      }
+    }catch(_){}
+
+    try{
+      const saved = standaloneNormalizeChecksBgMode(standaloneReadOverlaySettings().checksBgMode || "classic");
+      standaloneApplyChecksBgMode(saved, { save:false });
+    }catch(_){}
+  }
+
   function prepareStandaloneVisualsPanel(panel){
     if(!panel) return;
     try{
@@ -966,15 +2592,67 @@
       });
     }catch(_){}
     try{
+      panel.querySelectorAll("#flprBotRunUtilityWrap, #flprBotRunUtilityBtn, #flprBotRunUtilityStatus").forEach((node)=>{
+        const wrap = node.closest?.("#flprBotRunUtilityWrap") || node;
+        wrap.remove();
+      });
+    }catch(_){}
+    try{
       panel.querySelectorAll('[data-music-scenario="bonus_pinball"], [data-music-preview="bonus_pinball"], [data-music-clear="bonus_pinball"], [data-music-mode="bonus_pinball"], [data-music-volume="bonus_pinball"]').forEach((node)=>{
         const row = node.closest?.(".musicScenarioRow") || node.closest?.(".musicScenarioModeRow") || node.closest?.(".musicScenarioVolumeRow") || node;
         row.remove();
       });
     }catch(_){}
+    ensureStandaloneRendererControls(panel);
     ensureStandaloneTextSizeSlider(panel);
+    installStandaloneChecksBackgroundBridge();
+  }
+
+  function standaloneConnectionModeName(value){
+    const mode = String(value || "").trim().toLowerCase();
+    return mode === "singleplayer" ? "singleplayer" : "archipelago";
+  }
+
+  function setStandaloneConnectionMode(mode, event){
+    if(event){
+      event.preventDefault();
+      event.stopPropagation();
+      try{ event.stopImmediatePropagation(); }catch(_){}
+    }
+    const wanted = standaloneConnectionModeName(mode);
+    const shell = document.querySelector(".flprStandaloneConnectLayout .standaloneConnectionModeShell");
+    if(shell) shell.dataset.standaloneConnectionMode = wanted;
+    document.querySelectorAll(".flprStandaloneConnectLayout .standaloneConnectionModeTab").forEach((btn)=>{
+      const active = standaloneConnectionModeName(btn.dataset.standaloneModeTab) === wanted;
+      btn.classList.toggle("active", active);
+      btn.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    document.querySelectorAll(".flprStandaloneConnectLayout .standaloneConnectionModePanel").forEach((panel)=>{
+      const active = standaloneConnectionModeName(panel.dataset.standaloneModePanel) === wanted;
+      panel.classList.toggle("active", active);
+      panel.setAttribute("aria-hidden", active ? "false" : "true");
+    });
+    try{ window.__flprStandaloneConnectionMode = wanted; }catch(_){}
+    return false;
+  }
+
+  function bindStandaloneConnectionModeTabs(){
+    const shell = document.querySelector(".flprStandaloneConnectLayout .standaloneConnectionModeShell");
+    if(!shell) return;
+    if(shell.__flprStandaloneConnectionTabsBound !== true){
+      shell.__flprStandaloneConnectionTabsBound = true;
+      shell.addEventListener("click", (event)=>{
+        const btn = event.target.closest?.(".standaloneConnectionModeTab");
+        if(!btn || !shell.contains(btn)) return;
+        playClick();
+        setStandaloneConnectionMode(btn.dataset.standaloneModeTab || "archipelago", event);
+      }, true);
+    }
+    setStandaloneConnectionMode(shell.dataset.standaloneConnectionMode || "archipelago");
   }
 
   function bindStandaloneControls(){
+    bindStandaloneConnectionModeTabs();
     const start = document.getElementById("standaloneStartSeedBtn");
     if(start && !start.__flprStandaloneBound){
       start.__flprStandaloneBound = true;
@@ -1007,6 +2685,7 @@
       });
       slider.addEventListener("change", playClick);
     }
+    bindStandaloneRendererControls();
     bindStandaloneApControls();
     renderStandaloneCounters();
     try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
@@ -1021,12 +2700,2409 @@
   }
 
   const standaloneTextClient = {
-    activeTab: "chat",
-    logs: { status: [], chat: [], errors: [] },
-    maxLines: 360,
+    activeTab: "status",
+    logs: { status: [], errors: [] },
+    itemLogMeta: new Map(),
+    maxLines: 900,
+    loaded: false,
     wrapped: false,
-    originalApLog: null
+    originalApLog: null,
+    originalRenderApLogTab: null,
+    renderTimer: 0,
+    renderRaf: 0,
+    sessionReset: false
   };
+
+  const standaloneItemPanel = {
+    activeTab: "received",
+    selectedKey: "",
+    selectedText: "",
+    sent: [],
+    sentLoaded: false,
+    maxSent: 500,
+    sentModalSeen: new Set(),
+    sentLogSeen: new Set(),
+    sentServerMeta: new Map(),
+    pendingSentModals: new Map(),
+    selfProgressiveSeen: new Set(),
+    progressiveReceiveSeen: new Set(),
+    bossKeyReceiveSeen: new Set()
+  };
+
+  const standaloneReceivedRefreshState = {
+    lastSig: "",
+    lastAt: 0,
+    timers: []
+  };
+
+  function standaloneReadJson(key, fallback){
+    try{
+      const parsed = JSON.parse(localStorage.getItem(key) || "");
+      return parsed == null ? fallback : parsed;
+    }catch(_){
+      return fallback;
+    }
+  }
+
+  function standaloneWriteJson(key, value){
+    try{ localStorage.setItem(key, JSON.stringify(value)); }catch(_){}
+  }
+
+  function standaloneRewardSeedKey(){
+    try{
+      const seed = String(ap?.seedName || state?.relics?.run?.seedSig || state?.bossTableSeed || "").trim();
+      const slot = String(ap?.slot || ap?.cfg?.player || "").trim();
+      return `${seed || "unseeded"}|${slot || "slot"}`;
+    }catch(_){
+      return "unseeded|slot";
+    }
+  }
+
+  function standaloneLoadRewardState(){
+    const seedKey = standaloneRewardSeedKey();
+    const raw = standaloneReadJson(STANDALONE_AP_REWARD_STATE_KEY, {});
+    const saved = (raw && typeof raw === "object" && String(raw.seedKey || "") === seedKey) ? raw : {};
+    return {
+      seedKey,
+      easyRedeemsEarned: Math.max(0, Math.round(Number(saved.easyRedeemsEarned || 0))),
+      mediumRedeemsEarned: Math.max(0, Math.round(Number(saved.mediumRedeemsEarned || 0))),
+      fragmentTokensEarned: Math.max(0, Math.round(Number(saved.fragmentTokensEarned || 0))),
+      totalFragments: Math.max(0, Math.round(Number(saved.totalFragments || 0))),
+      currentFragments: Math.max(0, Math.round(Number(saved.currentFragments || 0))),
+      updatedAt: Math.max(0, Number(saved.updatedAt || 0))
+    };
+  }
+
+  function standaloneSaveRewardState(rewardState){
+    const seedKey = standaloneRewardSeedKey();
+    const next = {
+      seedKey,
+      easyRedeemsEarned: Math.max(0, Math.round(Number(rewardState?.easyRedeemsEarned || 0))),
+      mediumRedeemsEarned: Math.max(0, Math.round(Number(rewardState?.mediumRedeemsEarned || 0))),
+      fragmentTokensEarned: Math.max(0, Math.round(Number(rewardState?.fragmentTokensEarned || 0))),
+      totalFragments: Math.max(0, Math.round(Number(rewardState?.totalFragments || 0))),
+      currentFragments: Math.max(0, Math.round(Number(rewardState?.currentFragments || 0))),
+      updatedAt: Date.now()
+    };
+    standaloneWriteJson(STANDALONE_AP_REWARD_STATE_KEY, next);
+    try{
+      state.standaloneApRewardState = {
+        seedKey: next.seedKey,
+        junkRedeemsEarned: {
+          easy: next.easyRedeemsEarned,
+          medium: next.mediumRedeemsEarned
+        },
+        fragments: {
+          total: next.totalFragments,
+          current: next.currentFragments,
+          earnedExtraBalls: next.fragmentTokensEarned
+        },
+        updatedAt: next.updatedAt
+      };
+    }catch(_){}
+    return next;
+  }
+
+  function standaloneItemNameIsEasyJunk(name){
+    try{ if(typeof isEasyJunkName === "function") return !!isEasyJunkName(name); }catch(_){}
+    return /\beasy\b/i.test(String(name || "")) && /\bjunk\b/i.test(String(name || ""));
+  }
+
+  function standaloneItemNameIsMediumJunk(name){
+    try{ if(typeof isMediumJunkName === "function") return !!isMediumJunkName(name); }catch(_){}
+    return /\b(?:medium|med)\b/i.test(String(name || "")) && /\bjunk\b/i.test(String(name || ""));
+  }
+
+  function standaloneItemNameIsGenericJunk(name){
+    try{ if(typeof isGenericJunkName === "function") return !!isGenericJunkName(name); }catch(_){}
+    const text = String(name || "");
+    return /\bjunk\b/i.test(text) && !standaloneItemNameIsEasyJunk(text) && !standaloneItemNameIsMediumJunk(text);
+  }
+
+  function standaloneItemNameIsFragment(name){
+    try{ if(typeof isPinballFragmentItem === "function") return !!isPinballFragmentItem(name); }catch(_){}
+    const text = String(name || "").toLowerCase();
+    return /\bpinball\s*fragment\b/.test(text) || /\bfragment\s*pinball\b/.test(text) || /^pinball\s*frag/.test(text);
+  }
+
+  function standaloneResolveGenericJunkTier(row){
+    try{
+      if(typeof resolveGenericJunkTier === "function"){
+        return resolveGenericJunkTier(row?.recvIndex, row?.locId, row?.locationName || "");
+      }
+    }catch(_){}
+    const seed = `${row?.recvIndex ?? ""}|${row?.locId ?? ""}|${String(row?.locationName || "")}`;
+    let h = 5381;
+    for(let i = 0; i < seed.length; i++) h = ((h << 5) + h) + seed.charCodeAt(i);
+    return ((h >>> 0) % 2) === 0 ? "easy" : "medium";
+  }
+
+  function standaloneReceivedInventoryRows(){
+    let list = [];
+    try{ list = Array.isArray(ap?.receivedAll) ? ap.receivedAll : []; }catch(_){}
+    if(!list.length){
+      try{ if(typeof loadReceivedList === "function") list = loadReceivedList() || []; }catch(_){}
+    }
+    return Array.isArray(list) ? list : [];
+  }
+
+  function standaloneRewardInventorySummary(){
+    const seen = new Set();
+    let easy = 0;
+    let medium = 0;
+    let fragments = 0;
+    standaloneReceivedInventoryRows().forEach((row, index)=>{
+      const locId = Number(row?.locId ?? row?.location ?? row?.location_id ?? row?.loc);
+      const itemId = Number(row?.itemId ?? row?.item);
+      const sourceId = Number(row?.sourcePlayerId ?? row?.player ?? row?.player_id ?? 0) || 0;
+      const name = String(row?.itemName || row?.baseItemName || "");
+      const key = Number.isFinite(locId) && locId > 0
+        ? `loc:${locId}|item:${Number.isFinite(itemId) ? itemId : standaloneNormalizeLoose(name)}|source:${sourceId}`
+        : (row?.recvIndex != null
+          ? `idx:${row.recvIndex}`
+          : `${name}|${row?.locationName || ""}|${index}`);
+      if(seen.has(key)) return;
+      seen.add(key);
+      if(standaloneItemNameIsGenericJunk(name)){
+        const tier = standaloneResolveGenericJunkTier(row);
+        if(tier === "medium") medium++;
+        else easy++;
+      }else if(standaloneItemNameIsEasyJunk(name)){
+        easy++;
+      }else if(standaloneItemNameIsMediumJunk(name)){
+        medium++;
+      }else if(standaloneItemNameIsFragment(name)){
+        fragments++;
+      }
+    });
+    return {
+      easyPieces: easy,
+      mediumPieces: medium,
+      fragments,
+      easyRedeemsEarned: Math.floor(easy / 3),
+      mediumRedeemsEarned: Math.floor(medium / 3),
+      currentEasyPieces: easy % 3,
+      currentMediumPieces: medium % 3,
+      currentFragments: fragments % 5,
+      fragmentTokensEarned: Math.floor(fragments / 5)
+    };
+  }
+
+  function standaloneEnsureJunkRedeemState(){
+    try{
+      if(typeof ensureJunkRedeemState === "function") return ensureJunkRedeemState();
+    }catch(_){}
+    try{
+      state.junkRedeems = state.junkRedeems && typeof state.junkRedeems === "object" ? state.junkRedeems : { easy:0, medium:0 };
+      state.junkRedeems.easy = Math.max(0, Math.round(Number(state.junkRedeems.easy || 0)));
+      state.junkRedeems.medium = Math.max(0, Math.round(Number(state.junkRedeems.medium || 0)));
+      return state.junkRedeems;
+    }catch(_){
+      return { easy:0, medium:0 };
+    }
+  }
+
+  function standaloneExtraBallAssignedCount(){
+    try{
+      if(typeof getExtraBallAssignmentCount === "function"){
+        return Math.max(0, Math.round(Number(getExtraBallAssignmentCount()) || 0));
+      }
+    }catch(_){}
+    try{
+      const assignments = state?.extraBallAssignments || {};
+      if(!assignments || typeof assignments !== "object") return 0;
+      return Object.values(assignments).reduce((total, value)=>{
+        const num = Math.round(Number(value));
+        if(Number.isFinite(num) && num > 0) return total + num;
+        return total + (value ? 1 : 0);
+      }, 0);
+    }catch(_){}
+    return 0;
+  }
+
+  function standaloneClampRewardInventoryBalances(summary){
+    let changed = false;
+    try{
+      const earnedExtraBalls = Math.max(0, Math.round(Number(summary?.fragmentTokensEarned || 0)));
+      const assignedExtraBalls = standaloneExtraBallAssignedCount();
+      const maxBankedExtraBalls = Math.max(0, earnedExtraBalls - assignedExtraBalls);
+      const currentExtraBalls = Math.max(0, Math.round(Number(state?.extraBallTokens || 0)));
+      if(currentExtraBalls !== maxBankedExtraBalls){
+        state.extraBallTokens = maxBankedExtraBalls;
+        changed = true;
+      }
+    }catch(_){}
+    try{
+      const redeems = standaloneEnsureJunkRedeemState();
+      const maxEasy = Math.max(0, Math.round(Number(summary?.easyRedeemsEarned || 0)));
+      const maxMedium = Math.max(0, Math.round(Number(summary?.mediumRedeemsEarned || 0)));
+      const currentEasy = Math.max(0, Math.round(Number(redeems.easy || 0)));
+      const currentMedium = Math.max(0, Math.round(Number(redeems.medium || 0)));
+      if(currentEasy > maxEasy){
+        redeems.easy = maxEasy;
+        changed = true;
+      }
+      if(currentMedium > maxMedium){
+        redeems.medium = maxMedium;
+        changed = true;
+      }
+    }catch(_){}
+    if(changed){
+      try{ saveState(); }catch(_){}
+    }
+    return changed;
+  }
+
+  function standaloneCounterSnapshotFromAp(){
+    try{
+      return {
+        inited:true,
+        e: Number(ap?.junk?.easy || 0) || 0,
+        m: Number(ap?.junk?.med || 0) || 0,
+        f: Number(ap?.junk?.frag || 0) || 0,
+        et: Number(ap?.junk?.easyTotal || 0) || 0,
+        mt: Number(ap?.junk?.medTotal || 0) || 0,
+        ft: Number(ap?.junk?.fragTotal || 0) || 0
+      };
+    }catch(_){
+      return { inited:true, e:0, m:0, f:0, et:0, mt:0, ft:0 };
+    }
+  }
+
+  function standalonePrimeCounterDrawerPrev(){
+    try{ window.__counterDrawerPrev = standaloneCounterSnapshotFromAp(); }catch(_){}
+  }
+
+  function standaloneCloseAutoCounterDrawers(){
+    try{
+      const dock = document.getElementById("checksCountersDock");
+      if(!dock) return;
+      dock.querySelectorAll(".counterDrawer.autoOpen, .counterDrawer.pulse, .counterDrawer.redeemFx").forEach((drawer)=>{
+        try{
+          const wasAuto = drawer.classList.contains("autoOpen");
+          if(drawer.__autoTimer) clearTimeout(drawer.__autoTimer);
+          drawer.classList.remove("autoOpen", "pulse", "redeemFx");
+          if(wasAuto) drawer.classList.remove("open");
+        }catch(_){}
+      });
+      if(!dock.querySelector(".counterDrawer.open")){
+        dock.classList.remove("expanded", "active", "retreating", "showRetreatBar");
+        dock.__hoverExpanded = false;
+      }
+    }catch(_){}
+  }
+
+  function standaloneWithCounterDrawerFxSuppressed(fn){
+    try{ window.__flprStandaloneSuppressCounterDrawerFx = true; }catch(_){}
+    standalonePrimeCounterDrawerPrev();
+    try{
+      return typeof fn === "function" ? fn() : undefined;
+    }finally{
+      standalonePrimeCounterDrawerPrev();
+      standaloneCloseAutoCounterDrawers();
+      try{ window.__flprStandaloneSuppressCounterDrawerFx = false; }catch(_){}
+    }
+  }
+
+  function installStandaloneCounterDrawerSuppressionBridge(){
+    let originalUpdate = null;
+    try{ originalUpdate = (typeof updateCounterBars === "function") ? updateCounterBars : null; }catch(_){}
+    if(!originalUpdate){
+      setTimeout(installStandaloneCounterDrawerSuppressionBridge, 120);
+      return;
+    }
+    if(!originalUpdate.__flprStandaloneCounterSuppressBridge){
+      const bridgedUpdate = function standaloneUpdateCounterBarsBridge(){
+        if(window.__flprStandaloneSuppressCounterDrawerFx){
+          standalonePrimeCounterDrawerPrev();
+          const result = originalUpdate.apply(this, arguments);
+          standalonePrimeCounterDrawerPrev();
+          standaloneCloseAutoCounterDrawers();
+          return result;
+        }
+        return originalUpdate.apply(this, arguments);
+      };
+      bridgedUpdate.__flprStandaloneCounterSuppressBridge = true;
+      bridgedUpdate.__flprStandaloneOriginalUpdateCounterBars = originalUpdate;
+      try{ window.updateCounterBars = bridgedUpdate; }catch(_){}
+      try{ updateCounterBars = bridgedUpdate; }catch(_){}
+    }
+
+    let originalReconcile = null;
+    try{ originalReconcile = (typeof apReconcileWorldStateFromReceived === "function") ? apReconcileWorldStateFromReceived : null; }catch(_){}
+    if(originalReconcile && !originalReconcile.__flprStandaloneCounterSuppressBridge){
+      const bridgedReconcile = function standaloneReconcileCounterSuppressBridge(){
+        const args = arguments;
+        return standaloneWithCounterDrawerFxSuppressed(()=>originalReconcile.apply(this, args));
+      };
+      bridgedReconcile.__flprStandaloneCounterSuppressBridge = true;
+      bridgedReconcile.__flprStandaloneOriginalReconcile = originalReconcile;
+      try{ window.apReconcileWorldStateFromReceived = bridgedReconcile; }catch(_){}
+      try{ apReconcileWorldStateFromReceived = bridgedReconcile; }catch(_){}
+    }
+  }
+
+  function standaloneApplyRewardInventoryState(opts){
+    opts = opts || {};
+    const summary = standaloneRewardInventorySummary();
+    const previous = standaloneLoadRewardState();
+    const easyBaseline = Math.min(previous.easyRedeemsEarned, summary.easyRedeemsEarned);
+    const mediumBaseline = Math.min(previous.mediumRedeemsEarned, summary.mediumRedeemsEarned);
+    const easyDelta = opts.applyNewRewards === false ? 0 : Math.max(0, summary.easyRedeemsEarned - easyBaseline);
+    const mediumDelta = opts.applyNewRewards === false ? 0 : Math.max(0, summary.mediumRedeemsEarned - mediumBaseline);
+
+    try{
+      ap.junk = ap.junk || { easy:0, med:0, frag:0, easyTotal:0, medTotal:0, fragTotal:0 };
+      ap.junk.easy = summary.currentEasyPieces;
+      ap.junk.med = summary.currentMediumPieces;
+      ap.junk.frag = summary.currentFragments;
+      ap.junk.easyTotal = summary.easyRedeemsEarned;
+      ap.junk.medTotal = summary.mediumRedeemsEarned;
+      ap.junk.fragTotal = summary.fragments;
+    }catch(_){}
+
+    try{
+      const redeems = standaloneEnsureJunkRedeemState();
+      if(easyDelta) redeems.easy = Math.max(0, Math.round(Number(redeems.easy || 0)) + easyDelta);
+      if(mediumDelta) redeems.medium = Math.max(0, Math.round(Number(redeems.medium || 0)) + mediumDelta);
+      if(easyDelta || mediumDelta) try{ saveState(); }catch(_){}
+    }catch(_){}
+
+    standaloneClampRewardInventoryBalances(summary);
+    standaloneSaveRewardState({
+      easyRedeemsEarned: summary.easyRedeemsEarned,
+      mediumRedeemsEarned: summary.mediumRedeemsEarned,
+      fragmentTokensEarned: summary.fragmentTokensEarned,
+      totalFragments: summary.fragments,
+      currentFragments: summary.currentFragments
+    });
+    standaloneWithCounterDrawerFxSuppressed(()=>{ try{ updateCounterBars(); }catch(_){} });
+    try{ renderExtraBallNotices(); }catch(_){}
+    return summary;
+  }
+
+  function standaloneReceivedItemName(it){
+    try{
+      const id = it?.item;
+      const self = standaloneSelfSlotId();
+      const ownGame = standaloneSelfGameName();
+      const fallback = standaloneOwnPackageItemName(id) || "";
+      const resolved = standaloneResolveApItemName(id, self, fallback, ownGame);
+      return standaloneLooksUnresolvedItemName(resolved, id) ? "" : resolved;
+    }catch(_){
+      return "";
+    }
+  }
+
+  function standaloneReceivedRowItemName(row){
+    try{
+      const itemId = row?.itemId ?? row?.item ?? null;
+      const fallback = String(row?.itemName || row?.baseItemName || standaloneOwnPackageItemName(itemId) || "Unknown Item");
+      const self = standaloneSelfSlotId();
+      const ownGame = standaloneSelfGameName();
+      const resolved = standaloneResolveApItemName(itemId, self, fallback, ownGame);
+      return standaloneLooksUnresolvedItemName(resolved, itemId) ? fallback : resolved;
+    }catch(_){
+      return String(row?.itemName || row?.baseItemName || "Unknown Item");
+    }
+  }
+
+  function standaloneLooksUnresolvedItemName(name, itemId){
+    const text = String(name || "").trim();
+    const idText = String(itemId ?? "").trim();
+    if(!text) return true;
+    if(/^item\s*#?\s*\d+$/i.test(text)) return true;
+    if(idText && text === idText) return true;
+    return /^\d{4,}$/.test(text);
+  }
+
+  function standaloneBossBucketKey(){
+    try{ return String(normKey("Boss Table") || "bosstable"); }catch(_){ return "bosstable"; }
+  }
+
+  function standaloneCanonicalTableKey(value){
+    try{ return String(canonicalTableMapKey(value) || "").trim(); }catch(_){}
+    try{ return standaloneNormalizeLoose(value); }catch(_){}
+    return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+  }
+
+  function standaloneWorldKeyIsBoss(worldKey){
+    const wk = String(worldKey || "").trim();
+    if(!wk) return false;
+    try{ if(typeof isBossWorldId === "function") return !!isBossWorldId(wk, state); }catch(_){}
+    try{ if(typeof getBossWorldKey === "function" && wk === String(getBossWorldKey() || "")) return true; }catch(_){}
+    return wk.toLowerCase() === "boss";
+  }
+
+  function standaloneIsExplicitBossCheckNode(node){
+    try{
+      if(!node) return false;
+      if(node.standaloneBossCheck === true) return true;
+      const full = String(node.full || node.locationName || node.checkName || "");
+      const short = String(node.short || "");
+      const split = standaloneSplitLocationName(full);
+      const table = String(node.tableName || node.table || split.table || "").trim();
+      const tableKey = standaloneCanonicalTableKey(table);
+      if(tableKey === "boss" || tableKey === "bosstable") return true;
+      const raw = `${full} ${short}`.toLowerCase();
+      if(/\bboss\s*(?:damage|hp|health|segment|moment|phase|victory|defeat|clear|hit|attack)\b/.test(raw)) return true;
+      if(/\b(?:final\s*blow|boss\s*table)\b/.test(raw)) return true;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneDedupeSortLocationNodes(nodes){
+    const out = [];
+    const seen = new Set();
+    (Array.isArray(nodes) ? nodes : []).forEach((node, index)=>{
+      const id = Number(node?.id);
+      const key = Number.isFinite(id) && id > 0
+        ? `id:${id}`
+        : `node:${String(node?.full || node?.short || "")}|${index}`;
+      if(seen.has(key)) return;
+      seen.add(key);
+      out.push(node);
+    });
+    out.sort((a, b)=>{
+      const ai = Number(a?.id);
+      const bi = Number(b?.id);
+      if(Number.isFinite(ai) && Number.isFinite(bi) && ai !== bi) return ai - bi;
+      return String(a?.full || a?.short || "").localeCompare(String(b?.full || b?.short || ""));
+    });
+    return out;
+  }
+
+  function standaloneRepairBossCheckNodeBuckets(){
+    try{
+      const map = ap?.locsByTableKey;
+      if(!(map instanceof Map) || !map.size) return false;
+      const bossKeys = new Set([
+        "boss",
+        "bosstable",
+        standaloneBossBucketKey(),
+        (()=>{ try{ return String(normKey("(Boss Table)") || ""); }catch(_){ return ""; } })()
+      ].filter(Boolean));
+      const bossBucketKey = standaloneBossBucketKey();
+      const bossNodes = [];
+      let changed = false;
+      for(const [key, list] of Array.from(map.entries())){
+        if(!Array.isArray(list)) continue;
+        const keyText = String(key || "");
+        const keyIsBoss = bossKeys.has(keyText);
+        const keep = [];
+        list.forEach((node)=>{
+          if(standaloneIsExplicitBossCheckNode(node)){
+            const bossNode = {
+              ...node,
+              tableName: "Boss Table",
+              tableKey: bossBucketKey,
+              standaloneBossCheck: true
+            };
+            bossNodes.push(bossNode);
+            if(keyIsBoss) keep.push(bossNode);
+            else changed = true;
+          }else{
+            keep.push(node);
+          }
+        });
+        const next = standaloneDedupeSortLocationNodes(keep);
+        if(next.length !== list.length || next.some((node, index)=>node !== list[index])){
+          map.set(key, next);
+          changed = true;
+        }
+      }
+      if(bossNodes.length){
+        const existing = Array.isArray(map.get(bossBucketKey)) ? map.get(bossBucketKey) : [];
+        const merged = standaloneDedupeSortLocationNodes(existing.concat(bossNodes));
+        map.set(bossBucketKey, merged);
+        try{
+          const altKey = String(normKey("(Boss Table)") || "");
+          if(altKey && altKey !== bossBucketKey) map.set(altKey, merged);
+        }catch(_){}
+        changed = true;
+      }
+      return changed;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneFilterNonBossCheckNodes(nodes, opts){
+    if(!Array.isArray(nodes)) return nodes;
+    const tableKey = String(opts?.tableKey || "");
+    if(tableKey.startsWith("boss|")) return nodes;
+    const filtered = nodes.filter((node)=>!standaloneIsExplicitBossCheckNode(node));
+    return filtered.length === nodes.length ? nodes : filtered;
+  }
+
+  function standaloneKnownApItemName(itemId, playerId, gameHint){
+    const id = Number(itemId);
+    if(!Number.isFinite(id)) return "";
+    const idKey = String(Math.round(id));
+    const game = String(gameHint || (()=>{ try{ return typeof apPlayerGame === "function" ? apPlayerGame(playerId, "") : ""; }catch(_){ return ""; } })() || "").trim().toLowerCase();
+    const exact = game ? STANDALONE_KNOWN_AP_ITEM_NAMES[`${game}|${idKey}`] : "";
+    return String(exact || STANDALONE_KNOWN_AP_ITEM_NAMES[idKey] || "").trim();
+  }
+
+  function standaloneResolveApItemName(itemId, playerId, fallback, gameHint, opts){
+    opts = opts || {};
+    const id = Number(itemId);
+    const fb = String(fallback || "").trim();
+    try{
+      if(Number.isFinite(id)){
+        const self = standaloneSelfSlotId();
+        const targetPlayerId = Number(playerId);
+        const targetIsOtherPlayer = !!self && Number.isFinite(targetPlayerId) && targetPlayerId > 0 && targetPlayerId !== self;
+        const playerGame = String(gameHint || standaloneGameForPlayer(playerId, "", "") || (typeof apPlayerGame === "function" ? apPlayerGame(playerId, "") : "") || "").trim();
+        const ownGame = standaloneSelfGameName();
+        const crossGame = !!playerGame && !!ownGame && !standaloneGamesMatch(playerGame, ownGame);
+        const pkgName = playerGame && typeof apDataPackageForGame === "function"
+          ? String(apDataPackageForGame(playerGame)?.itemNameById?.get?.(id) || "").trim()
+          : "";
+        if(pkgName && !standaloneLooksUnresolvedItemName(pkgName, id)) return pkgName;
+        const known = standaloneKnownApItemName(id, playerId, playerGame || gameHint);
+        if(known) return known;
+        if(targetIsOtherPlayer && (crossGame || opts.preferServerForCrossGame === true)){
+          if(fb && !standaloneLooksUnresolvedItemName(fb, id)) return fb;
+          return Number.isFinite(id) ? `Item #${id}` : (fb || "Unknown Item");
+        }
+        try{
+          if(typeof apItemNameFor === "function"){
+            const resolved = String(apItemNameFor(id, playerId, "") || "").trim();
+            if(resolved && !standaloneLooksUnresolvedItemName(resolved, id)) return resolved;
+          }
+        }catch(_){}
+        const ownName = String(ap?.itemNameById?.get?.(id) || "").trim();
+        if(ownName && !standaloneLooksUnresolvedItemName(ownName, id)) return ownName;
+        try{
+          const packages = ap?.gameDataPackages;
+          const values = packages && typeof packages.values === "function" ? Array.from(packages.values()) : [];
+          for(const pkg of values){
+            const name = String(pkg?.itemNameById?.get?.(id) || "").trim();
+            if(name && !standaloneLooksUnresolvedItemName(name, id)) return name;
+          }
+        }catch(_){}
+      }
+    }catch(_){}
+    const known = standaloneKnownApItemName(id, playerId, gameHint);
+    if(known) return known;
+    return fb || (Number.isFinite(id) ? `Item #${id}` : "Unknown Item");
+  }
+
+  function standaloneResolveApLocationName(locId, playerId, fallback){
+    const id = Number(locId);
+    const fb = String(fallback || "").trim();
+    try{
+      if(Number.isFinite(id) && id > 0 && typeof apLocationNameFor === "function"){
+        const resolved = String(apLocationNameFor(id, playerId, "") || "").trim();
+        if(resolved && !/^location\s*#?\s*\d+$/i.test(resolved)) return resolved;
+      }
+    }catch(_){}
+    return fb || (Number.isFinite(id) && id > 0 ? `Location #${id}` : "");
+  }
+
+  function standaloneNormalizeLoose(value){
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[\u2012\u2013\u2014]/g, "-")
+      .replace(/[_:|]+/g, " ")
+      .replace(/\s*-\s*/g, " - ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function standaloneSelfSlotId(){
+    try{ return Number(ap?.slot || 0) || 0; }catch(_){ return 0; }
+  }
+
+  function standaloneSelfPlayerName(){
+    const self = standaloneSelfSlotId();
+    try{ if(typeof apPlayerName === "function") return apPlayerName(self, ap?.cfg?.player || ""); }catch(_){}
+    try{ return String(ap?.cfg?.player || "Player"); }catch(_){ return "Player"; }
+  }
+
+  function standaloneSelfGameName(){
+    const self = standaloneSelfSlotId();
+    try{ if(typeof apPlayerGame === "function") return apPlayerGame(self, ap?.cfg?.game || ""); }catch(_){}
+    try{ return String(ap?.cfg?.game || ""); }catch(_){ return ""; }
+  }
+
+  function standaloneGamesMatch(a, b){
+    const aa = standaloneNormalizeLoose(a);
+    const bb = standaloneNormalizeLoose(b);
+    return !!aa && !!bb && aa === bb;
+  }
+
+  function standaloneRememberPlayerMeta(id, name, game){
+    const slotId = Number(id);
+    if(!Number.isFinite(slotId) || slotId <= 0) return false;
+    const playerName = String(name || "").trim();
+    const gameName = String(game || "").trim();
+    let changed = false;
+    if(playerName){
+      standaloneApPlayerMeta.nameById.set(slotId, playerName);
+      try{ ap.playerNameById = ap.playerNameById || new Map(); ap.playerNameById.set(slotId, playerName); }catch(_){}
+    }
+    if(gameName){
+      const prev = String(standaloneApPlayerMeta.gameById.get(slotId) || "").trim();
+      standaloneApPlayerMeta.gameById.set(slotId, gameName);
+      if(playerName) standaloneApPlayerMeta.gameByName.set(standaloneNormalizeLoose(playerName), gameName);
+      try{ ap.gameByPlayerId = ap.gameByPlayerId || new Map(); ap.gameByPlayerId.set(slotId, gameName); }catch(_){}
+      try{
+        ap.slotInfoById = ap.slotInfoById || new Map();
+        const prevInfo = ap.slotInfoById.get(slotId) || {};
+        ap.slotInfoById.set(slotId, { ...prevInfo, id:slotId, name:playerName || prevInfo.name || "", game:gameName });
+      }catch(_){}
+      changed = prev !== gameName;
+    }
+    return changed;
+  }
+
+  function standaloneNetworkPlayerId(p){
+    const src = (p && typeof p === "object") ? p : {};
+    const raw = Array.isArray(p) ? p[1] : (src.slot ?? src.slot_id ?? src.id ?? src.player);
+    const id = Number(raw);
+    return Number.isFinite(id) && id > 0 ? id : 0;
+  }
+
+  function standaloneNetworkPlayerName(p){
+    const src = (p && typeof p === "object") ? p : {};
+    return String(Array.isArray(p) ? (p[2] ?? p[3] ?? "") : (src.alias ?? src.name ?? src.player_name ?? "")).trim();
+  }
+
+  function standaloneNetworkPlayerGame(p){
+    const src = (p && typeof p === "object") ? p : {};
+    return String(Array.isArray(p) ? "" : (src.game ?? src.game_name ?? src.slot_game ?? src.world ?? src.world_name ?? "")).trim();
+  }
+
+  function standaloneRememberSlotInfo(slotInfo){
+    let changed = false;
+    try{
+      const src = (slotInfo && typeof slotInfo === "object") ? slotInfo : {};
+      Object.entries(src).forEach(([slot, info])=>{
+        const id = Number(slot);
+        if(!Number.isFinite(id) || id <= 0) return;
+        const rec = (info && typeof info === "object") ? info : {};
+        const name = String(rec.name ?? rec.alias ?? "").trim();
+        const game = String(rec.game ?? rec.game_name ?? rec.slot_game ?? "").trim();
+        if(standaloneRememberPlayerMeta(id, name, game)) changed = true;
+      });
+    }catch(_){}
+    return changed;
+  }
+
+  function standaloneRememberPlayers(players){
+    let changed = false;
+    try{
+      if(!Array.isArray(players)) return false;
+      players.forEach((player)=>{
+        const id = standaloneNetworkPlayerId(player);
+        if(!id) return;
+        const name = standaloneNetworkPlayerName(player);
+        const game = standaloneNetworkPlayerGame(player);
+        if(standaloneRememberPlayerMeta(id, name, game)) changed = true;
+      });
+    }catch(_){}
+    return changed;
+  }
+
+  function standaloneRememberApPacketPlayerMeta(pkt){
+    let changed = false;
+    try{
+      const cmd = String(pkt?.cmd || "");
+      if(cmd === "RoomInfo"){
+        changed = standaloneRememberSlotInfo(pkt.slot_info || pkt.slotInfo || {}) || changed;
+        if(Array.isArray(pkt.players)) changed = standaloneRememberPlayers(pkt.players) || changed;
+      }
+      if(cmd === "Connected" || cmd === "RoomUpdate"){
+        changed = standaloneRememberSlotInfo(pkt.slot_info || pkt.slotInfo || {}) || changed;
+        changed = standaloneRememberPlayers(pkt.players || []) || changed;
+      }
+    }catch(_){}
+    return changed;
+  }
+
+  function standaloneGameForPlayer(playerId, fallbackName, fallbackGame){
+    const id = Number(playerId);
+    const fb = String(fallbackGame || "").trim();
+    if(Number.isFinite(id) && id > 0){
+      try{
+        const direct = String(ap?.gameByPlayerId?.get?.(id) || "").trim();
+        if(direct) return direct;
+      }catch(_){}
+      try{
+        const slotGame = String(ap?.slotInfoById?.get?.(id)?.game || "").trim();
+        if(slotGame) return slotGame;
+      }catch(_){}
+      const cached = String(standaloneApPlayerMeta.gameById.get(id) || "").trim();
+      if(cached) return cached;
+    }
+    const nameKey = standaloneNormalizeLoose(fallbackName);
+    if(nameKey){
+      const cachedNameGame = String(standaloneApPlayerMeta.gameByName.get(nameKey) || "").trim();
+      if(cachedNameGame) return cachedNameGame;
+    }
+    if(fb) return fb;
+    try{
+      if(typeof apPlayerGame === "function"){
+        const game = String(apPlayerGame(id, "") || "").trim();
+        if(game) return game;
+      }
+    }catch(_){}
+    return "";
+  }
+
+  function standaloneRequestMissingGamePackages(source){
+    try{
+      if(typeof apSend !== "function") return false;
+      const games = new Set();
+      standaloneApPlayerMeta.gameById.forEach((game)=>{ if(game) games.add(String(game)); });
+      try{ if(ap?.cfg?.game) games.add(String(ap.cfg.game)); }catch(_){}
+      try{ (ap?.roomGames || []).forEach((game)=>{ if(game) games.add(String(game)); }); }catch(_){}
+      const missing = Array.from(games).map((game)=>String(game || "").trim()).filter((game)=>{
+        if(!game || game === "Archipelago") return false;
+        try{ return !(typeof apDataPackageForGame === "function" && apDataPackageForGame(game)); }catch(_){ return true; }
+      });
+      if(!missing.length) return false;
+      setTimeout(()=>{
+        try{ apSend({ cmd:"GetDataPackage", games:missing }); }catch(_){}
+      }, 0);
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standalonePackageItemName(gameName, itemId){
+    const id = Number(itemId);
+    if(!Number.isFinite(id)) return "";
+    try{
+      const game = String(gameName || "").trim();
+      if(game && typeof apDataPackageForGame === "function"){
+        const name = String(apDataPackageForGame(game)?.itemNameById?.get?.(id) || "").trim();
+        if(name && !standaloneLooksUnresolvedItemName(name, id)) return name;
+      }
+    }catch(_){}
+    return "";
+  }
+
+  function standaloneOwnPackageItemName(itemId){
+    const id = Number(itemId);
+    if(!Number.isFinite(id)) return "";
+    const ownGame = standaloneSelfGameName();
+    const pkgName = standalonePackageItemName(ownGame, id);
+    if(pkgName) return pkgName;
+    try{
+      const ownName = String(ap?.itemNameById?.get?.(id) || "").trim();
+      if(ownName && !standaloneLooksUnresolvedItemName(ownName, id)) return ownName;
+    }catch(_){}
+    return "";
+  }
+
+  function standaloneProgressiveBallTarget(itemName){
+    try{
+      if(typeof parseProgressiveBallTarget === "function"){
+        const parsed = String(parseProgressiveBallTarget(itemName) || "").trim();
+        if(parsed) return parsed;
+      }
+    }catch(_){}
+    const text = String(itemName || "").trim();
+    const match = text.match(/^progressive\s*ball(?:\s*(?:-|:|\||for|to))\s*(.+)$/i)
+      || text.match(/^progressive\s*ball\s+(.+)$/i);
+    return match ? String(match[1] || "").trim() : "";
+  }
+
+  function standaloneTableCode(value){
+    const raw = String(value || "").trim();
+    if(!raw) return "";
+    try{
+      const code = String(getRepoCanonicalTableCode(raw) || "").trim();
+      if(code) return code;
+    }catch(_){}
+    try{
+      const name = String(getRepoCanonicalTableName(raw) || "").trim();
+      const code = String(name ? (getRepoCanonicalTableCode(name) || "") : "").trim();
+      if(code) return code;
+    }catch(_){}
+    try{
+      const code = String(achResolveTableCode(raw) || "").trim();
+      if(code) return code;
+    }catch(_){}
+    return "";
+  }
+
+  function standaloneTableNameKeys(value){
+    const keys = new Set();
+    const add = (v)=>{
+      const loose = standaloneNormalizeLoose(v);
+      if(loose) keys.add(loose);
+      try{
+        const canon = standaloneNormalizeLoose(getRepoCanonicalTableName(v));
+        if(canon) keys.add(canon);
+      }catch(_){}
+      try{
+        const display = standaloneNormalizeLoose(getRepoDisplayTableName(v));
+        if(display) keys.add(display);
+      }catch(_){}
+    };
+    add(value);
+    return keys;
+  }
+
+  function standaloneFindActiveTableKey(tableName, directLookup){
+    const raw = String(tableName || "").trim();
+    if(!raw) return "";
+    const lookup = typeof directLookup === "function" ? directLookup : null;
+    const directCandidates = [raw];
+    try{
+      const canonicalName = String(getRepoCanonicalTableName(raw) || "").trim();
+      if(canonicalName && !directCandidates.includes(canonicalName)) directCandidates.push(canonicalName);
+    }catch(_){}
+    for(const candidate of directCandidates){
+      if(!candidate) continue;
+      try{
+        const key = lookup ? lookup(candidate) : (typeof getTableKeyForName === "function" ? getTableKeyForName(candidate) : "");
+        if(key) return String(key);
+      }catch(_){}
+    }
+
+    const wantedCode = standaloneTableCode(raw);
+    const wantedKeys = standaloneTableNameKeys(raw);
+    try{
+      for(const [worldId, world] of Object.entries(state?.worlds || {})){
+        const tables = Array.isArray(world?.tables) ? world.tables : [];
+        for(let index = 0; index < tables.length; index++){
+          const slotName = String(tables[index] || "").trim();
+          if(!slotName) continue;
+          const slotCode = standaloneTableCode(slotName);
+          if(wantedCode && slotCode && slotCode === wantedCode) return `${worldId}|${index}`;
+          const slotKeys = standaloneTableNameKeys(slotName);
+          for(const key of wantedKeys){
+            if(slotKeys.has(key)) return `${worldId}|${index}`;
+          }
+        }
+      }
+    }catch(_){}
+    return "";
+  }
+
+  function standaloneFlagsForItem(flags, itemName){
+    let f = Number(flags || 0) || 0;
+    const name = String(itemName || "");
+    if(!(f & 0b100) && standaloneProgressiveBallTarget(name)) f |= 0b001;
+    try{ if(!(f & 0b100) && typeof isBossKeyItemName === "function" && isBossKeyItemName(name)) f |= 0b001; }catch(_){}
+    return f;
+  }
+
+  function standaloneIsActiveSeedTableName(tableName){
+    try{ if(typeof isActiveSeedTableName === "function") return !!isActiveSeedTableName(tableName); }catch(_){}
+    try{ if(typeof getTableKeyForName === "function") return !!getTableKeyForName(tableName); }catch(_){}
+    return !!standaloneFindActiveTableKey(tableName);
+  }
+
+  function standaloneShouldTreatSentMetaAsOwnProgressive(meta, itemName){
+    const self = standaloneSelfSlotId();
+    if(!self || !meta) return false;
+    const resolvedName = String(itemName || meta.itemName || "").trim();
+    const serverName = String(meta.serverItemName || standaloneCachedServerSentMeta(meta)?.serverItemName || "").trim();
+    if(serverName && !standaloneProgressiveBallTarget(serverName)) return false;
+    const target = standaloneProgressiveBallTarget(resolvedName);
+    if(!target) return false;
+    const receiverId = Number(meta.receiverId || 0) || 0;
+    if(receiverId === self) return true;
+    if(receiverId && receiverId !== self) return false;
+    const receiverName = standaloneNormalizeLoose(meta.receiverPlayer);
+    const selfName = standaloneNormalizeLoose(standaloneSelfPlayerName());
+    return !!receiverName && !!selfName && receiverName === selfName;
+  }
+
+  function standaloneCoerceOwnProgressiveSentMeta(meta){
+    if(!meta || typeof meta !== "object") return meta;
+    const itemName = String(meta.itemName || "").trim();
+    if(!standaloneShouldTreatSentMetaAsOwnProgressive(meta, itemName)) return meta;
+    const self = standaloneSelfSlotId();
+    const ownGame = standaloneSelfGameName();
+    return {
+      ...meta,
+      receiverId: self,
+      receiverPlayer: standaloneSelfPlayerName(),
+      receiverGame: ownGame,
+      itemName: standaloneResolveApItemName(meta.itemId, self, itemName || standaloneOwnPackageItemName(meta.itemId) || "Unknown Item", ownGame),
+      flags: standaloneFlagsForItem(meta.flags, itemName)
+    };
+  }
+
+  function standaloneSplitLocationName(value){
+    try{
+      if(typeof splitLocName === "function") return splitLocName(value);
+    }catch(_){}
+    const raw = String(value || "").trim();
+    const parts = raw.split(/\s+[\u2012\u2013\u2014-]\s+/);
+    return parts.length > 1 ? { table:parts[0].trim(), rest:parts.slice(1).join(" - ").trim() } : { table:"", rest:raw };
+  }
+
+  function standaloneIsGenericSlotTaskName(value){
+    return /^(easy|medium|hard)\s+task$/i.test(String(value || "").trim());
+  }
+
+  function standaloneNodeForLocation(locId, locationName){
+    const id = Number(locId);
+    try{
+      if(Number.isFinite(id) && id > 0 && ap?.locById?.get){
+        const node = ap.locById.get(id);
+        if(node) return node;
+      }
+    }catch(_){}
+    const raw = String(locationName || "").trim();
+    if(!raw) return null;
+    try{
+      if(ap?.locById?.values){
+        for(const node of ap.locById.values()){
+          if(String(node?.full || "").trim() === raw || String(node?.baseShort || node?.short || "").trim() === raw) return node;
+        }
+      }
+    }catch(_){}
+    return null;
+  }
+
+  function standaloneLocationDisplayName(locationName, locId){
+    const raw = String(locationName || "").trim();
+    let display = raw;
+    try{
+      if(typeof getDisplayedLocationName === "function"){
+        display = String(getDisplayedLocationName(raw) || raw).trim();
+      }
+    }catch(_){}
+    const scoreDisplay = standaloneScoreSlotDisplayName(raw, display, locId);
+    if(scoreDisplay) return scoreDisplay;
+    const split = standaloneSplitLocationName(display || raw);
+    if(!standaloneIsGenericSlotTaskName(split.rest)) return display || raw;
+
+    try{
+      const node = standaloneNodeForLocation(locId, raw || display);
+      if(node){
+        let taskName = "";
+        try{ if(typeof getTaskNameFromLocationNode === "function") taskName = String(getTaskNameFromLocationNode(node) || "").trim(); }catch(_){}
+        if(taskName && !standaloneIsGenericSlotTaskName(taskName)){
+          const tableName = String(node.tableName || node.table || split.table || "").trim();
+          return tableName ? `${tableName} - ${taskName}` : taskName;
+        }
+      }
+    }catch(_){}
+
+    try{
+      const cached = standaloneSlotTaskEntryForLocation(raw || display);
+      const taskName = standaloneTaskEntryObjective(cached);
+      if(taskName && !standaloneIsGenericSlotTaskName(taskName)){
+        const tableName = String(cached?.target_table || cached?.targetTable || cached?.table || split.table || standaloneSplitLocationName(raw).table || "").trim();
+        return tableName ? `${tableName} - ${taskName}` : taskName;
+      }
+    }catch(_){}
+
+    try{
+      const entry = (typeof getTaskShuffleEntryForLocationName === "function" ? getTaskShuffleEntryForLocationName(raw) : null)
+        || (typeof getGenericCheckEntryForLocationName === "function" ? getGenericCheckEntryForLocationName(raw) : null);
+      const taskName = String(entry?.objective || entry?.display_name || entry?.title || "").trim();
+      if(taskName && !standaloneIsGenericSlotTaskName(taskName)){
+        const tableName = String(entry?.target_table || entry?.table || split.table || standaloneSplitLocationName(raw).table || "").trim();
+        return tableName ? `${tableName} - ${taskName}` : taskName;
+      }
+    }catch(_){}
+
+    return display || raw;
+  }
+
+  function standaloneScoreSlotDisplayName(rawName, displayName, locId){
+    const titleDifficulty = (value)=>{
+      const diff = String(value || "").trim().toLowerCase();
+      if(diff === "easy") return "Easy";
+      if(diff === "medium") return "Medium";
+      if(diff === "hard") return "Hard";
+      return "";
+    };
+    const directCandidates = [rawName, displayName].map((value)=>String(value || "").trim()).filter(Boolean);
+    for(const candidate of directCandidates){
+      const split = standaloneSplitLocationName(candidate);
+      const match = String(split.rest || "").match(/^(easy|medium|hard)\s+score\s*\(([^)]+)\)$/i);
+      if(match && split.table){
+        return `${split.table} - ${titleDifficulty(match[1])} Score (${String(match[2] || "").trim()})`;
+      }
+    }
+    for(const candidate of directCandidates){
+      const split = standaloneSplitLocationName(candidate);
+      const match = String(split.rest || "").match(/^obtain\s+a\s+score\s+of\s+(.+)$/i);
+      if(!match || !split.table) continue;
+      let difficulty = "";
+      try{
+        const entry = standaloneSlotTaskEntryForLocation(rawName) || standaloneSlotTaskEntryForLocation(displayName);
+        difficulty = String(entry?.difficulty || "").trim().toLowerCase();
+      }catch(_){}
+      if(!difficulty){
+        for(const direct of directCandidates){
+          const directSplit = standaloneSplitLocationName(direct);
+          const directMatch = String(directSplit.rest || "").match(/^(easy|medium|hard)\s+score\b/i);
+          if(directMatch){ difficulty = String(directMatch[1] || "").toLowerCase(); break; }
+        }
+      }
+      const label = titleDifficulty(difficulty);
+      if(label) return `${split.table} - ${label} Score (${String(match[1] || "").trim()})`;
+    }
+    return "";
+  }
+
+  function standaloneFormatItemSendLogLine(meta){
+    const next = standaloneResolveSentMeta(meta);
+    if(!next) return "";
+    const sender = String(next.senderPlayer || "Unknown Player").trim();
+    const receiver = String(next.receiverPlayer || "Unknown Player").trim();
+    const item = String(next.itemName || "Unknown Item").trim();
+    const loc = standaloneLocationDisplayName(next.locationName || "", next.locId);
+    const location = loc ? ` (${loc})` : "";
+    const samePlayer = Number(next.senderId || 0) === Number(next.receiverId || 0)
+      || (!!sender && !!receiver && sender.toLowerCase() === receiver.toLowerCase());
+    if(samePlayer) return `${sender} has found their own ${item}${location}`;
+    return `${sender} sent ${item} to ${receiver}${location}`;
+  }
+
+  function standaloneReceivedItemTouchesRewardCounters(it){
+    const name = standaloneReceivedItemName(it);
+    return !!(name && (
+      standaloneItemNameIsEasyJunk(name)
+      || standaloneItemNameIsMediumJunk(name)
+      || standaloneItemNameIsGenericJunk(name)
+      || standaloneItemNameIsFragment(name)
+    ));
+  }
+
+  const standaloneBossHintScout = {
+    missingIds: new Set(),
+    infoByLocation: new Map(),
+    lastScoutSig: "",
+    lastApplySig: "",
+    timer: null,
+    focusPending: false
+  };
+
+  function standaloneQueueBossHintFocus(){
+    try{ standaloneBossHintScout.focusPending = true; }catch(_){}
+  }
+
+  function standaloneConsumeBossHintFocus(){
+    try{
+      const shouldFocus = !!standaloneBossHintScout.focusPending;
+      standaloneBossHintScout.focusPending = false;
+      return shouldFocus;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneIsBossKeyRewardName(itemName){
+    const text = String(itemName || "").trim();
+    if(!text) return false;
+    try{ if(typeof isBossKeyItemName === "function") return !!isBossKeyItemName(text); }catch(_){}
+    return /\bboss\s*key\b/i.test(text) && !/\bhint\b/i.test(text);
+  }
+
+  function standaloneIsBallHintRewardName(itemName){
+    const text = String(itemName || "").trim();
+    if(!text) return false;
+    return /\bhint\b/i.test(text) && /\bball\b/i.test(text) && !/\bboss\s*key\b/i.test(text);
+  }
+
+  function standaloneIsBossSegmentRewardName(itemName){
+    try{ if(typeof isBossSegmentItemName === "function") return !!isBossSegmentItemName(itemName); }catch(_){}
+    return /\bboss\s*(?:damage|segment|attack|hp)\b/i.test(String(itemName || ""));
+  }
+
+  function standaloneIsTrapRewardName(itemName, flags){
+    if(Number(flags || 0) & 0b100) return true;
+    try{ if(typeof isTrapItem === "function") return !!isTrapItem(itemName); }catch(_){}
+    return /\btrap\b/i.test(String(itemName || ""));
+  }
+
+  function standaloneStripBallHintPools(pools){
+    const p = pools && typeof pools === "object" ? pools : {};
+    p.ball1 = [];
+    p.ball2 = [];
+    p.ball3 = [];
+    p.ballProgressive = [];
+    return p;
+  }
+
+  function standaloneZeroBallHintState(){
+    try{
+      if(typeof hintState === "undefined" || !hintState) return;
+      hintState.pending = hintState.pending || {};
+      hintState.pending.ball = 0;
+      hintState.pools = standaloneStripBallHintPools(hintState.pools || {});
+      if(typeof hintTargetedEntries === "function") hintState.all = hintTargetedEntries(hintState.pools);
+    }catch(_){}
+  }
+
+  function standaloneRefreshBossHintUi(){
+    try{
+      const ballBtn = document.getElementById("hintBallLocationBtn");
+      if(ballBtn){
+        ballBtn.disabled = true;
+        ballBtn.style.display = "none";
+        ballBtn.setAttribute("aria-hidden", "true");
+      }
+      const pool = document.getElementById("hintPoolBall");
+      if(pool){
+        pool.textContent = "AP !HINT";
+        const row = pool.closest(".hintPoolItem");
+        if(row) row.style.display = "none";
+      }
+      const bossBtn = document.getElementById("hintBossKeyBtn");
+      if(bossBtn && !/boss\s*key/i.test(String(bossBtn.textContent || ""))){
+        bossBtn.textContent = "HINT BOSS KEY";
+      }
+    }catch(_){}
+  }
+
+  function standaloneResetBossHintsForConnection(){
+    try{
+      standaloneBossHintScout.missingIds = new Set();
+      standaloneBossHintScout.infoByLocation = new Map();
+      standaloneBossHintScout.lastScoutSig = "";
+      standaloneBossHintScout.lastApplySig = "";
+      standaloneBossHintScout.focusPending = false;
+      if(standaloneBossHintScout.timer) clearTimeout(standaloneBossHintScout.timer);
+      standaloneBossHintScout.timer = null;
+    }catch(_){}
+    try{
+      if(typeof hintState !== "undefined" && hintState){
+        hintState.pending = hintState.pending || {};
+        hintState.pending.ball = 0;
+        hintState.pools = { ball1: [], ball2: [], ball3: [], ballProgressive: [], boss: [] };
+        hintState.all = [];
+        hintState.rewardEntries = [];
+        hintState.loaded = false;
+        hintState.loadedMeta = null;
+        hintState.activeTarget = null;
+        hintState.history = [];
+        try{ if(typeof hintSetHintopediaOpen === "function") hintSetHintopediaOpen(false); }catch(_){}
+        try{ if(typeof hintSetStatus === "function") hintSetStatus("Waiting for AP boss key scout"); }catch(_){}
+        try{ if(typeof hintUpdateUi === "function") hintUpdateUi(); }catch(_){}
+      }
+    }catch(_){}
+    standaloneRefreshBossHintUi();
+  }
+
+  function standaloneRememberMissingLocationsForHints(pkt){
+    try{
+      const cmd = String(pkt?.cmd || "");
+      if(cmd === "Connected") standaloneResetBossHintsForConnection();
+      const missing = Array.isArray(pkt?.missing_locations) ? pkt.missing_locations : (Array.isArray(pkt?.missingLocations) ? pkt.missingLocations : null);
+      if(missing){
+        if(cmd === "Connected") standaloneBossHintScout.missingIds = new Set();
+        missing.forEach((value)=>{
+          const id = Number(value);
+          if(Number.isFinite(id) && id > 0) standaloneBossHintScout.missingIds.add(id);
+        });
+      }
+      const checked = Array.isArray(pkt?.checked_locations) ? pkt.checked_locations : (Array.isArray(pkt?.checkedLocations) ? pkt.checkedLocations : null);
+      if(checked){
+        checked.forEach((value)=>{
+          const id = Number(value);
+          if(Number.isFinite(id) && id > 0){
+            standaloneBossHintScout.missingIds.delete(id);
+            standaloneBossHintScout.infoByLocation.delete(id);
+          }
+        });
+      }
+      if(missing || checked) standaloneScheduleBossKeyScout("location-set");
+    }catch(_){}
+  }
+
+  function standaloneLocationInfoItems(pkt){
+    const items = Array.isArray(pkt?.locations) ? pkt.locations
+      : (Array.isArray(pkt?.items) ? pkt.items
+      : (Array.isArray(pkt?.data?.locations) ? pkt.data.locations : []));
+    return items.map((entry)=>{
+      if(Array.isArray(entry)){
+        return { item:entry[0], location:entry[1], player:entry[2], flags:entry[3] };
+      }
+      return entry && typeof entry === "object" ? entry : null;
+    }).filter(Boolean);
+  }
+
+  function standaloneBuildBossHintEntryFromLocationInfo(info){
+    try{
+      const locId = Number(info?.location);
+      if(!Number.isFinite(locId) || locId <= 0) return null;
+      const itemPlayer = Number(info?.player || 0) || standaloneSelfSlotId();
+      const self = standaloneSelfSlotId();
+      if(self && itemPlayer && itemPlayer !== self) return null;
+      const game = standaloneGameForPlayer(itemPlayer || self, "", standaloneSelfGameName());
+      const itemName = standaloneResolveApItemName(info?.item, itemPlayer || self, "", game);
+      if(!standaloneIsBossKeyRewardName(itemName)) return null;
+      const rawLoc = standaloneResolveApLocationName(locId, self, "");
+      const displayLoc = standaloneLocationDisplayName(rawLoc, locId) || rawLoc;
+      const split = standaloneSplitLocationName(displayLoc);
+      const tableName = String(split.table || "").trim();
+      const locationShort = String(split.rest || displayLoc || "").trim();
+      if(!tableName || !locationShort) return null;
+      let knownOwnLocation = false;
+      try{ knownOwnLocation = !!(ap?.locNameById?.has?.(locId) || ap?.locById?.has?.(locId)); }catch(_){}
+      if(!knownOwnLocation && !standaloneIsActiveSeedTableName(tableName)) return null;
+      return {
+        locId,
+        tableName,
+        locationName: `${tableName} - ${locationShort}`,
+        locationShort,
+        rawLine: `${tableName} - ${locationShort}: Boss Key`,
+        itemName: "Boss Key",
+        source: "AP LocationScouts"
+      };
+    }catch(_){
+      return null;
+    }
+  }
+
+  function standaloneApplyBossHintLocationInfo(source, opts){
+    opts = opts || {};
+    try{
+      standaloneZeroBallHintState();
+      if(typeof hintState === "undefined" || !hintState) return false;
+      const entries = [];
+      const seen = new Set();
+      standaloneBossHintScout.infoByLocation.forEach((info)=>{
+        const entry = standaloneBuildBossHintEntryFromLocationInfo(info);
+        if(!entry) return;
+        const key = `loc:${entry.locId || ""}|${standaloneNormalizeLoose(entry.locationName)}`;
+        if(seen.has(key)) return;
+        seen.add(key);
+        entries.push(entry);
+      });
+      entries.sort((a, b)=>String(a.locationName || "").localeCompare(String(b.locationName || "")));
+      const sig = entries.map((entry)=>`${entry.locId}:${entry.locationName}`).join("|");
+      if(!opts.force && sig === standaloneBossHintScout.lastApplySig){
+        standaloneRefreshBossHintUi();
+        return true;
+      }
+      standaloneBossHintScout.lastApplySig = sig;
+      const hasScoutInfo = standaloneBossHintScout.infoByLocation.size > 0;
+      hintState.pools = standaloneStripBallHintPools(hintState.pools || {});
+      hintState.pools.boss = entries;
+      hintState.rewardEntries = [];
+      hintState.all = (typeof hintTargetedEntries === "function") ? hintTargetedEntries(hintState.pools) : entries.slice();
+      hintState.loaded = entries.length > 0 || hasScoutInfo;
+      hintState.loadedMeta = {
+        ...(typeof hintBuildSeedMeta === "function" ? hintBuildSeedMeta() : {}),
+        sourceLabel: "AP LocationScouts",
+        apBossScout: true
+      };
+      if(typeof hintSetStatus === "function"){
+        hintSetStatus(entries.length ? `AP Boss Key scouts: ${entries.length}` : (hasScoutInfo ? "No local Boss Key hints" : "Waiting for AP boss key scout"));
+      }
+      if((entries.length || hasScoutInfo) && typeof hintLog === "function"){
+        hintLog(`[AP] Boss Key hints refreshed from server: ${entries.length}.`);
+      }
+      if(typeof hintUpdateUi === "function") hintUpdateUi();
+      if(entries.length && typeof hintConsumePendingTriggers === "function"){
+        const shouldFocusHints = standaloneConsumeBossHintFocus();
+        hintConsumePendingTriggers({ focusHintsTab:shouldFocusHints });
+      }
+      standaloneRefreshBossHintUi();
+      try{
+        window.__flprStandaloneBossHintScout = {
+          entries: entries.map((entry)=>({ locId:entry.locId, locationName:entry.locationName, itemName:entry.itemName })),
+          missing: Array.from(standaloneBossHintScout.missingIds),
+          lastSource: source || ""
+        };
+      }catch(_){}
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneHandleLocationInfoForHints(pkt){
+    try{
+      let changed = false;
+      standaloneLocationInfoItems(pkt).forEach((info)=>{
+        const locId = Number(info?.location);
+        if(!Number.isFinite(locId) || locId <= 0) return;
+        standaloneBossHintScout.infoByLocation.set(locId, { ...info });
+        changed = true;
+      });
+      if(changed) standaloneApplyBossHintLocationInfo("LocationInfo", { force:true });
+    }catch(_){}
+  }
+
+  function standaloneScheduleBossKeyScout(source){
+    try{
+      if(standaloneBossHintScout.timer) clearTimeout(standaloneBossHintScout.timer);
+      standaloneBossHintScout.timer = setTimeout(()=>{
+        standaloneBossHintScout.timer = null;
+        try{
+          standaloneZeroBallHintState();
+          standaloneRefreshBossHintUi();
+          const ids = Array.from(standaloneBossHintScout.missingIds)
+            .map(Number)
+            .filter((id)=>Number.isFinite(id) && id > 0)
+            .sort((a, b)=>a - b);
+          if(!ids.length) return;
+          const sig = ids.join(",");
+          if(sig === standaloneBossHintScout.lastScoutSig) return;
+          const wsOpen = !!(ap?.ws && Number(ap.ws.readyState) === 1);
+          if(!wsOpen || typeof apSend !== "function") return;
+          let sentAny = false;
+          for(let i = 0; i < ids.length; i += 200){
+            const locations = ids.slice(i, i + 200);
+            if(apSend({ cmd:"LocationScouts", locations, create_as_hint:0 })) sentAny = true;
+          }
+          if(sentAny){
+            standaloneBossHintScout.lastScoutSig = sig;
+            try{ window.__flprStandaloneBossHintScoutRequest = { source:source || "", locations:ids.slice() }; }catch(_){}
+          }
+        }catch(_){}
+      }, 120);
+    }catch(_){}
+  }
+
+  function standaloneRestoreChecksViewForReward(){
+    const work = ()=>{
+      try{
+        if(typeof showView === "function") showView("checks");
+        else{
+          activeView = "checks";
+          try{ setTabUI(); }catch(_){}
+        }
+      }catch(_){
+        try{
+          activeView = "checks";
+          if(typeof setTabUI === "function") setTabUI();
+        }catch(__){}
+      }
+      try{ if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs(); }catch(_){}
+      try{ if(typeof renderChecks === "function") renderChecks(); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
+    };
+    try{
+      if(typeof standalonePreserveChecksSelectionDuring === "function"){
+        return standalonePreserveChecksSelectionDuring(work, "restore-checks");
+      }
+    }catch(_){}
+    return work();
+  }
+
+  function standaloneShouldRestoreChecksAfterReward(itemName, it, opts){
+    try{
+      if(opts?.isSnapshot || opts?.isFlush || opts?.noPopup === true) return false;
+      if(String(activeView || "") !== "checks") return false;
+      const name = String(itemName || "").trim();
+      if(!name) return false;
+      if(standaloneProgressiveBallTarget(name)) return false;
+      if(standaloneIsTrapRewardName(name, it?.flags)) return false;
+      if(standaloneIsBossKeyRewardName(name)) return false;
+      if(standaloneIsBossSegmentRewardName(name)) return false;
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneScheduleChecksRestoreAfterReward(){
+    [680, 960, 1320].forEach((delay)=>{
+      setTimeout(()=>standaloneRestoreChecksViewForReward(), delay);
+    });
+  }
+
+  function installStandaloneBossHintBridge(){
+    let ready = false;
+    try{
+      const original = window.hintBuildPools || (typeof hintBuildPools === "function" ? hintBuildPools : null);
+      if(original){
+        ready = true;
+        if(!original.__flprStandaloneBossOnlyBridge){
+          const bridged = function standaloneHintBuildPoolsBossOnlyBridge(entries){
+            const pools = original.call(this, entries);
+            return standaloneStripBallHintPools(pools);
+          };
+          bridged.__flprStandaloneBossOnlyBridge = true;
+          bridged.__flprStandaloneOriginalHintBuildPools = original;
+          window.hintBuildPools = bridged;
+          try{ hintBuildPools = bridged; }catch(_){}
+        }
+      }
+    }catch(_){}
+    try{
+      const original = window.hintBuildRewardEntries || (typeof hintBuildRewardEntries === "function" ? hintBuildRewardEntries : null);
+      if(original){
+        ready = true;
+        if(!original.__flprStandaloneBossOnlyBridge){
+          const bridged = function standaloneHintBuildRewardEntriesBossOnlyBridge(entries){
+            return (original.call(this, entries) || []).filter((entry)=>/boss\s*key/i.test(String(entry?.itemName || "")));
+          };
+          bridged.__flprStandaloneBossOnlyBridge = true;
+          bridged.__flprStandaloneOriginalHintBuildRewardEntries = original;
+          window.hintBuildRewardEntries = bridged;
+          try{ hintBuildRewardEntries = bridged; }catch(_){}
+        }
+      }
+    }catch(_){}
+    try{
+      const original = window.isHintBallItemName || (typeof isHintBallItemName === "function" ? isHintBallItemName : null);
+      if(original){
+        ready = true;
+        if(!original.__flprStandaloneBossOnlyBridge){
+          const bridged = function standaloneIsHintBallItemNameBridge(){
+            return false;
+          };
+          bridged.__flprStandaloneBossOnlyBridge = true;
+          bridged.__flprStandaloneOriginalIsHintBallItemName = original;
+          window.isHintBallItemName = bridged;
+          try{ isHintBallItemName = bridged; }catch(_){}
+        }
+      }
+    }catch(_){}
+    try{
+      const original = window.isHintRewardItemName || (typeof isHintRewardItemName === "function" ? isHintRewardItemName : null);
+      if(original){
+        ready = true;
+        if(!original.__flprStandaloneBossOnlyBridge){
+          const bridged = function standaloneIsHintRewardItemNameBossOnlyBridge(itemName){
+            try{ if(typeof isHintBossKeyItemName === "function") return !!isHintBossKeyItemName(itemName); }catch(_){}
+            return /hint\s*:?\s*boss\s*key/i.test(String(itemName || ""));
+          };
+          bridged.__flprStandaloneBossOnlyBridge = true;
+          bridged.__flprStandaloneOriginalIsHintRewardItemName = original;
+          window.isHintRewardItemName = bridged;
+          try{ isHintRewardItemName = bridged; }catch(_){}
+        }
+      }
+    }catch(_){}
+    try{
+      const original = window.hintCandidatesForPool || (typeof hintCandidatesForPool === "function" ? hintCandidatesForPool : null);
+      if(original){
+        ready = true;
+        if(!original.__flprStandaloneBossOnlyBridge){
+          const bridged = function standaloneHintCandidatesForPoolBossOnlyBridge(poolName){
+            const pool = String(poolName || "").trim().toLowerCase();
+            if(pool && pool !== "boss") return [];
+            return original.apply(this, arguments);
+          };
+          bridged.__flprStandaloneBossOnlyBridge = true;
+          bridged.__flprStandaloneOriginalHintCandidatesForPool = original;
+          window.hintCandidatesForPool = bridged;
+          try{ hintCandidatesForPool = bridged; }catch(_){}
+        }
+      }
+    }catch(_){}
+    try{
+      const original = window.hintUpdateUi || (typeof hintUpdateUi === "function" ? hintUpdateUi : null);
+      if(original){
+        ready = true;
+        if(!original.__flprStandaloneBossOnlyBridge){
+          const bridged = function standaloneHintUpdateUiBossOnlyBridge(){
+            standaloneZeroBallHintState();
+            const result = original.apply(this, arguments);
+            standaloneZeroBallHintState();
+            standaloneRefreshBossHintUi();
+            return result;
+          };
+          bridged.__flprStandaloneBossOnlyBridge = true;
+          bridged.__flprStandaloneOriginalHintUpdateUi = original;
+          window.hintUpdateUi = bridged;
+          try{ hintUpdateUi = bridged; }catch(_){}
+        }
+      }
+    }catch(_){}
+    try{
+      const original = window.hintConsumePendingTriggers || (typeof hintConsumePendingTriggers === "function" ? hintConsumePendingTriggers : null);
+      if(original){
+        ready = true;
+        if(!original.__flprStandaloneBossOnlyBridge){
+          const bridged = function standaloneHintConsumePendingTriggersBossOnlyBridge(opts){
+            standaloneZeroBallHintState();
+            const nextOpts = { ...(opts || {}) };
+            if(nextOpts.focusHintsTab == null && standaloneBossHintScout.focusPending){
+              nextOpts.focusHintsTab = true;
+            }
+            const result = original.call(this, nextOpts);
+            if(nextOpts.focusHintsTab) standaloneBossHintScout.focusPending = false;
+            return result;
+          };
+          bridged.__flprStandaloneBossOnlyBridge = true;
+          bridged.__flprStandaloneOriginalHintConsumePendingTriggers = original;
+          window.hintConsumePendingTriggers = bridged;
+          try{ hintConsumePendingTriggers = bridged; }catch(_){}
+        }
+      }
+    }catch(_){}
+    try{
+      const original = window.hintHandleReceivedHintItem || (typeof hintHandleReceivedHintItem === "function" ? hintHandleReceivedHintItem : null);
+      if(original){
+        ready = true;
+        if(!original.__flprStandaloneBossOnlyBridge){
+          const bridged = function standaloneHintHandleReceivedHintItemBossOnlyBridge(itemName){
+            const text = String(itemName || "");
+            let isBoss = false;
+            try{ isBoss = typeof isHintBossKeyItemName === "function" ? !!isHintBossKeyItemName(text) : /hint\s*:?\s*boss\s*key/i.test(text); }catch(_){ isBoss = /hint\s*:?\s*boss\s*key/i.test(text); }
+            if(!isBoss){
+              if(/hint\s*:?\s*ball|ball\s*location/i.test(text)){
+                standaloneZeroBallHintState();
+                try{ if(typeof hintLog === "function") hintLog("[AP] Ball-location hint item ignored; use AP !hint for Progressive Balls."); }catch(_){}
+                try{ if(typeof hintUpdateUi === "function") hintUpdateUi(); }catch(_){}
+                return true;
+              }
+              return original.apply(this, arguments);
+            }
+            try{
+              hintState.pending = hintState.pending || {};
+              hintState.pending.ball = 0;
+              hintState.pending.boss = (hintState.pending.boss || 0) + 1;
+              standaloneQueueBossHintFocus();
+              try{
+                if(typeof showView === "function") showView("hints");
+                else if(typeof activeView !== "undefined"){
+                  activeView = "hints";
+                  if(typeof setTabUI === "function") setTabUI();
+                }
+              }catch(_){}
+              if(typeof hintLog === "function") hintLog(`[AP] Hint Boss Key received; queued (${hintState.pending.boss}).`);
+              standaloneScheduleBossKeyScout("hint-item");
+              if(hintState.loaded && typeof hintRemainingCount === "function" && hintRemainingCount("boss") > 0){
+                if(typeof hintLog === "function") hintLog("[AP] Auto-redeeming Hint Boss Key token.");
+                if(typeof hintRedeemPendingToken === "function"){
+                  const ok = hintRedeemPendingToken("boss", "Boss Key", { focusHintsTab:true, typewrite:true, silent:true });
+                  if(ok) standaloneBossHintScout.focusPending = false;
+                  if(!ok && typeof hintLog === "function") hintLog("[AP] Auto-redeem failed; token remains banked.");
+                }
+              }else if(typeof hintSetStatus === "function"){
+                hintSetStatus("Boss Key hint banked; waiting for AP scout.");
+              }
+              if(typeof hintUpdateUi === "function") hintUpdateUi();
+              standaloneRefreshBossHintUi();
+            }catch(_){}
+            return true;
+          };
+          bridged.__flprStandaloneBossOnlyBridge = true;
+          bridged.__flprStandaloneOriginalHintHandleReceivedHintItem = original;
+          window.hintHandleReceivedHintItem = bridged;
+          try{ hintHandleReceivedHintItem = bridged; }catch(_){}
+        }
+      }
+    }catch(_){}
+    standaloneZeroBallHintState();
+    standaloneRefreshBossHintUi();
+    standaloneScheduleBossKeyScout("hint-bridge");
+    if(!ready) setTimeout(installStandaloneBossHintBridge, 120);
+  }
+
+  function standaloneSnapshotRewardCounters(){
+    let apJunk = null;
+    let extraBallTokens = 0;
+    let junkRedeems = null;
+    try{ apJunk = ap?.junk ? { ...ap.junk } : null; }catch(_){}
+    try{ extraBallTokens = Math.max(0, Math.round(Number(state?.extraBallTokens || 0))); }catch(_){}
+    try{ junkRedeems = state?.junkRedeems ? { ...state.junkRedeems } : null; }catch(_){}
+    return { apJunk, extraBallTokens, junkRedeems };
+  }
+
+  function standaloneRestoreRewardCounters(snapshot){
+    if(!snapshot) return;
+    try{ if(snapshot.apJunk) ap.junk = { ...snapshot.apJunk }; }catch(_){}
+    try{ state.extraBallTokens = snapshot.extraBallTokens; }catch(_){}
+    try{ if(snapshot.junkRedeems) state.junkRedeems = { ...snapshot.junkRedeems }; }catch(_){}
+  }
+
+  function standaloneShouldIsolateReceivedReplay(it, opts){
+    if(!(opts?.isSnapshot || opts?.noPopup === true)) return false;
+    return standaloneReceivedItemTouchesRewardCounters(it);
+  }
+
+  function standaloneRewardItemKey(it, itemIndex, locId){
+    const idx = Number(itemIndex);
+    if(Number.isFinite(idx) && idx >= 0) return `idx:${idx}`;
+    const itemId = Number(it?.item);
+    const loc = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc);
+    return `fallback:${Number.isFinite(itemId) ? itemId : ""}|${Number.isFinite(loc) ? loc : ""}|${Number(it?.player ?? it?.player_id ?? 0) || 0}`;
+  }
+
+  function standaloneProgressiveRewardKey(it, itemIndex, locId, itemName){
+    const name = standaloneNormalizeLoose(itemName || "");
+    const loc = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc);
+    const itemId = Number(it?.item);
+    const source = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? 0) || 0;
+    if(Number.isFinite(loc) && loc > 0){
+      return [
+        "progressive",
+        "loc:" + loc,
+        "item:" + (Number.isFinite(itemId) ? itemId : ""),
+        "source:" + source,
+        "name:" + name
+      ].join("|");
+    }
+    const idx = Number(itemIndex);
+    if(Number.isFinite(idx) && idx >= 0){
+      return [
+        "progressive",
+        "idx:" + idx,
+        "item:" + (Number.isFinite(itemId) ? itemId : ""),
+        "source:" + source,
+        "name:" + name
+      ].join("|");
+    }
+    return [
+      "progressive",
+      "fallback",
+      "item:" + (Number.isFinite(itemId) ? itemId : ""),
+      "source:" + source,
+      "name:" + name
+    ].join("|");
+  }
+
+  function standaloneRememberProgressiveRewardKey(key){
+    if(!key) return;
+    try{
+      standaloneItemPanel.progressiveReceiveSeen.add(key);
+      if(standaloneItemPanel.progressiveReceiveSeen.size > 900) standaloneItemPanel.progressiveReceiveSeen.clear();
+    }catch(_){}
+  }
+
+  function standaloneBossKeyMaxCount(){
+    try{
+      const max = Number(typeof BOSS_KEYS_COUNT !== "undefined" ? BOSS_KEYS_COUNT : 3);
+      return Number.isFinite(max) && max > 0 ? Math.round(max) : 3;
+    }catch(_){
+      return 3;
+    }
+  }
+
+  function standaloneCurrentBossKeyCount(){
+    let count = 0;
+    try{
+      if(typeof getBossKeyRedeemedCount === "function"){
+        const value = Number(getBossKeyRedeemedCount());
+        if(Number.isFinite(value)) count = Math.max(count, value);
+      }
+    }catch(_){}
+    try{
+      if(typeof getBossKeysAcquiredCount === "function"){
+        const value = Number(getBossKeysAcquiredCount());
+        if(Number.isFinite(value)) count = Math.max(count, value);
+      }
+    }catch(_){}
+    try{
+      const value = Number(window.__apBossKeyCount);
+      if(Number.isFinite(value)) count = Math.max(count, value);
+    }catch(_){}
+    const max = standaloneBossKeyMaxCount();
+    return Math.max(0, Math.min(max, Math.round(count)));
+  }
+
+  function standaloneForceBossKeyCount(count){
+    const max = standaloneBossKeyMaxCount();
+    const c = Math.max(0, Math.min(max, Math.round(Number(count) || 0)));
+    try{
+      if(typeof bossKeysApplyAcquiredCount === "function"){
+        bossKeysApplyAcquiredCount(c, {
+          animate:false,
+          updateApCount:true,
+          source:"standalone-live-boss-key-force"
+        });
+      }
+    }catch(_){}
+    try{
+      if(Array.isArray(bossKeysState)){
+        for(let i = 0; i < bossKeysState.length; i++){
+          if(bossKeysState[i]) bossKeysState[i].acquired = i < c;
+        }
+      }
+    }catch(_){}
+    try{ if(typeof bossKeysSyncLegacyMirror === "function") bossKeysSyncLegacyMirror(c); }catch(_){}
+    try{ window.__apBossKeyCount = c; }catch(_){}
+    try{ window.__prevApBossKeyCount = Math.max(Number(window.__prevApBossKeyCount || 0), c); }catch(_){}
+    try{ if(typeof bossKeysSave === "function") bossKeysSave(); }catch(_){}
+    try{ if(typeof bossKeysRender === "function") bossKeysRender(); }catch(_){}
+    return standaloneCurrentBossKeyCount();
+  }
+
+  function standaloneBossKeyRewardKey(it, itemIndex, locId, itemName){
+    const name = standaloneNormalizeLoose(itemName || "");
+    const loc = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc);
+    const itemId = Number(it?.item);
+    const source = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? 0) || 0;
+    if(Number.isFinite(loc) && loc > 0){
+      return [
+        "boss-key",
+        "seed:" + standaloneRewardSeedKey(),
+        "loc:" + loc,
+        "item:" + (Number.isFinite(itemId) ? itemId : ""),
+        "source:" + source,
+        "name:" + name
+      ].join("|");
+    }
+    const idx = Number(itemIndex);
+    if(Number.isFinite(idx) && idx >= 0){
+      return [
+        "boss-key",
+        "seed:" + standaloneRewardSeedKey(),
+        "idx:" + idx,
+        "item:" + (Number.isFinite(itemId) ? itemId : ""),
+        "source:" + source,
+        "name:" + name
+      ].join("|");
+    }
+    return [
+      "boss-key",
+      "seed:" + standaloneRewardSeedKey(),
+      "fallback",
+      "item:" + (Number.isFinite(itemId) ? itemId : ""),
+      "source:" + source,
+      "name:" + name
+    ].join("|");
+  }
+
+  function standaloneShouldReplayLiveBossKeyReward(itemName, opts){
+    try{
+      if(!standaloneIsBossKeyRewardName(itemName)) return false;
+      if(opts?.noPopup === true) return false;
+      return !!(opts?.isSnapshot || opts?.isFlush);
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneScheduleLiveBossKeyRewardAnimation(it, itemIndex, locId, itemName, previousCount, rewardKey){
+    try{
+      const key = rewardKey || standaloneBossKeyRewardKey(it, itemIndex, locId, itemName);
+      if(!key) return;
+      if(standaloneItemPanel.bossKeyReceiveSeen.has(key)) return;
+      standaloneItemPanel.bossKeyReceiveSeen.add(key);
+      if(standaloneItemPanel.bossKeyReceiveSeen.size > 500) standaloneItemPanel.bossKeyReceiveSeen.clear();
+      const from = Math.max(0, Math.min(standaloneBossKeyMaxCount(), Math.round(Number(previousCount) || 0)));
+      setTimeout(()=>{
+        try{
+          const max = standaloneBossKeyMaxCount();
+          let current = standaloneCurrentBossKeyCount();
+          let to = Math.max(current, Math.min(max, from + 1));
+          if(current < to){
+            current = standaloneForceBossKeyCount(to);
+            to = Math.max(to, current);
+          }
+          if(to <= from && current > 0){
+            to = current;
+          }
+          if(to <= from && current >= max && max > 0){
+            to = current;
+          }
+          if(typeof bossKeysRunRedeemSequence === "function"){
+            if(to > from){
+              bossKeysRunRedeemSequence(from, to, { force:true });
+            }else if(current > 0){
+              bossKeysRunRedeemSequence(Math.max(0, current - 1), current, { force:true });
+            }
+          }
+          window.__flprStandaloneBossKeyLiveRewardAnimation = {
+            key,
+            itemName:String(itemName || ""),
+            itemIndex:Number(itemIndex),
+            locId:Number(locId ?? it?.location ?? it?.location_id ?? it?.loc ?? 0),
+            from,
+            to:Math.max(to, current),
+            ts:Date.now()
+          };
+        }catch(_){}
+      }, 220);
+    }catch(_){}
+  }
+
+  function standaloneReceivedListHasProgressiveReceipt(it, itemIndex, locId, itemName){
+    try{
+      const list = Array.isArray(ap?.receivedAll) ? ap.receivedAll : [];
+      if(!list.length) return false;
+      const idx = Number(itemIndex);
+      const loc = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc);
+      const itemId = Number(it?.item);
+      const source = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? 0) || 0;
+      const wantName = standaloneNormalizeLoose(itemName || "");
+      return list.some((row)=>{
+        const rowIdx = Number(row?.recvIndex);
+        if(Number.isFinite(idx) && idx >= 0 && Number.isFinite(rowIdx) && rowIdx === idx) return true;
+        const rowLoc = Number(row?.locId ?? row?.location ?? 0);
+        if(Number.isFinite(loc) && loc > 0 && Number.isFinite(rowLoc) && rowLoc > 0 && rowLoc !== loc) return false;
+        const rowItem = Number(row?.itemId ?? row?.item);
+        if(Number.isFinite(itemId) && Number.isFinite(rowItem) && rowItem !== itemId) return false;
+        const rowSource = Number(row?.sourcePlayerId ?? row?.player ?? 0) || 0;
+        if(source && rowSource && rowSource !== source) return false;
+        const rowName = standaloneNormalizeLoose(row?.itemName || row?.baseItemName || "");
+        return !wantName || !rowName || rowName === wantName;
+      });
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneProgressiveReceiptMayAnimate(opts, locId){
+    try{
+      if(opts?.isSnapshot || opts?.isFlush) return false;
+      if(opts?.noPopup !== true) return true;
+      if(opts?.pairedOverride) return true;
+      const loc = Number(locId);
+      return Number.isFinite(loc) && loc > 0;
+    }catch(_){
+      return true;
+    }
+  }
+
+  function standaloneEnhanceReceivedEntry(it, itemIndex, locId){
+    try{
+      const list = Array.isArray(ap?.receivedAll) ? ap.receivedAll : [];
+      if(!list.length) return;
+      const idx = Number(itemIndex);
+      const row = list.find((entry)=>Number(entry?.recvIndex) === idx) || list[list.length - 1];
+      if(!row) return;
+      const itemId = Number(it?.item);
+      if(Number.isFinite(itemId)) row.itemId = itemId;
+      const sourcePlayerId = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? row.sourcePlayerId ?? ap?.slot ?? 0);
+      if(Number.isFinite(sourcePlayerId)) row.sourcePlayerId = sourcePlayerId;
+      const loc = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc ?? row.locId);
+      if(Number.isFinite(loc)) row.locId = loc;
+      const resolved = standaloneReceivedRowItemName(row);
+      if(resolved && !standaloneLooksUnresolvedItemName(resolved, row.itemId)){
+        row.itemName = resolved;
+        row.baseItemName = resolved;
+      }
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(list); }catch(_){}
+    }catch(_){}
+  }
+
+  function installStandaloneReceivedAddBridge(){
+    let original = null;
+    try{ original = (typeof addReceivedToList === "function") ? addReceivedToList : null; }catch(_){}
+    if(!original){
+      setTimeout(installStandaloneReceivedAddBridge, 120);
+      return;
+    }
+    if(original.__flprStandaloneReceivedAddBridge) return;
+    const sameReceivedEntry = (row, itemName, locationName, locId, meta)=>{
+      try{
+        const rowItem = standaloneNormalizeLoose(row?.itemName || row?.baseItemName || "");
+        const wantItem = standaloneNormalizeLoose(itemName || "");
+        if(rowItem && wantItem && rowItem !== wantItem) return false;
+        const rowLocId = Number(row?.locId ?? row?.location ?? 0);
+        const wantLocId = Number(locId);
+        if(Number.isFinite(rowLocId) && rowLocId > 0 && Number.isFinite(wantLocId) && wantLocId > 0){
+          return rowLocId === wantLocId;
+        }
+        const rowLoc = standaloneSentLocationComparable(row?.locationName || row?.checkName || "");
+        const wantLoc = standaloneSentLocationComparable(locationName || "");
+        if(rowLoc && wantLoc && rowLoc !== wantLoc) return false;
+        const rowSource = Number(row?.sourcePlayerId ?? row?.player ?? 0) || 0;
+        const wantSource = Number(meta?.sourcePlayerId ?? meta?.player ?? 0) || 0;
+        if(rowSource && wantSource && rowSource !== wantSource) return false;
+        return true;
+      }catch(_){
+        return false;
+      }
+    };
+    const bridged = function standaloneAddReceivedToListBridge(itemName, locationName, checkName, recvIndex, flags, locId, baseItemName, meta){
+      let nextIndex = recvIndex;
+      try{
+        if(recvIndex != null){
+          const list = Array.isArray(ap?.receivedAll) ? ap.receivedAll : [];
+          const existing = list.find((row)=>Number(row?.recvIndex) === Number(recvIndex));
+          if(existing && !sameReceivedEntry(existing, itemName, locationName, locId, meta)){
+            nextIndex = null;
+          }
+        }
+      }catch(_){}
+      return original.call(this, itemName, locationName, checkName, nextIndex, flags, locId, baseItemName, meta);
+    };
+    bridged.__flprStandaloneReceivedAddBridge = true;
+    bridged.__flprStandaloneOriginalAddReceivedToList = original;
+    try{ window.addReceivedToList = bridged; }catch(_){}
+    try{ addReceivedToList = bridged; }catch(_){}
+  }
+
+  function installStandaloneReceivedRewardBridge(){
+    let original = null;
+    try{ original = (typeof processReceivedItem === "function") ? processReceivedItem : null; }catch(_){}
+    if(!original){
+      setTimeout(installStandaloneReceivedRewardBridge, 120);
+      return;
+    }
+    if(original.__flprStandaloneRewardBridge){
+      try{ standaloneApplyRewardInventoryState({ applyNewRewards:false }); }catch(_){}
+      return;
+    }
+    const bridged = function standaloneProcessReceivedItemBridge(it, itemIndex, locId, opts){
+      opts = opts || {};
+      let receivedName = "";
+      let progressiveKey = "";
+      let replayBossKeyReward = false;
+      let bossKeyRewardKey = "";
+      let bossKeyPreviousCount = 0;
+      let duplicateProgressive = false;
+      let restoreChecksAfterReward = false;
+      try{
+        receivedName = standaloneReceivedItemName(it);
+        if(standaloneIsBallHintRewardName(receivedName)){
+          standaloneZeroBallHintState();
+          try{ if(typeof hintLog === "function") hintLog("[AP] Ball-location hint item suppressed; use AP !hint for Progressive Balls."); }catch(_){}
+          try{ if(typeof hintUpdateUi === "function") hintUpdateUi(); }catch(_){}
+          return false;
+        }
+        restoreChecksAfterReward = standaloneShouldRestoreChecksAfterReward(receivedName, it, opts);
+        if(receivedName && standaloneProgressiveBallTarget(receivedName)){
+          progressiveKey = standaloneProgressiveRewardKey(it, itemIndex, locId, receivedName);
+          duplicateProgressive = !!(
+            progressiveKey &&
+            standaloneItemPanel.progressiveReceiveSeen.has(progressiveKey) &&
+            standaloneProgressiveReceiptMayAnimate(opts, locId) &&
+            standaloneReceivedListHasProgressiveReceipt(it, itemIndex, locId, receivedName)
+          );
+          standaloneRememberProgressiveRewardKey(progressiveKey);
+        }
+        replayBossKeyReward = standaloneShouldReplayLiveBossKeyReward(receivedName, opts);
+        if(replayBossKeyReward){
+          bossKeyRewardKey = standaloneBossKeyRewardKey(it, itemIndex, locId, receivedName);
+          bossKeyPreviousCount = standaloneCurrentBossKeyCount();
+        }
+      }catch(_){}
+      if(duplicateProgressive){
+        try{ window.__flprStandaloneProgressiveDuplicateSuppressed = Number(window.__flprStandaloneProgressiveDuplicateSuppressed || 0) + 1; }catch(_){}
+        try{ standaloneForceProgressiveUnlockFromInventory(receivedName, { animate:false, quiet:true }); }catch(_){}
+        try{ standaloneScheduleTextRender("duplicate-progressive-receipt"); }catch(_){}
+        return false;
+      }
+      const isolateReplay = standaloneShouldIsolateReceivedReplay(it, opts);
+      const touchesReward = isolateReplay || standaloneReceivedItemTouchesRewardCounters(it);
+      const snapshot = isolateReplay ? standaloneSnapshotRewardCounters() : null;
+      const callOpts = isolateReplay ? { ...opts, noPopup:true, noFeed:true } : opts;
+      const result = isolateReplay
+        ? standaloneWithCounterDrawerFxSuppressed(()=>original.call(this, it, itemIndex, locId, callOpts))
+        : original.call(this, it, itemIndex, locId, callOpts);
+      try{
+        standaloneEnhanceReceivedEntry(it, itemIndex, locId);
+        receivedName = receivedName || standaloneReceivedItemName(it);
+        if(receivedName && standaloneProgressiveBallTarget(receivedName)){
+          standaloneRememberProgressiveRewardKey(progressiveKey || standaloneProgressiveRewardKey(it, itemIndex, locId, receivedName));
+          standaloneRememberProgressiveRewardKey(standaloneRewardItemKey(it, itemIndex, locId));
+          if(opts?.isSnapshot || opts?.isFlush || opts?.noPopup === true){
+            standaloneForceProgressiveUnlockFromInventory(receivedName, { animate:false, quiet:true });
+          }else{
+            setTimeout(()=>standaloneForceProgressiveUnlockFromInventory(receivedName, { animate:false, quiet:true }), 4600);
+          }
+        }
+        if(isolateReplay){
+          standaloneRestoreRewardCounters(snapshot);
+          standaloneApplyRewardInventoryState({ applyNewRewards:true });
+        }else if(touchesReward){
+          standaloneApplyRewardInventoryState({ applyNewRewards:false });
+        }
+        if(restoreChecksAfterReward){
+          standaloneScheduleChecksRestoreAfterReward();
+        }
+        if(replayBossKeyReward){
+          standaloneScheduleLiveBossKeyRewardAnimation(it, itemIndex, locId, receivedName, bossKeyPreviousCount, bossKeyRewardKey);
+        }
+      }catch(_){}
+      return result;
+    };
+    bridged.__flprStandaloneRewardBridge = true;
+    bridged.__flprStandaloneOriginalProcessReceivedItem = original;
+    try{ window.processReceivedItem = bridged; }catch(_){}
+    try{ processReceivedItem = bridged; }catch(_){}
+    setTimeout(()=>{ try{ standaloneApplyRewardInventoryState({ applyNewRewards:false }); }catch(_){} }, 0);
+  }
+
+  function standaloneLogDisplayText(line){
+    return String(line || "")
+      .replace(/^\[[^\]]+\]:?\s*/, "")
+      .replace(/^\d{1,2}:\d{2}:\d{2}\s*/, "")
+      .trim();
+  }
+
+  function standaloneShouldShowLogLine(line){
+    const text = String(line || "");
+    const msg = standaloneLogDisplayText(text);
+    if(!text.trim()) return false;
+    if(/^(?:New Check:|FLIPPERMIZER CHECK;|Check metadata sent;|CHECK SENT;|CHECK STATE;)/i.test(msg)) return false;
+    if(/^BOUNCED(?:\b|;|$)/i.test(msg)) return false;
+    if(/FLPR-Bot sync/i.test(msg)) return false;
+    if(/\bIgnoring\s+(?:off-seed|pseudo location)/i.test(msg)) return false;
+    if(/\bIgnoring\s+.*\bProgressive Ball\b/i.test(msg)) return false;
+    if(/^(?:AP Text Client ready|CONNECT clicked|Runtime;|Warning: overlay is running|AP endpoints:|Connecting to |WebSocket open;)/i.test(msg)) return false;
+    if(/^(?:RoomInfo confirmed|UI relic run reset|ROOM INFO;|ROOM SLOTS;|RoomUpdate;|connected$|Server state:|Generic task payload;)/i.test(msg)) return false;
+    if(/^(?:SERVER\s+)?(?:LocationInfo|LocationScouts);/i.test(msg)) return false;
+    if(/^(?:OUT\b|SAY SENT TO AP SERVER|SYNC RECEIVED|ReceivedItems snapshot|RECEIVED ITEMS(?: SNAPSHOT)?;|DATAPACKAGE;)/i.test(msg)) return false;
+    if(/^(?:Standalone ReceivedItems flushed|Deferred ReceivedItems flushed|World state|Progressive unlock correction|Progressive Ball applied to|Table unlocked by Progressive Ball|Table unlock intro triggered|False self-progression suppressed|settings saved|settings loaded)/i.test(msg)) return false;
+    if(/^(?:SENT .+ to .+|RECEIVED .+ from .+)/i.test(msg)) return false;
+    if(/\b(?:sent|has\s+found\s+their\s+own|found\s+their\s+own|found their)\s+(?:Item\s*#?\s*)?\d{4,}\b/i.test(msg)) return false;
+    if(/^>\s+/.test(msg)) return false;
+    return true;
+  }
+
+  function standaloneLogDedupeKey(line){
+    const msg = standaloneLogDisplayText(line)
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+    if(/^new check:/.test(msg)) return msg;
+    if(/^client\(/.test(msg)) return msg;
+    if(/\bhas (?:joined|left)\b/.test(msg)) return msg;
+    if(/\b(?:sent|has found their own|found their own|found their)\b/.test(msg)) return msg;
+    if(/^\[hint\]:/.test(msg)) return msg;
+    return msg || String(line || "").trim().toLowerCase();
+  }
+
+  function standaloneTrimLogBuffer(buf){
+    const max = Math.max(120, Number(standaloneTextClient.maxLines || 900) || 900);
+    if(!Array.isArray(buf)) return [];
+    const filtered = [];
+    const seen = new Set();
+    buf.map((line)=>String(line || "")).filter(standaloneShouldShowLogLine).forEach((line)=>{
+      const key = standaloneLogDedupeKey(line);
+      if(seen.has(key)) return;
+      seen.add(key);
+      filtered.push(line);
+    });
+    return filtered.length > max ? filtered.slice(filtered.length - max) : filtered;
+  }
+
+  function standaloneResetTextLogsForNewSession(){
+    if(standaloneTextClient.sessionReset) return;
+    standaloneTextClient.sessionReset = true;
+    standaloneTextClient.loaded = true;
+    standaloneTextClient.logs.status = [];
+    standaloneTextClient.logs.errors = [];
+    try{ standaloneTextClient.itemLogMeta.clear(); }catch(_){}
+    try{ localStorage.removeItem(STANDALONE_AP_LOG_KEY); }catch(_){}
+  }
+
+  function standaloneLoadPersistedTextLogs(){
+    standaloneResetTextLogsForNewSession();
+    if(standaloneTextClient.loaded) return;
+    standaloneTextClient.loaded = true;
+    const saved = standaloneReadJson(STANDALONE_AP_LOG_KEY, null);
+    if(!saved || typeof saved !== "object") return;
+    standaloneTextClient.logs.status = standaloneTrimLogBuffer([]
+      .concat(saved.status || [])
+      .concat(saved.chat || [])
+      .concat(saved.generic || []));
+    standaloneTextClient.logs.errors = standaloneTrimLogBuffer(saved.errors || []);
+  }
+
+  function standaloneSavePersistedTextLogs(){
+    standaloneWriteJson(STANDALONE_AP_LOG_KEY, {
+      status: standaloneTrimLogBuffer(standaloneTextClient.logs.status || []),
+      errors: standaloneTrimLogBuffer(standaloneTextClient.logs.errors || [])
+    });
+  }
+
+  function standaloneAppendPersistedLogLine(tab, line){
+    const t = standaloneTextNormalizeTab(tab);
+    const text = String(line || "");
+    if(!standaloneShouldShowLogLine(text)) return;
+    const buf = standaloneTextClient.logs[t] || (standaloneTextClient.logs[t] = []);
+    const key = standaloneLogDedupeKey(text);
+    if(!buf.some((existing)=>standaloneLogDedupeKey(existing) === key)) buf.push(text);
+    standaloneTextClient.logs[t] = standaloneTrimLogBuffer(buf);
+  }
+
+  function standalonePersistNativeLogBuffers(){
+    standaloneLoadPersistedTextLogs();
+    try{
+      if(typeof apLogBuffers === "undefined" || !apLogBuffers) return;
+      const map = { status:"status", generic:"status", chat:"status", errors:"errors" };
+      Object.entries(map).forEach(([bucket, tab])=>{
+        const native = apLogBuffers[bucket];
+        if(!Array.isArray(native)) return;
+        native.forEach((line)=>standaloneAppendPersistedLogLine(tab, line));
+      });
+      standaloneSavePersistedTextLogs();
+    }catch(_){}
+  }
+
+  function standaloneLoadSentItems(){
+    if(standaloneItemPanel.sentLoaded) return;
+    standaloneItemPanel.sentLoaded = true;
+    const saved = standaloneReadJson(STANDALONE_SENT_ITEMS_KEY, []);
+    standaloneItemPanel.sent = Array.isArray(saved) ? saved.slice(-standaloneItemPanel.maxSent) : [];
+  }
+
+  function standaloneSaveSentItems(){
+    standaloneItemPanel.sent = Array.isArray(standaloneItemPanel.sent)
+      ? standaloneItemPanel.sent.slice(-standaloneItemPanel.maxSent)
+      : [];
+    standaloneWriteJson(STANDALONE_SENT_ITEMS_KEY, standaloneItemPanel.sent);
+  }
+
+  function standaloneSentLocationComparable(value){
+    const split = standaloneSplitLocationName(value);
+    const table = standaloneNormalizeLoose(split.table || "");
+    let rest = String(split.rest || value || "").trim();
+    const obtain = rest.match(/^obtain\s+a\s+score\s+of\s+(.+)$/i);
+    const score = rest.match(/^(?:easy|medium|hard)\s+score\s*\(([^)]+)\)$/i);
+    if(obtain) rest = `score ${obtain[1]}`;
+    else if(score) rest = `score ${score[1]}`;
+    return `${table}|${standaloneNormalizeLoose(rest)}`;
+  }
+
+  function standaloneSentCorrectionKey(sender, receiver, locationName){
+    return [
+      standaloneNormalizeLoose(sender),
+      standaloneNormalizeLoose(receiver),
+      standaloneSentLocationComparable(locationName)
+    ].join("|");
+  }
+
+  function standaloneParseSentLogLine(line){
+    const text = standaloneLogDisplayText(line);
+    const m = text.match(/^(.+?)\s+sent\s+(.+?)\s+to\s+(.+?)(?:\s+\((.*)\))?\.?$/i);
+    if(!m) return null;
+    return {
+      sender: String(m[1] || "").trim(),
+      itemName: String(m[2] || "").trim(),
+      receiver: String(m[3] || "").trim(),
+      locationName: String(m[4] || "").trim()
+    };
+  }
+
+  function standaloneParseOwnFoundLogLine(line){
+    const text = standaloneLogDisplayText(line);
+    const m = text.match(/^(.+?)\s+(?:has\s+found\s+their\s+own|found\s+their\s+own|found\s+their)\s+(.+?)(?:\s+\((.*)\))?\.?$/i);
+    if(!m) return null;
+    return {
+      player: String(m[1] || "").trim(),
+      itemName: String(m[2] || "").trim(),
+      locationName: String(m[3] || "").trim()
+    };
+  }
+
+  function standaloneReplaceLogMessage(line, message){
+    const prefix = String(line || "").match(/^(\[[^\]]+\]:?\s*)/)?.[1] || "";
+    return `${prefix}${message}`;
+  }
+
+  function standaloneOutgoingSentEntry(entry){
+    const self = standaloneSelfSlotId();
+    const senderId = Number(entry?.senderId || 0) || 0;
+    const receiverId = Number(entry?.receiverId || 0) || 0;
+    if(!self || senderId !== self || !receiverId || receiverId === self) return false;
+    return true;
+  }
+
+  function standaloneRepairSentItemsFromReceiverPackages(){
+    standaloneLoadSentItems();
+    let changed = false;
+    (standaloneItemPanel.sent || []).forEach((entry)=>{
+      changed = standaloneHydrateSentEntryFromKey(entry) || changed;
+      const resolved = standaloneResolveSentMeta(entry);
+      if(!resolved) return;
+      const updates = {
+        itemName: resolved.itemName,
+        locationName: standaloneLocationDisplayName(resolved.locationName || "", resolved.locId),
+        receiverPlayer: resolved.receiverPlayer,
+        receiverGame: resolved.receiverGame,
+        senderPlayer: resolved.senderPlayer,
+        senderGame: resolved.senderGame,
+        flags: standaloneFlagsForItem(resolved.flags, resolved.itemName)
+      };
+      Object.entries(updates).forEach(([key, value])=>{
+        const text = String(value ?? "").trim();
+        if(!text) return;
+        if(key === "itemName" && standaloneLooksUnresolvedItemName(text, entry.itemId)) return;
+        if(String(entry[key] ?? "").trim() !== text){
+          entry[key] = key === "flags" ? Number(value || 0) : text;
+          changed = true;
+        }
+      });
+    });
+    if(changed) standaloneSaveSentItems();
+    return changed;
+  }
+
+  function standaloneBuildSentCorrections(){
+    standaloneRepairSentItemsFromReceiverPackages();
+    const corrections = new Map();
+    try{
+      (standaloneItemPanel.sent || []).forEach((entry)=>{
+        if(!standaloneOutgoingSentEntry(entry)) return;
+        const resolved = standaloneResolveSentMeta(entry);
+        if(!resolved || standaloneLooksUnresolvedItemName(resolved.itemName, resolved.itemId)) return;
+        const sender = String(resolved.senderPlayer || entry.senderPlayer || standaloneSelfPlayerName() || "").trim();
+        const receiver = String(resolved.receiverPlayer || entry.receiverPlayer || "").trim();
+        const locRaw = String(resolved.locationName || entry.locationName || "").trim();
+        const locDisplay = standaloneLocationDisplayName(locRaw, resolved.locId || entry.locId);
+        [locRaw, locDisplay].filter(Boolean).forEach((loc)=>{
+          corrections.set(standaloneSentCorrectionKey(sender, receiver, loc), { ...resolved, locationName:locDisplay || locRaw });
+        });
+      });
+    }catch(_){}
+    return corrections;
+  }
+
+  function standaloneRepairLogBufferWithSentCorrections(buf, corrections){
+    if(!Array.isArray(buf)) return { changed:false, lines:buf };
+    const outgoing = standaloneOutgoingSentLocations();
+    let changed = false;
+    const lines = [];
+    buf.forEach((line)=>{
+      const found = standaloneParseOwnFoundLogLine(line);
+      if(
+        found &&
+        standaloneProgressiveBallTarget(found.itemName) &&
+        standaloneNormalizeLoose(found.player) === standaloneNormalizeLoose(standaloneSelfPlayerName()) &&
+        found.locationName &&
+        outgoing.locKeys.has(standaloneSentLocationComparable(found.locationName))
+      ){
+        changed = true;
+        return;
+      }
+      if(!corrections || !corrections.size){
+        lines.push(line);
+        return;
+      }
+      const parsed = standaloneParseSentLogLine(line);
+      if(!parsed || !parsed.locationName){
+        lines.push(line);
+        return;
+      }
+      const correction = corrections.get(standaloneSentCorrectionKey(parsed.sender, parsed.receiver, parsed.locationName));
+      if(!correction){
+        lines.push(line);
+        return;
+      }
+      const fixedMessage = standaloneFormatItemSendLogLine(correction);
+      if(!fixedMessage){
+        lines.push(line);
+        return;
+      }
+      const fixedLine = standaloneReplaceLogMessage(line, fixedMessage);
+      if(fixedLine !== line) changed = true;
+      lines.push(fixedLine);
+    });
+    return { changed, lines };
+  }
+
+  function standaloneRepairTextLogsFromSentItems(){
+    const corrections = standaloneBuildSentCorrections();
+    let changed = false;
+    standaloneLoadPersistedTextLogs();
+    ["status", "errors"].forEach((tab)=>{
+      const repaired = standaloneRepairLogBufferWithSentCorrections(standaloneTextClient.logs[tab] || [], corrections);
+      if(repaired.changed){
+        standaloneTextClient.logs[tab] = standaloneTrimLogBuffer(repaired.lines);
+        changed = true;
+      }
+    });
+    try{
+      if(typeof apLogBuffers !== "undefined" && apLogBuffers){
+        Object.keys(apLogBuffers).forEach((bucket)=>{
+          const repaired = standaloneRepairLogBufferWithSentCorrections(apLogBuffers[bucket] || [], corrections);
+          if(repaired.changed){
+            apLogBuffers[bucket] = repaired.lines;
+            changed = true;
+          }
+        });
+      }
+    }catch(_){}
+    if(changed) standaloneSavePersistedTextLogs();
+    try{
+      corrections.forEach((meta)=>{
+        standaloneRememberItemSendLogMeta(meta, standaloneFormatItemSendLogLine(meta));
+      });
+    }catch(_){}
+    return changed;
+  }
+
+  function standaloneReceivedKeyForRow(row){
+    const idx = (row?.recvIndex != null) ? `idx:${row.recvIndex}` : "";
+    return idx || `${row?.itemName || ""}|${row?.locationName || ""}`;
+  }
+
+  function standaloneRebuildReceivedKeySet(){
+    try{
+      ap.receivedKeySet = new Set((ap.receivedAll || []).map((row)=>standaloneReceivedKeyForRow(row)));
+    }catch(_){}
+  }
+
+  function standaloneOutgoingSentLocations(){
+    standaloneLoadSentItems();
+    const locIds = new Set();
+    const locKeys = new Set();
+    try{
+      (standaloneItemPanel.sent || []).forEach((entry)=>{
+        if(!standaloneOutgoingSentEntry(entry)) return;
+        const resolved = standaloneResolveSentMeta(entry) || entry;
+        const locId = Number(resolved.locId ?? entry.locId);
+        if(Number.isFinite(locId) && locId > 0) locIds.add(locId);
+        [resolved.locationName, entry.locationName, standaloneLocationDisplayName(resolved.locationName || entry.locationName || "", locId)]
+          .filter(Boolean)
+          .forEach((loc)=>locKeys.add(standaloneSentLocationComparable(loc)));
+      });
+      standaloneLoadPersistedTextLogs();
+      const allLogs = []
+        .concat(standaloneTextClient.logs.status || [])
+        .concat(standaloneTextClient.logs.errors || []);
+      allLogs.forEach((line)=>{
+        const parsed = standaloneParseSentLogLine(line);
+        if(!parsed || !standaloneProgressiveBallTarget(parsed.itemName)) return;
+        if(standaloneNormalizeLoose(parsed.sender) !== standaloneNormalizeLoose(standaloneSelfPlayerName())) return;
+        if(standaloneNormalizeLoose(parsed.receiver) === standaloneNormalizeLoose(standaloneSelfPlayerName())) return;
+        if(parsed.locationName) locKeys.add(standaloneSentLocationComparable(parsed.locationName));
+      });
+    }catch(_){}
+    return { locIds, locKeys };
+  }
+
+  function standaloneLocationMatchesOutgoingSent(locId, locationName){
+    const outgoing = standaloneOutgoingSentLocations();
+    const id = Number(locId);
+    if(Number.isFinite(id) && id > 0 && outgoing.locIds.has(id)) return true;
+    const key = standaloneSentLocationComparable(locationName || "");
+    return !!key && outgoing.locKeys.has(key);
+  }
+
+  function standaloneRepairFalseOwnProgressiveReceipts(){
+    const self = standaloneSelfSlotId();
+    if(!self) return false;
+    const outgoing = standaloneOutgoingSentLocations();
+    if(!outgoing.locIds.size && !outgoing.locKeys.size) return false;
+    let list = [];
+    try{ list = Array.isArray(ap?.receivedAll) && ap.receivedAll.length ? ap.receivedAll : (typeof loadReceivedList === "function" ? loadReceivedList() : []); }catch(_){}
+    if(!Array.isArray(list) || !list.length) return false;
+    let changed = false;
+    const next = list.filter((row)=>{
+      const itemName = String(row?.itemName || row?.baseItemName || "").trim();
+      if(!standaloneProgressiveBallTarget(itemName)) return true;
+      const sourceId = Number(row?.sourcePlayerId ?? row?.player ?? self) || self;
+      if(sourceId !== self) return true;
+      const locId = Number(row?.locId ?? row?.location ?? 0) || 0;
+      const locKey = standaloneSentLocationComparable(row?.locationName || row?.checkName || "");
+      const remove = (locId && outgoing.locIds.has(locId)) || (locKey && outgoing.locKeys.has(locKey));
+      if(remove) changed = true;
+      return !remove;
+    });
+    if(!changed) return false;
+    try{ ap.receivedAll = next; }catch(_){}
+    standaloneRebuildReceivedKeySet();
+    try{ if(typeof saveReceivedList === "function") saveReceivedList(next); }catch(_){}
+    try{ standaloneWithCounterDrawerFxSuppressed(()=>{ if(typeof apReconcileWorldStateFromReceived === "function") apReconcileWorldStateFromReceived(); }); }catch(_){}
+    try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
+    try{ if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
+    return true;
+  }
+
+  function standaloneRepairPersistedApState(){
+    let changed = false;
+    try{ changed = standaloneRepairSentItemsFromReceiverPackages() || changed; }catch(_){}
+    try{ changed = standaloneRepairTextLogsFromSentItems() || changed; }catch(_){}
+    try{ changed = standaloneRepairFalseOwnProgressiveReceipts() || changed; }catch(_){}
+    if(changed){
+      try{ standaloneScheduleTextRender("repair-state"); }catch(_){}
+      try{ standaloneRenderItemPanel(); }catch(_){}
+    }
+    return changed;
+  }
 
   function standaloneTextTimestamp(){
     const d = new Date();
@@ -1036,36 +5112,3312 @@
 
   function standaloneTextNormalizeTab(tab){
     const t = String(tab || "").toLowerCase();
-    if(t === "chat" || t === "server" || t === "messages" || t === "generic") return "chat";
     if(t === "error" || t === "errors") return "errors";
     return "status";
   }
 
+  function standaloneControlAll(selector){
+    try{
+      const nodes = Array.from(document.querySelectorAll(selector));
+      const standalone = [];
+      const other = [];
+      nodes.forEach((node)=>{
+        if(node && node.closest && node.closest(".flprStandaloneConnectLayout")) standalone.push(node);
+        else other.push(node);
+      });
+      return standalone.concat(other);
+    }catch(_){
+      return [];
+    }
+  }
+
+  function standalonePrimaryControl(selector){
+    const nodes = standaloneControlAll(selector);
+    return nodes.length ? nodes[0] : null;
+  }
+
+  function standaloneApPartNumber(part, keys){
+    if(!part || typeof part !== "object") return NaN;
+    for(const key of keys || []){
+      const num = Number(part[key]);
+      if(Number.isFinite(num)) return num;
+    }
+    return NaN;
+  }
+
+  function standaloneFirstFiniteNumber(){
+    for(let i = 0; i < arguments.length; i++){
+      const n = Number(arguments[i]);
+      if(Number.isFinite(n)) return n;
+    }
+    return NaN;
+  }
+
+  function standaloneApJsonParts(pkt){
+    return Array.isArray(pkt?.data) ? pkt.data.filter((part)=>part && typeof part === "object") : [];
+  }
+
+  function standaloneFirstJsonPart(pkt, type){
+    const want = String(type || "").toLowerCase();
+    return standaloneApJsonParts(pkt).find((part)=>String(part.type || "").toLowerCase() === want) || null;
+  }
+
+  function standaloneJsonPartsOfType(pkt, type){
+    const want = String(type || "").toLowerCase();
+    return standaloneApJsonParts(pkt).filter((part)=>String(part.type || "").toLowerCase() === want);
+  }
+
+  function standalonePartFallbackText(part){
+    return String(part?.text ?? part?.name ?? part?.value ?? "").trim();
+  }
+
+  function standaloneSentMetaCacheKeys(meta){
+    if(!meta) return [];
+    const sender = Number(meta.senderId || 0) || 0;
+    const receiver = Number(meta.receiverId || 0) || 0;
+    const item = meta.itemId ?? "";
+    const loc = meta.locId ?? "";
+    const flags = meta.flags ?? 0;
+    return [
+      `${sender}|${receiver}|${item}|${loc}|${flags}`,
+      `${sender}|${receiver}|${item}|${loc}`,
+      `${sender}|${receiver}|${item}`,
+      `${sender}|${item}|${loc}`,
+      `${item}|${loc}`
+    ];
+  }
+
+  function standaloneRememberServerSentMeta(meta){
+    try{
+      const serverItemName = String(meta?.serverItemName || "").trim();
+      if(!serverItemName || standaloneLooksUnresolvedItemName(serverItemName, meta?.itemId)) return;
+      const value = {
+        serverItemName,
+        receiverGame: String(meta?.receiverGame || ""),
+        receiverId: Number(meta?.receiverId || 0) || 0,
+        flags: meta?.flags ?? 0,
+        at: Date.now()
+      };
+      standaloneSentMetaCacheKeys(meta).forEach((key)=>{
+        if(key) standaloneItemPanel.sentServerMeta.set(key, value);
+      });
+      if(standaloneItemPanel.sentServerMeta.size > 900){
+        const keys = Array.from(standaloneItemPanel.sentServerMeta.keys());
+        keys.slice(0, Math.max(0, keys.length - 600)).forEach((key)=>standaloneItemPanel.sentServerMeta.delete(key));
+      }
+    }catch(_){}
+  }
+
+  function standaloneCachedServerSentMeta(meta){
+    try{
+      for(const key of standaloneSentMetaCacheKeys(meta)){
+        const cached = standaloneItemPanel.sentServerMeta.get(key);
+        if(cached) return cached;
+      }
+    }catch(_){}
+    return null;
+  }
+
+  function standaloneExtractItemSendMeta(pkt){
+    try{
+      const type = String(pkt?.type || "").trim().toLowerCase();
+      if(type !== "itemsend" && type !== "item_send") return null;
+      const netItem = (pkt?.item && typeof pkt.item === "object") ? pkt.item : {};
+      const itemPart = standaloneFirstJsonPart(pkt, "item_id");
+      const locPart = standaloneFirstJsonPart(pkt, "location_id");
+      const players = standaloneJsonPartsOfType(pkt, "player_id");
+      let base = null;
+      try{ if(typeof extractApItemSendMeta === "function") base = extractApItemSendMeta(pkt); }catch(_){}
+      if(!base) base = {};
+      const firstPlayerId = players.length ? standaloneApPartNumber(players[0], ["player", "player_id", "id"]) : NaN;
+      const lastPlayerId = players.length ? standaloneApPartNumber(players[players.length - 1], ["player", "player_id", "id"]) : NaN;
+      const itemId = standaloneFirstFiniteNumber(
+        standaloneApPartNumber(itemPart, ["item", "item_id", "id"]),
+        netItem.item,
+        pkt?.item_id,
+        (pkt?.item && typeof pkt.item !== "object") ? pkt.item : NaN,
+        base.itemId
+      );
+      const locId = standaloneFirstFiniteNumber(
+        standaloneApPartNumber(locPart, ["location", "location_id", "id"]),
+        netItem.location,
+        pkt?.location,
+        pkt?.location_id,
+        base.locId
+      );
+      const receiverId = standaloneFirstFiniteNumber(
+        pkt?.receiving,
+        pkt?.receiver,
+        pkt?.target,
+        pkt?.player_received,
+        standaloneApPartNumber(itemPart, ["player", "player_id", "owner", "receiving_player"]),
+        players.length > 1 ? lastPlayerId : NaN,
+        base.receiverId
+      );
+      const senderId = standaloneFirstFiniteNumber(
+        pkt?.player,
+        pkt?.sender,
+        pkt?.finder,
+        netItem.player,
+        standaloneApPartNumber(locPart, ["player", "player_id", "owner"]),
+        firstPlayerId,
+        base.senderId
+      );
+      const flags = Number(itemPart?.flags ?? itemPart?.item_flags ?? netItem.flags ?? pkt?.flags ?? base.flags ?? 0) || 0;
+      const serverItemName = standalonePartFallbackText(itemPart);
+      const serverLocationName = standalonePartFallbackText(locPart);
+      const senderPlayer = String(base.senderPlayer || (()=>{ try{ return typeof apPlayerName === "function" ? apPlayerName(senderId, players[0] ? standalonePartFallbackText(players[0]) : "") : ""; }catch(_){ return ""; } })() || "");
+      const receiverPlayer = String(base.receiverPlayer || (()=>{ try{ return typeof apPlayerName === "function" ? apPlayerName(receiverId, players.length ? standalonePartFallbackText(players[players.length - 1]) : "") : ""; }catch(_){ return ""; } })() || "");
+      const receiverGame = standaloneGameForPlayer(receiverId, receiverPlayer, base.receiverGame);
+      const senderGame = standaloneGameForPlayer(senderId, senderPlayer, base.senderGame);
+      const meta = {
+        ...base,
+        senderId: Number.isFinite(senderId) ? senderId : Number(base.senderId || 0) || 0,
+        receiverId: Number.isFinite(receiverId) ? receiverId : Number(base.receiverId || 0) || 0,
+        itemId: Number.isFinite(itemId) ? itemId : (base.itemId ?? null),
+        locId: Number.isFinite(locId) ? locId : (base.locId ?? null),
+        flags,
+        serverItemName,
+        serverLocationName,
+        senderPlayer,
+        senderGame,
+        receiverPlayer,
+        receiverGame
+      };
+      meta.itemName = standaloneResolveApItemName(meta.itemId, meta.receiverId, serverItemName || base.itemName || "Unknown Item", meta.receiverGame, { preferServerForCrossGame:true });
+      meta.locationName = standaloneResolveApLocationName(meta.locId, meta.senderId, serverLocationName || base.locationName || "");
+      standaloneRememberServerSentMeta(meta);
+      return meta;
+    }catch(_){
+      try{ return (typeof extractApItemSendMeta === "function") ? extractApItemSendMeta(pkt) : null; }catch(__){ return null; }
+    }
+  }
+
+  function standaloneApJsonPartText(part){
+    if(part == null) return "";
+    if(typeof part === "string" || typeof part === "number" || typeof part === "boolean") return String(part);
+    if(typeof part !== "object") return "";
+    const type = String(part.type || "").toLowerCase();
+    const rawText = String(part.text ?? part.name ?? part.value ?? "");
+    const fallback = rawText.trim();
+    if(type === "text") return rawText;
+    if(type === "player_id"){
+      const id = standaloneApPartNumber(part, ["player", "player_id", "id", "text"]);
+      try{ if(typeof apPlayerName === "function") return apPlayerName(id, fallback); }catch(_){}
+      return fallback || (Number.isFinite(id) ? `Player ${id}` : "");
+    }
+    if(type === "item_id"){
+      const id = standaloneApPartNumber(part, ["item", "item_id", "id", "text"]);
+      const playerId = standaloneApPartNumber(part, ["player", "player_id", "owner", "receiving_player"]);
+      try{ return standaloneResolveApItemName(id, playerId, fallback); }catch(_){}
+      return fallback || (Number.isFinite(id) ? `Item #${id}` : "");
+    }
+    if(type === "location_id"){
+      const id = standaloneApPartNumber(part, ["location", "location_id", "id", "text"]);
+      const playerId = standaloneApPartNumber(part, ["player", "player_id", "owner"]);
+      try{ if(typeof apLocationNameFor === "function") return apLocationNameFor(id, playerId, fallback); }catch(_){}
+      return fallback || (Number.isFinite(id) ? `Location #${id}` : "");
+    }
+    return fallback;
+  }
+
+  function standaloneFormatApJsonMessage(pkt){
+    const type = String(pkt?.type || "").toLowerCase();
+    if(type === "itemsend" || type === "item_send"){
+      try{
+        const meta = standaloneExtractItemSendMeta(pkt);
+        const line = standaloneFormatItemSendLogLine(meta);
+        if(line) return line;
+      }catch(_){}
+    }
+    const data = Array.isArray(pkt?.data) ? pkt.data : [];
+    let msg = data.map(standaloneApJsonPartText).join("");
+    if(!msg.trim()) msg = String(pkt?.text ?? pkt?.message ?? "");
+    return String(msg || "").replace(/\r\n/g, "\n").trim();
+  }
+
+  function installStandaloneApTextFormatter(){
+    try{
+      window.formatApJsonMessage = standaloneFormatApJsonMessage;
+      formatApJsonMessage = standaloneFormatApJsonMessage;
+      window.formatApItemSendLogLine = standaloneFormatItemSendLogLine;
+      formatApItemSendLogLine = standaloneFormatItemSendLogLine;
+    }catch(_){}
+  }
+
+  function standaloneNativeLogLines(tab){
+    try{
+      if(typeof apLogBuffers === "undefined" || !apLogBuffers) return [];
+      const nativeTab = standaloneTextNormalizeTab(tab);
+      const buckets = nativeTab === "errors"
+        ? ["errors"]
+        : ["chat", "generic", "status"];
+      const lines = [];
+      const seen = new Set();
+      buckets.forEach((bucket)=>{
+        const buf = apLogBuffers[bucket];
+        if(!Array.isArray(buf)) return;
+        buf.forEach((line)=>{
+          const key = String(line);
+          if(!standaloneShouldShowLogLine(key)) return;
+          const dedupeKey = standaloneLogDedupeKey(key);
+          if(seen.has(dedupeKey)) return;
+          seen.add(dedupeKey);
+          lines.push(line);
+        });
+      });
+      return lines.sort((a, b)=>String(a).localeCompare(String(b)));
+    }catch(_){
+      return [];
+    }
+  }
+
+  function standaloneVisibleLogLines(tab){
+    standaloneLoadPersistedTextLogs();
+    const nativeLines = standaloneNativeLogLines(tab);
+    const persisted = standaloneTextClient.logs[standaloneTextNormalizeTab(tab)] || [];
+    const lines = [];
+    const seen = new Set();
+    persisted.concat(nativeLines).forEach((line)=>{
+      const text = String(line || "");
+      if(!standaloneShouldShowLogLine(text)) return;
+      const key = standaloneLogDedupeKey(text);
+      if(seen.has(key)) return;
+      seen.add(key);
+      lines.push(text);
+    });
+    return standaloneTrimLogBuffer(lines);
+  }
+
+  function standaloneAppendLogSpan(parent, text, cls){
+    if(text == null || text === "") return;
+    const span = document.createElement("span");
+    if(cls) span.className = cls;
+    span.textContent = String(text);
+    parent.appendChild(span);
+  }
+
+  function standaloneAppendLogText(parent, text){
+    if(text == null || text === "") return;
+    parent.appendChild(document.createTextNode(String(text)));
+  }
+
+  function standaloneItemLogKey(line, itemName){
+    const msg = standaloneLogDisplayText(line).replace(/\s+/g, " ").trim().toLowerCase();
+    const item = String(itemName || "").replace(/\s+/g, " ").trim().toLowerCase();
+    return item ? `${msg}|${item}` : msg;
+  }
+
+  function standaloneRememberItemLogMeta(line, itemName, flags, itemId){
+    const msg = String(line || "").trim();
+    const item = String(itemName || "").trim();
+    if(!msg || !item) return;
+    const meta = {
+      flags: standaloneFlagsForItem(flags, item),
+      itemId: itemId ?? null,
+      itemName: item
+    };
+    standaloneTextClient.itemLogMeta.set(standaloneItemLogKey(msg, item), meta);
+    standaloneTextClient.itemLogMeta.set(standaloneItemLogKey(msg, ""), meta);
+    if(standaloneTextClient.itemLogMeta.size > 700){
+      const keys = Array.from(standaloneTextClient.itemLogMeta.keys());
+      keys.slice(0, Math.max(0, keys.length - 500)).forEach((key)=>standaloneTextClient.itemLogMeta.delete(key));
+    }
+  }
+
+  function standaloneRememberItemSendLogMeta(meta, lineOverride){
+    try{
+      const next = standaloneResolveSentMeta(meta);
+      if(!next || standaloneLooksUnresolvedItemName(next.itemName, next.itemId)) return;
+      let line = String(lineOverride || "").trim();
+      if(!line){
+        line = standaloneFormatItemSendLogLine(next);
+      }
+      if(!line){
+        const sender = String(next.senderPlayer || "Unknown Player").trim();
+        const receiver = String(next.receiverPlayer || "Unknown Player").trim();
+        const loc = standaloneLocationDisplayName(next.locationName || "", next.locId);
+        line = `${sender} sent ${next.itemName} to ${receiver}${loc ? ` (${loc})` : ""}`;
+      }
+      standaloneRememberItemLogMeta(line, next.itemName, next.flags, next.itemId);
+    }catch(_){}
+  }
+
+  function standaloneRememberJsonItemLogMeta(pkt){
+    try{
+      const data = Array.isArray(pkt?.data) ? pkt.data : [];
+      if(!data.length) return;
+      const line = standaloneFormatApJsonMessage(pkt);
+      if(!line) return;
+      data.forEach((part)=>{
+        if(!part || typeof part !== "object" || String(part.type || "").toLowerCase() !== "item_id") return;
+        const itemId = standaloneApPartNumber(part, ["item", "item_id", "id", "text"]);
+        const playerId = standaloneApPartNumber(part, ["player", "player_id", "owner", "receiving_player"]);
+        const itemName = standaloneResolveApItemName(itemId, playerId, String(part.text ?? part.name ?? part.value ?? ""));
+        if(standaloneLooksUnresolvedItemName(itemName, itemId)) return;
+        standaloneRememberItemLogMeta(line, itemName, part.flags ?? part.item_flags ?? 0, itemId);
+      });
+    }catch(_){}
+  }
+
+  function standaloneItemLogClass(line, itemName){
+    const meta = standaloneTextClient.itemLogMeta.get(standaloneItemLogKey(line, itemName))
+      || standaloneTextClient.itemLogMeta.get(standaloneItemLogKey(line, ""));
+    if(!meta) return "apLogItem";
+    const cls = standaloneItemClass(meta.flags, itemName || meta.itemName);
+    return `apLogItem apItem-${cls.key}`;
+  }
+
+  function standaloneRenderSendLine(parent, msg){
+    let m = String(msg || "").match(/^(.+?)\s+sent\s+(.+?)\s+to\s+(.+?)(\s+\(.+\))?\.?$/i);
+    if(!m) return false;
+    standaloneAppendLogSpan(parent, m[1], "apLogPlayer");
+    standaloneAppendLogText(parent, " sent ");
+    standaloneAppendLogSpan(parent, m[2], standaloneItemLogClass(msg, m[2]));
+    standaloneAppendLogText(parent, " to ");
+    standaloneAppendLogSpan(parent, m[3], "apLogPlayer");
+    if(m[4]) standaloneAppendLogSpan(parent, m[4], "apLogLocation");
+    return true;
+  }
+
+  function standaloneRenderFoundLine(parent, msg){
+    const m = String(msg || "").match(/^(.+?)\s+(has\s+found\s+their\s+own|found\s+their\s+own|found\s+their)\s+(.+?)(\s+\(.+\))?\.?$/i);
+    if(!m) return false;
+    standaloneAppendLogSpan(parent, m[1], "apLogPlayer");
+    standaloneAppendLogText(parent, ` ${m[2]} `);
+    standaloneAppendLogSpan(parent, m[3], standaloneItemLogClass(msg, m[3]));
+    if(m[4]) standaloneAppendLogSpan(parent, m[4], "apLogLocation");
+    return true;
+  }
+
+  function standaloneRenderPresenceLine(parent, msg){
+    let m = String(msg || "").match(/^(.+?)\s+(\(Team\s+#?\d+\))\s+playing\s+(.+?)\s+has\s+joined\.\s*(.*)$/i);
+    if(m){
+      standaloneAppendLogSpan(parent, m[1], "apLogPlayer");
+      standaloneAppendLogText(parent, " ");
+      standaloneAppendLogSpan(parent, m[2], "apLogMuted");
+      standaloneAppendLogText(parent, " playing ");
+      standaloneAppendLogSpan(parent, m[3], "apLogLocation");
+      standaloneAppendLogText(parent, " has ");
+      standaloneAppendLogSpan(parent, "joined", "apLogEvent");
+      standaloneAppendLogText(parent, ".");
+      if(m[4]) standaloneAppendLogSpan(parent, " " + m[4], "apLogMuted");
+      return true;
+    }
+    m = String(msg || "").match(/^(.+?)\s+(\(Team\s+#?\d+\))\s+has\s+left( the game)?\.\s*(.*)$/i);
+    if(m){
+      standaloneAppendLogSpan(parent, m[1], "apLogPlayer");
+      standaloneAppendLogText(parent, " ");
+      standaloneAppendLogSpan(parent, m[2], "apLogMuted");
+      standaloneAppendLogText(parent, " has ");
+      standaloneAppendLogSpan(parent, "left", "apLogEvent");
+      standaloneAppendLogText(parent, (m[3] || "") + ".");
+      if(m[4]) standaloneAppendLogSpan(parent, " " + m[4], "apLogMuted");
+      return true;
+    }
+    return false;
+  }
+
+  function standaloneRenderNewCheckLine(parent, msg){
+    const m = String(msg || "").match(/^(New Check:\s*)(.+?)(\s+\(\d+\/\d+\))?$/i);
+    if(!m) return false;
+    standaloneAppendLogSpan(parent, m[1], "apLogEvent");
+    standaloneAppendLogSpan(parent, m[2], "apLogLocation");
+    if(m[3]) standaloneAppendLogSpan(parent, m[3], "apLogMuted");
+    return true;
+  }
+
+  function standaloneRenderHintLine(parent, msg){
+    const m = String(msg || "").match(/^(\[Hint\]:\s*)(.+?)\s+contains\s+(.+?)\s+for\s+(.+?)\.?$/i);
+    if(!m) return false;
+    standaloneAppendLogSpan(parent, m[1], "apLogHint");
+    standaloneAppendLogSpan(parent, m[2], "apLogLocation");
+    standaloneAppendLogText(parent, " contains ");
+    standaloneAppendLogSpan(parent, m[3], standaloneItemLogClass(msg, m[3]));
+    standaloneAppendLogText(parent, " for ");
+    standaloneAppendLogSpan(parent, m[4].replace(/\.$/, ""), "apLogPlayer");
+    if(/\.$/.test(String(msg || ""))) standaloneAppendLogText(parent, ".");
+    return true;
+  }
+
+  function standaloneRenderChatLine(parent, msg){
+    const m = String(msg || "").match(/^([^:]{1,80}):\s+(.+)$/);
+    if(!m) return false;
+    standaloneAppendLogSpan(parent, m[1], "apLogPlayer");
+    standaloneAppendLogText(parent, ": ");
+    standaloneAppendLogSpan(parent, m[2], /^!/.test(m[2]) ? "apLogHint" : "");
+    return true;
+  }
+
+  function standaloneRenderClientLine(parent, msg){
+    if(!/^Client\(/i.test(String(msg || ""))) return false;
+    standaloneAppendLogSpan(parent, msg, "apLogSource");
+    return true;
+  }
+
+  function standaloneRenderLogMessage(parent, msg){
+    const text = String(msg || "");
+    if(standaloneRenderClientLine(parent, text)) return;
+    if(standaloneRenderNewCheckLine(parent, text)) return;
+    if(standaloneRenderHintLine(parent, text)) return;
+    if(standaloneRenderPresenceLine(parent, text)) return;
+    if(standaloneRenderSendLine(parent, text)) return;
+    if(standaloneRenderFoundLine(parent, text)) return;
+    if(standaloneRenderChatLine(parent, text)) return;
+    standaloneAppendLogSpan(parent, text, "apLogSource");
+  }
+
+  function standaloneBuildLogLine(line){
+    const row = document.createElement("div");
+    row.className = "apLogLine";
+    const text = String(line || "");
+    const m = text.match(/^(\[[^\]]+\]:?\s*)(.*)$/);
+    if(m){
+      standaloneAppendLogSpan(row, m[1], "apLogTimestamp");
+      standaloneRenderLogMessage(row, m[2]);
+    }else{
+      standaloneRenderLogMessage(row, text);
+    }
+    return row;
+  }
+
+  function standaloneScheduleTextRender(reason){
+    try{ standaloneTextClient.lastRenderReason = String(reason || ""); }catch(_){}
+    if(standaloneTextClient.renderTimer || standaloneTextClient.renderRaf) return;
+    const run = ()=>{
+      standaloneTextClient.renderTimer = 0;
+      standaloneTextClient.renderRaf = 0;
+      try{ standaloneTextRender(); }catch(_){}
+    };
+    try{
+      if(typeof requestAnimationFrame === "function"){
+        standaloneTextClient.renderRaf = requestAnimationFrame(run);
+        return;
+      }
+    }catch(_){}
+    standaloneTextClient.renderTimer = setTimeout(run, 16);
+  }
+
   function standaloneTextRender(){
-    const body = document.getElementById("apConnLogBody");
-    if(!body) return;
+    const bodies = standaloneControlAll("#apConnLogBody");
+    if(!bodies.length) return;
     const tab = standaloneTextNormalizeTab(standaloneTextClient.activeTab);
-    document.querySelectorAll("#apLogTabs .apLogTab").forEach((btn)=>{
+    standaloneControlAll("#apLogTabs .apLogTab").forEach((btn)=>{
       btn.classList.toggle("active", standaloneTextNormalizeTab(btn.dataset.aplogTab || "") === tab);
     });
-    const lines = standaloneTextClient.logs[tab] || [];
-    const empty = tab === "chat"
-      ? "AP Text Client ready. Connect to a server, then type chat or !hint commands here."
-      : (tab === "errors" ? "No AP errors yet." : "AP Text Client ready. Connect to a server, then type chat or !hint commands here.");
-    body.textContent = lines.length ? lines.join("\n") : empty;
-    body.scrollTop = body.scrollHeight;
+    const lines = standaloneVisibleLogLines(tab);
+    const empty = tab === "errors" ? "No AP errors yet." : "AP Text Client ready. Connect to a server, then type chat or !hint commands here.";
+    const renderKey = JSON.stringify({ tab, lines, empty });
+    bodies.forEach((body)=>{
+      if(body.__flprStandaloneLogRenderKey === renderKey && body.childNodes.length){
+        return;
+      }
+      const shouldStickToBottom = Math.abs((body.scrollHeight - body.clientHeight) - body.scrollTop) < 24;
+      const frag = document.createDocumentFragment();
+      if(lines.length){
+        lines.forEach((line)=>frag.appendChild(standaloneBuildLogLine(line)));
+      }else{
+        const d = document.createElement("div");
+        d.className = "apLogEmpty";
+        d.textContent = empty;
+        frag.appendChild(d);
+      }
+      body.replaceChildren(frag);
+      body.__flprStandaloneLogRenderKey = renderKey;
+      if(shouldStickToBottom || lines.length){
+        body.scrollTop = body.scrollHeight;
+      }
+    });
+  }
+
+  function standaloneMirrorReceivedList(){
+    standaloneRenderItemPanel();
+  }
+
+  function standaloneItemTabName(tab){
+    return String(tab || "").toLowerCase() === "sent" ? "sent" : "received";
+  }
+
+  function standaloneItemCount(tab){
+    standaloneLoadSentItems();
+    if(standaloneItemTabName(tab) === "sent"){
+      standalonePruneOwnProgressiveSentItems();
+      return standaloneItemPanel.sent.length;
+    }
+    try{ return Array.isArray(ap?.receivedAll) ? ap.receivedAll.length : 0; }catch(_){ return 0; }
+  }
+
+  function standaloneItemClass(flags, itemName){
+    try{
+      if(typeof apItemClassFromFlags === "function") return apItemClassFromFlags(standaloneFlagsForItem(flags, itemName), itemName);
+    }catch(_){}
+    return { key:"normal", label:"ITEM", title:"ITEM" };
+  }
+
+  function standaloneReceivedRows(){
+    let list = [];
+    try{ list = Array.isArray(ap?.receivedAll) ? ap.receivedAll : []; }catch(_){}
+    if(!list.length){
+      try{ if(typeof loadReceivedList === "function") list = loadReceivedList() || []; }catch(_){}
+    }
+    return (Array.isArray(list) ? list : []).slice(-120).reverse().map((r, index)=>{
+      const itemId = r?.itemId ?? r?.item ?? null;
+      const itemName = standaloneReceivedRowItemName(r);
+      const locName = String(r?.locationName || r?.checkName || "").trim();
+      const player = String(r?.sourcePlayerName || "").trim();
+      const game = String(r?.sourceGame || "").trim();
+      const source = player || game ? `FROM; ${player || "Unknown Player"}${game ? ` (${game})` : ""}` : "";
+      const checkName = standaloneLocationDisplayName(locName, r?.locId);
+      const check = locName ? `CHECK; ${checkName}` : "CHECK; -";
+      const text = [String(r?.time || ""), check, `ITEM; ${itemName}`, source].filter(Boolean).join("\n");
+      return {
+        key: `received|${r?.recvIndex ?? index}|${itemName}|${locName}`,
+        time: String(r?.time || ""),
+        flags: standaloneFlagsForItem(r?.flags ?? 0, itemName),
+        itemName,
+        lineA: check,
+        lineB: `ITEM; ${itemName}`,
+        lineC: source,
+        text
+      };
+    });
+  }
+
+  function standaloneSentRows(){
+    standaloneLoadSentItems();
+    standalonePruneOwnProgressiveSentItems();
+    let changed = false;
+    const rows = standaloneItemPanel.sent.slice(-120).reverse().map((r, index)=>{
+      changed = standaloneHydrateSentEntryFromKey(r) || changed;
+      const resolved = standaloneResolveSentMeta(r) || r;
+      const itemName = String(resolved?.itemName || standaloneResolveApItemName(r?.itemId, r?.receiverId, r?.itemName || "Unknown Item", r?.receiverGame || ""));
+      const locName = String(resolved?.locationName || standaloneResolveApLocationName(r?.locId, r?.senderId, r?.locationName || ""));
+      if(itemName && itemName !== r?.itemName && !standaloneLooksUnresolvedItemName(itemName, r?.itemId)){
+        r.itemName = itemName;
+        changed = true;
+      }
+      if(locName && locName !== r?.locationName && !/^location\s*#?\s*\d+$/i.test(locName)){
+        r.locationName = locName;
+        changed = true;
+      }
+      const target = String(resolved?.receiverPlayer || r?.receiverPlayer || "").trim();
+      const game = String(resolved?.receiverGame || r?.receiverGame || "").trim();
+      const to = `TO; ${target || "Unknown Player"}${game ? ` (${game})` : ""}`;
+      const checkName = standaloneLocationDisplayName(locName, r?.locId);
+      const check = locName ? `CHECK; ${checkName}` : "";
+      const text = [String(r?.time || ""), `ITEM; ${itemName}`, to, check].filter(Boolean).join("\n");
+      return {
+        key: String(r?.key || `sent|${index}|${itemName}|${target}|${locName}`),
+        time: String(r?.time || ""),
+        flags: standaloneFlagsForItem(r?.flags ?? 0, itemName),
+        itemName,
+        lineA: `ITEM; ${itemName}`,
+        lineB: to,
+        lineC: check,
+        text
+      };
+    });
+    if(changed) standaloneSaveSentItems();
+    return rows;
+  }
+
+  function standaloneSetSelectedItem(key, text){
+    standaloneItemPanel.selectedKey = String(key || "");
+    standaloneItemPanel.selectedText = String(text || "");
+    standaloneControlAll("#receivedBody .recvRow").forEach((row)=>{
+      row.classList.toggle("is-selected", String(row.dataset.standaloneItemKey || "") === standaloneItemPanel.selectedKey);
+    });
+  }
+
+  function standaloneAppendItemRow(body, rowData){
+    const cls = standaloneItemClass(rowData.flags, rowData.itemName);
+    const row = document.createElement("div");
+    row.className = `recvRow apItem-${cls.key}`;
+    row.tabIndex = 0;
+    row.dataset.standaloneItemKey = rowData.key;
+    row.dataset.copyText = rowData.text;
+    if(rowData.key === standaloneItemPanel.selectedKey) row.classList.add("is-selected");
+
+    const time = document.createElement("div");
+    time.className = "recvTime";
+    time.textContent = rowData.time || "";
+    const txt = document.createElement("div");
+    txt.className = "recvText";
+    const badge = document.createElement("span");
+    badge.className = `recvBadge apItem-${cls.key}`;
+    badge.textContent = cls.label || "ITEM";
+    txt.appendChild(badge);
+    [rowData.lineA, rowData.lineB, rowData.lineC].filter(Boolean).forEach((line)=>{
+      txt.appendChild(document.createElement("br"));
+      txt.appendChild(document.createTextNode(line));
+    });
+    row.appendChild(time);
+    row.appendChild(txt);
+    row.addEventListener("click", ()=>standaloneSetSelectedItem(rowData.key, rowData.text));
+    row.addEventListener("focus", ()=>standaloneSetSelectedItem(rowData.key, rowData.text));
+    row.addEventListener("contextmenu", (event)=>{
+      event.preventDefault();
+      standaloneSetSelectedItem(rowData.key, rowData.text);
+      standaloneShowItemCopyMenu(event.clientX, event.clientY);
+    });
+    body.appendChild(row);
+  }
+
+  function standaloneRenderItemPanel(){
+    standaloneLoadSentItems();
+    const bodies = standaloneControlAll("#receivedBody");
+    if(!bodies.length) return;
+    const tab = standaloneItemTabName(standaloneItemPanel.activeTab);
+    const receivedCount = standaloneItemCount("received");
+    const sentCount = standaloneItemCount("sent");
+    standaloneControlAll("#standaloneItemTabs .standaloneItemTab").forEach((btn)=>{
+      btn.classList.toggle("active", standaloneItemTabName(btn.dataset.standaloneItemTab) === tab);
+    });
+    standaloneControlAll("#receivedHdr").forEach((hdr)=>{
+      hdr.textContent = `ITEM LOG (${receivedCount} RECEIVED / ${sentCount} SENT)`;
+    });
+    const rows = tab === "sent" ? standaloneSentRows() : standaloneReceivedRows();
+    bodies.forEach((body)=>{
+      if(!body.closest(".flprStandaloneConnectLayout")) return;
+      body.innerHTML = "";
+      if(!rows.length){
+        const d = document.createElement("div");
+        d.style.color = "rgba(232,250,255,0.65)";
+        d.style.fontSize = "inherit";
+        d.textContent = tab === "sent" ? "No sent items recorded yet." : "No received items yet; click SYNC RECEIVED after connecting.";
+        body.appendChild(d);
+        return;
+      }
+      rows.forEach((row)=>standaloneAppendItemRow(body, row));
+    });
+  }
+
+  function activateStandaloneItemTab(tab, event){
+    if(event){
+      event.preventDefault();
+      event.stopPropagation();
+      try{ event.stopImmediatePropagation(); }catch(_){}
+    }
+    standaloneItemPanel.activeTab = standaloneItemTabName(tab);
+    standaloneItemPanel.selectedKey = "";
+    standaloneItemPanel.selectedText = "";
+    try{ playClick(); }catch(_){}
+    standaloneHideItemCopyMenu();
+    standaloneRenderItemPanel();
+    return false;
+  }
+
+  function standaloneCopyTextFallback(text){
+    try{
+      const ta = document.createElement("textarea");
+      ta.value = String(text || "");
+      ta.setAttribute("readonly", "readonly");
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      ta.style.top = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneCopyText(text){
+    const value = String(text || standaloneItemPanel.selectedText || "");
+    if(!value) return false;
+    try{
+      if(navigator?.clipboard?.writeText){
+        navigator.clipboard.writeText(value).catch(()=>standaloneCopyTextFallback(value));
+      }else{
+        standaloneCopyTextFallback(value);
+      }
+      try{ if(typeof toast === "function") toast("good", "COPIED", "Item text copied.", 1200); }catch(_){}
+      return true;
+    }catch(_){
+      return standaloneCopyTextFallback(value);
+    }
+  }
+
+  function standaloneHideItemCopyMenu(){
+    try{ document.getElementById("standaloneItemCopyMenu")?.remove(); }catch(_){}
+  }
+
+  function standaloneShowItemCopyMenu(x, y){
+    standaloneHideItemCopyMenu();
+    const menu = document.createElement("div");
+    menu.id = "standaloneItemCopyMenu";
+    menu.className = "standaloneItemCopyMenu";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = "COPY TEXT";
+    btn.addEventListener("click", (event)=>{
+      event.preventDefault();
+      event.stopPropagation();
+      standaloneCopyText(standaloneItemPanel.selectedText);
+      standaloneHideItemCopyMenu();
+    });
+    menu.appendChild(btn);
+    const host = document.querySelector(".stage") || document.body;
+    host.appendChild(menu);
+    const rect = menu.getBoundingClientRect();
+    const left = Math.max(4, Math.min(Number(x || 0), (window.innerWidth || 0) - rect.width - 4));
+    const top = Math.max(4, Math.min(Number(y || 0), (window.innerHeight || 0) - rect.height - 4));
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
+  }
+
+  function standaloneColorizeSentItemModal(meta, cls, holdMs){
+    const item = String(meta?.itemName || "Unknown Item");
+    const targetGame = standaloneGameForPlayer(meta?.receiverId, meta?.receiverPlayer, meta?.receiverGame);
+    const targetPlayer = String(meta?.receiverPlayer || "Unknown Player");
+    const locName = String(meta?.locationName || "").trim();
+    const key = String(cls?.key || "filler").trim() || "filler";
+    const apply = ()=>{
+      try{
+        const card = document.getElementById("ovModalCard");
+        const title = document.getElementById("ovModalTitle");
+        const big = document.getElementById("ovModalBig");
+        const sub = document.getElementById("ovModalSub");
+        const modalMeta = document.getElementById("ovModalMeta");
+        if(!card || !big || String(big.textContent || "").trim() !== item) return;
+        if(title && !/\bSENT\b/i.test(String(title.textContent || ""))) return;
+        card.classList.remove("apItem-progression", "apItem-useful", "apItem-filler", "apItem-trap");
+        card.classList.add("flprStandaloneSentItemModal", `apItem-${key}`);
+        big.className = `ovModalBig apLogItem apItem-${key}`;
+        if(sub){
+          sub.innerHTML = `TO; <span class="apLogPlayer">${standaloneEscapeHtml(targetPlayer)}</span>${targetGame ? ` <span class="apLogSource">(${standaloneEscapeHtml(targetGame)})</span>` : ""}`;
+        }
+        if(modalMeta){
+          modalMeta.innerHTML = locName ? `CHECK; <span class="apLogLocation">${standaloneEscapeHtml(standaloneLocationDisplayName(locName, meta?.locId))}</span>` : "";
+        }
+      }catch(_){}
+    };
+    [0, 120, 620, 780].forEach((delay)=>setTimeout(apply, delay));
+    setTimeout(()=>{
+      try{
+        const card = document.getElementById("ovModalCard");
+        const big = document.getElementById("ovModalBig");
+        if(card) card.classList.remove("flprStandaloneSentItemModal", "apItem-progression", "apItem-useful", "apItem-filler", "apItem-trap");
+        if(big) big.className = "ovModalBig";
+      }catch(_){}
+    }, Math.max(1200, Number(holdMs || 4200) + 900));
+  }
+
+  function standaloneEnsureOverviewModalVisibleHost(){
+    try{
+      const modal = document.getElementById("ovModal");
+      const viewport = document.querySelector(".viewport");
+      if(!modal || !viewport) return false;
+      if(modal.parentElement !== viewport) viewport.appendChild(modal);
+      return modal.parentElement === viewport;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneSentMetaKey(meta){
+    return `${Number(meta?.senderId || 0)}|${Number(meta?.receiverId || 0)}|${meta?.itemId ?? ""}|${meta?.locId ?? ""}|${meta?.flags ?? 0}`;
+  }
+
+  function standaloneResolveSentMeta(meta){
+    if(!meta || typeof meta !== "object") return null;
+    const next = { ...meta };
+    const cached = standaloneCachedServerSentMeta(next);
+    if(cached){
+      if(cached.serverItemName) next.serverItemName = cached.serverItemName;
+      if(cached.receiverGame && !next.receiverGame) next.receiverGame = cached.receiverGame;
+      if(cached.receiverId && !Number(next.receiverId || 0)) next.receiverId = cached.receiverId;
+      if(cached.flags != null) next.flags = cached.flags;
+    }
+    next.receiverGame = standaloneGameForPlayer(next.receiverId, next.receiverPlayer, next.receiverGame);
+    next.senderGame = standaloneGameForPlayer(next.senderId, next.senderPlayer, next.senderGame);
+    const self = standaloneSelfSlotId();
+    const receiverId = Number(next.receiverId || 0) || 0;
+    const sentToOther = !!self && !!receiverId && receiverId !== self;
+    const serverItemName = String(next.serverItemName || "").trim();
+    const existingItemName = String(next.itemName || "").trim();
+    const fallbackItemName = serverItemName
+      || (sentToOther && standaloneProgressiveBallTarget(existingItemName) ? "" : existingItemName)
+      || "Unknown Item";
+    next.itemName = standaloneResolveApItemName(next.itemId, next.receiverId, fallbackItemName, next.receiverGame || "", { preferServerForCrossGame:true });
+    next.locationName = standaloneResolveApLocationName(next.locId, next.senderId, next.locationName || "");
+    const coerced = standaloneCoerceOwnProgressiveSentMeta(next);
+    coerced.locationName = standaloneResolveApLocationName(coerced.locId, coerced.senderId, coerced.locationName || "");
+    coerced.flags = standaloneFlagsForItem(coerced.flags, coerced.itemName);
+    return coerced;
+  }
+
+  function standaloneHydrateSentEntryFromKey(entry){
+    if(!entry || typeof entry !== "object") return false;
+    if(typeof entry.key !== "string") return false;
+    const parts = String(entry.key || "").split("|");
+    if(parts[0] !== "sent") return false;
+    let changed = false;
+    if(entry.senderId == null && Number.isFinite(Number(parts[1]))){ entry.senderId = Number(parts[1]); changed = true; }
+    if(entry.receiverId == null && Number.isFinite(Number(parts[2]))){ entry.receiverId = Number(parts[2]); changed = true; }
+    if(entry.itemId == null && Number.isFinite(Number(parts[3]))){ entry.itemId = Number(parts[3]); changed = true; }
+    if(entry.locId == null && Number.isFinite(Number(parts[4]))){ entry.locId = Number(parts[4]); changed = true; }
+    return changed;
+  }
+
+  function standaloneResolvedMetaIsOwnProgressive(meta){
+    const self = standaloneSelfSlotId();
+    if(!self || !meta) return false;
+    if(Number(meta.receiverId || 0) !== self) return false;
+    return !!standaloneProgressiveBallTarget(meta.itemName || "");
+  }
+
+  function standalonePruneOwnProgressiveSentItems(){
+    standaloneLoadSentItems();
+    let changed = false;
+    const nextRows = [];
+    (standaloneItemPanel.sent || []).forEach((entry)=>{
+      changed = standaloneHydrateSentEntryFromKey(entry) || changed;
+      const resolved = standaloneResolveSentMeta(entry);
+      if(standaloneResolvedMetaIsOwnProgressive(resolved)){
+        changed = true;
+        return;
+      }
+      nextRows.push(entry);
+    });
+    if(changed || nextRows.length !== standaloneItemPanel.sent.length){
+      standaloneItemPanel.sent = nextRows.slice(-standaloneItemPanel.maxSent);
+      standaloneSaveSentItems();
+    }
+  }
+
+  function standaloneBuildPairedMetaForSentCheck(meta){
+    const locName = standaloneLocationDisplayName(meta?.locationName || "", meta?.locId);
+    const split = standaloneSplitLocationName(locName || meta?.locationName || "");
+    const rawTableName = String(split.table || "").trim();
+    const tableName = standaloneIsActiveSeedTableName(rawTableName) ? rawTableName : "";
+    return {
+      id: Number(meta?.locId || 0) || null,
+      locId: Number(meta?.locId || 0) || null,
+      full: String(meta?.locationName || locName || ""),
+      short: String(split.rest || locName || meta?.locationName || ""),
+      locationName: locName || String(meta?.locationName || ""),
+      checkName: locName || String(meta?.locationName || ""),
+      tableName,
+      table: tableName
+    };
+  }
+
+  function standaloneEnsureOwnProgressiveReceivedRow(meta, itemIndex){
+    try{
+      if(!meta || !standaloneResolvedMetaIsOwnProgressive(meta)){
+        try{ window.__flprStandaloneLastOwnProgressiveRow = { ok:false, reason:"not-own-progressive", meta:{ ...(meta || {}) }, itemIndex, ts:Date.now() }; }catch(_){}
+        return false;
+      }
+      const itemId = Number(meta.itemId);
+      if(!Number.isFinite(itemId)){
+        try{ window.__flprStandaloneLastOwnProgressiveRow = { ok:false, reason:"bad-item-id", meta:{ ...(meta || {}) }, itemIndex, ts:Date.now() }; }catch(_){}
+        return false;
+      }
+      const locId = Number(meta.locId);
+      const sourceId = Number(meta.senderId || standaloneSelfSlotId() || 0) || 0;
+      const locName = standaloneLocationDisplayName(meta.locationName || "", locId);
+      const itemName = String(meta.itemName || standaloneResolveApItemName(itemId, standaloneSelfSlotId(), "", standaloneSelfGameName()) || "").trim();
+      if(!itemName){
+        try{ window.__flprStandaloneLastOwnProgressiveRow = { ok:false, reason:"missing-item-name", meta:{ ...(meta || {}) }, itemIndex, ts:Date.now() }; }catch(_){}
+        return false;
+      }
+      ap.receivedAll = Array.isArray(ap?.receivedAll) ? ap.receivedAll : [];
+      const idx = Number(itemIndex);
+      const exists = ap.receivedAll.some((row)=>{
+        const rowIdx = Number(row?.recvIndex);
+        if(Number.isFinite(idx) && idx >= 0 && Number.isFinite(rowIdx) && rowIdx === idx) return true;
+        const rowLoc = Number(row?.locId ?? row?.location ?? 0);
+        const rowItem = Number(row?.itemId ?? row?.item ?? 0);
+        const rowSource = Number(row?.sourcePlayerId ?? row?.player ?? 0) || 0;
+        return Number.isFinite(locId) && locId > 0 && rowLoc === locId && rowItem === itemId && (!sourceId || !rowSource || rowSource === sourceId);
+      });
+      if(exists){
+        try{ window.__flprStandaloneLastOwnProgressiveRow = { ok:true, existed:true, itemName, itemId, locId, itemIndex, count:ap.receivedAll.length, ts:Date.now() }; }catch(_){}
+        return false;
+      }
+      const row = {
+        time: (typeof fmtTime === "function") ? fmtTime() : standaloneTextTimestamp().replace(/^\[|\]$/g, ""),
+        ts: Date.now(),
+        itemName,
+        baseItemName: itemName,
+        itemId,
+        locationName: locName || (Number.isFinite(locId) && locId > 0 ? `Location #${locId}` : ""),
+        checkName: locName || (Number.isFinite(locId) && locId > 0 ? `Location #${locId}` : ""),
+        sourcePlayerId: sourceId || standaloneSelfSlotId() || null,
+        sourcePlayerName: String(meta.senderPlayer || standaloneSelfPlayerName() || ""),
+        sourceGame: String(meta.senderGame || standaloneSelfGameName() || ""),
+        recvIndex: Number.isFinite(idx) && idx >= 0 ? idx : null,
+        locId: Number.isFinite(locId) ? locId : null,
+        flags: standaloneFlagsForItem(meta.flags || 0, itemName),
+        bossPct: null
+      };
+      ap.receivedAll.push(row);
+      if(ap.receivedAll.length > 500) ap.receivedAll.splice(0, ap.receivedAll.length - 500);
+      try{
+        ap.receivedKeySet = ap.receivedKeySet || new Set();
+        if(row.recvIndex != null) ap.receivedKeySet.add(`idx:${row.recvIndex}`);
+        else ap.receivedKeySet.add(`${row.itemName || ""}|${row.locationName || ""}`);
+      }catch(_){}
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll); }catch(_){}
+      try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
+      try{ window.__flprStandaloneLastOwnProgressiveRow = { ok:true, added:true, itemName, itemId, locId, itemIndex:row.recvIndex, count:ap.receivedAll.length, ts:Date.now() }; }catch(_){}
+      return true;
+    }catch(_){}
+    try{ window.__flprStandaloneLastOwnProgressiveRow = { ok:false, reason:"exception", itemIndex, ts:Date.now() }; }catch(_){}
+    return false;
+  }
+
+  function standaloneWithUnlockFxSuppressed(fn, holdMs){
+    const prev = !!window.__flprStandaloneSuppressUnlockFx;
+    window.__flprStandaloneSuppressUnlockFx = true;
+    try{
+      return fn();
+    }finally{
+      setTimeout(()=>{
+        try{ window.__flprStandaloneSuppressUnlockFx = prev; }catch(_){}
+      }, Math.max(120, Number(holdMs) || 900));
+    }
+  }
+
+  function standaloneForceProgressiveUnlockFromInventory(itemName, opts){
+    opts = opts || {};
+    const target = standaloneProgressiveBallTarget(itemName);
+    if(!target || !standaloneIsActiveSeedTableName(target)) return false;
+    const run = (fn)=> opts.animate === false
+      ? standaloneWithUnlockFxSuppressed(()=>standaloneWithCounterDrawerFxSuppressed(fn), 900)
+      : standaloneWithCounterDrawerFxSuppressed(fn);
+    try{
+      if(typeof apReconcileWorldStateFromReceived === "function"){
+        run(()=>apReconcileWorldStateFromReceived());
+        return true;
+      }
+    }catch(_){}
+    try{
+      if(typeof forceUnlockTablesFromProgressiveInventory === "function"){
+        run(()=>forceUnlockTablesFromProgressiveInventory({ render:true, animate:opts.animate !== false, quiet:opts.quiet !== false }));
+        return true;
+      }
+    }catch(_){}
+    return false;
+  }
+
+  function installStandaloneTableLookupBridge(){
+    let installedAny = false;
+    let originalGet = null;
+    try{ originalGet = (typeof getTableKeyForName === "function") ? getTableKeyForName : null; }catch(_){}
+    if(originalGet && !originalGet.__flprStandaloneTableLookupBridge){
+      const bridgedGet = function standaloneGetTableKeyForNameBridge(tableName){
+        try{
+          const direct = originalGet.apply(this, arguments);
+          if(direct) return direct;
+        }catch(_){}
+        return standaloneFindActiveTableKey(tableName, (name)=>originalGet.call(this, name)) || null;
+      };
+      bridgedGet.__flprStandaloneTableLookupBridge = true;
+      bridgedGet.__flprStandaloneOriginalGetTableKeyForName = originalGet;
+      try{ window.getTableKeyForName = bridgedGet; }catch(_){}
+      try{ getTableKeyForName = bridgedGet; }catch(_){}
+      originalGet = bridgedGet.__flprStandaloneOriginalGetTableKeyForName;
+      installedAny = true;
+    }else if(originalGet){
+      installedAny = true;
+    }
+
+    try{
+      const originalFind = (typeof findTableKeyByCanonicalCode === "function") ? findTableKeyByCanonicalCode : null;
+      if(originalFind && !originalFind.__flprStandaloneTableLookupBridge){
+        const bridgedFind = function standaloneFindTableKeyByCanonicalCodeBridge(tableCode){
+          try{
+            const direct = originalFind.apply(this, arguments);
+            if(direct) return direct;
+          }catch(_){}
+          const want = String(tableCode || "").trim();
+          if(!want) return null;
+          try{
+            for(const [worldId, world] of Object.entries(state?.worlds || {})){
+              const tables = Array.isArray(world?.tables) ? world.tables : [];
+              for(let index = 0; index < tables.length; index++){
+                if(standaloneTableCode(tables[index]) === want) return `${worldId}|${index}`;
+              }
+            }
+          }catch(_){}
+          return null;
+        };
+        bridgedFind.__flprStandaloneTableLookupBridge = true;
+        bridgedFind.__flprStandaloneOriginalFindTableKeyByCanonicalCode = originalFind;
+        try{ window.findTableKeyByCanonicalCode = bridgedFind; }catch(_){}
+        try{ findTableKeyByCanonicalCode = bridgedFind; }catch(_){}
+        installedAny = true;
+      }else if(originalFind){
+        installedAny = true;
+      }
+    }catch(_){}
+
+    try{
+      const originalActive = (typeof isActiveSeedTableName === "function") ? isActiveSeedTableName : null;
+      if(originalActive && !originalActive.__flprStandaloneTableLookupBridge){
+        const direct = originalGet && originalGet.__flprStandaloneOriginalGetTableKeyForName
+          ? originalGet.__flprStandaloneOriginalGetTableKeyForName
+          : originalGet;
+        const bridgedActive = function standaloneIsActiveSeedTableNameBridge(tableName){
+          try{ if(originalActive.apply(this, arguments)) return true; }catch(_){}
+          const raw = String(tableName || "").trim();
+          if(!raw) return false;
+          if(/boss table/i.test(raw)) return true;
+          return !!standaloneFindActiveTableKey(raw, direct ? ((name)=>direct.call(this, name)) : null);
+        };
+        bridgedActive.__flprStandaloneTableLookupBridge = true;
+        bridgedActive.__flprStandaloneOriginalIsActiveSeedTableName = originalActive;
+        try{ window.isActiveSeedTableName = bridgedActive; }catch(_){}
+        try{ isActiveSeedTableName = bridgedActive; }catch(_){}
+        installedAny = true;
+      }else if(originalActive){
+        installedAny = true;
+      }
+    }catch(_){}
+
+    if(!installedAny) setTimeout(installStandaloneTableLookupBridge, 120);
+  }
+
+  function installStandaloneUnlockFxBridge(){
+    let original = null;
+    try{ original = (typeof triggerTableFirstUnlockFx === "function") ? triggerTableFirstUnlockFx : null; }catch(_){}
+    if(!original){
+      setTimeout(installStandaloneUnlockFxBridge, 120);
+      return;
+    }
+    if(original.__flprStandaloneUnlockFxBridge) return;
+    const lastByTable = new Map();
+    const bridged = function standaloneTriggerTableFirstUnlockFxBridge(tableKey){
+      const key = String(tableKey || "").trim();
+      if(!key) return;
+      if(window.__flprStandaloneSuppressUnlockFx){
+        try{ if(typeof markUnlockFxPlayed === "function") markUnlockFxPlayed(key); }catch(_){}
+        return;
+      }
+      const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+      const last = Number(lastByTable.get(key) || 0);
+      try{
+        if(typeof hasUnlockFxPlayed === "function" && hasUnlockFxPlayed(key)) return;
+      }catch(_){}
+      if(last && now - last < 1400) return;
+      lastByTable.set(key, now);
+      if(lastByTable.size > 200){
+        Array.from(lastByTable.keys()).slice(0, 80).forEach((k)=>lastByTable.delete(k));
+      }
+      return original.apply(this, arguments);
+    };
+    bridged.__flprStandaloneUnlockFxBridge = true;
+    bridged.__flprStandaloneOriginalTriggerTableFirstUnlockFx = original;
+    try{ window.triggerTableFirstUnlockFx = bridged; }catch(_){}
+    try{ triggerTableFirstUnlockFx = bridged; }catch(_){}
+  }
+
+  function installStandaloneSfxDedupeBridge(){
+    let original = null;
+    try{ original = (typeof playSfx === "function") ? playSfx : null; }catch(_){}
+    if(!original){
+      setTimeout(installStandaloneSfxDedupeBridge, 120);
+      return;
+    }
+    if(original.__flprStandaloneSfxDedupeBridge) return;
+    const watched = new Set(["receive", "ball", "zoomIn", "ballDrop", "ballSlot", "zoomOut", "popup", "unlock"]);
+    const lastByKind = new Map();
+    const bridged = function standalonePlaySfxDedupeBridge(kind){
+      const key = String(kind || "");
+      if(watched.has(key)){
+        const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+        const last = Number(lastByKind.get(key) || 0);
+        if(last && now - last < 120){
+          window.__flprStandaloneSfxDedupeSuppressed = Number(window.__flprStandaloneSfxDedupeSuppressed || 0) + 1;
+          return;
+        }
+        lastByKind.set(key, now);
+        if(lastByKind.size > 40){
+          Array.from(lastByKind.keys()).slice(0, 10).forEach((k)=>lastByKind.delete(k));
+        }
+      }
+      return original.apply(this, arguments);
+    };
+    bridged.__flprStandaloneSfxDedupeBridge = true;
+    bridged.__flprStandaloneOriginalPlaySfx = original;
+    try{ window.playSfx = bridged; }catch(_){}
+    try{ playSfx = bridged; }catch(_){}
+  }
+
+  function standaloneBesiegedTarget(){
+    try{
+      const live = (typeof besiegedGetState === "function")
+        ? besiegedGetState()
+        : (state && state.besiegedEvent ? state.besiegedEvent : null);
+      if(!live || !live.active) return null;
+      const worldKey = String(live.worldKey || "").trim();
+      const tableKey = String(live.tableKey || "").trim();
+      const parts = tableKey.split("|");
+      const idx = Math.max(0, Number(parts[1] || 0) || 0);
+      if(!worldKey || !tableKey || !state?.worlds?.[worldKey]) return null;
+      return {
+        worldKey,
+        tableKey,
+        idx,
+        tableName: String(live.tableName || state?.worlds?.[worldKey]?.tables?.[idx] || "Besieged table")
+      };
+    }catch(_){}
+    return null;
+  }
+
+  function standaloneEnforceBesiegedTarget(reason, opts){
+    opts = opts || {};
+    const target = standaloneBesiegedTarget();
+    if(!target) return false;
+    let changed = false;
+    try{
+      state.nowPlaying = state.nowPlaying || {};
+      if(state.nowPlaying[target.worldKey] !== target.idx){
+        state.nowPlaying[target.worldKey] = target.idx;
+        changed = true;
+      }
+      if(String(state.selected || "") !== target.worldKey){
+        state.lastSelected = state.selected;
+        state.selected = target.worldKey;
+        changed = true;
+      }
+      if(String(ap?.currentWorld || "") !== target.worldKey){
+        ap.currentWorld = target.worldKey;
+        changed = true;
+      }
+      if(state && typeof getWorldPageForWorldKey === "function"){
+        const nextPage = getWorldPageForWorldKey(target.worldKey, state, ap?.slotData);
+        if(Number.isFinite(nextPage) && state.worldPage !== nextPage){
+          state.worldPage = nextPage;
+          changed = true;
+        }
+      }
+      if(changed && opts.save !== false){
+        try{ saveState(); }catch(_){}
+      }
+      if(opts.log && reason){
+        try{ apLog(`Besieged table kept selected; ${reason}.`); }catch(_){}
+      }
+    }catch(_){}
+    return changed;
+  }
+
+  function standaloneRenderAfterBesiegedSelection(){
+    try{ setHeader(); }catch(_){}
+    try{ renderWorldButtons(); }catch(_){}
+    try{ renderSelected(); }catch(_){}
+    try{ renderOverviewGrid(); }catch(_){}
+    try{ renderOverviewFeed(); }catch(_){}
+    try{ renderChecksWorldTabs(); }catch(_){}
+    try{ if(typeof activeView !== "undefined" && activeView === "checks") renderChecks(); }catch(_){}
+    try{ requestAnimationFrame(updateClimber); }catch(_){}
+  }
+
+  function standaloneBesiegedKeyFromArgs(worldKey, idx){
+    const wk = String(worldKey || "").trim();
+    const n = Number(idx);
+    if(!wk || !Number.isFinite(n) || n < 0) return "";
+    return `${wk}|${Math.max(0, Math.round(n))}`;
+  }
+
+  const standaloneSiegeNotificationQueue = {
+    pending: null,
+    timer: null,
+    pendingShowUntil: 0,
+    expectedHideUntil: 0,
+    sequenceHoldUntil: 0,
+    introTimer: null,
+    introPhaseTimers: [],
+    introSig: "",
+    introAnimating: false,
+    flushing: false
+  };
+
+  function standaloneSiegeSequenceHoldActive(){
+    return Date.now() < Number(standaloneSiegeNotificationQueue.sequenceHoldUntil || 0);
+  }
+
+  function standaloneMarkSiegeSequenceHold(holdMs, reason){
+    const now = Date.now();
+    const hold = Math.max(0, Number(holdMs || 0) || 0);
+    const until = now + hold;
+    standaloneSiegeNotificationQueue.sequenceHoldUntil = Math.max(
+      Number(standaloneSiegeNotificationQueue.sequenceHoldUntil || 0),
+      until
+    );
+    standaloneSiegeNotificationQueue.expectedHideUntil = Math.max(
+      Number(standaloneSiegeNotificationQueue.expectedHideUntil || 0),
+      until
+    );
+    try{
+      window.__flprStandaloneSiegeSequenceHold = {
+        until: Number(standaloneSiegeNotificationQueue.sequenceHoldUntil || until),
+        reason: String(reason || ""),
+        ts: now
+      };
+    }catch(_){}
+    if(standaloneSiegeNotificationQueue.pending) standaloneScheduleQueuedBesiegedActivation();
+    return Number(standaloneSiegeNotificationQueue.sequenceHoldUntil || until);
+  }
+
+  function standaloneQueuedSiegeWaiting(){
+    return !!standaloneSiegeNotificationQueue.pending;
+  }
+
+  function standaloneOverviewModalVisible(){
+    try{
+      const modal = document.getElementById("ovModal");
+      if(!modal || modal.classList.contains("hidden")) return false;
+      const style = getComputedStyle(modal);
+      return style.display !== "none" && style.visibility !== "hidden" && style.opacity !== "0";
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneClearSiegeIncomingNotice(){
+    try{
+      document.querySelectorAll(".flprStandaloneSiegeIncoming").forEach((node)=>node.remove());
+      document.querySelectorAll(".flprStandaloneSiegeQueued").forEach((node)=>node.classList.remove("flprStandaloneSiegeQueued"));
+    }catch(_){}
+  }
+
+  function standaloneShowSiegeIncomingNotice(){
+    try{
+      const modal = document.getElementById("ovModal");
+      const card = document.getElementById("ovModalCard");
+      if(!modal || !card || modal.classList.contains("hidden")) return false;
+      card.classList.add("flprStandaloneSiegeQueued");
+      let notice = card.querySelector(".flprStandaloneSiegeIncoming");
+      if(!notice){
+        notice = document.createElement("div");
+        notice.className = "flprStandaloneSiegeIncoming";
+        card.appendChild(notice);
+      }
+      notice.textContent = "SIEGE INCOMING!";
+      return true;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneMarkOverviewNotificationWindow(holdMs, showDelayMs){
+    const now = Date.now();
+    const hold = Math.max(600, Number(holdMs || 2800) || 2800);
+    const delay = Math.max(0, Number(showDelayMs || 0) || 0);
+    standaloneSiegeNotificationQueue.pendingShowUntil = Math.max(
+      Number(standaloneSiegeNotificationQueue.pendingShowUntil || 0),
+      now + delay + 520
+    );
+    standaloneSiegeNotificationQueue.expectedHideUntil = Math.max(
+      Number(standaloneSiegeNotificationQueue.expectedHideUntil || 0),
+      now + delay + hold + 1200
+    );
+    if(standaloneSiegeNotificationQueue.pending){
+      setTimeout(()=>standaloneShowSiegeIncomingNotice(), delay + 40);
+      standaloneScheduleQueuedBesiegedActivation();
+    }
+  }
+
+  function standaloneShouldQueueBesiegedActivation(){
+    if(standaloneSiegeNotificationQueue.flushing) return false;
+    if(standaloneBesiegedTarget()) return false;
+    if(standaloneOverviewModalVisible()) return true;
+    if(standaloneSiegeSequenceHoldActive()) return true;
+    return Date.now() < Number(standaloneSiegeNotificationQueue.pendingShowUntil || 0);
+  }
+
+  function standaloneFlushQueuedBesiegedActivation(){
+    const pending = standaloneSiegeNotificationQueue.pending;
+    if(!pending) return false;
+    standaloneSiegeNotificationQueue.pending = null;
+    try{
+      if(standaloneSiegeNotificationQueue.timer) clearTimeout(standaloneSiegeNotificationQueue.timer);
+    }catch(_){}
+    standaloneSiegeNotificationQueue.timer = null;
+    standaloneSiegeNotificationQueue.pendingShowUntil = 0;
+    standaloneSiegeNotificationQueue.expectedHideUntil = 0;
+    standaloneSiegeNotificationQueue.sequenceHoldUntil = 0;
+    standaloneClearSiegeIncomingNotice();
+    standaloneSiegeNotificationQueue.flushing = true;
+    try{
+      const result = pending.original.apply(pending.thisArg, pending.args);
+      try{ standaloneEnforceBesiegedTarget("queued activation", { save:true }); }catch(_){}
+      try{ standaloneRunSiegeActivationIntroForCurrent("queued activation"); }catch(_){}
+      return result;
+    }finally{
+      standaloneSiegeNotificationQueue.flushing = false;
+    }
+  }
+
+  function standaloneScheduleQueuedBesiegedActivation(){
+    if(!standaloneSiegeNotificationQueue.pending) return;
+    if(standaloneSiegeNotificationQueue.timer) return;
+    const poll = ()=>{
+      standaloneSiegeNotificationQueue.timer = null;
+      const pending = standaloneSiegeNotificationQueue.pending;
+      if(!pending){
+        standaloneClearSiegeIncomingNotice();
+        return;
+      }
+      if(standaloneOverviewModalVisible()){
+        pending.sawModal = true;
+        standaloneShowSiegeIncomingNotice();
+        standaloneSiegeNotificationQueue.timer = setTimeout(poll, 120);
+        return;
+      }
+      const now = Date.now();
+      if(now < Number(standaloneSiegeNotificationQueue.sequenceHoldUntil || 0)){
+        if(pending.sawModal) standaloneShowSiegeIncomingNotice();
+        standaloneSiegeNotificationQueue.timer = setTimeout(poll, 140);
+        return;
+      }
+      const waitForDelayedModal = !pending.sawModal && now < Math.min(
+        Number(standaloneSiegeNotificationQueue.expectedHideUntil || 0) || now,
+        Number(pending.queuedAt || now) + 1800
+      );
+      if(waitForDelayedModal){
+        standaloneSiegeNotificationQueue.timer = setTimeout(poll, 90);
+        return;
+      }
+      setTimeout(()=>standaloneFlushQueuedBesiegedActivation(), 160);
+    };
+    standaloneSiegeNotificationQueue.timer = setTimeout(poll, 40);
+  }
+
+  function standaloneQueueBesiegedActivation(original, thisArg, argsLike){
+    if(!standaloneShouldQueueBesiegedActivation()) return false;
+    standaloneSiegeNotificationQueue.pending = {
+      original,
+      thisArg,
+      args: Array.prototype.slice.call(argsLike || []),
+      queuedAt: Date.now(),
+      sawModal: standaloneOverviewModalVisible()
+    };
+    standaloneShowSiegeIncomingNotice();
+    standaloneScheduleQueuedBesiegedActivation();
+    return true;
+  }
+
+  function standaloneClearSiegeIntroClasses(){
+    try{
+      if(standaloneSiegeNotificationQueue.introTimer) clearTimeout(standaloneSiegeNotificationQueue.introTimer);
+    }catch(_){}
+    try{
+      standaloneSiegeNotificationQueue.introPhaseTimers.forEach((timer)=>clearTimeout(timer));
+    }catch(_){}
+    standaloneSiegeNotificationQueue.introTimer = null;
+    standaloneSiegeNotificationQueue.introPhaseTimers = [];
+    standaloneSiegeNotificationQueue.introAnimating = false;
+    try{ document.body.classList.remove("flprStandaloneSiegeIntroActive"); }catch(_){}
+    try{
+      document.querySelectorAll(".flprStandaloneSiegeIntroTarget").forEach((node)=>{
+        node.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroReady");
+      });
+    }catch(_){}
+  }
+
+  function standaloneFindCurrentSiegeTargetCard(live){
+    try{
+      if(!live?.active) return null;
+      const targetKey = String(live.tableKey || "").trim();
+      const selectedWorld = String(state?.selected || "");
+      const targetWorld = String(live.worldKey || "");
+      const targetIdx = Number(String(targetKey).split("|")[1]);
+      let card = document.querySelector("#selectedBody .pentaCard.besiegedTarget");
+      if(card) return card;
+      const wrap = document.querySelector("#selectedBody .pentagonWrap");
+      const cards = wrap && Array.isArray(wrap.__pentaCards) ? wrap.__pentaCards : null;
+      if(cards && selectedWorld === targetWorld && Number.isFinite(targetIdx) && cards[targetIdx]) return cards[targetIdx];
+    }catch(_){}
+    return null;
+  }
+
+  function standalonePlaySiegeIntroSound(){
+    try{ if(typeof playSfx === "function") playSfx("bossKeyTravelSizzle"); }catch(_){}
+    try{
+      if(typeof playTone === "function"){
+        [
+          { delay:0, freq:72, sweepTo:46, gain:.080 },
+          { delay:90, freq:82, sweepTo:52, gain:.070 },
+          { delay:190, freq:66, sweepTo:42, gain:.075 },
+          { delay:320, freq:92, sweepTo:58, gain:.060 }
+        ].forEach((tone)=>{
+          const timer = setTimeout(()=>{
+            try{ playTone({ freq:tone.freq, dur:.30, type:"sawtooth", gain:tone.gain, sweepTo:tone.sweepTo, sweepDur:.24 }); }catch(_){}
+          }, tone.delay);
+          standaloneSiegeNotificationQueue.introPhaseTimers.push(timer);
+        });
+      }
+    }catch(_){}
+  }
+
+  function standaloneRunSiegeActivationIntroForCurrent(reason){
+    try{
+      const live = (typeof besiegedGetState === "function")
+        ? (besiegedGetState() || {})
+        : (state?.besiegedEvent || {});
+      if(!live?.active) return false;
+      const sig = [
+        String(live.tableKey || ""),
+        String(live.activatedAt || ""),
+        String(reason || "")
+      ].join("|");
+      if(sig && String(standaloneSiegeNotificationQueue.introSig || "") === sig) return false;
+      standaloneClearSiegeIntroClasses();
+      standaloneSiegeNotificationQueue.introSig = sig;
+      const holdMs = Math.max(900, Number(window.__flprStandaloneSiegeIntroMs || 3600) || 3600);
+      try{
+        if(String(state?.selected || "") !== String(live.worldKey || "")) state.selected = String(live.worldKey || state?.selected || "");
+      }catch(_){}
+      try{ if(typeof showView === "function") showView("tower"); else { activeView = "tower"; try{ setTabUI(); }catch(__){} } }catch(_){}
+      try{ renderAll(); }catch(_){}
+      const apply = ()=>{
+        const card = standaloneFindCurrentSiegeTargetCard(live);
+        if(!card){
+          standaloneSiegeNotificationQueue.introAnimating = false;
+          return;
+        }
+        standaloneSiegeNotificationQueue.introAnimating = true;
+        try{ document.body.classList.add("flprStandaloneSiegeIntroActive"); }catch(_){}
+        try{ card.classList.add("flprStandaloneSiegeIntroTarget"); }catch(_){}
+        standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroArmy"); standalonePlaySiegeIntroSound(); }catch(_){} }, 1280));
+        standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroReady"); }catch(_){} }, 2420));
+        standaloneSiegeNotificationQueue.introTimer = setTimeout(()=>{
+          standaloneSiegeNotificationQueue.introTimer = null;
+          standaloneSiegeNotificationQueue.introPhaseTimers = [];
+          standaloneSiegeNotificationQueue.introAnimating = false;
+          try{ document.body.classList.remove("flprStandaloneSiegeIntroActive"); }catch(_){}
+          try{ card.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroReady"); }catch(_){}
+          try{
+            window.__flprStandaloneLastSiegeIntro = {
+              tableKey: String(live.tableKey || ""),
+              tableName: String(live.tableName || ""),
+              reason: String(reason || ""),
+              completed:true,
+              ts:Date.now()
+            };
+          }catch(_){}
+        }, holdMs);
+      };
+      requestAnimationFrame(()=>requestAnimationFrame(apply));
+      try{
+        window.__flprStandaloneLastSiegeIntro = {
+          tableKey: String(live.tableKey || ""),
+          tableName: String(live.tableName || ""),
+          reason: String(reason || ""),
+          completed:false,
+          ts:Date.now()
+        };
+      }catch(_){}
+      return true;
+    }catch(_){}
+    return false;
+  }
+
+  const standaloneSiegeVictoryOverlay = {
+    hideTimer: null,
+    removeTimer: null,
+    fireworkTimer: null,
+    soundTimers: []
+  };
+
+  function standaloneClearSiegeVictoryOverlay(){
+    try{ if(standaloneSiegeVictoryOverlay.hideTimer) clearTimeout(standaloneSiegeVictoryOverlay.hideTimer); }catch(_){}
+    try{ if(standaloneSiegeVictoryOverlay.removeTimer) clearTimeout(standaloneSiegeVictoryOverlay.removeTimer); }catch(_){}
+    try{ if(standaloneSiegeVictoryOverlay.fireworkTimer) clearInterval(standaloneSiegeVictoryOverlay.fireworkTimer); }catch(_){}
+    standaloneSiegeVictoryOverlay.hideTimer = null;
+    standaloneSiegeVictoryOverlay.removeTimer = null;
+    standaloneSiegeVictoryOverlay.fireworkTimer = null;
+    try{
+      standaloneSiegeVictoryOverlay.soundTimers.forEach((timer)=>clearTimeout(timer));
+    }catch(_){}
+    standaloneSiegeVictoryOverlay.soundTimers = [];
+    try{ document.getElementById("flprStandaloneSiegeVictoryOverlay")?.remove(); }catch(_){}
+    try{ document.querySelector(".stage")?.classList?.remove("victoryGroove"); }catch(_){}
+  }
+
+  function standaloneSiegeEnemyName(raw){
+    let name = String(raw || "").trim();
+    if(!name) name = "siege army";
+    name = name.replace(/^the\s+/i, "");
+    return name;
+  }
+
+  function standaloneScheduleSiegeVictorySound(delay, fn){
+    const timer = setTimeout(()=>{
+      try{ fn(); }catch(_){}
+    }, Math.max(0, Number(delay || 0) || 0));
+    standaloneSiegeVictoryOverlay.soundTimers.push(timer);
+  }
+
+  function standalonePlaySiegeVictoryCheer(){
+    try{
+      if(typeof musicLockScenario === "function") musicLockScenario("randomizer_win", 4600);
+    }catch(_){}
+    standaloneScheduleSiegeVictorySound(0, ()=>{
+      try{ if(typeof playSfx === "function") playSfx("tada"); }catch(_){}
+      try{ if(typeof playSfx === "function") playSfx("introBurst"); }catch(_){}
+    });
+    standaloneScheduleSiegeVictorySound(360, ()=>{ try{ if(typeof playSfx === "function") playSfx("chaching"); }catch(_){} });
+    standaloneScheduleSiegeVictorySound(760, ()=>{ try{ if(typeof playSfx === "function") playSfx("key"); }catch(_){} });
+    standaloneScheduleSiegeVictorySound(1160, ()=>{
+      try{ if(typeof playSfx === "function") playSfx("introBurst"); }catch(_){}
+      try{ if(typeof playTone === "function") playTone({ freq:1318, dur:0.18, type:"sine", gain:0.12, sweepTo:1760, sweepDur:0.16 }); }catch(_){}
+    });
+  }
+
+  function standaloneSpawnSiegeFirework(layer, opts){
+    try{
+      if(!layer) return;
+      const fw = document.createElement("div");
+      fw.className = "flprStandaloneSiegeFirework";
+      const w = window.innerWidth || document.documentElement.clientWidth || 1600;
+      const h = window.innerHeight || document.documentElement.clientHeight || 900;
+      const left = opts?.left != null ? Number(opts.left) : Math.round(w * (0.18 + Math.random() * 0.64));
+      const top = opts?.top != null ? Number(opts.top) : Math.round(h * (0.16 + Math.random() * 0.38));
+      const palette = ["#00ffd5", "#00a6ff", "#22ff88", "#ffe66d", "#ff4d6d", "#ffffff"];
+      const color = String(opts?.color || palette[Math.floor(Math.random() * palette.length)] || "#ffe66d");
+      fw.style.left = `${Math.max(20, Math.min(w - 20, left))}px`;
+      fw.style.top = `${Math.max(20, Math.min(h - 20, top))}px`;
+      fw.style.setProperty("--fw-color", color);
+      const sparks = Math.max(12, Math.round(Number(opts?.sparks || 18) || 18));
+      for(let i = 0; i < sparks; i++){
+        const spark = document.createElement("div");
+        spark.className = "flprStandaloneSiegeSpark";
+        const angle = ((Math.PI * 2) / sparks) * i + (Math.random() * 0.22);
+        const dist = 72 + Math.random() * 110;
+        spark.style.setProperty("--dx", `${Math.round(Math.cos(angle) * dist)}px`);
+        spark.style.setProperty("--dy", `${Math.round(Math.sin(angle) * dist)}px`);
+        spark.style.setProperty("--fw-color", color);
+        fw.appendChild(spark);
+      }
+      layer.appendChild(fw);
+      setTimeout(()=>{ try{ fw.remove(); }catch(_){} }, 1250);
+    }catch(_){}
+  }
+
+  function standaloneStartSiegeVictoryFireworks(layer, holdMs){
+    try{
+      if(!layer) return;
+      [0, 180, 360, 620].forEach((delay)=>setTimeout(()=>standaloneSpawnSiegeFirework(layer), delay));
+      standaloneSiegeVictoryOverlay.fireworkTimer = setInterval(()=>standaloneSpawnSiegeFirework(layer), 260);
+      setTimeout(()=>{
+        try{
+          if(standaloneSiegeVictoryOverlay.fireworkTimer){
+            clearInterval(standaloneSiegeVictoryOverlay.fireworkTimer);
+            standaloneSiegeVictoryOverlay.fireworkTimer = null;
+          }
+        }catch(_){}
+      }, Math.max(700, Number(holdMs || 4200) - 450));
+    }catch(_){}
+  }
+
+  function standaloneShowSiegeVictoryOverlay(live, reason){
+    try{
+      if(!live || reason === "test-reset") return false;
+      const tableName = String(live.tableName || "Besieged table").trim() || "Besieged table";
+      const enemy = standaloneSiegeEnemyName(live.armyLabel || live.armyType || "siege army");
+      const holdMs = Math.max(800, Number(window.__flprStandaloneSiegeVictoryHoldMs || 4200) || 4200);
+      standaloneClearSiegeVictoryOverlay();
+      const overlay = document.createElement("div");
+      overlay.id = "flprStandaloneSiegeVictoryOverlay";
+      overlay.className = "flprStandaloneSiegeVictoryOverlay";
+      overlay.setAttribute("aria-hidden", "true");
+      overlay.addEventListener("click", (ev)=>{
+        try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){}
+      }, true);
+      overlay.innerHTML = `
+        <div class="flprStandaloneSiegeVictoryFireworks" aria-hidden="true"></div>
+        <div class="flprStandaloneSiegeVictoryCard">
+          <div class="flprStandaloneSiegeVictoryKicker">SIEGE BROKEN</div>
+          <div class="flprStandaloneSiegeVictoryTable">${standaloneEscapeHtml(tableName)} is free!</div>
+          <div class="flprStandaloneSiegeVictoryEnemy">The ${standaloneEscapeHtml(enemy)} is defeated!</div>
+        </div>
+      `;
+      (document.documentElement || document.body).appendChild(overlay);
+      try{ document.querySelector(".stage")?.classList?.add("victoryGroove"); }catch(_){}
+      standalonePlaySiegeVictoryCheer();
+      standaloneStartSiegeVictoryFireworks(overlay.querySelector(".flprStandaloneSiegeVictoryFireworks"), holdMs);
+      standaloneSiegeVictoryOverlay.hideTimer = setTimeout(()=>{
+        try{ overlay.classList.add("leaving"); }catch(_){}
+        try{ document.querySelector(".stage")?.classList?.remove("victoryGroove"); }catch(_){}
+      }, holdMs);
+      standaloneSiegeVictoryOverlay.removeTimer = setTimeout(()=>standaloneClearSiegeVictoryOverlay(), holdMs + 760);
+      return true;
+    }catch(_){}
+    return false;
+  }
+
+  function installStandaloneSiegeNotificationQueueBridge(){
+    let installedAny = false;
+    try{
+      const original = window.showOverviewModalNow || (typeof showOverviewModalNow === "function" ? showOverviewModalNow : null);
+      if(original && !original.__flprStandaloneSiegeQueueBridge){
+        const bridged = function standaloneShowOverviewModalNowSiegeQueueBridge(args){
+          const holdMs = Number(args?.holdMs || 2800) || 2800;
+          standaloneMarkOverviewNotificationWindow(holdMs, 0);
+          const result = original.apply(this, arguments);
+          if(standaloneSiegeNotificationQueue.pending) standaloneShowSiegeIncomingNotice();
+          return result;
+        };
+        bridged.__flprStandaloneSiegeQueueBridge = true;
+        bridged.__flprStandaloneOriginalShowOverviewModalNow = original;
+        window.showOverviewModalNow = bridged;
+        try{ showOverviewModalNow = bridged; }catch(_){}
+      }
+      if(window.showOverviewModalNow || typeof showOverviewModalNow === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.showOverviewModal || (typeof showOverviewModal === "function" ? showOverviewModal : null);
+      if(original && !original.__flprStandaloneSiegeQueueBridge){
+        const bridged = function standaloneShowOverviewModalSiegeQueueBridge(args){
+          const holdMs = Number(args?.holdMs || 2800) || 2800;
+          standaloneMarkOverviewNotificationWindow(holdMs, 620);
+          const result = original.apply(this, arguments);
+          const delay = Number(result || 0);
+          if(Number.isFinite(delay) && delay >= 0) standaloneMarkOverviewNotificationWindow(holdMs, delay);
+          if(standaloneSiegeNotificationQueue.pending) setTimeout(()=>standaloneShowSiegeIncomingNotice(), Math.max(0, delay || 0) + 40);
+          return result;
+        };
+        bridged.__flprStandaloneSiegeQueueBridge = true;
+        bridged.__flprStandaloneOriginalShowOverviewModal = original;
+        window.showOverviewModal = bridged;
+        try{ showOverviewModal = bridged; }catch(_){}
+      }
+      if(window.showOverviewModal || typeof showOverviewModal === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      window.flprStandaloneSiegeQueueState = function(){
+        return {
+          pending: !!standaloneSiegeNotificationQueue.pending,
+          sawModal: !!standaloneSiegeNotificationQueue.pending?.sawModal,
+          modalVisible: standaloneOverviewModalVisible(),
+          pendingShowUntil: Number(standaloneSiegeNotificationQueue.pendingShowUntil || 0),
+          expectedHideUntil: Number(standaloneSiegeNotificationQueue.expectedHideUntil || 0),
+          sequenceHoldUntil: Number(standaloneSiegeNotificationQueue.sequenceHoldUntil || 0),
+          sequenceHoldActive: standaloneSiegeSequenceHoldActive(),
+          introAnimating: !!standaloneSiegeNotificationQueue.introAnimating,
+          hasNotice: !!document.querySelector(".flprStandaloneSiegeIncoming")
+        };
+      };
+    }catch(_){}
+
+    if(!installedAny) setTimeout(installStandaloneSiegeNotificationQueueBridge, 120);
+  }
+
+  function installStandaloneBesiegedSelectionBridge(){
+    let installedAny = false;
+
+    try{
+      const original = window.besiegedActivate || (typeof besiegedActivate === "function" ? besiegedActivate : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneBesiegedActivateBridge(){
+          if(standaloneQueueBesiegedActivation(original, this, arguments)) return true;
+          const result = original.apply(this, arguments);
+          try{ standaloneEnforceBesiegedTarget("activation", { save:true }); }catch(_){}
+          if(result !== false) try{ standaloneRunSiegeActivationIntroForCurrent("activation"); }catch(_){}
+          return result;
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalBesiegedActivate = original;
+        window.besiegedActivate = bridged;
+        try{ besiegedActivate = bridged; }catch(_){}
+      }
+      if(window.besiegedActivate || typeof besiegedActivate === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.besiegedClear || (typeof besiegedClear === "function" ? besiegedClear : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneBesiegedClearBridge(reason){
+          let live = null;
+          try{
+            live = (typeof besiegedGetState === "function")
+              ? { ...(besiegedGetState() || {}) }
+              : { ...(state?.besiegedEvent || {}) };
+          }catch(_){}
+          const result = original.apply(this, arguments);
+          try{ standaloneClearSiegeIntroClasses(); }catch(_){}
+          if(result !== false && live?.active){
+            try{ standaloneShowSiegeVictoryOverlay(live, reason); }catch(_){}
+          }
+          return result;
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalBesiegedClear = original;
+        window.besiegedClear = bridged;
+        try{ besiegedClear = bridged; }catch(_){}
+      }
+      if(window.besiegedClear || typeof besiegedClear === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.besiegedSyncContext || (typeof besiegedSyncContext === "function" ? besiegedSyncContext : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneBesiegedSyncContextBridge(opts){
+          const result = original.apply(this, arguments);
+          try{ standaloneEnforceBesiegedTarget("context sync", { save: !!(opts && opts.save) }); }catch(_){}
+          return result;
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalBesiegedSyncContext = original;
+        window.besiegedSyncContext = bridged;
+        try{ besiegedSyncContext = bridged; }catch(_){}
+      }
+      if(window.besiegedSyncContext || typeof besiegedSyncContext === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.setNowPlayingIndex || (typeof setNowPlayingIndex === "function" ? setNowPlayingIndex : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneSetNowPlayingIndexBesiegedBridge(worldKey, idx, opts){
+          const target = standaloneBesiegedTarget();
+          if(target){
+            const nextKey = standaloneBesiegedKeyFromArgs(worldKey, idx);
+            if(nextKey && nextKey !== target.tableKey){
+              standaloneEnforceBesiegedTarget("blocked now-playing switch", { save:true });
+              return false;
+            }
+            standaloneEnforceBesiegedTarget("target now-playing refresh", { save:true });
+            try{ applyOverviewNowPlayingHighlight(); }catch(_){}
+            try{ applyChecksNowPlayingHighlight(); }catch(_){}
+            try{ flprStatsRefreshNowPlayingTracker(); }catch(_){}
+            return true;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSetNowPlayingIndex = original;
+        window.setNowPlayingIndex = bridged;
+        try{ setNowPlayingIndex = bridged; }catch(_){}
+      }
+      if(window.setNowPlayingIndex || typeof setNowPlayingIndex === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.setNowPlayingFromTableKey || (typeof setNowPlayingFromTableKey === "function" ? setNowPlayingFromTableKey : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneSetNowPlayingFromTableKeyBesiegedBridge(tableKey, opts){
+          const target = standaloneBesiegedTarget();
+          if(target){
+            const nextKey = String(tableKey || "").trim();
+            if(nextKey && nextKey !== target.tableKey){
+              standaloneEnforceBesiegedTarget("blocked table switch", { save:true });
+              return false;
+            }
+            standaloneEnforceBesiegedTarget("target table refresh", { save:true });
+            return true;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSetNowPlayingFromTableKey = original;
+        window.setNowPlayingFromTableKey = bridged;
+        try{ setNowPlayingFromTableKey = bridged; }catch(_){}
+      }
+      if(window.setNowPlayingFromTableKey || typeof setNowPlayingFromTableKey === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.syncTowerSelectionToWorld || (typeof syncTowerSelectionToWorld === "function" ? syncTowerSelectionToWorld : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneSyncTowerSelectionToWorldBesiegedBridge(worldKey){
+          const target = standaloneBesiegedTarget();
+          if(target){
+            standaloneEnforceBesiegedTarget("blocked tower world sync", { save:true });
+            return target.worldKey;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSyncTowerSelectionToWorld = original;
+        window.syncTowerSelectionToWorld = bridged;
+        try{ syncTowerSelectionToWorld = bridged; }catch(_){}
+      }
+      if(window.syncTowerSelectionToWorld || typeof syncTowerSelectionToWorld === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.syncTowerSelectionToBossWorld || (typeof syncTowerSelectionToBossWorld === "function" ? syncTowerSelectionToBossWorld : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneSyncTowerSelectionToBossWorldBesiegedBridge(){
+          const target = standaloneBesiegedTarget();
+          if(target){
+            standaloneEnforceBesiegedTarget("blocked boss tower sync", { save:true });
+            return target.worldKey;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSyncTowerSelectionToBossWorld = original;
+        window.syncTowerSelectionToBossWorld = bridged;
+        try{ syncTowerSelectionToBossWorld = bridged; }catch(_){}
+      }
+      if(window.syncTowerSelectionToBossWorld || typeof syncTowerSelectionToBossWorld === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.syncChecksWorldFromTowerContext || (typeof syncChecksWorldFromTowerContext === "function" ? syncChecksWorldFromTowerContext : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneSyncChecksWorldFromTowerContextBesiegedBridge(){
+          const target = standaloneBesiegedTarget();
+          if(target){
+            standaloneEnforceBesiegedTarget("blocked checks world sync", { save:true });
+            return target.worldKey;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSyncChecksWorldFromTowerContext = original;
+        window.syncChecksWorldFromTowerContext = bridged;
+        try{ syncChecksWorldFromTowerContext = bridged; }catch(_){}
+      }
+      if(window.syncChecksWorldFromTowerContext || typeof syncChecksWorldFromTowerContext === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.syncNowPlayingIndexesToUnlockedTables || (typeof syncNowPlayingIndexesToUnlockedTables === "function" ? syncNowPlayingIndexesToUnlockedTables : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        let inBridge = false;
+        const bridged = function standaloneSyncNowPlayingIndexesBesiegedBridge(opts){
+          const target = standaloneBesiegedTarget();
+          if(!target || inBridge) return original.apply(this, arguments);
+          inBridge = true;
+          let changed = false;
+          try{
+            changed = !!standaloneEnforceBesiegedTarget("blocked unlocked-table sync", { save: opts?.save !== false });
+            if(opts && opts.render) standaloneRenderAfterBesiegedSelection();
+            return changed;
+          }finally{
+            inBridge = false;
+          }
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSyncNowPlayingIndexesToUnlockedTables = original;
+        window.syncNowPlayingIndexesToUnlockedTables = bridged;
+        try{ syncNowPlayingIndexesToUnlockedTables = bridged; }catch(_){}
+      }
+      if(window.syncNowPlayingIndexesToUnlockedTables || typeof syncNowPlayingIndexesToUnlockedTables === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.setWorldPage || (typeof setWorldPage === "function" ? setWorldPage : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneSetWorldPageBesiegedBridge(pageIdx, opts){
+          const target = standaloneBesiegedTarget();
+          if(target){
+            standaloneEnforceBesiegedTarget("blocked world page switch", { save: opts?.save !== false });
+            if(opts?.render !== false) standaloneRenderAfterBesiegedSelection();
+            return false;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSetWorldPage = original;
+        window.setWorldPage = bridged;
+        try{ setWorldPage = bridged; }catch(_){}
+      }
+      if(window.setWorldPage || typeof setWorldPage === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.ensureBossTableSelectionForUnlock || (typeof ensureBossTableSelectionForUnlock === "function" ? ensureBossTableSelectionForUnlock : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneEnsureBossTableSelectionForUnlockBesiegedBridge(opts){
+          const target = standaloneBesiegedTarget();
+          if(target){
+            const nextOpts = { ...(opts || {}), selectInTower:false, render:false };
+            const result = original.call(this, nextOpts);
+            standaloneEnforceBesiegedTarget("blocked boss selection", { save:true });
+            if(opts && opts.render) standaloneRenderAfterBesiegedSelection();
+            return result;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalEnsureBossTableSelectionForUnlock = original;
+        window.ensureBossTableSelectionForUnlock = bridged;
+        try{ ensureBossTableSelectionForUnlock = bridged; }catch(_){}
+      }
+      if(window.ensureBossTableSelectionForUnlock || typeof ensureBossTableSelectionForUnlock === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.bossFocusVictoryChecksView || (typeof bossFocusVictoryChecksView === "function" ? bossFocusVictoryChecksView : null);
+      if(original && !original.__flprStandaloneBesiegedSelectionBridge){
+        const bridged = function standaloneBossFocusVictoryChecksViewBesiegedBridge(opts){
+          const target = standaloneBesiegedTarget();
+          if(target){
+            standaloneEnforceBesiegedTarget("blocked boss focus", { save:true });
+            try{ if(typeof showView === "function") showView("tower"); }catch(_){}
+            if(opts && opts.render) standaloneRenderAfterBesiegedSelection();
+            return false;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBesiegedSelectionBridge = true;
+        bridged.__flprStandaloneOriginalBossFocusVictoryChecksView = original;
+        window.bossFocusVictoryChecksView = bridged;
+        try{ bossFocusVictoryChecksView = bridged; }catch(_){}
+      }
+      if(window.bossFocusVictoryChecksView || typeof bossFocusVictoryChecksView === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      window.flprStandaloneBesiegedSelectionBridgeState = function(){
+        const target = standaloneBesiegedTarget();
+        return {
+          installed: true,
+          active: !!target,
+          target,
+          selected: String(state?.selected || ""),
+          currentWorld: String(ap?.currentWorld || ""),
+          nowPlaying: target ? Number(state?.nowPlaying?.[target.worldKey]) : null
+        };
+      };
+    }catch(_){}
+
+    if(!installedAny) setTimeout(installStandaloneBesiegedSelectionBridge, 120);
+  }
+
+  const standaloneChecksSelection = {
+    key: "",
+    ts: 0,
+    source: "",
+    applying: false,
+    timer: null
+  };
+  const standaloneChecksWorldSelection = {
+    key: "",
+    ts: 0,
+    source: "",
+    applying: false
+  };
+  const standaloneChecksRenderState = {
+    lastSig: "",
+    lastAt: 0,
+    rendered: 0,
+    skipped: 0
+  };
+
+  function standaloneParseTableKey(tableKey){
+    const key = String(tableKey || "").trim();
+    if(!key || key.startsWith("boss|")) return null;
+    const parts = key.split("|");
+    if(parts.length < 2) return null;
+    const worldKey = String(parts[0] || "").trim();
+    const idx = Number(parts[1]);
+    if(!worldKey || !Number.isFinite(idx) || idx < 0) return null;
+    return { key, worldKey, idx:Math.max(0, Math.round(idx)) };
+  }
+
+  function standaloneChecksViewActive(){
+    try{ return String(activeView || "") === "checks"; }catch(_){}
+    return false;
+  }
+
+  function standaloneChecksTableSelectable(tableKey){
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed) return false;
+    try{
+      const world = state?.worlds?.[parsed.worldKey];
+      if(!world || !Array.isArray(world.tables) || !world.tables[parsed.idx]) return false;
+      if(typeof getBallLevelByTableKey === "function"){
+        return Number(getBallLevelByTableKey(parsed.key) || 0) > 0;
+      }
+      return !!(
+        state?.balls?.[`${parsed.key}|1`] ||
+        state?.balls?.[`${parsed.key}|2`] ||
+        state?.balls?.[`${parsed.key}|3`]
+      );
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneChecksTableExists(tableKey){
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed) return false;
+    try{
+      const world = state?.worlds?.[parsed.worldKey];
+      return !!(world && Array.isArray(world.tables) && world.tables[parsed.idx]);
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneChecksWorldExists(worldKey){
+    const wk = String(worldKey || "").trim();
+    if(!wk) return false;
+    try{
+      if(wk === "boss"){
+        if(typeof isBossUnlocked === "function" && !isBossUnlocked()) return false;
+        return !!(state?.worlds?.boss || (typeof getBossWorldKey === "function" && state?.worlds?.[getBossWorldKey()]));
+      }
+      return !!state?.worlds?.[wk];
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneClearChecksSelectionPin(reason){
+    standaloneChecksSelection.key = "";
+    standaloneChecksSelection.ts = 0;
+    standaloneChecksSelection.source = String(reason || "");
+    try{
+      if(standaloneChecksSelection.timer) clearTimeout(standaloneChecksSelection.timer);
+      standaloneChecksSelection.timer = null;
+    }catch(_){}
+  }
+
+  function standaloneClearChecksWorldPin(reason){
+    standaloneChecksWorldSelection.key = "";
+    standaloneChecksWorldSelection.ts = 0;
+    standaloneChecksWorldSelection.source = String(reason || "");
+  }
+
+  function standaloneRememberChecksWorldSelection(worldKey, source){
+    const wk = String(worldKey || "").trim();
+    if(!wk || !standaloneChecksWorldExists(wk)) return false;
+    standaloneChecksWorldSelection.key = wk;
+    standaloneChecksWorldSelection.ts = Date.now();
+    standaloneChecksWorldSelection.source = String(source || "checks-world");
+    return true;
+  }
+
+  function standalonePinnedChecksWorldKey(){
+    const wk = String(standaloneChecksWorldSelection.key || "").trim();
+    if(!wk) return "";
+    if(standaloneBesiegedTarget()) return "";
+    if(!standaloneChecksViewActive()){
+      if(Date.now() - Number(standaloneChecksWorldSelection.ts || 0) > 1200){
+        standaloneClearChecksWorldPin("left-checks");
+      }
+      return "";
+    }
+    if(!standaloneChecksWorldExists(wk)){
+      standaloneClearChecksWorldPin("missing-world");
+      return "";
+    }
+    return wk;
+  }
+
+  function standaloneEnforceChecksWorldSelection(reason, opts){
+    opts = opts || {};
+    const wk = standalonePinnedChecksWorldKey();
+    if(!wk || standaloneChecksWorldSelection.applying) return false;
+    let changed = false;
+    standaloneChecksWorldSelection.applying = true;
+    try{
+      if(String(ap?.currentWorld || "") !== wk){
+        ap.currentWorld = wk;
+        changed = true;
+      }
+      if(opts.syncTowerSelection !== false && wk !== "boss" && state?.worlds?.[wk] && String(state?.selected || "") !== wk){
+        state.lastSelected = state.selected;
+        state.selected = wk;
+        changed = true;
+      }
+      if(changed && opts.save !== false){
+        try{ saveState(); }catch(_){}
+      }
+    }catch(_){
+    }finally{
+      standaloneChecksWorldSelection.applying = false;
+    }
+    return changed;
+  }
+
+  function standaloneClearChecksSelectionPinForWorldSwitch(worldKey, reason){
+    const wk = String(worldKey || "").trim();
+    if(!wk) return false;
+    standaloneRememberChecksWorldSelection(wk, reason || "checks-world-switch");
+    const pinned = standaloneParseTableKey(standaloneChecksSelection.key);
+    if(pinned && pinned.worldKey === wk) return false;
+    standaloneClearChecksSelectionPin(reason || "checks-world-switch");
+    try{
+      window.__flprStandaloneLastChecksWorldSwitch = {
+        worldKey:wk,
+        reason:String(reason || "checks-world-switch"),
+        ts:Date.now()
+      };
+    }catch(_){}
+    return true;
+  }
+
+  function standalonePinnedChecksTableKey(){
+    const key = String(standaloneChecksSelection.key || "").trim();
+    if(!key) return "";
+    if(standaloneBesiegedTarget()) return "";
+    const pinnedWorld = standalonePinnedChecksWorldKey();
+    const parsedKey = standaloneParseTableKey(key);
+    if(pinnedWorld && parsedKey && parsedKey.worldKey !== pinnedWorld){
+      standaloneClearChecksSelectionPin("world-pin-mismatch");
+      return "";
+    }
+    if(!standaloneChecksViewActive()){
+      if(Date.now() - Number(standaloneChecksSelection.ts || 0) > 1200){
+        standaloneClearChecksSelectionPin("left-checks");
+      }
+      return "";
+    }
+    if(!standaloneChecksTableSelectable(key)){
+      if(standaloneChecksTableExists(key) && (Date.now() - Number(standaloneChecksSelection.ts || 0)) < 9000){
+        return key;
+      }
+      standaloneClearChecksSelectionPin("unselectable");
+      return "";
+    }
+    return key;
+  }
+
+  function standaloneRememberChecksSelection(tableKey, source){
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed || !standaloneChecksTableSelectable(parsed.key)) return false;
+    standaloneChecksSelection.key = parsed.key;
+    standaloneChecksSelection.ts = Date.now();
+    standaloneChecksSelection.source = String(source || "checks-click");
+    standaloneRememberChecksWorldSelection(parsed.worldKey, source || "checks-click");
+    standaloneScheduleChecksSelectionApply("pin");
+    return true;
+  }
+
+  function standaloneCurrentChecksSelectionCandidate(){
+    try{
+      const active = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      if(standaloneParseTableKey(active)) return active;
+    }catch(_){}
+    try{
+      if(typeof getChecksNowPlayingTableKey === "function"){
+        const key = String(getChecksNowPlayingTableKey() || "").trim();
+        if(standaloneParseTableKey(key)) return key;
+      }
+    }catch(_){}
+    try{
+      const wk = String(ap?.currentWorld || "").trim();
+      const idx = Number(state?.nowPlaying?.[wk]);
+      const key = standaloneBesiegedKeyFromArgs(wk, idx);
+      if(standaloneParseTableKey(key)) return key;
+    }catch(_){}
+    return "";
+  }
+
+  function standaloneChecksRenderSignature(){
+    try{
+      const wk = String(ap?.currentWorld || "");
+      const selected = String(state?.selected || "");
+      const world = wk === "boss" && !state?.worlds?.[wk]
+        ? state?.worlds?.[(typeof getBossWorldKey === "function" ? getBossWorldKey() : "boss")]
+        : state?.worlds?.[wk];
+      const tables = Array.isArray(world?.tables) ? world.tables : [];
+      const tableSig = tables.map((name, idx)=>{
+        const tableKey = `${wk}|${idx}`;
+        const ballSig = [1, 2, 3].map((ball)=> state?.balls?.[`${tableKey}|${ball}`] ? "1" : "0").join("");
+        let locCount = 0;
+        try{
+          const mapKey = typeof canonicalTableMapKey === "function" ? canonicalTableMapKey(name) : String(name || "");
+          locCount = Number(ap?.locsByTableKey?.get?.(mapKey)?.length || 0);
+        }catch(_){}
+        return `${idx}:${String(name || "")}:${ballSig}:${locCount}`;
+      }).join(";");
+      const checkedSig = (()=> {
+        try{ return Array.from(ap?.checked || []).map(Number).filter(Number.isFinite).sort((a,b)=>a-b).join(","); }catch(_){}
+        return "";
+      })();
+      const pendingSig = (()=> {
+        try{ return Array.from(ap?.pendingByLoc?.keys?.() || []).map(Number).filter(Number.isFinite).sort((a,b)=>a-b).join(","); }catch(_){}
+        return "";
+      })();
+      const hintSig = (()=> {
+        try{
+          if(typeof relicGetCombinedHintTargets !== "function") return "";
+          return relicGetCombinedHintTargets().map((target)=>[
+            target?.tableKey || "",
+            target?.locationName || target?.locName || "",
+            target?.typeLabel || ""
+          ].join(":")).sort().join(",");
+        }catch(_){}
+        return "";
+      })();
+      const lockSig = [
+        (()=>{ try{ return isTrapCheckLockActive() ? "trap" : ""; }catch(_){ return ""; } })(),
+        (()=>{ try{ return isBossPhase2RedeemPauseActive() ? "phase2" : ""; }catch(_){ return ""; } })(),
+        (()=>{ try{ return isBossUnlocked() ? "boss-open" : "boss-closed"; }catch(_){ return ""; } })()
+      ].join(",");
+      return [
+        String(activeView || ""),
+        wk,
+        selected,
+        String(state?.worldPage ?? ""),
+        String(state?.nowPlaying?.[wk] ?? ""),
+        tableSig,
+        checkedSig,
+        pendingSig,
+        hintSig,
+        lockSig
+      ].join("||");
+    }catch(_){}
+    return "";
+  }
+
+  function standaloneChecksBodyMatchesWorld(worldKey){
+    try{
+      const wk = String(worldKey || "");
+      const body = document.getElementById("checksBody");
+      if(!body || body.__checksSwapAnimating) return false;
+      const blocks = Array.from(body.querySelectorAll(".tableBlock[data-tablekey]"));
+      if(!blocks.length) return false;
+      if(wk === "boss") return blocks.some((block)=>String(block.getAttribute("data-tablekey") || "").startsWith("boss|"));
+      return blocks.every((block)=>String(block.getAttribute("data-tablekey") || "").startsWith(`${wk}|`));
+    }catch(_){}
+    return false;
+  }
+
+  function standalonePreserveChecksSelectionDuring(fn, reason){
+    const pinnedWorld = standalonePinnedChecksWorldKey();
+    const candidate = standaloneCurrentChecksSelectionCandidate();
+    const parsedCandidate = standaloneParseTableKey(candidate);
+    const key = standalonePinnedChecksTableKey()
+      || (parsedCandidate && (!pinnedWorld || parsedCandidate.worldKey === pinnedWorld) ? parsedCandidate.key : "");
+    if(pinnedWorld){
+      standaloneRememberChecksWorldSelection(pinnedWorld, reason || "preserve-world");
+      standaloneEnforceChecksWorldSelection(reason || "preserve-world", { save:false });
+    }
+    if(key && standaloneChecksTableExists(key)){
+      standaloneChecksSelection.key = key;
+      standaloneChecksSelection.ts = Date.now();
+      standaloneChecksSelection.source = String(reason || "preserve");
+    }
+    let result;
+    try{
+      result = fn();
+    }finally{
+      if(pinnedWorld){
+        standaloneRememberChecksWorldSelection(pinnedWorld, reason || "preserve-world");
+        try{ standaloneEnforceChecksWorldSelection(reason || "preserve-world", { save:false }); }catch(_){}
+      }
+      if(key && standaloneChecksTableExists(key)){
+        standaloneChecksSelection.key = key;
+        standaloneChecksSelection.ts = Date.now();
+        standaloneChecksSelection.source = String(reason || "preserve");
+        try{ standaloneEnforceChecksSelectionPin(reason || "preserve", { save:false }); }catch(_){}
+        try{ standaloneScheduleChecksSelectionApply(reason || "preserve"); }catch(_){}
+      }
+    }
+    return result;
+  }
+
+  function standaloneEnforceChecksSelectionPin(reason, opts){
+    opts = opts || {};
+    const parsed = standaloneParseTableKey(standalonePinnedChecksTableKey());
+    if(!parsed || standaloneChecksSelection.applying) return false;
+    let changed = false;
+    standaloneChecksSelection.applying = true;
+    try{
+      state.nowPlaying = state.nowPlaying || {};
+      if(Number(state.nowPlaying[parsed.worldKey]) !== parsed.idx){
+        state.nowPlaying[parsed.worldKey] = parsed.idx;
+        changed = true;
+      }
+      try{
+        if(String(ap?.currentWorld || "") !== parsed.worldKey){
+          ap.currentWorld = parsed.worldKey;
+          changed = true;
+        }
+      }catch(_){}
+      try{
+        if(opts.syncTowerSelection && String(state?.selected || "") !== parsed.worldKey){
+          state.lastSelected = state.selected;
+          state.selected = parsed.worldKey;
+          changed = true;
+        }
+      }catch(_){}
+      if(changed && opts.save !== false){
+        try{ saveState(); }catch(_){}
+      }
+    }catch(_){
+    }finally{
+      standaloneChecksSelection.applying = false;
+    }
+    return changed;
+  }
+
+  function standaloneDirectChecksHighlightPinned(){
+    const key = standalonePinnedChecksTableKey();
+    if(!key) return false;
+    try{
+      const body = document.getElementById("checksBody");
+      try{ standaloneCancelChecksSwapAnimation(); }catch(_){}
+      if(!body) return false;
+      const keyEsc = (typeof CSS !== "undefined" && CSS && CSS.escape) ? CSS.escape(key) : key;
+      const target = body.querySelector(`.tableBlock[data-tablekey="${keyEsc}"]`);
+      if(!target || target.classList.contains("lockedTable")) return false;
+      body.querySelectorAll(".tableBlock.nowPlayingChecks").forEach((el)=>el.classList.remove("nowPlayingChecks"));
+      target.classList.add("nowPlayingChecks");
+      return true;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneCancelChecksSwapAnimation(){
+    try{
+      document.querySelectorAll(".checksSwapGhost").forEach((node)=>{
+        try{ node.remove(); }catch(_){}
+      });
+      const body = document.getElementById("checksBody");
+      if(body){
+        body.__checksSwapAnimating = false;
+        body.classList.remove("checksDrawerAnim");
+        body.querySelectorAll(".checksDrawerClosing, .checksDrawerClosed, .checksDrawerOpening, .checksDrawerReady, .checksSwapIn").forEach((el)=>{
+          try{
+            el.classList.remove("checksDrawerClosing", "checksDrawerClosed", "checksDrawerOpening", "checksDrawerReady", "checksSwapIn");
+            el.style.removeProperty("height");
+            el.style.removeProperty("min-height");
+            el.style.removeProperty("transition");
+            el.style.removeProperty("opacity");
+          }catch(_){}
+        });
+      }
+    }catch(_){}
+  }
+
+  function standaloneScheduleChecksSelectionApply(reason){
+    try{
+      if(standaloneChecksSelection.timer) clearTimeout(standaloneChecksSelection.timer);
+      standaloneChecksSelection.timer = null;
+    }catch(_){}
+    const applySoon = (delay)=>{
+      setTimeout(()=>{
+        try{
+          standaloneEnforceChecksSelectionPin(reason, { save:false });
+          standaloneDirectChecksHighlightPinned();
+        }catch(_){}
+      }, delay);
+    };
+    [0, 60, 220, 520, 940, 1260].forEach(applySoon);
+  }
+
+  function standaloneScheduleChecksSelectionHold(reason, durationMs){
+    const ms = Math.max(0, Number(durationMs || 0) || 0);
+    const delays = [0, 60, 220, 520, 940, 1260];
+    if(ms > 1400){
+      delays.push(Math.max(0, ms - 700), Math.max(0, ms - 120), ms + 180, ms + 760, ms + 1420);
+    }
+    Array.from(new Set(delays.map((delay)=>Math.max(0, Math.round(delay))))).sort((a, b)=>a-b).forEach((delay)=>{
+      setTimeout(()=>{
+        try{
+          standaloneEnforceChecksWorldSelection(reason || "hold", { save:false });
+          standaloneEnforceChecksSelectionPin(reason || "hold", { save:false });
+          standaloneDirectChecksHighlightPinned();
+          standaloneGuardChecksNodeInteractions();
+        }catch(_){}
+      }, delay);
+    });
+  }
+
+  function standaloneReassertChecksWorldPin(reason, opts){
+    opts = opts || {};
+    const wk = standalonePinnedChecksWorldKey();
+    if(!wk) return "";
+    standaloneRememberChecksWorldSelection(wk, reason || "world-pin");
+    standaloneEnforceChecksWorldSelection(reason || "world-pin", {
+      save: opts.save !== false,
+      syncTowerSelection: opts.syncTowerSelection !== false
+    });
+    try{ if(standaloneChecksViewActive() && opts.renderTabs) renderChecksWorldTabs(); }catch(_){}
+    return wk;
+  }
+
+  function standaloneGuardChecksNodeInteractions(){
+    try{
+      const body = document.getElementById("checksBody");
+      if(!body) return;
+      body.querySelectorAll(".nodeCell, .nodeCounterBar").forEach((node)=>{
+        if(node.__flprStandaloneNodeGuardBound) return;
+        node.__flprStandaloneNodeGuardBound = true;
+        const guard = (event)=>{
+          try{
+            const block = event?.target?.closest?.(".tableBlock[data-tablekey]");
+            const key = String(block?.getAttribute?.("data-tablekey") || "").trim();
+            if(key && !block.classList.contains("lockedTable")){
+              standaloneRememberChecksSelection(key, "node-interaction");
+              standaloneScheduleChecksSelectionHold("node-interaction", 1800);
+            }
+            event.stopPropagation();
+          }catch(_){}
+        };
+        node.addEventListener("pointerdown", guard, false);
+        node.addEventListener("mousedown", guard, false);
+        node.addEventListener("click", guard, false);
+      });
+    }catch(_){}
+  }
+
+  function installStandaloneChecksSelectionBridge(){
+    let installedAny = false;
+
+    try{
+      if(!window.__flprStandaloneChecksWorldTabPinClearBound){
+        window.__flprStandaloneChecksWorldTabPinClearBound = true;
+        document.addEventListener("pointerdown", (event)=>{
+          try{
+            const tab = event.target?.closest?.("#checksWorldTabs .wTab[data-world-tab]");
+            if(!tab || tab.disabled) return;
+            const wk = String(tab.dataset.worldTab || "").trim();
+            if(wk && wk !== String(ap?.currentWorld || "")){
+              standaloneClearChecksSelectionPinForWorldSwitch(wk, "checks-world-tab-pointer");
+            }
+          }catch(_){}
+        }, true);
+        document.addEventListener("click", (event)=>{
+          try{
+            const tab = event.target?.closest?.("#checksWorldTabs .wTab[data-world-tab]");
+            if(!tab || tab.disabled) return;
+            const wk = String(tab.dataset.worldTab || "").trim();
+            if(wk && wk !== String(ap?.currentWorld || "")){
+              standaloneClearChecksSelectionPinForWorldSwitch(wk, "checks-world-tab-click");
+            }
+          }catch(_){}
+        }, true);
+      }
+    }catch(_){}
+
+    try{
+      const original = window.syncChecksWorldFromTowerContext || (typeof syncChecksWorldFromTowerContext === "function" ? syncChecksWorldFromTowerContext : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneSyncChecksWorldFromTowerContextChecksBridge(){
+          const pinned = standalonePinnedChecksWorldKey();
+          if(pinned && !standaloneChecksWorldSelection.applying){
+            standaloneReassertChecksWorldPin("blocked-checks-world-context", { save:false, syncTowerSelection:true });
+            return pinned;
+          }
+          const result = original.apply(this, arguments);
+          standaloneReassertChecksWorldPin("post-checks-world-context", { save:false, syncTowerSelection:true });
+          return standalonePinnedChecksWorldKey() || result;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSyncChecksWorldFromTowerContext = original;
+        window.syncChecksWorldFromTowerContext = bridged;
+        try{ syncChecksWorldFromTowerContext = bridged; }catch(_){}
+      }
+      if(window.syncChecksWorldFromTowerContext || typeof syncChecksWorldFromTowerContext === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.syncTowerSelectionToWorld || (typeof syncTowerSelectionToWorld === "function" ? syncTowerSelectionToWorld : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneSyncTowerSelectionToWorldChecksBridge(worldKey){
+          const requested = String(worldKey || "").trim();
+          const pinned = standalonePinnedChecksWorldKey();
+          if(pinned && requested && requested !== pinned && standaloneChecksViewActive() && !standaloneChecksWorldSelection.applying){
+            standaloneReassertChecksWorldPin(`blocked-tower-world-sync:${requested}`, { save:true, syncTowerSelection:true });
+            return pinned;
+          }
+          const result = original.apply(this, arguments);
+          standaloneReassertChecksWorldPin("post-tower-world-sync", { save:false, syncTowerSelection:true });
+          return result;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSyncTowerSelectionToWorld = original;
+        window.syncTowerSelectionToWorld = bridged;
+        try{ syncTowerSelectionToWorld = bridged; }catch(_){}
+      }
+      if(window.syncTowerSelectionToWorld || typeof syncTowerSelectionToWorld === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.syncTowerSelectionToBossWorld || (typeof syncTowerSelectionToBossWorld === "function" ? syncTowerSelectionToBossWorld : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneSyncTowerSelectionToBossWorldChecksBridge(){
+          const pinned = standalonePinnedChecksWorldKey();
+          if(pinned && pinned !== "boss" && standaloneChecksViewActive() && !standaloneChecksWorldSelection.applying){
+            standaloneReassertChecksWorldPin("blocked-boss-world-sync", { save:true, syncTowerSelection:true });
+            return pinned;
+          }
+          const result = original.apply(this, arguments);
+          standaloneReassertChecksWorldPin("post-boss-world-sync", { save:false, syncTowerSelection:true });
+          return result;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSyncTowerSelectionToBossWorld = original;
+        window.syncTowerSelectionToBossWorld = bridged;
+        try{ syncTowerSelectionToBossWorld = bridged; }catch(_){}
+      }
+      if(window.syncTowerSelectionToBossWorld || typeof syncTowerSelectionToBossWorld === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.animateChecksSwapCards || (typeof animateChecksSwapCards === "function" ? animateChecksSwapCards : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneAnimateChecksSwapCardsBridge(){
+          try{ standaloneCancelChecksSwapAnimation(); }catch(_){}
+          return false;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalAnimateChecksSwapCards = original;
+        window.animateChecksSwapCards = bridged;
+        try{ animateChecksSwapCards = bridged; }catch(_){}
+      }
+      if(window.animateChecksSwapCards || typeof animateChecksSwapCards === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.setNowPlayingFromTableKey || (typeof setNowPlayingFromTableKey === "function" ? setNowPlayingFromTableKey : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneSetNowPlayingFromTableKeyChecksBridge(tableKey, opts){
+          opts = opts || {};
+          const key = String(tableKey || "").trim();
+          const source = String(opts.source || "");
+          const fromChecks = source === "checks-click";
+          if(!fromChecks && standaloneChecksSelection.key && key && key !== standaloneChecksSelection.key && !standaloneChecksSelection.applying){
+            if(standaloneChecksViewActive() && standalonePinnedChecksTableKey()){
+              standaloneEnforceChecksSelectionPin(`blocked-table-key:${source || "external"}`, { save:true });
+              standaloneScheduleChecksSelectionApply("blocked-table-key");
+              return false;
+            }
+            standaloneClearChecksSelectionPin(`external:${source || "table-key"}`);
+          }
+          const result = original.apply(this, arguments);
+          if(result !== false && fromChecks && !standaloneBesiegedTarget()){
+            standaloneRememberChecksSelection(key, source || "checks-click");
+            standaloneEnforceChecksSelectionPin("table-key", { save:true, syncTowerSelection:true });
+            standaloneScheduleChecksSelectionApply("table-key");
+          }
+          return result;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSetNowPlayingFromTableKey = original;
+        window.setNowPlayingFromTableKey = bridged;
+        try{ setNowPlayingFromTableKey = bridged; }catch(_){}
+      }
+      if(window.setNowPlayingFromTableKey || typeof setNowPlayingFromTableKey === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.setNowPlayingIndex || (typeof setNowPlayingIndex === "function" ? setNowPlayingIndex : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneSetNowPlayingIndexChecksBridge(worldKey, idx, opts){
+          opts = opts || {};
+          const key = standaloneBesiegedKeyFromArgs(worldKey, idx);
+          const source = String(opts.source || "");
+          const fromChecks = source === "checks-click" || source === "standalone-checks-pin";
+          const fromOverview = source === "overview-click";
+          if(!fromChecks && standaloneChecksSelection.key && key && key !== standaloneChecksSelection.key && !standaloneChecksSelection.applying){
+            if(standaloneChecksViewActive() && standalonePinnedChecksTableKey()){
+              standaloneEnforceChecksSelectionPin(`blocked-index:${source || "external"}`, { save:true });
+              standaloneScheduleChecksSelectionApply("blocked-index");
+              return false;
+            }
+            standaloneClearChecksSelectionPin(`external:${source || "index"}`);
+            if(fromOverview) standaloneClearChecksWorldPin("external:overview-click");
+          }
+          const result = original.apply(this, arguments);
+          if(result !== false && fromOverview && !standaloneBesiegedTarget()){
+            standaloneRememberChecksWorldSelection(String(worldKey || ""), "overview-click");
+            standaloneChecksSelection.key = key;
+            standaloneChecksSelection.ts = Date.now();
+            standaloneChecksSelection.source = "overview-click";
+            try{
+              if(String(ap?.currentWorld || "") !== String(worldKey || "")){
+                ap.currentWorld = String(worldKey || "");
+              }
+            }catch(_){}
+            standaloneScheduleChecksSelectionHold("overview-click", 3600);
+          }
+          if(result !== false && fromChecks && !standaloneBesiegedTarget()){
+            standaloneRememberChecksSelection(key, source || "checks-click");
+            standaloneEnforceChecksSelectionPin("index", { save:true });
+            standaloneScheduleChecksSelectionApply("index");
+          }
+          return result;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSetNowPlayingIndex = original;
+        window.setNowPlayingIndex = bridged;
+        try{ setNowPlayingIndex = bridged; }catch(_){}
+      }
+      if(window.setNowPlayingIndex || typeof setNowPlayingIndex === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.syncNowPlayingIndexesToUnlockedTables || (typeof syncNowPlayingIndexesToUnlockedTables === "function" ? syncNowPlayingIndexesToUnlockedTables : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneSyncNowPlayingIndexesChecksBridge(opts){
+          const pinnedWorld = standalonePinnedChecksWorldKey();
+          const nextOpts = pinnedWorld ? { ...(opts || {}), render:false } : opts;
+          const preWorldChanged = standaloneEnforceChecksWorldSelection("pre-unlocked-sync-world", { save:false });
+          const preChanged = standaloneEnforceChecksSelectionPin("pre-unlocked-sync", { save:false });
+          const result = pinnedWorld ? original.call(this, nextOpts) : original.apply(this, arguments);
+          const postWorldChanged = standaloneEnforceChecksWorldSelection("post-unlocked-sync-world", { save: opts?.save !== false });
+          const postChanged = standaloneEnforceChecksSelectionPin("post-unlocked-sync", { save: opts?.save !== false });
+          if(pinnedWorld && opts?.render){
+            try{
+              if(standaloneChecksViewActive()){
+                renderChecksWorldTabs();
+                renderChecks();
+              }else{
+                applyChecksNowPlayingHighlight();
+              }
+            }catch(_){}
+          }else if((postChanged || postWorldChanged) && opts?.render){
+            try{ if(standaloneChecksViewActive()) renderChecks(); else applyChecksNowPlayingHighlight(); }catch(_){}
+          }
+          standaloneScheduleChecksSelectionApply("unlocked-sync");
+          return !!result || preChanged || postChanged || preWorldChanged || postWorldChanged;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalSyncNowPlayingIndexesToUnlockedTables = original;
+        window.syncNowPlayingIndexesToUnlockedTables = bridged;
+        try{ syncNowPlayingIndexesToUnlockedTables = bridged; }catch(_){}
+      }
+      if(window.syncNowPlayingIndexesToUnlockedTables || typeof syncNowPlayingIndexesToUnlockedTables === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.renderChecks || (typeof renderChecks === "function" ? renderChecks : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneRenderChecksSelectionBridge(){
+          standaloneCancelChecksSwapAnimation();
+          standaloneEnforceChecksWorldSelection("pre-render-world", { save:false });
+          standaloneEnforceChecksSelectionPin("pre-render", { save:false });
+          const sigBefore = standaloneChecksRenderSignature();
+          const currentWorld = String(ap?.currentWorld || "");
+          if(
+            sigBefore &&
+            sigBefore === standaloneChecksRenderState.lastSig &&
+            standaloneChecksBodyMatchesWorld(currentWorld)
+          ){
+            standaloneChecksRenderState.skipped = Number(standaloneChecksRenderState.skipped || 0) + 1;
+            standaloneChecksRenderState.lastAt = Date.now();
+            try{ applyChecksNowPlayingHighlight(); }catch(_){}
+            try{ standaloneDirectChecksHighlightPinned(); }catch(_){}
+            try{ standaloneGuardChecksNodeInteractions(); }catch(_){}
+            return undefined;
+          }
+          const result = original.apply(this, arguments);
+          standaloneEnforceChecksWorldSelection("post-render-world", { save:false });
+          standaloneEnforceChecksSelectionPin("post-render", { save:false });
+          standaloneChecksRenderState.lastSig = standaloneChecksRenderSignature() || sigBefore;
+          standaloneChecksRenderState.lastAt = Date.now();
+          standaloneChecksRenderState.rendered = Number(standaloneChecksRenderState.rendered || 0) + 1;
+          standaloneGuardChecksNodeInteractions();
+          standaloneScheduleChecksSelectionApply("render");
+          return result;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalRenderChecks = original;
+        window.renderChecks = bridged;
+        try{ renderChecks = bridged; }catch(_){}
+      }
+      if(window.renderChecks || typeof renderChecks === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.applyChecksNowPlayingHighlight || (typeof applyChecksNowPlayingHighlight === "function" ? applyChecksNowPlayingHighlight : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneApplyChecksNowPlayingHighlightBridge(){
+          standaloneCancelChecksSwapAnimation();
+          standaloneEnforceChecksSelectionPin("highlight", { save:false });
+          const result = original.apply(this, arguments);
+          standaloneCancelChecksSwapAnimation();
+          standaloneDirectChecksHighlightPinned();
+          standaloneGuardChecksNodeInteractions();
+          return result;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalApplyChecksNowPlayingHighlight = original;
+        window.applyChecksNowPlayingHighlight = bridged;
+        try{ applyChecksNowPlayingHighlight = bridged; }catch(_){}
+      }
+      if(window.applyChecksNowPlayingHighlight || typeof applyChecksNowPlayingHighlight === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      window.flprStandaloneChecksSelectionBridgeState = function(){
+        const key = String(standaloneChecksSelection.key || "");
+        const parsed = standaloneParseTableKey(key);
+        return {
+          installed: true,
+          key,
+          worldKey: String(standaloneChecksWorldSelection.key || ""),
+          worldActive: !!standalonePinnedChecksWorldKey(),
+          worldSource: standaloneChecksWorldSelection.source,
+          worldAgeMs: standaloneChecksWorldSelection.ts ? Date.now() - standaloneChecksWorldSelection.ts : null,
+          renderState: { ...standaloneChecksRenderState },
+          active: !!standalonePinnedChecksTableKey(),
+          source: standaloneChecksSelection.source,
+          ageMs: standaloneChecksSelection.ts ? Date.now() - standaloneChecksSelection.ts : null,
+          currentWorld: String(ap?.currentWorld || ""),
+          selected: String(state?.selected || ""),
+          nowPlaying: parsed ? Number(state?.nowPlaying?.[parsed.worldKey]) : null,
+          activeCard: document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || ""
+        };
+      };
+    }catch(_){}
+
+    if(!installedAny) setTimeout(installStandaloneChecksSelectionBridge, 120);
+  }
+
+  function standaloneApplyOwnProgressiveItemSend(meta, opts){
+    opts = opts || {};
+    const next = standaloneResolveSentMeta(meta);
+    if(!standaloneResolvedMetaIsOwnProgressive(next)){
+      try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:false, reason:"not-own-progressive", meta:{ ...(meta || {}) }, resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
+      return false;
+    }
+    const self = standaloneSelfSlotId();
+    const itemId = Number(next.itemId);
+    const locId = Number(next.locId);
+    if(!self || !Number.isFinite(itemId)){
+      try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:false, reason:"missing-self-or-item", self, itemId, resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
+      return false;
+    }
+    const targetTable = standaloneProgressiveBallTarget(next.itemName);
+    if(!targetTable || !standaloneIsActiveSeedTableName(targetTable)){
+      try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:false, reason:"inactive-target", targetTable, resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
+      return false;
+    }
+    const targetLevel = ()=>{
+      try{
+        const key = (typeof getTableKeyForName === "function") ? String(getTableKeyForName(targetTable) || "") : "";
+        if(!key) return 0;
+        if(typeof getBallLevelByTableKey === "function") return Math.max(0, Math.min(3, Number(getBallLevelByTableKey(key) || 0)));
+        return state?.balls?.[`${key}|3`] ? 3 : (state?.balls?.[`${key}|2`] ? 2 : (state?.balls?.[`${key}|1`] ? 1 : 0));
+      }catch(_){}
+      return 0;
+    };
+    const levelBeforeApply = targetLevel();
+    const applyDirectIfNeeded = (reason)=>{
+      try{
+        const current = targetLevel();
+        if(current > levelBeforeApply || current >= 3) return false;
+        if(typeof applyProgressiveBallToTower !== "function") return false;
+        standaloneWithUnlockFxSuppressed(()=>{
+          standaloneWithCounterDrawerFxSuppressed(()=>applyProgressiveBallToTower(targetTable));
+        }, 1200);
+        try{
+          window.__flprStandaloneLastSelfProgressiveDirectApply = {
+            itemName:String(next.itemName || ""),
+            targetTable,
+            reason:String(reason || ""),
+            from:current,
+            to:targetLevel(),
+            ts:Date.now()
+          };
+        }catch(_){}
+        return true;
+      }catch(_){}
+      return false;
+    };
+    if(standaloneLocationMatchesOutgoingSent(next.locId, next.locationName)){
+      try{ if(typeof apLog === "function") apLog(`False self-progression suppressed; ${next.itemName} belongs to an outgoing AP item at ${standaloneLocationDisplayName(next.locationName || "", next.locId)}.`, { tab:"status" }); }catch(_){}
+      try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:false, reason:"outgoing-location", resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
+      return false;
+    }
+    const key = `self-progressive|${itemId}|${Number.isFinite(locId) ? locId : ""}|${Number(next.senderId || 0) || self}|${standaloneNormalizeLoose(next.itemName)}`;
+    if(standaloneItemPanel.selfProgressiveSeen.has(key)){
+      try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:true, duplicate:true, key, resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
+      return true;
+    }
+    standaloneItemPanel.selfProgressiveSeen.add(key);
+    if(standaloneItemPanel.selfProgressiveSeen.size > 500) standaloneItemPanel.selfProgressiveSeen.clear();
+
+    try{
+      if(!ap.itemNameById) ap.itemNameById = new Map();
+      ap.itemNameById.set(itemId, String(next.itemName || ""));
+    }catch(_){}
+
+    let itemIndex = Math.max(0, Number(ap?.lastReceivedIndex || 0) || 0);
+    try{
+      ap.receivedSeen = ap.receivedSeen || new Set();
+      ap.receivedKeySet = ap.receivedKeySet || new Set();
+      const receivedAll = Array.isArray(ap?.receivedAll) ? ap.receivedAll : [];
+      const indexTaken = (idx)=> {
+        const key = `idx:${idx}`;
+        if(ap.receivedSeen.has(key)) return true;
+        if(ap.receivedKeySet.has(key)) return true;
+        return receivedAll.some((row)=>Number(row?.recvIndex) === Number(idx));
+      };
+      while(indexTaken(itemIndex)) itemIndex++;
+      ap.receivedSeen.add(`idx:${itemIndex}`);
+      ap.receivedByIndex = ap.receivedByIndex || new Map();
+      ap.receivedByIndex.set(itemIndex, {
+        item: itemId,
+        location: Number.isFinite(locId) ? locId : null,
+        player: Number(next.senderId || self) || self,
+        flags: standaloneFlagsForItem(next.flags || 0, next.itemName)
+      });
+      ap.lastReceivedIndex = Math.max(Number(ap.lastReceivedIndex || 0) || 0, itemIndex + 1);
+      try{ localStorage.setItem("flpr_ap_last_received_index", String(ap.lastReceivedIndex)); }catch(_){}
+    }catch(_){}
+
+    let ensuredRow = false;
+    try{ ensuredRow = standaloneEnsureOwnProgressiveReceivedRow(next, itemIndex); }catch(_){}
+
+    try{
+      if(typeof processReceivedItem === "function"){
+        processReceivedItem(
+          { item:itemId, location:Number.isFinite(locId) ? locId : null, player:Number(next.senderId || self) || self, flags:standaloneFlagsForItem(next.flags || 0, next.itemName) },
+          itemIndex,
+          Number.isFinite(locId) ? locId : null,
+          {
+            noPopup: opts.noPopup === true,
+            noFeed: opts.noFeed === true,
+            isSnapshot: false,
+            pairedOverride: standaloneBuildPairedMetaForSentCheck(next)
+          }
+        );
+      }
+    }catch(err){
+      try{ if(typeof apLog === "function") apLog("Self Progressive Ball application failed; " + (err?.message || err), { tab:"errors" }); }catch(_){}
+    }
+
+    try{ standaloneRenderItemPanel(); }catch(_){}
+    if(opts.noPopup === true || opts.forceQuietUnlock === true){
+      try{
+        standaloneForceProgressiveUnlockFromInventory(next.itemName, { animate:false, quiet:true });
+        applyDirectIfNeeded("quiet-immediate");
+      }catch(_){}
+      setTimeout(()=>{
+        try{
+          standaloneForceProgressiveUnlockFromInventory(next.itemName, { animate:false, quiet:true });
+          applyDirectIfNeeded("quiet-followup");
+        }catch(_){}
+      }, 360);
+    }else{
+      setTimeout(()=>{
+        try{
+          standaloneForceProgressiveUnlockFromInventory(next.itemName, { animate:false, quiet:true });
+          applyDirectIfNeeded("animated-before-socket");
+        }catch(_){}
+      }, 5400);
+      setTimeout(()=>{
+        try{
+          standaloneForceProgressiveUnlockFromInventory(next.itemName, { animate:false, quiet:true });
+          applyDirectIfNeeded("animated-final");
+        }catch(_){}
+      }, 8200);
+    }
+    try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:true, key, itemIndex, ensuredRow, noPopup:opts.noPopup === true, levelBefore:levelBeforeApply, resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
+    return true;
+  }
+
+  function standaloneQueueSentItemModal(meta){
+    const key = standaloneSentMetaKey(meta);
+    if(!key) return;
+    standaloneItemPanel.pendingSentModals.set(key, { ...meta, queuedAt:Date.now() });
+  }
+
+  function standaloneShowSentItemModal(meta, opts){
+    opts = opts || {};
+    let next = standaloneResolveSentMeta(meta);
+    if(!next) return false;
+    const self = standaloneSelfSlotId();
+    if(!self || Number(next.senderId || 0) !== self || Number(next.receiverId || 0) === self) return false;
+    const key = standaloneSentMetaKey(next);
+    if(standaloneItemPanel.sentModalSeen.has(key)) return false;
+    if(standaloneLooksUnresolvedItemName(next.itemName, next.itemId) && opts.deferUnresolved !== false){
+      standaloneQueueSentItemModal(next);
+      return false;
+    }
+    standaloneItemPanel.sentModalSeen.add(key);
+    if(standaloneItemPanel.sentModalSeen.size > 500) standaloneItemPanel.sentModalSeen.clear();
+    standaloneItemPanel.pendingSentModals.delete(key);
+    const item = String(next.itemName || "Unknown Item");
+    const flags = standaloneFlagsForItem(next.flags, item);
+    const cls = (()=>{ try{ return apItemClassFromFlags(flags, item); }catch(_){ return { label:"ITEM", title:"ITEM" }; } })();
+    const targetGame = standaloneGameForPlayer(next.receiverId, next.receiverPlayer, next.receiverGame);
+    const targetPlayer = String(next.receiverPlayer || "Unknown Player");
+    const locName = String(next.locationName || "").trim();
+    const holdMs = Math.max(3000, Number(opts.holdMs || 4200) || 4200);
+    let restoreChecksAfterSentModal = false;
+    try{ restoreChecksAfterSentModal = String(activeView || "") === "checks"; }catch(_){}
+    const checksKeyBeforeModal = restoreChecksAfterSentModal
+      ? (standaloneCurrentChecksSelectionCandidate() || standalonePinnedChecksTableKey())
+      : "";
+    if(checksKeyBeforeModal){
+      try{ standaloneRememberChecksSelection(checksKeyBeforeModal, "sent-item-modal"); }catch(_){}
+    }
+    try{
+      standaloneEnsureOverviewModalVisibleHost();
+      const modalArgs = {
+          tag: cls.label || "ITEM",
+          title: `${cls.title || "ITEM"} SENT`,
+          big: item,
+          sub: `TO; ${targetPlayer}${targetGame ? ` (${targetGame})` : ""}`,
+          meta: locName ? `CHECK; ${locName}` : "",
+          isTrap: false,
+          holdMs
+      };
+      if(restoreChecksAfterSentModal && typeof showOverviewModalNow === "function"){
+        standalonePreserveChecksSelectionDuring(()=>standaloneRestoreChecksViewForReward(), "sent-item-modal");
+        try{ if(typeof pauseAutoSwap === "function") pauseAutoSwap(holdMs + 2200); }catch(_){}
+        showOverviewModalNow(modalArgs);
+        standaloneColorizeSentItemModal(next, cls, holdMs);
+        standaloneScheduleChecksSelectionHold("sent-item-modal", holdMs + 1800);
+      }else if(typeof showOverviewModal === "function"){
+        showOverviewModal(modalArgs);
+        standaloneColorizeSentItemModal(next, cls, holdMs);
+        if(restoreChecksAfterSentModal){
+          standaloneScheduleChecksRestoreAfterReward();
+          standaloneScheduleChecksSelectionHold("sent-item-modal", holdMs + 1800);
+        }
+      }else if(typeof toast === "function"){
+        toast("good", `${cls.title || "ITEM"} SENT`, `${item} -> ${targetPlayer}`, 4200);
+      }
+    }catch(_){}
+    return true;
+  }
+
+  function standaloneColorizeReceivedProgressiveModal(itemName, holdMs){
+    const apply = ()=>{
+      try{
+        const card = document.getElementById("ovModalCard");
+        const tag = document.getElementById("ovModalTag");
+        const big = document.getElementById("ovModalBig");
+        const meta = document.getElementById("ovModalMeta");
+        if(!card || !big) return;
+        card.classList.add("flprStandaloneSentItemModal", "apItem-progression");
+        if(tag) tag.className = "ovModalTag apLogBadge apItem-progression";
+        big.className = "ovModalBig apLogItem apItem-progression";
+        if(meta && meta.textContent){
+          meta.innerHTML = `CHECK; <span class="apLogLocation">${standaloneEscapeHtml(meta.textContent.replace(/^CHECK;\s*/i, ""))}</span>`;
+        }
+      }catch(_){}
+    };
+    [0, 120, 520].forEach((delay)=>setTimeout(apply, delay));
+    setTimeout(()=>{
+      try{
+        const card = document.getElementById("ovModalCard");
+        const tag = document.getElementById("ovModalTag");
+        const big = document.getElementById("ovModalBig");
+        if(card) card.classList.remove("flprStandaloneSentItemModal", "apItem-progression", "apItem-useful", "apItem-filler", "apItem-trap");
+        if(tag) tag.className = "ovModalTag";
+        if(big) big.className = "ovModalBig";
+      }catch(_){}
+    }, Math.max(1200, Number(holdMs || 3200) + 900));
+  }
+
+  function standaloneProgressiveSiegeSequenceMs(tableName, holdMs){
+    let unlockLead = 0;
+    try{
+      const key = (typeof getTableKeyForName === "function") ? String(getTableKeyForName(tableName) || "") : "";
+      const level = key && typeof getBallLevelByTableKey === "function" ? Number(getBallLevelByTableKey(key) || 0) : 1;
+      if(key && Number.isFinite(level) && level <= 0) unlockLead = 1120;
+    }catch(_){}
+    return Math.max(
+      6800,
+      580 + Math.max(1800, Number(holdMs || 2600) || 2600) + 90 + unlockLead + 3500 + 1060
+    );
+  }
+
+  function installStandaloneProgressiveChecksRewardBridge(){
+    let original = null;
+    try{ original = (typeof runProgressiveBallFlow === "function") ? runProgressiveBallFlow : null; }catch(_){}
+    if(!original){
+      setTimeout(installStandaloneProgressiveChecksRewardBridge, 120);
+      return;
+    }
+    if(original.__flprStandaloneProgressiveChecksBridge) return;
+    const bridged = function standaloneRunProgressiveBallFlowChecksBridge(table, opts){
+      opts = opts || {};
+      const tableName = String(table || "").trim();
+      const explicitStayOnChecks = opts.standaloneStayOnChecks === true;
+      const coordinateFromChecks = !!(
+        tableName &&
+        !opts.isTest &&
+        opts.standaloneAllowOverview !== true &&
+        standaloneChecksViewActive()
+      );
+      if(!coordinateFromChecks) return original.apply(this, arguments);
+      const itemName = /^progressive\s+ball\s*-/i.test(tableName) ? tableName : `Progressive Ball - ${tableName}`;
+      const holdMs = Math.max(2200, Number(opts.holdMs || 3200) || 3200);
+      const modalMeta = String(opts.modalMeta || "").trim();
+      const thisArg = this;
+      const targetTableKey = (()=> {
+        try{ return tableName && typeof getTableKeyForName === "function" ? String(getTableKeyForName(tableName) || "") : ""; }catch(_){}
+        return "";
+      })();
+      if(targetTableKey && standaloneChecksTableExists(targetTableKey)){
+        const parsedTarget = standaloneParseTableKey(targetTableKey);
+        standaloneChecksSelection.key = targetTableKey;
+        standaloneChecksSelection.ts = Date.now();
+        standaloneChecksSelection.source = "progressive-reward";
+        if(parsedTarget) standaloneRememberChecksWorldSelection(parsedTarget.worldKey, "progressive-reward");
+        try{ standaloneEnforceChecksSelectionPin("progressive-reward", { save:false }); }catch(_){}
+        standaloneScheduleChecksSelectionHold("progressive-reward", holdMs + 6800);
+      }
+      const runOverviewReward = ()=>{
+        const nextOpts = {
+          ...opts,
+          holdMs,
+          standaloneAllowOverview:true
+        };
+        try{ if(typeof pauseAutoSwap === "function") pauseAutoSwap(holdMs + 5600); }catch(_){}
+        try{
+          window.__flprStandaloneProgressiveChecksReward = {
+            tableName,
+            itemName,
+            activeView:String(activeView || ""),
+            stayedOnChecks:false,
+            yieldedToSiege:false,
+            ts:Date.now()
+          };
+        }catch(_){}
+        const result = original.call(thisArg, table, nextOpts);
+        try{ standaloneColorizeReceivedProgressiveModal(itemName, holdMs); }catch(_){}
+        return result;
+      };
+      const runOverviewPipelineForQueuedSiege = ()=>{
+        const sequenceMs = standaloneProgressiveSiegeSequenceMs(tableName, holdMs);
+        const sequenceHoldUntil = standaloneMarkSiegeSequenceHold(sequenceMs, "progressive-ball-siege-sequence");
+        try{ if(typeof pauseAutoSwap === "function") pauseAutoSwap(sequenceMs + 1400); }catch(_){}
+        const nextOpts = {
+          ...opts,
+          holdMs,
+          returnView:"",
+          standaloneAllowOverview:true
+        };
+        try{
+          window.__flprStandaloneProgressiveChecksReward = {
+            tableName,
+            itemName,
+            activeView:String(activeView || ""),
+            stayedOnChecks:false,
+            yieldedToSiege:true,
+            sequenceHoldUntil,
+            ts:Date.now()
+          };
+        }catch(_){}
+        const result = original.call(thisArg, table, nextOpts);
+        try{ standaloneColorizeReceivedProgressiveModal(itemName, holdMs); }catch(_){}
+        if(standaloneSiegeNotificationQueue.pending){
+          setTimeout(()=>standaloneShowSiegeIncomingNotice(), 720);
+          standaloneScheduleQueuedBesiegedActivation();
+        }
+        return result;
+      };
+      const runChecksReward = ()=>{
+        return standalonePreserveChecksSelectionDuring(()=>{
+        try{ if(typeof pauseAutoSwap === "function") pauseAutoSwap(holdMs + 1200); }catch(_){}
+        try{ standaloneEnsureOverviewModalVisibleHost(); }catch(_){}
+        try{
+          if(typeof showOverviewModalNow === "function"){
+            showOverviewModalNow({
+              tag:"REWARD",
+              title:"ITEM RECEIVED",
+              big:itemName,
+              sub:tableName,
+              meta:modalMeta,
+              isTrap:false,
+              holdMs
+            });
+            standaloneColorizeReceivedProgressiveModal(itemName, holdMs);
+          }else if(typeof toast === "function"){
+            toast("good", "ITEM RECEIVED", itemName, holdMs);
+          }
+        }catch(_){}
+        try{
+          standaloneWithUnlockFxSuppressed(()=>{
+            standaloneForceProgressiveUnlockFromInventory(itemName, { animate:false, quiet:true });
+          }, holdMs + 600);
+        }catch(_){}
+        const renderStableChecks = ()=>{
+          try{
+            if(!standaloneChecksViewActive()) return;
+            standalonePreserveChecksSelectionDuring(()=>{
+              try{ if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs(); }catch(_){}
+              try{ if(typeof renderChecks === "function") renderChecks(); }catch(_){}
+              try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+            }, "progressive-checks-render");
+          }catch(_){}
+        };
+        setTimeout(renderStableChecks, 90);
+        setTimeout(()=>{
+          try{
+            standaloneEnforceChecksSelectionPin("progressive-checks-final", { save:false });
+            standaloneDirectChecksHighlightPinned();
+          }catch(_){}
+        }, holdMs + 180);
+        try{
+          window.__flprStandaloneProgressiveChecksReward = {
+            tableName,
+            itemName,
+            activeView:String(activeView || ""),
+            stayedOnChecks:true,
+            ts:Date.now()
+          };
+        }catch(_){}
+        return undefined;
+        }, "progressive-checks-reward");
+      };
+      standaloneMarkSiegeSequenceHold(620, "progressive-reward-decision");
+      setTimeout(()=>{
+        try{
+          if(standaloneQueuedSiegeWaiting()) runOverviewPipelineForQueuedSiege();
+          else if(!explicitStayOnChecks) runOverviewReward();
+          else runChecksReward();
+        }catch(_){
+          try{ explicitStayOnChecks ? runChecksReward() : runOverviewReward(); }catch(__){}
+        }
+      }, 140);
+      return undefined;
+    };
+    bridged.__flprStandaloneProgressiveChecksBridge = true;
+    bridged.__flprStandaloneOriginalRunProgressiveBallFlow = original;
+    try{ window.runProgressiveBallFlow = bridged; }catch(_){}
+    try{ runProgressiveBallFlow = bridged; }catch(_){}
+  }
+
+  function standaloneAppendResolvedSentLog(meta){
+    try{
+      const next = standaloneResolveSentMeta(meta);
+      if(!next || standaloneLooksUnresolvedItemName(next.itemName, next.itemId)) return false;
+      const key = standaloneSentMetaKey(next);
+      if(standaloneItemPanel.sentLogSeen.has(key)) return false;
+      standaloneItemPanel.sentLogSeen.add(key);
+      if(standaloneItemPanel.sentLogSeen.size > 500) standaloneItemPanel.sentLogSeen.clear();
+      let line = standaloneFormatItemSendLogLine(next);
+      if(!line){
+        const sender = String(next.senderPlayer || "Unknown Player").trim();
+        const receiver = String(next.receiverPlayer || "Unknown Player").trim();
+        const item = String(next.itemName || "Unknown Item").trim();
+        const loc = standaloneLocationDisplayName(next.locationName || "", next.locId);
+        line = `${sender} sent ${item} to ${receiver}${loc ? ` (${loc})` : ""}`;
+      }
+      standaloneRememberItemSendLogMeta(next, line);
+      if(line && typeof apLog === "function") apLog(line, { tab:"chat", mirrorTabs:["status"] });
+      return !!line;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneFlushPendingSentItemModals(){
+    try{
+      Array.from(standaloneItemPanel.pendingSentModals.values()).forEach((meta)=>{
+        const next = standaloneResolveSentMeta(meta);
+        standaloneAppendResolvedSentLog(next);
+        standaloneShowSentItemModal(next, { deferUnresolved:false });
+      });
+    }catch(_){}
+  }
+
+  function installStandaloneSentItemNotificationBridge(){
+    let original = null;
+    try{ original = (typeof showApSentItemToast === "function") ? showApSentItemToast : null; }catch(_){}
+    if(!original){
+      setTimeout(installStandaloneSentItemNotificationBridge, 120);
+      return;
+    }
+    if(original.__flprStandaloneSentModalBridge) return;
+    const bridged = function standaloneShowApSentItemModalBridge(meta, opts){
+      try{
+        const next = standaloneResolveSentMeta(meta);
+        const cached = standaloneCachedServerSentMeta(next || meta);
+        if(!cached && Number((next || meta)?.receiverId || 0) !== standaloneSelfSlotId() && standaloneProgressiveBallTarget((next || meta)?.itemName || "")){
+          return;
+        }
+        if(standaloneResolvedMetaIsOwnProgressive(next)){
+          standaloneApplyOwnProgressiveItemSend(next, { noPopup:false, noFeed:true });
+          return;
+        }
+        const key = standaloneSentMetaKey(next || meta);
+        if(standaloneItemPanel.sentModalSeen.has(key) || standaloneItemPanel.pendingSentModals.has(key)) return;
+        if(standaloneShowSentItemModal(next || meta, { ...(opts || {}), deferUnresolved:true })) return;
+        if(standaloneLooksUnresolvedItemName((next || meta)?.itemName, (next || meta)?.itemId)) return;
+      }catch(_){}
+      try{ return original.apply(this, arguments); }catch(_){}
+    };
+    bridged.__flprStandaloneSentModalBridge = true;
+    bridged.__flprStandaloneOriginalSentToast = original;
+    try{ window.showApSentItemToast = bridged; }catch(_){}
+    try{ showApSentItemToast = bridged; }catch(_){}
+  }
+
+  function standaloneRecordSentItemFromPacket(pkt){
+    try{
+      const type = String(pkt?.type || "").toLowerCase();
+      if(type !== "itemsend" && type !== "item_send") return false;
+      const rawMeta = standaloneExtractItemSendMeta(pkt);
+      const meta = standaloneResolveSentMeta(rawMeta);
+      if(!meta) return false;
+      const self = Number(ap?.slot || 0);
+      if(!self || Number(meta.senderId || 0) !== self) return false;
+      if(standaloneResolvedMetaIsOwnProgressive(meta)){
+        standaloneApplyOwnProgressiveItemSend(meta);
+        return false;
+      }
+      if(Number(meta.receiverId || 0) === self) return false;
+      standaloneLoadSentItems();
+      const key = `sent|${meta.senderId || 0}|${meta.receiverId || 0}|${meta.itemId ?? ""}|${meta.locId ?? ""}|${meta.flags ?? 0}`;
+      const entry = {
+        key,
+        ts: Date.now(),
+        time: (typeof fmtTime === "function") ? fmtTime() : standaloneTextTimestamp().replace(/^\[|\]$/g, ""),
+        itemId: meta.itemId ?? null,
+        locId: meta.locId ?? null,
+        senderId: meta.senderId ?? null,
+        receiverId: meta.receiverId ?? null,
+        itemName: meta.itemName || standaloneResolveApItemName(meta.itemId, meta.receiverId, meta.itemName || "Unknown Item", meta.receiverGame || ""),
+        locationName: meta.locationName || standaloneResolveApLocationName(meta.locId, meta.senderId, meta.locationName || ""),
+        receiverPlayer: String(meta.receiverPlayer || "Unknown Player"),
+        receiverGame: String(meta.receiverGame || ""),
+        senderPlayer: String(meta.senderPlayer || ""),
+        senderGame: String(meta.senderGame || ""),
+        flags: standaloneFlagsForItem(meta.flags ?? 0, meta.itemName)
+      };
+      const existing = standaloneItemPanel.sent.find((row)=>String(row?.key || "") === key);
+      if(existing){
+        Object.assign(existing, entry, { ts:existing.ts || entry.ts, time:existing.time || entry.time });
+      }else{
+        standaloneItemPanel.sent.push(entry);
+      }
+      standaloneSaveSentItems();
+      standaloneRepairPersistedApState();
+      standaloneRenderItemPanel();
+      standaloneShowSentItemModal(meta, { deferUnresolved:false });
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function installStandaloneReceivedListBridge(){
+    let original = null;
+    try{ original = (typeof renderReceivedList === "function") ? renderReceivedList : null; }catch(_){}
+    if(!original){
+      setTimeout(installStandaloneReceivedListBridge, 120);
+      return;
+    }
+    if(original.__flprStandaloneReceivedBridge){
+      try{ standaloneMirrorReceivedList(); }catch(_){}
+      return;
+    }
+    const bridged = function standaloneRenderReceivedListBridge(){
+      const result = original.apply(this, arguments);
+      try{ standaloneMirrorReceivedList(); }catch(_){}
+      return result;
+    };
+    bridged.__flprStandaloneReceivedBridge = true;
+    bridged.__flprStandaloneOriginalRenderReceivedList = original;
+    try{ window.renderReceivedList = bridged; }catch(_){}
+    try{ renderReceivedList = bridged; }catch(_){}
+    setTimeout(()=>{ try{ standaloneMirrorReceivedList(); }catch(_){} }, 0);
   }
 
   function standaloneTextMirrorLog(message, opts){
+    standaloneLoadPersistedTextLogs();
     const msg = String(message ?? "").trim();
     if(!msg) return;
+    if(!standaloneShouldShowLogLine(msg)) return;
     const forced = opts && Object.prototype.hasOwnProperty.call(opts, "tab") ? String(opts.tab || "") : "";
     const lower = msg.toLowerCase();
     const inferred = lower.includes("error") || lower.includes("failed") || lower.includes("refused") || lower.includes("blocked") || lower.includes("timeout")
       ? "errors"
-      : (lower.includes("server") || lower.includes("received") || lower.includes("sent") || lower.includes("hint") || lower.startsWith(">") || lower.includes("item") || lower.includes("check"))
-        ? "chat"
-        : "status";
+      : "status";
     const tab = standaloneTextNormalizeTab(forced || inferred);
     const line = `${standaloneTextTimestamp()} ${msg}`;
     const targets = [tab];
@@ -1081,25 +8433,45 @@
     targets.forEach((t)=>{
       const buf = standaloneTextClient.logs[t] || (standaloneTextClient.logs[t] = []);
       buf.push(line);
-      if(buf.length > standaloneTextClient.maxLines) buf.splice(0, buf.length - standaloneTextClient.maxLines);
+      standaloneTextClient.logs[t] = standaloneTrimLogBuffer(buf);
     });
-    standaloneTextRender();
+    standaloneSavePersistedTextLogs();
+    standaloneScheduleTextRender("mirror-log");
+  }
+
+  function installStandaloneNativeLogRenderBridge(){
+    try{
+      const original = window.renderApLogTab || (typeof renderApLogTab === "function" ? renderApLogTab : null);
+      if(!original || original.__flprStandaloneNativeLogRenderBridge) return;
+      standaloneTextClient.originalRenderApLogTab = original;
+      const bridged = function standaloneRenderApLogTabBridge(){
+        standaloneScheduleTextRender("native-renderApLogTab");
+      };
+      bridged.__flprStandaloneNativeLogRenderBridge = true;
+      bridged.__flprStandaloneOriginalRenderApLogTab = original;
+      window.renderApLogTab = bridged;
+      try{ renderApLogTab = bridged; }catch(_){}
+    }catch(_){}
   }
 
   function installStandaloneTextLogBridge(){
     if(standaloneTextClient.wrapped) return;
+    standaloneResetTextLogsForNewSession();
     standaloneTextClient.wrapped = true;
+    installStandaloneNativeLogRenderBridge();
     standaloneTextClient.originalApLog = (typeof window.apLog === "function") ? window.apLog : null;
     if(standaloneTextClient.originalApLog){
       window.apLog = function standaloneApLogBridge(message, opts){
         try{ standaloneTextClient.originalApLog.call(window, message, opts); }catch(_){}
-        try{ standaloneTextMirrorLog(message, opts); }catch(_){}
+        try{ standalonePersistNativeLogBuffers(); }catch(_){}
+        try{ standaloneScheduleTextRender("apLog"); }catch(_){}
       };
     }else{
       window.apLog = function standaloneApLogBridgeFallback(message, opts){
         try{ standaloneTextMirrorLog(message, opts); }catch(_){}
       };
     }
+    try{ standaloneTextRender(); }catch(_){}
   }
 
   let standaloneSayLastSubmit = { text:"", at:0 };
@@ -1107,22 +8479,26 @@
     const msg = String(text || "").trim();
     if(!msg) return false;
     const ws = (typeof ap !== "undefined" && ap) ? ap.ws : null;
-    const wsOpen = !!(ws && ws.readyState === WebSocket.OPEN);
+    const wsOpen = !!(ws && Number(ws.readyState) === 1);
     if(!wsOpen){
-      try{ window.apLog ? window.apLog("AP chat blocked; socket is not connected.", { tab:"errors" }) : standaloneTextMirrorLog("AP chat blocked; socket is not connected.", { tab:"errors" }); }catch(_){}
+      const stateText = `readyState=${ws ? ws.readyState : "none"} connected=${!!(typeof ap !== "undefined" && ap?.connected)} singleplayer=${!!(typeof ap !== "undefined" && ap?.inherentSeedActive)}`;
+      try{ window.apLog ? window.apLog("AP chat blocked; socket is not connected (" + stateText + ").", { tab:"errors" }) : standaloneTextMirrorLog("AP chat blocked; socket is not connected (" + stateText + ").", { tab:"errors" }); }catch(_){}
       return false;
     }
     try{ window.apLog ? window.apLog("> " + msg, { tab:"chat", mirrorTabs:["status"] }) : standaloneTextMirrorLog("> " + msg, { tab:"chat", mirrorTabs:["status"] }); }catch(_){}
     try{
-      if(typeof apSend === "function"){
-        const ok = !!apSend({ cmd:"Say", text:msg });
-        if(ok){
-          try{ window.apLog ? window.apLog("SAY SENT TO AP SERVER; " + msg, { tab:"status", mirrorTabs:["chat"] }) : standaloneTextMirrorLog("SAY SENT TO AP SERVER; " + msg, { tab:"status", mirrorTabs:["chat"] }); }catch(_){}
+      const pkt = { cmd:"Say", text:msg };
+      ws.send(JSON.stringify([pkt]));
+      try{ ap.lastSaySentAt = Date.now(); }catch(_){}
+      try{
+        if(typeof apLog === "function"){
+          apLog("OUT Say " + JSON.stringify(pkt), { tab:"status", mirrorTabs:["chat"] });
+          apLog("SAY SENT TO AP SERVER; " + msg, { tab:"status", mirrorTabs:["chat"] });
+        }else{
+          standaloneTextMirrorLog("OUT Say " + JSON.stringify(pkt), { tab:"status", mirrorTabs:["chat"] });
+          standaloneTextMirrorLog("SAY SENT TO AP SERVER; " + msg, { tab:"status", mirrorTabs:["chat"] });
         }
-        return ok;
-      }
-      ws.send(JSON.stringify([{ cmd:"Say", text:msg }]));
-      try{ window.apLog ? window.apLog("SAY SENT TO AP SERVER; " + msg, { tab:"status", mirrorTabs:["chat"] }) : standaloneTextMirrorLog("SAY SENT TO AP SERVER; " + msg, { tab:"status", mirrorTabs:["chat"] }); }catch(_){}
+      }catch(_){}
       return true;
     }catch(err){
       try{ window.apLog ? window.apLog("AP chat send failed; " + (err?.message || err), { tab:"errors" }) : standaloneTextMirrorLog("AP chat send failed; " + (err?.message || err), { tab:"errors" }); }catch(_){}
@@ -1136,7 +8512,7 @@
       event.stopPropagation();
       try{ event.stopImmediatePropagation(); }catch(_){}
     }
-    const sayInput = document.getElementById("apClientSayInput");
+    const sayInput = standalonePrimaryControl("#apClientSayInput");
     const text = String(sayInput?.value || "").trim();
     if(!text) return false;
     const now = Date.now();
@@ -1151,8 +8527,8 @@
     if(sent){
       try{ playClick(); }catch(_){}
       if(sayInput) sayInput.value = "";
-      try{ if(typeof setApLogTab === "function") setApLogTab("chat"); }catch(_){}
-      standaloneTextClient.activeTab = "chat";
+      try{ if(typeof setApLogTab === "function") setApLogTab("status"); }catch(_){}
+      standaloneTextClient.activeTab = "status";
       standaloneTextRender();
     }
     return false;
@@ -1178,7 +8554,7 @@
 
   function activateStandaloneTextClientTabByName(tab, event){
     const wanted = standaloneTextNormalizeTab(tab);
-    const btn = Array.from(document.querySelectorAll("#apLogTabs .apLogTab")).find((node)=>standaloneTextNormalizeTab(node.dataset.aplogTab || "") === wanted);
+    const btn = standaloneControlAll("#apLogTabs .apLogTab").find((node)=>standaloneTextNormalizeTab(node.dataset.aplogTab || "") === wanted);
     return activateStandaloneTextClientTab(btn || { dataset:{ aplogTab:wanted } }, event);
   }
 
@@ -1220,15 +8596,438 @@
     return false;
   }
 
+  function standaloneSendRedeemMetadataBounce(meta){
+    if(!meta || !ap?.connected) return false;
+    try{
+      const games = [String(ap?.cfg?.game || "")].filter(Boolean);
+      return !!apSend({
+        cmd: "Bounce",
+        games,
+        data: {
+          type: "flippermizer_check_redeemed",
+          meta
+        }
+      });
+    }catch(_){
+      return false;
+    }
+  }
+
+  function installStandaloneLocationCheckBridge(){
+    let original = null;
+    try{
+      original = window.apSendLocationCheckWithMetadata || (typeof apSendLocationCheckWithMetadata === "function" ? apSendLocationCheckWithMetadata : null);
+    }catch(_){}
+    if(!original){
+      setTimeout(installStandaloneLocationCheckBridge, 120);
+      return;
+    }
+    if(original.__flprStandaloneLocationCheckBridge) return;
+    const bridged = function standaloneApSendLocationCheckWithMetadata(locId, meta){
+      const id = Number(locId);
+      if(!Number.isFinite(id) || id <= 0) return false;
+      try{
+        if(typeof apSend !== "function") return original.call(this, locId, meta);
+        const sent = !!apSend({
+          cmd: "LocationChecks",
+          locations: [id]
+        });
+        if(sent && meta) standaloneSendRedeemMetadataBounce(meta);
+        return sent;
+      }catch(_){
+        try{ return original.call(this, locId, meta); }catch(__){ return false; }
+      }
+    };
+    bridged.__flprStandaloneLocationCheckBridge = true;
+    bridged.__flprStandaloneOriginalLocationCheck = original;
+    try{ window.apSendLocationCheckWithMetadata = bridged; }catch(_){}
+    try{ apSendLocationCheckWithMetadata = bridged; }catch(_){}
+  }
+
+  function installStandaloneBossCheckRoutingBridge(){
+    let installedAny = false;
+
+    try{
+      const original = window.renderTableBlock || (typeof renderTableBlock === "function" ? renderTableBlock : null);
+      if(original && !original.__flprStandaloneBossCheckRoutingBridge){
+        const bridged = function standaloneRenderTableBlockBossRouting(parent, tableName, nodes, opts){
+          try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+          return original.call(this, parent, tableName, standaloneFilterNonBossCheckNodes(nodes, opts), opts);
+        };
+        bridged.__flprStandaloneBossCheckRoutingBridge = true;
+        bridged.__flprStandaloneOriginalRenderTableBlock = original;
+        window.renderTableBlock = bridged;
+        try{ renderTableBlock = bridged; }catch(_){}
+      }
+      if(window.renderTableBlock || typeof renderTableBlock === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.resolveBossChecksNodes || (typeof resolveBossChecksNodes === "function" ? resolveBossChecksNodes : null);
+      if(original && !original.__flprStandaloneBossCheckRoutingBridge){
+        const bridged = function standaloneResolveBossChecksNodesBridge(){
+          try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+          const nodes = original.apply(this, arguments);
+          return standaloneDedupeSortLocationNodes((Array.isArray(nodes) ? nodes : []).filter(standaloneIsExplicitBossCheckNode));
+        };
+        bridged.__flprStandaloneBossCheckRoutingBridge = true;
+        bridged.__flprStandaloneOriginalResolveBossChecksNodes = original;
+        window.resolveBossChecksNodes = bridged;
+        try{ resolveBossChecksNodes = bridged; }catch(_){}
+      }
+      if(window.resolveBossChecksNodes || typeof resolveBossChecksNodes === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.getTableCheckNodesForVisualComplete || (typeof getTableCheckNodesForVisualComplete === "function" ? getTableCheckNodesForVisualComplete : null);
+      if(original && !original.__flprStandaloneBossCheckRoutingBridge){
+        const bridged = function standaloneGetTableCheckNodesForVisualCompleteBridge(tableName, tableKey){
+          try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+          const nodes = original.apply(this, arguments);
+          return standaloneFilterNonBossCheckNodes(Array.isArray(nodes) ? nodes : [], { tableKey });
+        };
+        bridged.__flprStandaloneBossCheckRoutingBridge = true;
+        bridged.__flprStandaloneOriginalGetTableCheckNodesForVisualComplete = original;
+        window.getTableCheckNodesForVisualComplete = bridged;
+        try{ getTableCheckNodesForVisualComplete = bridged; }catch(_){}
+      }
+      if(window.getTableCheckNodesForVisualComplete || typeof getTableCheckNodesForVisualComplete === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.renderChecks || (typeof renderChecks === "function" ? renderChecks : null);
+      if(original && !original.__flprStandaloneBossCheckRoutingBridge){
+        const bridged = function standaloneRenderChecksBossRoutingBridge(){
+          try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBossCheckRoutingBridge = true;
+        bridged.__flprStandaloneOriginalRenderChecks = original;
+        window.renderChecks = bridged;
+        try{ renderChecks = bridged; }catch(_){}
+      }
+      if(window.renderChecks || typeof renderChecks === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.renderOverviewGrid || (typeof renderOverviewGrid === "function" ? renderOverviewGrid : null);
+      if(original && !original.__flprStandaloneBossCheckRoutingBridge){
+        const bridged = function standaloneRenderOverviewGridBossRoutingBridge(){
+          try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBossCheckRoutingBridge = true;
+        bridged.__flprStandaloneOriginalRenderOverviewGrid = original;
+        window.renderOverviewGrid = bridged;
+        try{ renderOverviewGrid = bridged; }catch(_){}
+      }
+      if(window.renderOverviewGrid || typeof renderOverviewGrid === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.tileEl || (typeof tileEl === "function" ? tileEl : null);
+      if(original && !original.__flprStandaloneBossCheckRoutingBridge){
+        const bridged = function standaloneTileElBossRoutingBridge(opts){
+          let next = opts;
+          try{
+            if(opts && opts.isBossTable && !standaloneWorldKeyIsBoss(opts.worldKey)){
+              next = { ...opts, isBossTable:false };
+            }
+          }catch(_){}
+          return original.call(this, next);
+        };
+        bridged.__flprStandaloneBossCheckRoutingBridge = true;
+        bridged.__flprStandaloneOriginalTileEl = original;
+        window.tileEl = bridged;
+        try{ tileEl = bridged; }catch(_){}
+      }
+      if(window.tileEl || typeof tileEl === "function") installedAny = true;
+    }catch(_){}
+
+    try{ window.flprStandaloneRepairBossCheckNodeBuckets = standaloneRepairBossCheckNodeBuckets; }catch(_){}
+    try{ window.flprStandaloneIsExplicitBossCheckNode = standaloneIsExplicitBossCheckNode; }catch(_){}
+    try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+    if(!installedAny) setTimeout(installStandaloneBossCheckRoutingBridge, 120);
+  }
+
+  const standaloneApPacketBridge = {
+    installed: false,
+    nativeWebSocket: null
+  };
+
+  function standaloneDeferredItemHasName(it){
+    const itemIdNum = Number(it?.item);
+    try{
+      if(ap?.itemNameById?.get?.(it?.item)) return true;
+    }catch(_){}
+    try{
+      if(Number.isFinite(itemIdNum) && typeof apDataPackageForGame === "function"){
+        return !!apDataPackageForGame(ap?.cfg?.game)?.itemNameById?.get?.(itemIdNum);
+      }
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneFlushDeferredReceived(source){
+    let flushed = 0;
+    try{
+      if(!ap || !Array.isArray(ap.receivedDeferred) || !ap.receivedDeferred.length) return 0;
+      if(typeof processReceivedItem !== "function") return 0;
+      const stillDeferred = [];
+      for(const d of ap.receivedDeferred){
+        const it = d?.it || {};
+        if(!standaloneDeferredItemHasName(it)){
+          stillDeferred.push(d);
+          continue;
+        }
+        const itemIndex = d.itemIndex;
+        const locId = (d.locId != null) ? d.locId : (d.paired && d.paired.locId != null ? d.paired.locId : null);
+        processReceivedItem(it, itemIndex, locId, {
+          noPopup: (d.noPopup ?? true),
+          noFeed: (d.noFeed ?? true),
+          isFlush: true,
+          isSnapshot: !!d.isSnapshot,
+          pairedOverride: d.paired || null
+        });
+        flushed++;
+      }
+      ap.receivedDeferred = stillDeferred;
+      if(flushed && typeof apLog === "function"){
+        apLog(`Standalone ReceivedItems flushed after ${source || "AP packet"}: ${flushed} (remaining ${ap.receivedDeferred.length})`, { tab:"status" });
+      }
+    }catch(err){
+      try{ if(typeof apLog === "function") apLog("Standalone ReceivedItems flush failed; " + (err?.message || err), { tab:"errors" }); }catch(_){}
+    }
+    return flushed;
+  }
+
+  function standaloneReceivedInventorySignature(){
+    try{
+      const list = Array.isArray(ap?.receivedAll)
+        ? ap.receivedAll
+        : (typeof loadReceivedList === "function" ? loadReceivedList() : []);
+      return (Array.isArray(list) ? list : []).map((row)=>{
+        const idx = row?.recvIndex ?? "";
+        const item = row?.itemId ?? row?.item ?? "";
+        const loc = row?.locId ?? row?.location ?? "";
+        const src = row?.sourcePlayerId ?? row?.player ?? "";
+        const name = standaloneNormalizeLoose(row?.itemName || row?.baseItemName || "");
+        return `${idx}:${item}:${loc}:${src}:${name}`;
+      }).join("|");
+    }catch(_){
+      return "";
+    }
+  }
+
+  function standaloneRefreshReceivedFromServer(source){
+    standaloneWithCounterDrawerFxSuppressed(()=>{
+      const beforeSig = standaloneReceivedInventorySignature();
+      const deferredBefore = Array.isArray(ap?.receivedDeferred) ? ap.receivedDeferred.length : 0;
+      const flushWork = ()=>{
+        try{ standaloneFlushDeferredReceived(source); }catch(_){}
+        try{ if(typeof flushDeferredReceived === "function") flushDeferredReceived(); }catch(_){}
+      };
+      if(deferredBefore > 0){
+        standalonePreserveChecksSelectionDuring(flushWork, `received-flush:${source || ""}`);
+      }else{
+        flushWork();
+      }
+      const afterSig = standaloneReceivedInventorySignature();
+      const deferredAfter = Array.isArray(ap?.receivedDeferred) ? ap.receivedDeferred.length : 0;
+      const now = Date.now();
+      const changed = beforeSig !== afterSig || deferredBefore !== deferredAfter;
+      const signatureChanged = afterSig !== standaloneReceivedRefreshState.lastSig;
+      const shouldReconcile = changed || signatureChanged;
+      try{
+        const stats = window.__flprStandaloneReceivedRefreshStats || {
+          total:0,
+          rendered:0,
+          reconciled:0,
+          noops:0,
+          lastSource:"",
+          lastSig:""
+        };
+        stats.total = Number(stats.total || 0) + 1;
+        stats.lastSource = String(source || "");
+        stats.lastSig = afterSig;
+        window.__flprStandaloneReceivedRefreshStats = stats;
+      }catch(_){}
+      if(shouldReconcile){
+        standaloneReceivedRefreshState.lastSig = afterSig;
+        standaloneReceivedRefreshState.lastAt = now;
+        standalonePreserveChecksSelectionDuring(()=>{
+          try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
+          try{ standaloneMirrorReceivedList(); }catch(_){}
+          try{ if(typeof apReconcileWorldStateFromReceived === "function") apReconcileWorldStateFromReceived(); }catch(_){}
+        }, `received-refresh:${source || ""}`);
+        try{
+          const stats = window.__flprStandaloneReceivedRefreshStats;
+          if(stats){
+            stats.rendered = Number(stats.rendered || 0) + 1;
+            stats.reconciled = Number(stats.reconciled || 0) + 1;
+          }
+        }catch(_){}
+      }else{
+        standaloneReceivedRefreshState.lastAt = now;
+        try{
+          const stats = window.__flprStandaloneReceivedRefreshStats;
+          if(stats) stats.noops = Number(stats.noops || 0) + 1;
+        }catch(_){}
+      }
+      if(shouldReconcile){
+        try{ if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
+        try{ standaloneScheduleTextRender("received-refresh"); }catch(_){}
+      }
+    });
+  }
+
+  function standaloneScheduleReceivedRefresh(source){
+    try{
+      standaloneReceivedRefreshState.timers.forEach((timer)=>clearTimeout(timer));
+    }catch(_){}
+    standaloneReceivedRefreshState.timers = [];
+    const delays = source === "DataPackage" ? [40, 420] : [30, 360];
+    delays.forEach((delay)=>{
+      const timer = setTimeout(()=>{
+        try{
+          standaloneReceivedRefreshState.timers = standaloneReceivedRefreshState.timers.filter((item)=>item !== timer);
+        }catch(_){}
+        standaloneRefreshReceivedFromServer(source);
+      }, delay);
+      standaloneReceivedRefreshState.timers.push(timer);
+    });
+  }
+
+  function standaloneAttachApSocket(ws){
+    if(!ws || ws.__flprStandaloneApPacketBridge) return ws;
+    ws.__flprStandaloneApPacketBridge = true;
+    try{
+      ws.addEventListener("message", (event)=>{
+        let arr;
+        try{ arr = JSON.parse(event.data); }catch(_){ return; }
+        if(!Array.isArray(arr)) arr = [arr];
+        const cmds = new Set(arr.map((pkt)=>String(pkt?.cmd || "")));
+        let playerMetaChanged = false;
+        arr.forEach((pkt)=>{
+          playerMetaChanged = standaloneRememberApPacketPlayerMeta(pkt) || playerMetaChanged;
+          const cmd = String(pkt?.cmd || "");
+          if(cmd === "Connected" || cmd === "RoomUpdate") standaloneRememberMissingLocationsForHints(pkt);
+          if(cmd === "LocationInfo") standaloneHandleLocationInfoForHints(pkt);
+        });
+        if(playerMetaChanged){
+          try{ standaloneRequestMissingGamePackages("AP player metadata"); }catch(_){}
+          setTimeout(()=>{
+            try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+            try{ standaloneRepairPersistedApState(); }catch(_){}
+            try{ standaloneFlushPendingSentItemModals(); }catch(_){}
+            try{ standaloneRenderItemPanel(); }catch(_){}
+          }, 0);
+        }
+        arr.forEach((pkt)=>{
+          if(String(pkt?.cmd || "") === "PrintJSON"){
+            standaloneRememberJsonItemLogMeta(pkt);
+            try{
+              const meta = standaloneExtractItemSendMeta(pkt);
+              if(meta) standaloneRememberItemSendLogMeta(meta);
+            }catch(_){}
+            standaloneRecordSentItemFromPacket(pkt);
+          }
+        });
+        if(cmds.has("DataPackage")){
+          standaloneScheduleReceivedRefresh("DataPackage");
+          setTimeout(()=>{
+            try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+            try{ standaloneRepairPersistedApState(); }catch(_){}
+            try{ standaloneApplyBossHintLocationInfo("DataPackage", { force:true }); }catch(_){}
+            try{ standaloneScheduleBossKeyScout("DataPackage"); }catch(_){}
+            try{ standaloneFlushPendingSentItemModals(); }catch(_){}
+            try{ standaloneRenderItemPanel(); }catch(_){}
+          }, 0);
+        }
+        if(cmds.has("ReceivedItems")) standaloneScheduleReceivedRefresh("ReceivedItems");
+        if(cmds.has("Print") || cmds.has("PrintJSON") || cmds.has("RoomUpdate") || cmds.has("Connected")){
+          setTimeout(()=>{
+            try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+            try{ standaloneRepairPersistedApState(); }catch(_){}
+            try{ standalonePersistNativeLogBuffers(); }catch(_){}
+            try{ standaloneScheduleTextRender("packet-burst"); }catch(_){}
+            try{ standaloneRenderItemPanel(); }catch(_){}
+          }, 0);
+        }
+      });
+    }catch(_){}
+    return ws;
+  }
+
+  function installStandaloneApPacketBridge(){
+    if(standaloneApPacketBridge.installed) return;
+    standaloneApPacketBridge.installed = true;
+    try{
+      const NativeWebSocket = window.WebSocket;
+      if(typeof NativeWebSocket !== "function") return;
+      standaloneApPacketBridge.nativeWebSocket = NativeWebSocket;
+      function StandaloneWebSocket(){
+        const ws = new NativeWebSocket(...arguments);
+        return standaloneAttachApSocket(ws);
+      }
+      try{ Object.setPrototypeOf(StandaloneWebSocket, NativeWebSocket); }catch(_){}
+      try{ StandaloneWebSocket.prototype = NativeWebSocket.prototype; }catch(_){}
+      try{
+        Object.getOwnPropertyNames(NativeWebSocket).forEach((key)=>{
+          if(key in StandaloneWebSocket) return;
+          const desc = Object.getOwnPropertyDescriptor(NativeWebSocket, key);
+          if(desc) Object.defineProperty(StandaloneWebSocket, key, desc);
+        });
+      }catch(_){}
+      window.WebSocket = StandaloneWebSocket;
+    }catch(err){
+      try{ if(typeof apLog === "function") apLog("Standalone AP packet bridge failed; " + (err?.message || err), { tab:"errors" }); }catch(_){}
+    }
+  }
+
   function installStandaloneTextClientDelegates(){
+    disableStandaloneFlprBotSync();
+    installStandaloneApTextFormatter();
+    installStandaloneApPacketBridge();
+    installStandaloneTableLookupBridge();
+    installStandaloneUnlockFxBridge();
+    installStandaloneSfxDedupeBridge();
+    installStandaloneSiegeNotificationQueueBridge();
+    installStandaloneBesiegedSelectionBridge();
+    installStandaloneChecksSelectionBridge();
+    installStandaloneProgressiveChecksRewardBridge();
+    installStandaloneChecksBackgroundBridge();
+    installStandaloneLocationCheckBridge();
+    installStandaloneBossCheckRoutingBridge();
+    installStandaloneBossHintBridge();
+    standaloneResetTextLogsForNewSession();
     installStandaloneTextLogBridge();
+    installStandaloneReceivedListBridge();
+    installStandaloneReceivedAddBridge();
+    installStandaloneReceivedRewardBridge();
+    installStandaloneCounterDrawerSuppressionBridge();
+    installStandaloneSentItemNotificationBridge();
     window.flprStandaloneTextClientSend = submitStandaloneTextClientSay;
     window.flprStandaloneTextClientSetTab = activateStandaloneTextClientTabByName;
+    window.flprStandaloneItemTab = activateStandaloneItemTab;
     window.flprStandaloneSyncReceived = syncStandaloneReceived;
     window.flprStandaloneTextClientRender = standaloneTextRender;
+    window.flprStandaloneRefreshReceivedFromServer = standaloneRefreshReceivedFromServer;
+    window.flprStandaloneScheduleReceivedRefresh = standaloneScheduleReceivedRefresh;
+    window.flprStandaloneRepairPersistedApState = ()=>{
+      try{ standaloneItemPanel.sentLoaded = false; }catch(_){}
+      try{ standaloneTextClient.loaded = false; }catch(_){}
+      try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
+      return standaloneRepairPersistedApState();
+    };
+    window.flprStandaloneCopySelectedItemText = ()=>standaloneCopyText(standaloneItemPanel.selectedText);
     if(window.__flprStandaloneTextClientDelegates === true) return;
     window.__flprStandaloneTextClientDelegates = true;
     const isTextClientTarget = (target)=>!!(target && target.closest && target.closest(".apConnLog"));
+    const isEditableTarget = (target)=>{
+      const tag = String(target?.tagName || "").toLowerCase();
+      return tag === "input" || tag === "textarea" || tag === "select" || !!target?.isContentEditable;
+    };
     document.addEventListener("submit", (event)=>{
       if(event.target && event.target.id === "apClientSayForm"){
         submitStandaloneTextClientSay(event);
@@ -1238,9 +9037,15 @@
       const target = event.target;
       if(target && target.id === "apClientSayInput" && event.key === "Enter" && !event.shiftKey){
         submitStandaloneTextClientSay(event);
+        return;
+      }
+      if((event.ctrlKey || event.metaKey) && String(event.key || "").toLowerCase() === "c" && !isEditableTarget(target) && standaloneItemPanel.selectedText){
+        event.preventDefault();
+        standaloneCopyText(standaloneItemPanel.selectedText);
       }
     }, true);
     document.addEventListener("pointerdown", (event)=>{
+      if(!event.target.closest?.(".standaloneItemCopyMenu")) standaloneHideItemCopyMenu();
       if(!isTextClientTarget(event.target)) return;
       const input = event.target.closest("#apClientSayInput");
       if(input){
@@ -1252,6 +9057,11 @@
       if(tab) activateStandaloneTextClientTab(tab, event);
     }, true);
     document.addEventListener("click", (event)=>{
+      const itemTab = event.target.closest?.(".standaloneItemTab");
+      if(itemTab){
+        activateStandaloneItemTab(itemTab.dataset.standaloneItemTab, event);
+        return;
+      }
       if(!isTextClientTarget(event.target)) return;
       const send = event.target.closest("#apClientSayBtn");
       if(send){
@@ -1267,7 +9077,9 @@
       try{
         window.apLog ? window.apLog("AP Text Client ready; connect to a server, then type chat or !hint commands here.", { tab:"chat", mirrorTabs:["status"] }) : standaloneTextMirrorLog("AP Text Client ready; connect to a server, then type chat or !hint commands here.", { tab:"chat", mirrorTabs:["status"] });
       }catch(_){}
-      standaloneTextRender();
+      standaloneRepairPersistedApState();
+      standaloneScheduleTextRender("delegates-ready");
+      standaloneRenderItemPanel();
     }, 0);
   }
 
@@ -1329,6 +9141,14 @@
     };
     if(btnCR) btnCR.onclick = ()=>{
       playClick();
+      if(standaloneItemTabName(standaloneItemPanel.activeTab) === "sent"){
+        standaloneItemPanel.sent = [];
+        standaloneItemPanel.selectedKey = "";
+        standaloneItemPanel.selectedText = "";
+        standaloneSaveSentItems();
+        standaloneRenderItemPanel();
+        return;
+      }
       try{
         if(typeof ap !== "undefined"){
           ap.receivedAll = [];
@@ -1342,11 +9162,12 @@
       try{ localStorage.setItem("flpr_ap_last_received_index", "0"); }catch(_){}
       try{ if(typeof saveReceivedList === "function") saveReceivedList([]); }catch(_){}
       try{ if(typeof renderReceivedList === "function") renderReceivedList([]); }catch(_){}
+      try{ standaloneRenderItemPanel(); }catch(_){}
       try{ if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
       try{ if(typeof forceReceivedSync === "function") forceReceivedSync(true); }catch(_){}
     };
 
-    const logTabs = document.getElementById("apLogTabs");
+    const logTabs = standalonePrimaryControl("#apLogTabs");
     const activateLogTab = (btn, event)=>{
       activateStandaloneTextClientTab(btn, event);
     };
@@ -1359,30 +9180,20 @@
       });
     }
     try{
-      document.querySelectorAll("#apLogTabs .apLogTab").forEach((btn)=>{
+      standaloneControlAll("#apLogTabs .apLogTab").forEach((btn)=>{
         if(btn.__flprStandaloneDirectBound === true) return;
         btn.__flprStandaloneDirectBound = true;
         btn.addEventListener("pointerup", (event)=>activateLogTab(btn, event), true);
         btn.addEventListener("click", (event)=>activateLogTab(btn, event), true);
       });
     }catch(_){}
-    const submitStandaloneSay = (event)=>{
-      if(typeof apSubmitSayFromControls === "function"){
-        if(event){
-          event.preventDefault();
-          event.stopPropagation();
-          try{ event.stopImmediatePropagation(); }catch(_){}
-        }
-        return !!apSubmitSayFromControls();
-      }
-      return submitStandaloneTextClientSay(event);
-    };
+    const submitStandaloneSay = (event)=>submitStandaloneTextClientSay(event);
     try{
       if(typeof bindApSayControls === "function"){
         bindApSayControls();
       }else{
-        const sayForm = document.getElementById("apClientSayForm");
-        const sayInput = document.getElementById("apClientSayInput");
+        const sayForm = standalonePrimaryControl("#apClientSayForm");
+        const sayInput = standalonePrimaryControl("#apClientSayInput");
         if(sayForm && sayInput && sayForm.__flprStandaloneBound !== true){
           sayForm.__flprStandaloneBound = true;
           sayForm.addEventListener("submit", (event)=>{
@@ -1392,7 +9203,7 @@
       }
     }catch(_){}
     try{
-      const sayBtn = document.getElementById("apClientSayBtn");
+      const sayBtn = standalonePrimaryControl("#apClientSayBtn");
       if(sayBtn && sayBtn.__flprStandaloneDirectBound !== true){
         sayBtn.__flprStandaloneDirectBound = true;
         try{ sayBtn.type = "button"; }catch(_){}
@@ -1401,12 +9212,12 @@
       }
     }catch(_){}
     try{
-      const sayForm = document.getElementById("apClientSayForm");
+      const sayForm = standalonePrimaryControl("#apClientSayForm");
       if(sayForm && sayForm.__flprStandaloneDirectSubmitBound !== true){
         sayForm.__flprStandaloneDirectSubmitBound = true;
         sayForm.addEventListener("submit", submitStandaloneSay, true);
       }
-      const sayInput = document.getElementById("apClientSayInput");
+      const sayInput = standalonePrimaryControl("#apClientSayInput");
       if(sayInput && sayInput.__flprStandaloneEnterBound !== true){
         sayInput.__flprStandaloneEnterBound = true;
         sayInput.addEventListener("keydown", (event)=>{
@@ -1479,11 +9290,7 @@
       if(typeof ensureMusicScenarioControls === "function") ensureMusicScenarioControls();
       if(typeof wireTableBannerGalleryControls === "function") wireTableBannerGalleryControls();
       prepareStandaloneVisualsPanel(visuals);
-      if(typeof applyChecksBgMode === "function"){
-        let savedMode = "classic";
-        try{ savedMode = (JSON.parse(localStorage.getItem("flpr_settings_v2") || "{}") || {}).checksBgMode || "classic"; }catch(_){}
-        applyChecksBgMode(savedMode, { save:false });
-      }
+      installStandaloneChecksBackgroundBridge();
     }catch(_){}
 
     if(
@@ -1514,7 +9321,25 @@
 
   function bootStandaloneBridge(){
     const attempt = ()=>{
-      try{ rebuildStandaloneControls(); applyStandaloneWindowScale(); }catch(err){ try{ console.error(err); }catch(_){} }
+      try{
+        installStandaloneTaskTooltipBridge();
+        installStandaloneStrategyTooltipBridge();
+        standaloneEnsureOverviewModalVisibleHost();
+        installStandaloneTableLookupBridge();
+        installStandaloneUnlockFxBridge();
+        installStandaloneSfxDedupeBridge();
+        installStandaloneSiegeNotificationQueueBridge();
+        installStandaloneBesiegedSelectionBridge();
+        installStandaloneChecksSelectionBridge();
+        installStandaloneProgressiveChecksRewardBridge();
+        installStandaloneChecksBackgroundBridge();
+        installStandaloneLocationCheckBridge();
+        installStandaloneBossCheckRoutingBridge();
+        installStandaloneBossHintBridge();
+        installStandaloneReceivedAddBridge();
+        rebuildStandaloneControls();
+        applyStandaloneWindowScale();
+      }catch(err){ try{ console.error(err); }catch(_){} }
     };
     if(!window.__flprStandaloneResizeBound){
       window.__flprStandaloneResizeBound = true;

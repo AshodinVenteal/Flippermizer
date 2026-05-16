@@ -1,14 +1,115 @@
-const { app, BrowserWindow, shell, screen, nativeImage } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, screen, nativeImage } = require("electron");
 const fs = require("fs");
 const path = require("path");
 
-const APP_ID = "net.flippermizer.standalone";
+const APP_TITLE = "Flippermizer! Pinball Randomized! | Home Edition";
+const APP_SHORT_NAME = "Flippermizer Home Edition";
+const APP_ID = "net.flippermizer.homeedition";
 const APP_ICON = path.join(__dirname, "..", "build", process.platform === "win32" ? "icon.ico" : "icon.png");
 const APP_ICON_FALLBACK = path.join(__dirname, "..", "Flippermizer Images", "FM-Icon64x64.png");
 const OVERLAY_BASE_HEIGHT = 1450;
 const DEFAULT_WINDOW_BOUNDS = { width: 1600, height: 960 };
 const MIN_WINDOW_BOUNDS = { width: 1280, height: 720 };
 const WINDOW_STATE_FILE = "standalone-window-state.json";
+const RENDERER_SETTINGS_FILE = "standalone-renderer-settings.json";
+const DEFAULT_RENDERER_SETTINGS = {
+  hardwareAcceleration: true,
+  renderer: "default"
+};
+let mainWindow = null;
+
+function getUserDataBaseDir(){
+  return process.platform === "win32"
+    ? (process.env.APPDATA || path.join(process.env.USERPROFILE || process.cwd(), "AppData", "Roaming"))
+    : (process.env.XDG_CONFIG_HOME || path.join(process.env.HOME || process.cwd(), ".config"));
+}
+
+function getFallbackUserDataDir(){
+  const base = getUserDataBaseDir();
+  return path.join(base, APP_SHORT_NAME);
+}
+
+function getCommandLineUserDataDir(){
+  try{
+    for(let i = 0; i < process.argv.length; i++){
+      const arg = String(process.argv[i] || "");
+      if(arg.startsWith("--user-data-dir=")){
+        const raw = arg.slice("--user-data-dir=".length).replace(/^"|"$/g, "");
+        return raw ? path.resolve(raw) : "";
+      }
+      if(arg === "--user-data-dir" && process.argv[i + 1]){
+        return path.resolve(String(process.argv[i + 1]));
+      }
+    }
+  }catch(_err){}
+  return "";
+}
+
+app.setName(APP_TITLE);
+try{
+  const cliUserData = getCommandLineUserDataDir();
+  app.setPath("userData", cliUserData || getFallbackUserDataDir());
+}catch(_err){}
+
+function getUserDataDir(){
+  const cliUserData = getCommandLineUserDataDir();
+  if(cliUserData) return cliUserData;
+  try{ return app.getPath("userData"); }catch(_err){ return getFallbackUserDataDir(); }
+}
+
+function getRendererSettingsPath(){
+  return path.join(getUserDataDir(), RENDERER_SETTINGS_FILE);
+}
+
+function normalizeRendererSettings(value){
+  const raw = value && typeof value === "object" ? value : {};
+  const renderer = String(raw.renderer || DEFAULT_RENDERER_SETTINGS.renderer).toLowerCase() === "vulkan"
+    ? "vulkan"
+    : "default";
+  return {
+    hardwareAcceleration: raw.hardwareAcceleration !== false,
+    renderer
+  };
+}
+
+function readRendererSettings(){
+  try{
+    const raw = fs.readFileSync(getRendererSettingsPath(), "utf8");
+    return normalizeRendererSettings(JSON.parse(raw));
+  }catch(_err){
+    return { ...DEFAULT_RENDERER_SETTINGS };
+  }
+}
+
+function writeRendererSettings(settings){
+  const next = normalizeRendererSettings(settings);
+  fs.mkdirSync(path.dirname(getRendererSettingsPath()), { recursive: true });
+  fs.writeFileSync(getRendererSettingsPath(), JSON.stringify(next, null, 2));
+  return next;
+}
+
+const rendererSettingsAtLaunch = readRendererSettings();
+
+function applyRendererLaunchSettings(settings){
+  const cfg = normalizeRendererSettings(settings);
+  if(cfg.hardwareAcceleration === false){
+    app.disableHardwareAcceleration();
+    return;
+  }
+  if(cfg.renderer === "vulkan"){
+    app.commandLine.appendSwitch("ignore-gpu-blocklist");
+    app.commandLine.appendSwitch("use-angle", "vulkan");
+    app.commandLine.appendSwitch("enable-features", "Vulkan");
+  }
+}
+
+applyRendererLaunchSettings(rendererSettingsAtLaunch);
+
+function rendererGraphicsMode(settings){
+  const cfg = normalizeRendererSettings(settings);
+  if(cfg.hardwareAcceleration === false) return "software_fallback";
+  return cfg.renderer === "vulkan" ? "vulkan" : "default";
+}
 
 function normalizeNavUrl(url){
   try{
@@ -130,6 +231,35 @@ function scheduleOverlayZoom(win){
   }, 50);
 }
 
+function rendererSettingsResponse(settings, saved){
+  const normalized = normalizeRendererSettings(settings);
+  const applied = normalizeRendererSettings(rendererSettingsAtLaunch);
+  return {
+    settings: normalized,
+    applied,
+    saved: saved !== false,
+    restartRequired: (
+      normalized.hardwareAcceleration !== applied.hardwareAcceleration ||
+      normalized.renderer !== applied.renderer
+    )
+  };
+}
+
+function installRendererSettingsIpc(){
+  ipcMain.handle("flpr-renderer-settings:get", ()=>{
+    return rendererSettingsResponse(readRendererSettings(), true);
+  });
+  ipcMain.handle("flpr-renderer-settings:set", (_event, settings)=>{
+    const next = writeRendererSettings(settings);
+    return rendererSettingsResponse(next, true);
+  });
+  ipcMain.handle("flpr-renderer-settings:relaunch", ()=>{
+    app.relaunch();
+    app.exit(0);
+    return { ok:true };
+  });
+}
+
 function createWindow(){
   const savedWindowState = readWindowState();
   const savedBounds = savedWindowState ? savedWindowState.bounds : null;
@@ -142,20 +272,28 @@ function createWindow(){
     autoHideMenuBar: true,
     show: false,
     icon: appIcon.isEmpty() ? APP_ICON : appIcon,
-    title: "Flippermizer Standalone AP Client",
+    title: APP_TITLE,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true
+      sandbox: true,
+      preload: path.join(__dirname, "preload.js")
     }
   });
+  mainWindow = win;
   if(!appIcon.isEmpty()){
     win.setIcon(appIcon);
   }
 
-  win.loadFile(path.join(__dirname, "..", "flippermizer_overlay_tower_v3.html"));
+  win.loadFile(path.join(__dirname, "..", "flippermizer_overlay_tower_v3.html"), {
+    query: {
+      launcherGraphicsMode: rendererGraphicsMode(rendererSettingsAtLaunch)
+    }
+  });
 
   win.webContents.on("did-finish-load", ()=>{
+    try{ win.setTitle(APP_TITLE); }catch(_err){}
+    win.webContents.executeJavaScript(`document.title = ${JSON.stringify(APP_TITLE)};`).catch(()=>{});
     fitOverlayZoom(win);
     const bridgePath = path.join(__dirname, "standalone-overlay-bridge.js");
     fs.readFile(bridgePath, "utf8", (err, source)=>{
@@ -191,6 +329,9 @@ function createWindow(){
     scheduleWindowStateSave(win);
   });
   win.on("close", ()=> writeWindowState(win));
+  win.on("closed", ()=>{
+    if(mainWindow === win) mainWindow = null;
+  });
 
   win.webContents.setWindowOpenHandler(({ url })=>{
     shell.openExternal(url);
@@ -215,6 +356,7 @@ function createWindow(){
 }
 
 app.setAppUserModelId(APP_ID);
+installRendererSettingsIpc();
 
 app.whenReady().then(()=>{
   createWindow();
