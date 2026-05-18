@@ -5,6 +5,11 @@
   const STANDALONE_AP_LOG_KEY = "flpr_standalone_ap_text_log_v1";
   const STANDALONE_SENT_ITEMS_KEY = "flpr_standalone_ap_sent_items_v1";
   const STANDALONE_AP_REWARD_STATE_KEY = "flpr_standalone_ap_reward_state_v1";
+  const STANDALONE_PROFILE_STATE_KEY = "flpr_standalone_home_profiles_v1";
+  const STANDALONE_SEED_SAVES_KEY = "flpr_standalone_singleplayer_seed_saves_v1";
+  const STANDALONE_ACHIEVEMENT_LS_KEY = "flpr_achievements_v1";
+  const STANDALONE_ACHIEVEMENT_UI_LS_KEY = "flpr_achievements_ui_v1";
+  const STANDALONE_EPISODE_LS_KEY = "flpr_episode_v1";
   const STANDALONE_KNOWN_AP_ITEM_NAMES = Object.freeze({
     "370001": "Ethereal Crossbow",
     "heretic|370001": "Ethereal Crossbow"
@@ -18,6 +23,11 @@
     { value:"blueprint", label:"BLUEPRINT GRID", className:"checksBgBlueprint" },
     { value:"stars", label:"VECTOR STARS", className:"checksBgVectorStars" },
     { value:"radar", label:"RADAR SWEEP", className:"checksBgRadar" }
+  ]);
+  const STANDALONE_PROFILE_EMOJI_CODES = Object.freeze([
+    0x1F3B1, 0x1F3AF, 0x1F579, 0x1F3AE, 0x1F4AB, 0x1F680, 0x26A1, 0x1F52E,
+    0x1F48E, 0x1F3C6, 0x1F3B2, 0x1F3B5, 0x1F525, 0x1F308, 0x1F31F, 0x1F9E9,
+    0x1F6F8, 0x1F3A8, 0x1F5A5, 0x1F4BE, 0x1F9FF, 0x1FA99, 0x1F451, 0x2728
   ]);
   const DEFAULT_SETTINGS = {
     controlsOffset: 0
@@ -40,6 +50,19 @@
     loaded: false,
     response: null,
     saveTimer: null
+  };
+  const standaloneProfileRuntime = {
+    selectedMode: "",
+    switchingMode: false,
+    randomizerReady: false,
+    randomizerStarted: false,
+    randomizerReason: "",
+    gateTimer: null,
+    profileRestoring: false,
+    achievementSaveWrapped: false,
+    profileGateMode: "choose",
+    profileGateManualOpen: false,
+    activeSeedLoadConfirmId: ""
   };
   const standaloneSlotTaskPayload = {
     byLocation: new Map(),
@@ -69,6 +92,99 @@
     try{ syncFlprBotBossKeys = function(){}; }catch(_){}
     try{ syncFlprBotBossStatus = function(){}; }catch(_){}
     try{ syncFlprBotEpisodeState = function(){}; }catch(_){}
+  }
+
+  function installStandaloneNoChatHangmanBridge(){
+    try{ window.FLPR_STANDALONE_CHAT_HANGMAN_DISABLED = true; }catch(_){}
+    try{
+      if(typeof hintCancelHangman === "function") hintCancelHangman();
+      else if(typeof hintState !== "undefined" && hintState) hintState.hangman = null;
+    }catch(_){}
+    try{ if(typeof hintStopHangmanCooldownTimer === "function") hintStopHangmanCooldownTimer(); }catch(_){}
+    try{ if(typeof hintStopFlprBotHangmanPoll === "function") hintStopFlprBotHangmanPoll(); }catch(_){}
+
+    try{
+      if(typeof hintCanStartHangman === "function" && hintCanStartHangman.__flprStandaloneNoChatHangman !== true){
+        const original = hintCanStartHangman;
+        const disabled = function standaloneNoChatHangmanCanStart(){
+          return false;
+        };
+        disabled.__flprStandaloneNoChatHangman = true;
+        disabled.__flprStandaloneOriginalHintCanStartHangman = original;
+        hintCanStartHangman = disabled;
+        window.hintCanStartHangman = disabled;
+      }
+    }catch(_){}
+    try{
+      if(typeof hintStartHangman === "function" && hintStartHangman.__flprStandaloneNoChatHangman !== true){
+        const original = hintStartHangman;
+        const disabled = function standaloneNoChatHangmanStart(){
+          try{ if(typeof hintCancelHangman === "function") hintCancelHangman(); }catch(_){}
+          return false;
+        };
+        disabled.__flprStandaloneNoChatHangman = true;
+        disabled.__flprStandaloneOriginalHintStartHangman = original;
+        hintStartHangman = disabled;
+        window.hintStartHangman = disabled;
+      }
+    }catch(_){}
+    try{
+      if(typeof hintStartTestHangman === "function" && hintStartTestHangman.__flprStandaloneNoChatHangman !== true){
+        const original = hintStartTestHangman;
+        const disabled = function standaloneNoChatHangmanTest(){
+          try{ if(typeof hintLog === "function") hintLog("[Home Edition] Chat Hangman is disabled."); }catch(_){}
+          try{ if(typeof toast === "function") toast("info", "HOME EDITION", "Chat Hangman is disabled in Home Edition.", 2200); }catch(_){}
+          return false;
+        };
+        disabled.__flprStandaloneNoChatHangman = true;
+        disabled.__flprStandaloneOriginalHintStartTestHangman = original;
+        hintStartTestHangman = disabled;
+        window.hintStartTestHangman = disabled;
+      }
+    }catch(_){}
+    try{
+      if(typeof hintHandleHangmanGuess === "function" && hintHandleHangmanGuess.__flprStandaloneNoChatHangman !== true){
+        const original = hintHandleHangmanGuess;
+        const disabled = function standaloneNoChatHangmanGuess(){
+          return false;
+        };
+        disabled.__flprStandaloneNoChatHangman = true;
+        disabled.__flprStandaloneOriginalHintHandleHangmanGuess = original;
+        hintHandleHangmanGuess = disabled;
+        window.hintHandleHangmanGuess = disabled;
+      }
+    }catch(_){}
+    try{
+      if(typeof hintStartFlprBotHangmanPoll === "function" && hintStartFlprBotHangmanPoll.__flprStandaloneNoChatHangman !== true){
+        const original = hintStartFlprBotHangmanPoll;
+        const disabled = function standaloneNoChatHangmanPoll(){
+          return false;
+        };
+        disabled.__flprStandaloneNoChatHangman = true;
+        disabled.__flprStandaloneOriginalHintStartFlprBotHangmanPoll = original;
+        hintStartFlprBotHangmanPoll = disabled;
+        window.hintStartFlprBotHangmanPoll = disabled;
+      }
+    }catch(_){}
+
+    try{
+      document.querySelectorAll("#hintTestHangmanBtn, #testHangmanBtn, [data-testtag='Hangman']").forEach((node)=>{
+        node.hidden = true;
+        node.style.display = "none";
+        node.setAttribute("aria-hidden", "true");
+      });
+      document.querySelectorAll(".hintHangmanCard, .hintHangmanCooldowns, .hintHangmanChat").forEach((node)=>{
+        node.remove();
+      });
+      const box = document.getElementById("hintRevealBox");
+      if(box) box.classList.remove("hangman");
+      document.querySelectorAll(".hintMeta").forEach((node)=>{
+        const text = String(node.textContent || "");
+        if(/hangman/i.test(text)){
+          node.textContent = "Hints are generated as Home Edition boss-key clues.";
+        }
+      });
+    }catch(_){}
   }
 
   disableStandaloneFlprBotSync();
@@ -115,6 +231,670 @@
       body.flprStandaloneOriginalClient .stage{
         transform:none !important;
         transform-origin:top left !important;
+        transition:filter .24s ease, opacity .24s ease !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneNeedsProfile .stage,
+      body.flprStandaloneOriginalClient.flprStandaloneModePicking .stage{
+        filter:brightness(.42) saturate(.76) !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneNeedsProfile .controlsShell,
+      body.flprStandaloneOriginalClient.flprStandaloneNeedsProfile .controls,
+      body.flprStandaloneOriginalClient.flprStandaloneNeedsProfile .controlsBody{
+        filter:brightness(.54) saturate(.82) !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneModePicking .controlsShell,
+      body.flprStandaloneOriginalClient.flprStandaloneModePicking .controls,
+      body.flprStandaloneOriginalClient.flprStandaloneModePicking .controlsBody{
+        filter:brightness(.42) saturate(.76) !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneModePicking .controlsBody{
+        box-shadow:
+          0 0 0 1px rgba(0,255,213,.16) inset,
+          0 0 24px rgba(0,217,255,.18) !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneModePicking .controlsPanels::after{
+        content:"" !important;
+        position:absolute !important;
+        inset:0 !important;
+        z-index:75 !important;
+        display:block !important;
+        pointer-events:auto !important;
+        border:1px solid rgba(0,255,213,.24) !important;
+        border-radius:12px !important;
+        background:linear-gradient(180deg, rgba(0,6,14,.58), rgba(0,2,8,.78)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileGate{
+        position:fixed !important;
+        inset:0 !important;
+        z-index:2147483646 !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        padding:24px !important;
+        background:
+          radial-gradient(circle at 52% 28%, rgba(0,217,255,.16), transparent 38%),
+          linear-gradient(180deg, rgba(0,6,14,.80), rgba(0,2,8,.92)) !important;
+        pointer-events:auto !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileGate[hidden]{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeGate{
+        position:fixed !important;
+        inset:0 !important;
+        z-index:2147483645 !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        padding:24px !important;
+        background:
+          radial-gradient(circle at 50% 30%, rgba(0,217,255,.16), transparent 34%),
+          linear-gradient(180deg, rgba(0,6,14,.74), rgba(0,2,8,.90)) !important;
+        pointer-events:auto !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeGate[hidden]{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeCard{
+        width:min(1160px, calc(100vw - 48px)) !important;
+        border:1px solid rgba(0,255,213,.70) !important;
+        border-radius:18px !important;
+        padding:34px !important;
+        background:
+          radial-gradient(100% 120% at 50% 0%, rgba(0,217,255,.16), transparent 54%),
+          linear-gradient(180deg, rgba(4,24,39,.98), rgba(0,8,18,.98)) !important;
+        box-shadow:
+          0 0 0 1px rgba(0,217,255,.18) inset,
+          0 26px 58px rgba(0,0,0,.58),
+          0 0 32px rgba(0,217,255,.24) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeTitle{
+        font-size:30px !important;
+        line-height:1.12 !important;
+        color:rgba(238,255,252,.98) !important;
+        margin-bottom:22px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeSub{
+        font-size:14px !important;
+        line-height:1.45 !important;
+        color:rgba(190,226,238,.80) !important;
+        margin-bottom:20px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeChoices{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:16px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeChoice{
+        position:relative !important;
+        min-height:270px !important;
+        display:flex !important;
+        flex-direction:column !important;
+        align-items:flex-start !important;
+        justify-content:flex-start !important;
+        gap:16px !important;
+        padding:24px !important;
+        border:1px solid rgba(0,166,255,.50) !important;
+        border-radius:14px !important;
+        background:
+          radial-gradient(90% 110% at 20% 0%, rgba(0,217,255,.14), transparent 56%),
+          linear-gradient(180deg, rgba(0,34,62,.88), rgba(0,12,24,.94)) !important;
+        color:rgba(232,250,255,.96) !important;
+        box-shadow:0 0 0 1px rgba(0,217,255,.10) inset !important;
+        overflow:hidden !important;
+        transform:translateY(0) scale(1) !important;
+        transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease !important;
+        text-align:left !important;
+        font-family:'Press Start 2P', var(--mono, monospace) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeChoice:hover,
+      body.flprStandaloneOriginalClient .standaloneModeChoice:focus-visible{
+        transform:translateY(-4px) scale(1.015) !important;
+        border-color:rgba(0,255,213,.96) !important;
+        box-shadow:
+          0 0 0 1px rgba(0,255,213,.18) inset,
+          0 0 24px rgba(0,217,255,.36),
+          0 0 38px rgba(255,214,122,.14) !important;
+        filter:saturate(1.18) brightness(1.08) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeChoiceIcon{
+        font-size:46px !important;
+        line-height:1 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeChoiceTitle{
+        font-size:28px !important;
+        line-height:1.12 !important;
+        color:rgba(238,255,252,.98) !important;
+        font-family:'Press Start 2P', var(--mono, monospace) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeChoiceText{
+        font-size:17px !important;
+        line-height:1.38 !important;
+        color:rgba(190,226,238,.84) !important;
+        font-family:'Press Start 2P', var(--mono, monospace) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeChoiceCue{
+        margin-top:auto !important;
+        font-size:14px !important;
+        line-height:1.24 !important;
+        color:rgba(255,224,122,.92) !important;
+        font-family:'Press Start 2P', var(--mono, monospace) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeGate.choosing .standaloneModeChoice:not(.selected){
+        opacity:.28 !important;
+        transform:scale(.96) !important;
+        filter:saturate(.70) brightness(.78) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeGate.choosing .standaloneModeChoice.selected{
+        animation:standaloneModeFlourish 640ms ease both !important;
+        border-color:rgba(255,224,122,.98) !important;
+      }
+      @keyframes standaloneModeFlourish{
+        0%{ transform:translateY(-4px) scale(1.015); box-shadow:0 0 18px rgba(0,217,255,.32); }
+        45%{ transform:translateY(-9px) scale(1.045); box-shadow:0 0 28px rgba(0,255,213,.50), 0 0 54px rgba(255,224,122,.26); }
+        100%{ transform:translateY(0) scale(1); box-shadow:0 0 22px rgba(0,217,255,.34), 0 0 42px rgba(255,224,122,.20); }
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileCard{
+        width:min(1120px, calc(100vw - 48px)) !important;
+        min-height:min(640px, calc(100vh - 48px)) !important;
+        border:1px solid rgba(0,255,213,.74) !important;
+        border-radius:16px !important;
+        background:
+          radial-gradient(110% 140% at 20% 0%, rgba(0,217,255,.16), transparent 54%),
+          linear-gradient(180deg, rgba(4,24,39,.98), rgba(0,8,18,.98)) !important;
+        box-shadow:
+          0 0 0 1px rgba(0,217,255,.18) inset,
+          0 26px 58px rgba(0,0,0,.58),
+          0 0 28px rgba(0,217,255,.24) !important;
+        color:rgba(235,252,255,.98) !important;
+        padding:28px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileTitle{
+        font-size:30px !important;
+        line-height:1.15 !important;
+        margin-bottom:10px !important;
+        color:rgba(238,255,252,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileSub,
+      body.flprStandaloneOriginalClient .standaloneProfileHint{
+        font-size:15px !important;
+        line-height:1.45 !important;
+        color:rgba(190,226,238,.78) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileForm{
+        display:grid !important;
+        grid-template-columns:minmax(260px, 1fr) minmax(260px, .9fr) 140px !important;
+        gap:16px !important;
+        margin-top:22px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileForm label{
+        display:flex !important;
+        flex-direction:column !important;
+        gap:5px !important;
+        min-width:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiPicker{
+        position:relative !important;
+        min-width:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiPickerButton{
+        width:100% !important;
+        min-height:48px !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        border:1px solid rgba(0,217,255,.62) !important;
+        border-radius:10px !important;
+        background:linear-gradient(180deg, rgba(0,34,62,.88), rgba(0,12,24,.94)) !important;
+        color:rgba(238,255,252,.98) !important;
+        font-size:28px !important;
+        box-shadow:0 0 0 1px rgba(0,217,255,.12) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiGrid{
+        display:grid !important;
+        grid-template-columns:repeat(8, minmax(0, 1fr)) !important;
+        gap:8px !important;
+        margin-top:8px !important;
+        padding:10px !important;
+        border:1px solid rgba(0,255,213,.24) !important;
+        border-radius:12px !important;
+        background:rgba(0,10,18,.74) !important;
+        max-height:204px !important;
+        overflow:auto !important;
+        scrollbar-width:thin !important;
+        scrollbar-color:rgba(0,217,255,.78) rgba(0,18,31,.96) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiGrid[hidden]{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiChoice{
+        min-width:0 !important;
+        min-height:38px !important;
+        border:1px solid rgba(0,166,255,.38) !important;
+        border-radius:9px !important;
+        background:rgba(0,38,60,.74) !important;
+        color:rgba(238,255,252,.98) !important;
+        font-size:22px !important;
+        line-height:1 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiChoice.active{
+        border-color:rgba(0,255,213,.96) !important;
+        box-shadow:0 0 14px rgba(0,217,255,.32) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileExisting{
+        display:flex !important;
+        flex-wrap:wrap !important;
+        gap:8px !important;
+        margin-top:18px !important;
+        max-height:162px !important;
+        overflow:auto !important;
+        scrollbar-width:thin !important;
+        scrollbar-color:rgba(0,217,255,.78) rgba(0,18,31,.96) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePick{
+        border:1px solid rgba(0,217,255,.46) !important;
+        border-radius:12px !important;
+        background:rgba(0,40,72,.56) !important;
+        color:rgba(232,250,255,.94) !important;
+        padding:7px 9px !important;
+        display:flex !important;
+        align-items:center !important;
+        gap:8px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileActions{
+        display:flex !important;
+        justify-content:flex-end !important;
+        gap:8px !important;
+        margin-top:14px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileBar{
+        grid-column:1 / -1 !important;
+        grid-row:1 !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:space-between !important;
+        gap:8px !important;
+        border:1px solid rgba(0,255,213,.28) !important;
+        border-radius:12px !important;
+        padding:6px 8px !important;
+        background:linear-gradient(90deg, rgba(0,217,255,.12), rgba(0,18,32,.88)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileIdentity{
+        display:flex !important;
+        align-items:center !important;
+        gap:8px !important;
+        min-width:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileAvatar{
+        width:28px !important;
+        height:28px !important;
+        display:grid !important;
+        place-items:center !important;
+        border-radius:50% !important;
+        border:1px solid rgba(255,255,255,.42) !important;
+        background:var(--profileColor, rgba(0,217,255,.42)) !important;
+        font-size:17px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileName{
+        min-width:0 !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        white-space:nowrap !important;
+        font-size:10px !important;
+        color:rgba(238,255,252,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileSwapBtn{
+        flex:0 0 auto !important;
+        min-height:24px !important;
+        padding:4px 8px !important;
+        font-size:7px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileHud{
+        position:fixed !important;
+        top:10px !important;
+        right:18px !important;
+        z-index:2147483644 !important;
+        display:flex !important;
+        align-items:center !important;
+        gap:14px !important;
+        max-width:min(640px, calc(100vw - 36px)) !important;
+        pointer-events:auto !important;
+        font-family:var(--pixelFont, inherit) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePoints{
+        flex:0 0 auto !important;
+        border:1px solid rgba(255,224,122,.62) !important;
+        border-radius:999px !important;
+        padding:10px 18px !important;
+        background:rgba(18,12,0,.70) !important;
+        color:rgba(255,238,178,.98) !important;
+        font-size:18px !important;
+        line-height:1 !important;
+        box-shadow:0 0 12px rgba(255,224,122,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileHudWrap{
+        position:relative !important;
+        min-width:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileHudBtn{
+        min-height:64px !important;
+        display:flex !important;
+        align-items:center !important;
+        gap:12px !important;
+        border:1px solid rgba(0,255,213,.42) !important;
+        border-radius:999px !important;
+        padding:8px 18px 8px 8px !important;
+        background:linear-gradient(90deg, rgba(0,217,255,.16), rgba(0,18,32,.88)) !important;
+        color:rgba(238,255,252,.98) !important;
+        box-shadow:0 0 12px rgba(0,217,255,.16) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileHudBtn .standaloneProfileAvatar{
+        width:48px !important;
+        height:48px !important;
+        font-size:30px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileHudBtn .standaloneProfileName{
+        font-size:20px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHud{
+        position:fixed !important;
+        top:10px !important;
+        left:calc(var(--captureW) + var(--bonusLeaderboardW) + var(--gutter) + 16px) !important;
+        z-index:2147483644 !important;
+        display:flex !important;
+        align-items:center !important;
+        gap:14px !important;
+        max-width:min(590px, calc(100vw - 36px)) !important;
+        pointer-events:auto !important;
+        font-family:var(--pixelFont, inherit) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHud[hidden]{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHudLogo{
+        width:300px !important;
+        height:64px !important;
+        flex:0 0 300px !important;
+        display:block !important;
+        object-fit:contain !important;
+        object-position:left center !important;
+        image-rendering:auto !important;
+        filter:drop-shadow(0 0 12px rgba(0,217,255,.42)) drop-shadow(0 0 6px rgba(255,86,214,.26)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHudButtons{
+        display:flex !important;
+        align-items:center !important;
+        gap:10px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHudBtn{
+        min-width:86px !important;
+        min-height:54px !important;
+        display:grid !important;
+        place-items:center !important;
+        border:1px solid rgba(0,166,255,.48) !important;
+        border-radius:999px !important;
+        padding:8px 14px !important;
+        background:linear-gradient(180deg, rgba(0,39,64,.88), rgba(0,12,24,.94)) !important;
+        color:rgba(190,226,238,.88) !important;
+        font-size:19px !important;
+        line-height:1 !important;
+        letter-spacing:0 !important;
+        box-shadow:0 0 10px rgba(0,166,255,.12) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHudBtn:hover,
+      body.flprStandaloneOriginalClient .standaloneModeHudBtn:focus-visible{
+        border-color:rgba(0,255,213,.88) !important;
+        color:rgba(238,255,252,.98) !important;
+        box-shadow:0 0 18px rgba(0,217,255,.26), 0 0 0 1px rgba(0,255,213,.20) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHudBtn.active{
+        border-color:rgba(0,255,213,.96) !important;
+        background:linear-gradient(180deg, rgba(0,135,146,.86), rgba(0,38,58,.96)) !important;
+        color:rgba(238,255,252,.98) !important;
+        text-shadow:0 0 10px rgba(0,255,213,.42) !important;
+        box-shadow:0 0 20px rgba(0,255,213,.26), 0 0 0 1px rgba(0,255,213,.22) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileMenu{
+        position:absolute !important;
+        right:0 !important;
+        top:calc(100% + 10px) !important;
+        width:440px !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:10px !important;
+        padding:14px !important;
+        border:1px solid rgba(0,255,213,.42) !important;
+        border-radius:12px !important;
+        background:linear-gradient(180deg, rgba(3,24,38,.98), rgba(0,8,18,.98)) !important;
+        box-shadow:0 18px 36px rgba(0,0,0,.46), 0 0 16px rgba(0,217,255,.20) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileMenu[hidden]{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileMenu button{
+        width:100% !important;
+        text-align:left !important;
+        justify-content:flex-start !important;
+        min-height:42px !important;
+        font-size:14px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSavePanel{
+        border:1px solid rgba(0,255,213,.22) !important;
+        border-radius:12px !important;
+        padding:12px !important;
+        background:rgba(0,17,29,.58) !important;
+        min-height:0 !important;
+        display:flex !important;
+        flex-direction:column !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveTitle{
+        display:flex !important;
+        justify-content:space-between !important;
+        gap:8px !important;
+        color:rgba(230,248,255,.96) !important;
+        font-size:14px !important;
+        margin-bottom:10px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveList{
+        flex:1 1 auto !important;
+        min-height:0 !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:10px !important;
+        max-height:min(360px, 42vh) !important;
+        overflow:auto !important;
+        scrollbar-width:thin !important;
+        scrollbar-color:rgba(0,217,255,.78) rgba(0,18,31,.96) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveList::-webkit-scrollbar{
+        width:12px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveList::-webkit-scrollbar-track{
+        border:1px solid rgba(0,166,255,.22) !important;
+        border-radius:999px !important;
+        background:rgba(0,10,20,.86) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveList::-webkit-scrollbar-thumb{
+        border:2px solid rgba(0,10,20,.86) !important;
+        border-radius:999px !important;
+        background:linear-gradient(180deg, rgba(0,217,255,.95), rgba(0,255,213,.70)) !important;
+        box-shadow:0 0 10px rgba(0,217,255,.24) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveRow{
+        position:relative !important;
+        border:1px solid rgba(0,166,255,.26) !important;
+        border-radius:10px !important;
+        padding:12px !important;
+        background:rgba(0,33,52,.46) !important;
+        cursor:pointer !important;
+        overflow:hidden !important;
+        min-height:96px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveRowHd{
+        display:flex !important;
+        justify-content:space-between !important;
+        gap:8px !important;
+        font-size:16px !important;
+        color:rgba(238,255,252,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveMeta{
+        margin-top:8px !important;
+        font-size:12px !important;
+        line-height:1.35 !important;
+        color:rgba(190,226,238,.78) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedProgressTrack{
+        margin-top:6px !important;
+        height:7px !important;
+        border:1px solid rgba(0,217,255,.36) !important;
+        border-radius:999px !important;
+        background:rgba(0,8,14,.92) !important;
+        overflow:hidden !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedProgressFill{
+        height:100% !important;
+        width:var(--seedProgress, 0%) !important;
+        background:linear-gradient(90deg, rgba(0,217,255,.95), rgba(0,255,213,.92), rgba(255,224,122,.88)) !important;
+        box-shadow:0 0 10px rgba(0,217,255,.34) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedLoadPrompt{
+        position:absolute !important;
+        inset:0 !important;
+        display:none !important;
+        align-items:center !important;
+        justify-content:center !important;
+        background:linear-gradient(180deg, rgba(0,8,16,.78), rgba(0,2,8,.90)) !important;
+        backdrop-filter:blur(2px) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedSaveRow.pendingLoad .standaloneSeedLoadPrompt{
+        display:flex !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSeedLoadBtn{
+        min-width:170px !important;
+        min-height:46px !important;
+        border:1px solid rgba(255,224,122,.88) !important;
+        border-radius:999px !important;
+        background:linear-gradient(180deg, rgba(80,52,0,.92), rgba(16,10,0,.96)) !important;
+        color:rgba(255,244,212,.98) !important;
+        font-size:18px !important;
+        box-shadow:0 0 22px rgba(255,224,122,.24) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneNextAchievementCard{
+        width:100% !important;
+        min-height:132px !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:8px !important;
+        align-items:stretch !important;
+        justify-content:center !important;
+        border:1px solid rgba(0,217,255,.38) !important;
+        border-radius:12px !important;
+        padding:14px !important;
+        background:
+          linear-gradient(180deg, rgba(0,52,74,.72), rgba(0,16,28,.94)),
+          radial-gradient(circle at 10% 0%, rgba(0,255,213,.18), transparent 46%) !important;
+        color:rgba(238,255,252,.96) !important;
+        text-align:left !important;
+        box-shadow:0 0 0 1px rgba(0,255,213,.12) inset, 0 0 18px rgba(0,217,255,.12) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneNextAchievementCard:hover{
+        border-color:rgba(0,255,213,.86) !important;
+        box-shadow:0 0 18px rgba(0,217,255,.28), 0 0 0 1px rgba(0,255,213,.20) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneNextAchievementCard[disabled]{
+        opacity:.62 !important;
+        cursor:default !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneNextAchievementEyebrow{
+        font-size:12px !important;
+        color:rgba(0,255,213,.88) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneNextAchievementTitle{
+        font-size:18px !important;
+        line-height:1.16 !important;
+        color:rgba(255,244,212,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneNextAchievementMeta,
+      body.flprStandaloneOriginalClient .standaloneNextAchievementDesc{
+        font-size:12px !important;
+        line-height:1.35 !important;
+        color:rgba(190,226,238,.82) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneNextAchievementBar{
+        height:9px !important;
+        border:1px solid rgba(0,217,255,.42) !important;
+        border-radius:999px !important;
+        overflow:hidden !important;
+        background:rgba(0,8,14,.92) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneNextAchievementBar span{
+        display:block !important;
+        height:100% !important;
+        width:var(--nextAchProgress, 0%) !important;
+        background:linear-gradient(90deg, rgba(0,217,255,.95), rgba(0,255,213,.92), rgba(255,224,122,.90)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerIdeaGrid{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:10px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerIdea{
+        border:1px solid rgba(0,166,255,.22) !important;
+        border-radius:10px !important;
+        padding:10px !important;
+        background:rgba(0,20,34,.54) !important;
+        color:rgba(208,238,248,.88) !important;
+        font-size:12px !important;
+        line-height:1.35 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerIdea strong{
+        display:block !important;
+        margin-bottom:4px !important;
+        color:rgba(0,255,213,.88) !important;
+        font-size:13px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerIdea span{
+        display:block !important;
+        color:rgba(238,255,252,.94) !important;
+        overflow-wrap:anywhere !important;
+      }
+      body.flprStandaloneOriginalClient .achCtlItem.standaloneAchFocusPulse{
+        outline:2px solid rgba(255,224,122,.95) !important;
+        box-shadow:0 0 22px rgba(255,224,122,.34), 0 0 0 1px rgba(255,244,212,.18) inset !important;
+      }
+      body.flprStandaloneOriginalClient .randomizerIntro.flprStandaloneClosed .randomizerIntroStartBtn{
+        opacity:.52 !important;
+        filter:saturate(.62) !important;
+        cursor:not-allowed !important;
+      }
+      body.flprStandaloneOriginalClient .randomizerIntro.flprStandaloneClosed .randomizerIntroSign{
+        color:rgba(190,226,238,.92) !important;
+        text-shadow:0 0 12px rgba(0,217,255,.26) !important;
+      }
+      body.flprStandaloneOriginalClient .achievementToast{
+        position:relative !important;
+        padding-right:38px !important;
+      }
+      body.flprStandaloneOriginalClient .achievementToastClose,
+      body.flprStandaloneOriginalClient .achievementModalClose{
+        position:absolute !important;
+        top:7px !important;
+        right:7px !important;
+        width:22px !important;
+        height:22px !important;
+        border:1px solid rgba(255,244,208,.82) !important;
+        border-radius:50% !important;
+        background:rgba(20,10,0,.66) !important;
+        color:rgba(255,248,224,.98) !important;
+        font-size:11px !important;
+        line-height:20px !important;
+        padding:0 !important;
+        text-align:center !important;
+        cursor:pointer !important;
+        z-index:3 !important;
+      }
+      body.flprStandaloneOriginalClient .achievementModalCard{
+        position:relative !important;
       }
       body.flprStandaloneOriginalClient,
       body.flprStandaloneOriginalClient *{
@@ -128,6 +908,17 @@
       body.flprStandaloneOriginalClient .nodeBtn,
       body.flprStandaloneOriginalClient .achTinyBtn{
         cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .controls{
+        box-sizing:border-box !important;
+        align-self:flex-start !important;
+        flex:0 0 auto !important;
+        margin-top:84px !important;
+        padding-top:0 !important;
+        top:0 !important;
+        transform:none !important;
+        height:calc(var(--captureH) - 230px) !important;
+        max-height:calc(var(--captureH) - 230px) !important;
       }
       body.flprStandaloneOriginalClient .controlsBody{
         overflow:hidden !important;
@@ -150,6 +941,14 @@
       }
       body.flprStandaloneOriginalClient #hintBallLocationBtn,
       body.flprStandaloneOriginalClient .hintPoolItem:has(#hintPoolBall){
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient #hintTestHangmanBtn,
+      body.flprStandaloneOriginalClient #testHangmanBtn,
+      body.flprStandaloneOriginalClient [data-testtag="Hangman"],
+      body.flprStandaloneOriginalClient .hintHangmanCard,
+      body.flprStandaloneOriginalClient .hintHangmanCooldowns,
+      body.flprStandaloneOriginalClient .hintHangmanChat{
         display:none !important;
       }
       body.flprStandaloneOriginalClient #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks{
@@ -254,6 +1053,8 @@
       }
       body.flprStandaloneOriginalClient .controlsTabs{
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        position:relative !important;
+        z-index:45 !important;
       }
       body.flprStandaloneOriginalClient .controlsHead,
       body.flprStandaloneOriginalClient .controlsHeadTitle{
@@ -276,6 +1077,14 @@
         z-index:30 !important;
         grid-template-columns:minmax(360px, .92fr) minmax(380px, 1.08fr) !important;
         grid-template-rows:auto minmax(0, 1fr) !important;
+        gap:10px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerLayout{
+        height:100% !important;
+        min-height:0 !important;
+        display:grid !important;
+        grid-template-columns:minmax(360px, .9fr) minmax(340px, 1.1fr) !important;
+        grid-template-rows:auto minmax(220px, .82fr) minmax(160px, .55fr) !important;
         gap:10px !important;
       }
       body.flprStandaloneOriginalClient .connectCol{
@@ -301,6 +1110,7 @@
       }
       body.flprStandaloneOriginalClient .standaloneConnectionModeShell{
         grid-column:1 / -1 !important;
+        grid-row:2 !important;
         display:flex !important;
         flex-direction:column !important;
         gap:calc(5px * var(--flprStandaloneControlFontScale)) !important;
@@ -369,7 +1179,33 @@
       }
       body.flprStandaloneOriginalClient .standaloneSecondaryStack,
       body.flprStandaloneOriginalClient .standaloneLogStack{
+        grid-row:2 !important;
         gap:10px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerSaveStack,
+      body.flprStandaloneOriginalClient .standaloneSingleplayerInfoStack{
+        min-height:0 !important;
+        overflow:hidden !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:10px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerSection{
+        grid-column:1 !important;
+        grid-row:1 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerToolsSection{
+        grid-column:2 !important;
+        grid-row:1 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerSaveStack{
+        grid-column:1 / -1 !important;
+        grid-row:2 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSingleplayerInfoStack{
+        grid-column:1 / -1 !important;
+        grid-row:3 !important;
+        overflow:auto !important;
       }
       body.flprStandaloneOriginalClient .standaloneSecondaryStack .standaloneControlSection,
       body.flprStandaloneOriginalClient .standaloneLogStack .standaloneControlSection{
@@ -1220,14 +2056,20 @@
     root.style.setProperty("--controlsW", `${controlsW}px`);
     root.style.removeProperty("--flprStandaloneBaseW");
     root.style.removeProperty("--flprStandaloneWindowScale");
+    try{ standaloneRenderModeHud(); }catch(_){}
   }
 
   function activeControlTab(){
-    return document.querySelector(".controlsTabBtn.active")?.dataset?.ctrlTab || "connect";
+    const activePanel = document.querySelector(".controlsTabPanel.active")?.dataset?.ctrlPanel || "";
+    if(activePanel === "singleplayer" || activePanel === "multiplayer" || activePanel === "visuals" || activePanel === "achievements") return activePanel;
+    return document.querySelector(".controlsTabBtn.active")?.dataset?.ctrlTab || "multiplayer";
   }
 
   function setControlTab(key){
-    const wanted = key === "achievements" ? "achievements" : (key === "visuals" ? "visuals" : "connect");
+    const raw = String(key || "").trim().toLowerCase();
+    const wanted = raw === "singleplayer"
+      ? "singleplayer"
+      : (raw === "visuals" || raw === "achievements" ? raw : "multiplayer");
     document.querySelectorAll(".controlsTabBtn").forEach((btn)=>{
       btn.classList.toggle("active", btn.dataset.ctrlTab === wanted);
     });
@@ -1240,7 +2082,52 @@
         panel.style.display = isWanted ? "" : "none";
       }
     });
-    try{ localStorage.setItem("flpr_controls_tab_v1", wanted); }catch(_){}
+    if(wanted === "singleplayer" || wanted === "multiplayer"){
+      try{ localStorage.setItem("flpr_controls_tab_v1", wanted); }catch(_){}
+    }
+    try{ standaloneRenderMenuTabs(wanted); }catch(_){}
+  }
+  try{ window.flprStandaloneSetControlTab = setControlTab; }catch(_){}
+
+  function standaloneCurrentMenuMode(){
+    const raw = String(standaloneProfileRuntime.selectedMode || "").trim().toLowerCase();
+    return raw === "singleplayer" ? "singleplayer" : "archipelago";
+  }
+
+  function standalonePrimaryTabForMode(mode){
+    return standaloneConnectionModeName(mode) === "singleplayer"
+      ? { key:"singleplayer", label:"RUN" }
+      : { key:"multiplayer", label:"CONNECT" };
+  }
+
+  function standaloneRenderMenuTabs(activeKey){
+    const tabs = document.querySelector(".controlsBody .controlsTabs");
+    if(!tabs) return;
+    const mode = standaloneCurrentMenuMode();
+    const primary = standalonePrimaryTabForMode(mode);
+    const current = String(activeKey || activeControlTab() || primary.key);
+    const wanted = current === "visuals" || current === "achievements" ? current : primary.key;
+    const signature = `${mode}|${wanted}`;
+    if(tabs.dataset.flprStandaloneModeTabs === signature && tabs.querySelector(`[data-ctrl-tab="${wanted}"]`)) return;
+    tabs.dataset.flprStandaloneTabs = "1";
+    tabs.dataset.flprStandaloneModeTabs = signature;
+    tabs.innerHTML = `
+      <button class="controlsTabBtn${wanted === primary.key ? " active" : ""}" data-ctrl-tab="${primary.key}" type="button">${primary.label}</button>
+      <button class="controlsTabBtn${wanted === "visuals" ? " active" : ""}" data-ctrl-tab="visuals" type="button">VISUALS / MUSIC</button>
+      <button class="controlsTabBtn${wanted === "achievements" ? " active" : ""}" data-ctrl-tab="achievements" type="button">ACHIEVEMENTS</button>
+    `;
+    if(tabs.__flprStandaloneModeTabsBound !== true){
+      tabs.__flprStandaloneModeTabsBound = true;
+      tabs.addEventListener("click", (event)=>{
+        const btn = event.target.closest(".controlsTabBtn");
+        if(!btn || !tabs.contains(btn)) return;
+        playClick();
+        const tab = btn.dataset.ctrlTab || primary.key;
+        if(tab === "singleplayer") standaloneSetSelectedMode("singleplayer");
+        else if(tab === "multiplayer") standaloneSetSelectedMode("archipelago");
+        setControlTab(tab);
+      }, true);
+    }
   }
 
   function apCfg(){
@@ -1960,7 +2847,8 @@
     return (tableIndex % 6 === 0) ? "Medium Junk Item" : "Easy Junk Item";
   }
 
-  function buildStandaloneSingleplayerSeedFixture(){
+  function buildStandaloneSingleplayerSeedFixture(seedName){
+    const activeSeedName = String(seedName || STANDALONE_SEED_NAME || "").trim() || STANDALONE_SEED_NAME;
     const worlds = standaloneCloneWorlds();
     const tables = standaloneSeedTables(worlds);
     const startingTables = standalonePickStartingTables(tables, 5);
@@ -2025,7 +2913,7 @@
       locationItemByLocId,
       spoilerText: spoilerLines.join("\n"),
       slotData: {
-        seed_name: STANDALONE_SEED_NAME,
+        seed_name: activeSeedName,
         boss_keys_required: 3,
         boss_keys_total: 3,
         traps_enabled: false,
@@ -2041,13 +2929,15 @@
     };
   }
 
-  async function loadStandaloneSingleplayerSeed(){
-    const fixture = buildStandaloneSingleplayerSeedFixture();
+  async function loadStandaloneSingleplayerSeed(opts){
+    opts = opts || {};
+    const seedName = String(opts.seedName || standaloneNewSingleplayerSeedName()).trim() || STANDALONE_SEED_NAME;
+    const fixture = buildStandaloneSingleplayerSeedFixture(seedName);
     try{ if(typeof apDisconnect === "function") apDisconnect({ manual:false }); }catch(_){}
     window.__manualDisconnect = true;
     ap.inherentSeedActive = true;
     ap.connected = true;
-    ap.seedName = STANDALONE_SEED_NAME;
+    ap.seedName = seedName;
     ap.cfg = { ...(ap.cfg || {}), player: ap.cfg?.player || "Ashodin", game: "Manual_FlippermizerBaseGame" };
     ap.checked = new Set();
     ap.pendingByLoc = new Map();
@@ -2076,7 +2966,7 @@
     state.selected = firstStart?.worldKey || "w1";
     state.lastSelected = state.selected;
     state.bossTable = "";
-    state.bossTableSeed = STANDALONE_SEED_NAME;
+    state.bossTableSeed = seedName;
     state.bossVictorySent = false;
     state.bossVictoryPending = false;
     state.bossVictoryFinalizing = false;
@@ -2094,75 +2984,106 @@
     try{ if(typeof setGenericCheckPayload === "function") setGenericCheckPayload(fixture.slotData); }catch(_){ ap.slotData = fixture.slotData; }
     try{ if(typeof inherentSeedPopulateLocationMaps === "function") inherentSeedPopulateLocationMaps(fixture); }catch(_){}
     ap.inherentLocationItems = new Map(Object.entries(fixture.locationItemByLocId || {}).map(([locId, reward])=>[Number(locId), reward]));
-    try{ if(typeof relicBeginRun === "function") relicBeginRun(STANDALONE_SEED_NAME, "standalone-singleplayer"); }catch(_){}
+    try{ if(typeof relicBeginRun === "function") relicBeginRun(seedName, "standalone-singleplayer"); }catch(_){}
     try{ if(typeof syncTableBannerCodeMapFromSlots === "function") syncTableBannerCodeMapFromSlots(state); if(typeof hydrateTableBannerSlotsFromCodeMap === "function") hydrateTableBannerSlotsFromCodeMap(state, { overwrite:true }); }catch(_){}
     try{ if(typeof saveState === "function") saveState(); }catch(_){}
     try{ if(typeof setApIndicator === "function") setApIndicator("green", "SINGLEPLAYER SEED"); }catch(_){}
     const hEl = document.getElementById("apConnectedHost");
-    if(hEl) hEl.textContent = `SINGLEPLAYER; ${STANDALONE_SEED_NAME}`;
+    if(hEl) hEl.textContent = `SINGLEPLAYER; ${seedName}`;
     try{ if(typeof updateApConnectButtons === "function") updateApConnectButtons("connected"); }catch(_){}
-    try{ if(typeof flprStatsStartRun === "function") flprStatsStartRun(STANDALONE_SEED_NAME, "standalone-singleplayer"); }catch(_){}
+    try{ if(typeof flprStatsStartRun === "function") flprStatsStartRun(seedName, "standalone-singleplayer"); }catch(_){}
     try{ if(typeof achBuildTableCatalogFromAp === "function") achBuildTableCatalogFromAp(); if(typeof achRecomputeProgress === "function") achRecomputeProgress(); if(typeof achSaveStore === "function") achSaveStore(); if(typeof renderAchievementsControlsPanel === "function") renderAchievementsControlsPanel(); }catch(_){}
     try{ if(typeof hintApplySpoilerText === "function") await hintApplySpoilerText(fixture.spoilerText, STANDALONE_SPOILER_SOURCE, { persist:true }); }catch(err){ try{ if(typeof hintLog === "function") hintLog(`Standalone spoiler load failed: ${err?.message || err}`); }catch(_){} }
     const startNames = (fixture.startingTables || []).map((table)=>table.tableName).join(", ");
     try{ if(typeof apLog === "function") apLog(`Standalone seed loaded; starts=${startNames || "none"}; locations=${Object.keys(fixture.locNameToId).length}; bundled task catalog=yes`); }catch(_){}
     try{ if(typeof renderAll === "function") renderAll(); if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs(); if(typeof renderChecks === "function") renderChecks(); if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
     try{ if(typeof showView === "function") showView("checks"); }catch(_){}
-    try{ if(typeof toast === "function") toast("good", "SINGLEPLAYER SEED", `Loaded bundled tasks and scores for ${Math.max(0, fixture.tables.length)} tables.`, 4200); }catch(_){}
+    if(!opts.fromSave){
+      try{ if(typeof toast === "function") toast("good", "SINGLEPLAYER SEED", `Loaded bundled tasks and scores for ${Math.max(0, fixture.tables.length)} tables.`, 4200); }catch(_){}
+    }
+    standaloneUpsertCurrentSeedSave({ createdAt:Date.now(), reason:"seed-start" });
+    standaloneMarkRandomizerReady("singleplayer");
     return true;
+  }
+
+  function standaloneSingleplayerPanelHtml(){
+    return `
+      <div class="standaloneSingleplayerLayout flprStandaloneSingleplayerLayout">
+        <section class="standaloneControlSection standaloneSingleplayerSection" data-accent="green">
+          <div class="standaloneSectionTitle">SINGLEPLAYER <span class="mini">local seed</span></div>
+          <div class="cRow connectActionRow">
+            <button class="cBtn" id="standaloneStartSeedBtn" type="button">START SINGLEPLAYER SEED</button>
+            <button class="cBtn danger" id="standaloneResetSeedBtn" type="button">RESET LOCAL RUN</button>
+          </div>
+          <div class="apHint">Start or continue a local Home Edition seed to open the randomizer door and begin achievement tracking.</div>
+        </section>
+
+        <section class="standaloneControlSection standaloneSingleplayerToolsSection" data-accent="blue">
+          <div class="standaloneSectionTitle">LOCAL RUN TOOLS <span class="mini">profile goals</span></div>
+          <button class="standaloneNextAchievementCard" id="standaloneNextAchievementBtn" type="button" disabled>
+            <div class="standaloneNextAchievementEyebrow">NEXT CLOSEST ACHIEVEMENT</div>
+            <div class="standaloneNextAchievementTitle">Load a profile goal</div>
+            <div class="standaloneNextAchievementDesc">Start or continue a seed to compare current progress against the achievement list.</div>
+          </button>
+        </section>
+
+        <div class="standaloneSingleplayerSaveStack">
+          <section class="standaloneControlSection grow" data-accent="gold">
+            <div class="standaloneSectionTitle">SAVE FILES <span class="mini">profile progress</span></div>
+            <div class="standaloneSeedSavePanel" id="standaloneSeedSavePanel">
+              <div class="standaloneSeedSaveTitle"><span>LOCAL SEEDS</span><span id="standaloneSeedSaveCount">0 saves</span></div>
+              <div class="standaloneSeedSaveList" id="standaloneSeedSaveList"></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="standaloneSingleplayerInfoStack">
+          <section class="standaloneControlSection grow" data-accent="green">
+            <div class="standaloneSectionTitle">RUN BRIEFING <span class="mini">local state</span></div>
+            <div class="standaloneSingleplayerIdeaGrid">
+              <div class="standaloneSingleplayerIdea"><strong>SEED</strong><span id="standaloneRunSeedSummary">No seed loaded</span></div>
+              <div class="standaloneSingleplayerIdea"><strong>CHECKS</strong><span id="standaloneRunCheckSummary">0 / 0</span></div>
+              <div class="standaloneSingleplayerIdea"><strong>BOSS KEYS</strong><span id="standaloneRunBossKeySummary">Searching</span></div>
+              <div class="standaloneSingleplayerIdea"><strong>RESOURCES</strong><span id="standaloneRunResourceSummary">Fragments 0 | EB 0</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    `;
   }
 
   function connectPanelHtml(cfg){
     return `
       <div class="connectCompactLayout flprStandaloneConnectLayout">
-        <div class="standaloneConnectionModeShell" data-standalone-connection-mode="archipelago">
-          <div class="standaloneConnectionModeTabs" role="tablist" aria-label="Connection mode">
-            <button class="standaloneConnectionModeTab active" type="button" role="tab" aria-selected="true" data-standalone-mode-tab="archipelago">ARCHIPELAGO CONNECTIONS</button>
-            <button class="standaloneConnectionModeTab" type="button" role="tab" aria-selected="false" data-standalone-mode-tab="singleplayer">SINGLEPLAYER</button>
-          </div>
-          <div class="standaloneConnectionModePanels">
-            <div class="standaloneConnectionModePanel active" role="tabpanel" data-standalone-mode-panel="archipelago">
-              <section class="standaloneControlSection standaloneArchipelagoSection" data-accent="gold">
-                <div class="standaloneSectionTitle">ARCHIPELAGO CONNECTIONS <span class="mini">multiworld</span></div>
-                <div class="apSettingsGrid">
-                  <div>
-                    <div class="cLabel">SERVER</div>
-                    <input class="cInput" id="apServer" autocomplete="off" placeholder="archipelago.gg:38281" value="${escapeAttr(cfg.server || "")}">
-                  </div>
-                  <div>
-                    <div class="cLabel">PLAYER</div>
-                    <input class="cInput" id="apPlayer" autocomplete="off" placeholder="Slot name" value="${escapeAttr(cfg.player || "Ashodin")}">
-                  </div>
-                  <div>
-                    <div class="cLabel">GAME</div>
-                    <input class="cInput" id="apGame" autocomplete="off" placeholder="Manual_FlippermizerBaseGame" value="${escapeAttr(cfg.game || "")}">
-                  </div>
-                  <div>
-                    <div class="cLabel">PASSWORD</div>
-                    <input class="cInput" id="apPass" type="password" autocomplete="off" placeholder="Optional" value="${escapeAttr(cfg.pass || "")}">
-                  </div>
-                </div>
-                <div class="standaloneArchipelagoFooter">
-                  <div class="apHint" id="apConnectedHost">CONNECTED; -</div>
-                  <div class="standaloneArchipelagoButtons">
-                    <button class="cBtn" id="apConnectBtn" type="button">CONNECT</button>
-                    <button class="cBtn danger" id="apDisconnectBtn" type="button">DISCONNECT</button>
-                  </div>
-                  <button class="cBtn standaloneSaveApCfgBtn" id="saveApCfgBtn" type="button">SAVE AP CFG</button>
-                </div>
-              </section>
+        <section class="standaloneControlSection standaloneArchipelagoSection" data-accent="gold">
+          <div class="standaloneSectionTitle">ARCHIPELAGO CONNECTIONS <span class="mini">multiworld</span></div>
+          <div class="apSettingsGrid">
+            <div>
+              <div class="cLabel">SERVER</div>
+              <input class="cInput" id="apServer" autocomplete="off" placeholder="archipelago.gg:38281" value="${escapeAttr(cfg.server || "")}">
             </div>
-            <div class="standaloneConnectionModePanel" role="tabpanel" data-standalone-mode-panel="singleplayer">
-              <section class="standaloneControlSection standaloneSingleplayerSection" data-accent="green">
-                <div class="standaloneSectionTitle">SINGLEPLAYER <span class="mini">local seed</span></div>
-                <div class="cRow connectActionRow">
-                  <button class="cBtn" id="standaloneStartSeedBtn" type="button">START SINGLEPLAYER SEED</button>
-                  <button class="cBtn danger" id="standaloneResetSeedBtn" type="button">RESET LOCAL RUN</button>
-                </div>
-              </section>
+            <div>
+              <div class="cLabel">PLAYER</div>
+              <input class="cInput" id="apPlayer" autocomplete="off" placeholder="Slot name" value="${escapeAttr(cfg.player || "Ashodin")}">
+            </div>
+            <div>
+              <div class="cLabel">GAME</div>
+              <input class="cInput" id="apGame" autocomplete="off" placeholder="Manual_FlippermizerBaseGame" value="${escapeAttr(cfg.game || "")}">
+            </div>
+            <div>
+              <div class="cLabel">PASSWORD</div>
+              <input class="cInput" id="apPass" type="password" autocomplete="off" placeholder="Optional" value="${escapeAttr(cfg.pass || "")}">
             </div>
           </div>
-        </div>
+          <div class="standaloneArchipelagoFooter">
+            <div class="apHint" id="apConnectedHost">CONNECTED; -</div>
+            <div class="standaloneArchipelagoButtons">
+              <button class="cBtn" id="apConnectBtn" type="button">CONNECT</button>
+              <button class="cBtn danger" id="apDisconnectBtn" type="button">DISCONNECT</button>
+            </div>
+            <button class="cBtn standaloneSaveApCfgBtn" id="saveApCfgBtn" type="button">SAVE AP CFG</button>
+          </div>
+        </section>
 
         <div class="connectCol connectColLeft standaloneSecondaryStack">
           <section class="standaloneControlSection grow" data-accent="gold">
@@ -2222,6 +3143,1532 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  function standaloneCloneJson(value, fallback){
+    try{
+      if(value == null) return fallback;
+      return JSON.parse(JSON.stringify(value));
+    }catch(_){
+      return fallback;
+    }
+  }
+
+  function standaloneLocalStorageJson(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      if(!raw) return fallback;
+      const parsed = JSON.parse(raw);
+      return parsed == null ? fallback : parsed;
+    }catch(_){
+      return fallback;
+    }
+  }
+
+  function standaloneWriteLocalStorageJson(key, value){
+    try{ localStorage.setItem(key, JSON.stringify(value)); }catch(_){}
+  }
+
+  function standaloneFreshProfileState(){
+    return { version:1, activeProfileId:"", profiles:[] };
+  }
+
+  function standaloneNormalizeProfileColor(value){
+    const raw = String(value || "").trim();
+    return /^#[0-9a-f]{6}$/i.test(raw) ? raw : "#00ffd5";
+  }
+
+  function standaloneDefaultProfileAvatar(){
+    return String.fromCodePoint(0x1F3B1);
+  }
+
+  function standaloneProfileEmojiList(){
+    return STANDALONE_PROFILE_EMOJI_CODES.map((code)=>String.fromCodePoint(code));
+  }
+
+  function standaloneSanitizeProfileAvatar(value){
+    const text = String(value || "").trim();
+    return text ? Array.from(text).slice(0, 2).join("") : standaloneDefaultProfileAvatar();
+  }
+
+  function standaloneSanitizeProfileName(value){
+    return String(value || "").replace(/\s+/g, " ").trim().slice(0, 28) || "Player";
+  }
+
+  function standaloneProfileState(){
+    const raw = standaloneLocalStorageJson(STANDALONE_PROFILE_STATE_KEY, null);
+    const state = (raw && typeof raw === "object") ? raw : standaloneFreshProfileState();
+    const profiles = Array.isArray(state.profiles) ? state.profiles : [];
+    const normalized = profiles.map((profile)=>{
+      const id = String(profile?.id || "").trim();
+      if(!id) return null;
+      return {
+        id,
+        name: standaloneSanitizeProfileName(profile?.name || "Player"),
+        avatar: standaloneSanitizeProfileAvatar(profile?.avatar || ""),
+        color: standaloneNormalizeProfileColor(profile?.color),
+        createdAt: Math.max(0, Number(profile?.createdAt || Date.now())),
+        updatedAt: Math.max(0, Number(profile?.updatedAt || profile?.createdAt || Date.now())),
+        achievementStore: (profile?.achievementStore && typeof profile.achievementStore === "object") ? profile.achievementStore : null,
+        achievementUi: (profile?.achievementUi && typeof profile.achievementUi === "object") ? profile.achievementUi : null,
+        episodeState: (profile?.episodeState && typeof profile.episodeState === "object") ? profile.episodeState : null,
+        relics: (profile?.relics && typeof profile.relics === "object") ? profile.relics : null,
+        seedSaves: Array.isArray(profile?.seedSaves) ? profile.seedSaves : [],
+        multiplayerSnapshot: (profile?.multiplayerSnapshot && typeof profile.multiplayerSnapshot === "object") ? profile.multiplayerSnapshot : null
+      };
+    }).filter(Boolean);
+    let activeProfileId = String(state.activeProfileId || "").trim();
+    if(activeProfileId && !profiles.some((profile)=>String(profile?.id || "") === activeProfileId)) activeProfileId = "";
+    return { version:1, activeProfileId, profiles:normalized };
+  }
+
+  function standaloneSaveProfileState(next){
+    const state = next && typeof next === "object" ? next : standaloneProfileState();
+    standaloneWriteLocalStorageJson(STANDALONE_PROFILE_STATE_KEY, {
+      version:1,
+      activeProfileId:String(state.activeProfileId || ""),
+      profiles:Array.isArray(state.profiles) ? state.profiles : []
+    });
+  }
+
+  function standaloneActiveProfile(stateOverride){
+    const state = stateOverride || standaloneProfileState();
+    const id = String(state.activeProfileId || "").trim();
+    return (state.profiles || []).find((profile)=>String(profile?.id || "") === id) || null;
+  }
+
+  function standaloneProfilePoints(profile){
+    const store = profile?.achievementStore && typeof profile.achievementStore === "object"
+      ? profile.achievementStore
+      : standaloneCurrentAchievementStoreSnapshot();
+    const earned = Number(store?.pointsEarned ?? store?.points ?? 0);
+    return Number.isFinite(earned) ? Math.max(0, Math.round(earned)) : 0;
+  }
+
+  function standaloneProfileId(){
+    return `home_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  function standaloneFreshAchievementStore(){
+    try{ if(typeof achCreateFreshStore === "function") return achCreateFreshStore(); }catch(_){}
+    return {
+      version:2,
+      updatedAt:Date.now(),
+      unlocked:{},
+      order:[],
+      catalog:{ tables:{}, randomizer:[] },
+      pointsEarned:0,
+      pointsSpent:0,
+      justCompleted:[],
+      descOverrides:{},
+      sortPrefs:{ achievements:"default", achPanel:"trophies", customizationType:"all" },
+      shop:{ owned:{}, equipped:{ border:"", sparks:"", cursor:"", title:"" } },
+      interaction:{ panelClicks:{}, tableSequence:[], panelSequence:[] },
+      progress:{ totalChecks:0, multiballChecks:0, tableChecks:{}, tableTotals:{} }
+    };
+  }
+
+  function standaloneFreshEpisodeState(){
+    try{ if(typeof episodeFreshState === "function") return episodeFreshState(); }catch(_){}
+    return { version:1, status:"idle", startedAt:0, endedAt:0, pausedAt:0, seedName:"", reason:"", runId:"" };
+  }
+
+  function standaloneCurrentAchievementStoreSnapshot(){
+    try{ if(typeof achStore !== "undefined" && achStore && typeof achStore === "object") return standaloneCloneJson(achStore, null); }catch(_){}
+    try{ if(window.flprAchievementStore && typeof window.flprAchievementStore === "object") return standaloneCloneJson(window.flprAchievementStore, null); }catch(_){}
+    return standaloneLocalStorageJson(STANDALONE_ACHIEVEMENT_LS_KEY, standaloneFreshAchievementStore());
+  }
+
+  function standaloneCurrentAchievementUiSnapshot(){
+    return standaloneLocalStorageJson(STANDALONE_ACHIEVEMENT_UI_LS_KEY, null);
+  }
+
+  function standaloneCurrentEpisodeSnapshot(){
+    try{ if(typeof episodeState !== "undefined" && episodeState && typeof episodeState === "object") return standaloneCloneJson(episodeState, null); }catch(_){}
+    return standaloneLocalStorageJson(STANDALONE_EPISODE_LS_KEY, standaloneFreshEpisodeState());
+  }
+
+  function standaloneCurrentRelicsSnapshot(){
+    try{ if(state?.relics && typeof state.relics === "object") return standaloneCloneJson(state.relics, null); }catch(_){}
+    return null;
+  }
+
+  function standaloneCaptureActiveProfileSnapshots(opts){
+    opts = opts || {};
+    if(standaloneProfileRuntime.profileRestoring && opts.force !== true) return;
+    const stateData = standaloneProfileState();
+    const active = standaloneActiveProfile(stateData);
+    if(!active) return;
+    active.achievementStore = standaloneCurrentAchievementStoreSnapshot() || standaloneFreshAchievementStore();
+    active.achievementUi = standaloneCurrentAchievementUiSnapshot();
+    active.episodeState = standaloneCurrentEpisodeSnapshot() || standaloneFreshEpisodeState();
+    active.relics = standaloneCurrentRelicsSnapshot();
+    active.updatedAt = Date.now();
+    standaloneSaveProfileState(stateData);
+  }
+
+  function standaloneApplyProfileSnapshots(profile){
+    if(!profile) return;
+    standaloneProfileRuntime.profileRestoring = true;
+    try{
+      const achievementStore = standaloneCloneJson(profile.achievementStore, null) || standaloneFreshAchievementStore();
+      standaloneWriteLocalStorageJson(STANDALONE_ACHIEVEMENT_LS_KEY, achievementStore);
+      try{
+        achStore = (typeof achLoadStore === "function") ? achLoadStore() : achievementStore;
+        if(typeof achEnsureExtendedStore === "function") achEnsureExtendedStore();
+        window.flprAchievementStore = achStore;
+      }catch(_){}
+      if(profile.achievementUi){
+        standaloneWriteLocalStorageJson(STANDALONE_ACHIEVEMENT_UI_LS_KEY, standaloneCloneJson(profile.achievementUi, profile.achievementUi));
+      }
+      const episode = standaloneCloneJson(profile.episodeState, null) || standaloneFreshEpisodeState();
+      standaloneWriteLocalStorageJson(STANDALONE_EPISODE_LS_KEY, episode);
+      try{ episodeState = episode; }catch(_){}
+      try{
+        if(profile.relics && state && typeof state === "object"){
+          state.relics = typeof relicNormalizeState === "function"
+            ? relicNormalizeState(standaloneCloneJson(profile.relics, {}))
+            : standaloneCloneJson(profile.relics, {});
+        }
+      }catch(_){}
+      try{ if(typeof achApplyShopCustomizationClasses === "function") achApplyShopCustomizationClasses(); }catch(_){}
+      try{ if(typeof achBuildTableCatalogFromAp === "function") achBuildTableCatalogFromAp(); }catch(_){}
+      try{ if(typeof achRecomputeProgress === "function") achRecomputeProgress(); }catch(_){}
+      try{ if(typeof achSaveStore === "function") achSaveStore(); }catch(_){}
+      try{ if(typeof updateEpisodeControlsUi === "function") updateEpisodeControlsUi(); }catch(_){}
+      try{ if(typeof renderAchievementsControlsPanel === "function") renderAchievementsControlsPanel(); }catch(_){}
+      try{ if(typeof renderHeaderTitleBadge === "function") renderHeaderTitleBadge(); }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+    }finally{
+      standaloneProfileRuntime.profileRestoring = false;
+    }
+  }
+
+  function standaloneCreateProfile(data){
+    const stateData = standaloneProfileState();
+    const now = Date.now();
+    const importExisting = !stateData.profiles.length;
+    const profile = {
+      id: standaloneProfileId(),
+      name: standaloneSanitizeProfileName(data?.name || ""),
+      avatar: standaloneSanitizeProfileAvatar(data?.avatar || ""),
+      color: standaloneNormalizeProfileColor(data?.color),
+      createdAt: now,
+      updatedAt: now,
+      achievementStore: importExisting ? (standaloneCurrentAchievementStoreSnapshot() || standaloneFreshAchievementStore()) : standaloneFreshAchievementStore(),
+      achievementUi: importExisting ? standaloneCurrentAchievementUiSnapshot() : null,
+      episodeState: standaloneFreshEpisodeState(),
+      relics: importExisting ? standaloneCurrentRelicsSnapshot() : null,
+      seedSaves: [],
+      multiplayerSnapshot: null
+    };
+    stateData.profiles.push(profile);
+    stateData.activeProfileId = profile.id;
+    standaloneSaveProfileState(stateData);
+    standaloneProfileRuntime.appliedProfileId = profile.id;
+    standaloneProfileRuntime.profileGateManualOpen = false;
+    standaloneApplyProfileSnapshots(profile);
+    standaloneRefreshProfileUi();
+    return profile;
+  }
+
+  function standaloneUpdateActiveProfile(data){
+    const stateData = standaloneProfileState();
+    const active = standaloneActiveProfile(stateData);
+    if(!active) return null;
+    active.name = standaloneSanitizeProfileName(data?.name || active.name || "");
+    active.avatar = standaloneSanitizeProfileAvatar(data?.avatar || active.avatar || "");
+    active.color = standaloneNormalizeProfileColor(data?.color || active.color);
+    active.updatedAt = Date.now();
+    standaloneSaveProfileState(stateData);
+    standaloneProfileRuntime.profileGateManualOpen = false;
+    standaloneCloseProfileGate({ force:true });
+    standaloneRefreshProfileUi();
+    return active;
+  }
+
+  function standaloneSignOutProfile(){
+    try{ if(standaloneCurrentMenuMode() === "archipelago" || (ap?.connected && !ap?.inherentSeedActive)) standaloneCaptureMultiplayerSnapshot("profile-signout"); }catch(_){}
+    standaloneCaptureActiveProfileSnapshots({ force:true });
+    const stateData = standaloneProfileState();
+    stateData.activeProfileId = "";
+    standaloneSaveProfileState(stateData);
+    standaloneProfileRuntime.appliedProfileId = "";
+    standaloneProfileRuntime.selectedMode = "";
+    standaloneMarkRandomizerClosed();
+    standaloneOpenProfileGate(true, "choose");
+  }
+
+  function standaloneSwitchProfile(profileId){
+    try{ if(standaloneCurrentMenuMode() === "archipelago" || (ap?.connected && !ap?.inherentSeedActive)) standaloneCaptureMultiplayerSnapshot("profile-switch"); }catch(_){}
+    standaloneCaptureActiveProfileSnapshots({ force:true });
+    const stateData = standaloneProfileState();
+    const id = String(profileId || "").trim();
+    const profile = stateData.profiles.find((entry)=>String(entry?.id || "") === id);
+    if(!profile) return false;
+    stateData.activeProfileId = id;
+    standaloneSaveProfileState(stateData);
+    standaloneProfileRuntime.appliedProfileId = id;
+    standaloneProfileRuntime.randomizerStarted = false;
+    standaloneProfileRuntime.randomizerReady = false;
+    standaloneProfileRuntime.selectedMode = "";
+    standaloneProfileRuntime.profileGateManualOpen = false;
+    standaloneApplyProfileSnapshots(profile);
+    standaloneRefreshProfileUi();
+    return true;
+  }
+
+  function standaloneFormatShortTime(ts){
+    try{
+      const d = new Date(Number(ts) || Date.now());
+      return d.toLocaleString([], { month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+    }catch(_){
+      return "now";
+    }
+  }
+
+  function standaloneSeedWord(seedName){
+    try{ if(typeof flprSeedWord === "function") return String(flprSeedWord(seedName) || "").trim(); }catch(_){}
+    const raw = String(seedName || "").trim();
+    return raw ? raw.replace(/^FLPR[_-]?/i, "").replace(/[_-]+/g, " ").slice(0, 28) : "Local Seed";
+  }
+
+  function standaloneNewSingleplayerSeedName(){
+    const code = Date.now().toString(36).toUpperCase();
+    const salt = Math.random().toString(36).slice(2, 6).toUpperCase();
+    return `FLPR_HOME_${code}_${salt}`;
+  }
+
+  function standaloneSeedProgressSnapshot(){
+    let total = 0;
+    let checked = 0;
+    try{
+      const valid = ap?.validCheckLocIds instanceof Set ? Array.from(ap.validCheckLocIds) : [];
+      const locIds = valid.length
+        ? valid
+        : (ap?.locById instanceof Map ? Array.from(ap.locById.keys()) : []);
+      const unique = new Set(locIds.map(Number).filter((id)=>Number.isFinite(id) && id > 0));
+      total = unique.size;
+      const checkedSet = ap?.checked instanceof Set ? ap.checked : new Set();
+      checked = Array.from(unique).reduce((n, id)=> n + (checkedSet.has(id) ? 1 : 0), 0);
+    }catch(_){}
+    const pct = total > 0 ? Math.max(0, Math.min(100, (checked / total) * 100)) : 0;
+    return { checked, total, pct };
+  }
+
+  function standaloneSeedSaveId(seedName){
+    const raw = String(seedName || "").trim() || "singleplayer";
+    let h = 5381;
+    for(let i = 0; i < raw.length; i++) h = ((h << 5) + h) + raw.charCodeAt(i);
+    return `seed_${(h >>> 0).toString(36)}`;
+  }
+
+  function standaloneCurrentSingleplayerSeedSavePatch(extra){
+    const seedName = String(ap?.seedName || state?.bossTableSeed || "").trim();
+    if(!seedName || !ap?.inherentSeedActive) return null;
+    const progress = standaloneSeedProgressSnapshot();
+    return {
+      id: standaloneSeedSaveId(seedName),
+      mode: "singleplayer",
+      seedName,
+      seedWord: standaloneSeedWord(seedName),
+      updatedAt: Date.now(),
+      checked: progress.checked,
+      total: progress.total,
+      pct: progress.pct,
+      checkedLocIds: (()=>{ try{ return Array.from(ap.checked || []).map(Number).filter((id)=>Number.isFinite(id) && id > 0); }catch(_){ return []; } })(),
+      stateSnapshot: (()=>{ try{ return standaloneCloneJson(state, null); }catch(_){ return null; } })(),
+      ...(extra || {})
+    };
+  }
+
+  function standaloneUpsertCurrentSeedSave(extra){
+    if(standaloneProfileRuntime.activeSeedLoadConfirmId && extra?.reason !== "seed-load" && extra?.force !== true) return null;
+    const activeState = standaloneProfileState();
+    const active = standaloneActiveProfile(activeState);
+    if(!active) return null;
+    const patch = standaloneCurrentSingleplayerSeedSavePatch(extra);
+    if(!patch) return null;
+    const list = Array.isArray(active.seedSaves) ? active.seedSaves.slice() : [];
+    const idx = list.findIndex((entry)=>String(entry?.id || "") === patch.id);
+    const previous = idx >= 0 ? list[idx] : null;
+    const next = {
+      ...(previous || {}),
+      ...patch,
+      createdAt: Number(previous?.createdAt || patch.createdAt || Date.now())
+    };
+    if(idx >= 0) list[idx] = next;
+    else list.unshift(next);
+    active.seedSaves = list
+      .filter((entry)=>entry && String(entry.mode || "") === "singleplayer")
+      .sort((a, b)=>Number(b?.updatedAt || 0) - Number(a?.updatedAt || 0))
+      .slice(0, 18);
+    active.updatedAt = Date.now();
+    standaloneSaveProfileState(activeState);
+    standaloneWriteLocalStorageJson(STANDALONE_SEED_SAVES_KEY, active.seedSaves);
+    standaloneRenderSeedSaveList();
+    standaloneRenderRunBriefing();
+    standaloneRenderNextAchievement();
+    return next;
+  }
+
+  function standaloneSavedSeedById(seedId){
+    const active = standaloneActiveProfile();
+    const id = String(seedId || "").trim();
+    return (active?.seedSaves || []).find((entry)=>String(entry?.id || "") === id) || null;
+  }
+
+  function standaloneSetSeedLoadConfirm(seedId){
+    const id = String(seedId || "").trim();
+    standaloneProfileRuntime.activeSeedLoadConfirmId = id;
+    document.querySelectorAll("#standaloneSeedSaveList .standaloneSeedSaveRow").forEach((row)=>{
+      row.classList.toggle("pendingLoad", !!id && String(row.dataset.seedSaveId || "") === id);
+    });
+  }
+
+  function standaloneClearSeedLoadConfirm(){
+    if(!standaloneProfileRuntime.activeSeedLoadConfirmId) return;
+    standaloneProfileRuntime.activeSeedLoadConfirmId = "";
+    document.querySelectorAll("#standaloneSeedSaveList .standaloneSeedSaveRow.pendingLoad").forEach((row)=>{
+      row.classList.remove("pendingLoad");
+    });
+  }
+
+  async function standaloneLoadSavedSingleplayerSeed(seedId){
+    const save = standaloneCloneJson(standaloneSavedSeedById(seedId), null);
+    if(!save || String(save.mode || "") !== "singleplayer" || !String(save.seedName || "").trim()) return false;
+    standaloneClearSeedLoadConfirm();
+    standaloneSetSelectedMode("singleplayer");
+    const seedName = String(save.seedName || "").trim();
+    await loadStandaloneSingleplayerSeed({ seedName, fromSave:true });
+    const snapshot = standaloneCloneJson(save.stateSnapshot, null);
+    let restoredSelected = "";
+    let restoredLastSelected = "";
+    if(snapshot && snapshot.worlds && snapshot.selected){
+      restoredSelected = String(snapshot.selected || "");
+      restoredLastSelected = String(snapshot.lastSelected || restoredSelected || "");
+      try{
+        state = snapshot;
+        if(typeof window !== "undefined") window.state = state;
+        if(typeof saveState === "function") saveState();
+        if(typeof loadState === "function") state = loadState();
+      }catch(_){}
+    }
+    try{
+      ap.inherentSeedActive = true;
+      ap.connected = true;
+      ap.seedName = seedName;
+      ap.checked = new Set((Array.isArray(save.checkedLocIds) ? save.checkedLocIds : []).map(Number).filter((id)=>Number.isFinite(id) && id > 0));
+    }catch(_){}
+    try{
+      if(restoredSelected){
+        if(typeof standaloneClearChecksSelectionPin === "function") standaloneClearChecksSelectionPin("save-load");
+        if(typeof standaloneClearChecksWorldPin === "function") standaloneClearChecksWorldPin("save-load");
+        if(typeof standaloneRememberChecksWorldSelection === "function") standaloneRememberChecksWorldSelection(restoredSelected, "save-load");
+        ap.currentWorld = restoredSelected;
+      }
+    }catch(_){}
+    try{ if(typeof saveState === "function") saveState(); }catch(_){}
+    try{ if(typeof setApIndicator === "function") setApIndicator("green", "SINGLEPLAYER SEED"); }catch(_){}
+    const hEl = document.getElementById("apConnectedHost");
+    if(hEl) hEl.textContent = `SINGLEPLAYER; ${seedName}`;
+    try{ if(typeof updateApConnectButtons === "function") updateApConnectButtons("connected"); }catch(_){}
+    try{ if(typeof achBuildTableCatalogFromAp === "function") achBuildTableCatalogFromAp(); if(typeof achRecomputeProgress === "function") achRecomputeProgress(); if(typeof achSaveStore === "function") achSaveStore(); if(typeof renderAchievementsControlsPanel === "function") renderAchievementsControlsPanel(); }catch(_){}
+    try{ if(typeof renderAll === "function") renderAll(); if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs(); if(typeof renderChecks === "function") renderChecks(); if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
+    try{ if(typeof showView === "function") showView("checks"); }catch(_){}
+    try{
+      if(restoredSelected && state?.worlds?.[restoredSelected]){
+        if(typeof standaloneRememberChecksWorldSelection === "function") standaloneRememberChecksWorldSelection(restoredSelected, "save-load");
+        ap.currentWorld = restoredSelected;
+        state.selected = restoredSelected;
+        state.lastSelected = restoredLastSelected || restoredSelected;
+        if(typeof saveState === "function") saveState();
+        if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+        if(typeof renderChecks === "function") renderChecks();
+        if(typeof updateCountCheckUI === "function") updateCountCheckUI();
+      }
+    }catch(_){}
+    standaloneUpsertCurrentSeedSave({ createdAt:save.createdAt || Date.now(), reason:"seed-load" });
+    standaloneMarkRandomizerReady("singleplayer");
+    standaloneRefreshProfileUi();
+    try{
+      window.__flprStandaloneLastSeedLoad = {
+        id:String(save.id || ""),
+        seedName,
+        restoredSelected,
+        selected:String(state?.selected || ""),
+        ts:Date.now()
+      };
+    }catch(_){}
+    try{ if(typeof toast === "function") toast("good", "SAVE LOADED", `${save.seedWord || standaloneSeedWord(seedName)} restored.`, 3000); }catch(_){}
+    return true;
+  }
+
+  function standaloneHandleSeedLoadActivation(event, seedId){
+    if(event?.__flprStandaloneSeedLoadHandled) return;
+    if(event) event.__flprStandaloneSeedLoadHandled = true;
+    if(event?.preventDefault) event.preventDefault();
+    if(event?.stopPropagation) event.stopPropagation();
+    try{ playClick(); }catch(_){}
+    standaloneLoadSavedSingleplayerSeed(seedId).catch((err)=>{ try{ console.error(err); }catch(_){} });
+  }
+
+  function standaloneHandleSeedSaveActivation(event, row){
+    if(event?.target?.closest?.("[data-seed-load-id]")) return;
+    if(event?.preventDefault) event.preventDefault();
+    try{ playClick(); }catch(_){}
+    standaloneSetSeedLoadConfirm(row?.dataset?.seedSaveId || "");
+  }
+
+  function standaloneRenderSeedSaveList(){
+    const list = document.getElementById("standaloneSeedSaveList");
+    const count = document.getElementById("standaloneSeedSaveCount");
+    if(!list) return;
+    const active = standaloneActiveProfile();
+    const saves = (active?.seedSaves || []).filter((entry)=>String(entry?.mode || "") === "singleplayer");
+    if(count) count.textContent = `${saves.length} save${saves.length === 1 ? "" : "s"}`;
+    if(!saves.length){
+      list.innerHTML = `<div class="standaloneProfileHint">No local seeds saved yet. Start a Singleplayer seed to create a save file.</div>`;
+      return;
+    }
+    list.innerHTML = saves.map((save)=>{
+      const pct = Math.max(0, Math.min(100, Number(save?.pct || 0)));
+      const checked = Math.max(0, Math.round(Number(save?.checked || 0)));
+      const total = Math.max(0, Math.round(Number(save?.total || 0)));
+      const pending = String(standaloneProfileRuntime.activeSeedLoadConfirmId || "") === String(save?.id || "");
+      return `
+        <div class="standaloneSeedSaveRow${pending ? " pendingLoad" : ""}" data-seed-save-id="${escapeAttr(save?.id || "")}" role="button" tabindex="0" aria-label="Load ${escapeAttr(save?.seedWord || "local seed")}">
+          <div class="standaloneSeedSaveRowHd">
+            <span>${standaloneEscapeHtml(save?.seedWord || "Local Seed")}</span>
+            <span>${pct.toFixed(1)}%</span>
+          </div>
+          <div class="standaloneSeedSaveMeta">${checked}/${total || "?"} checks | ${standaloneEscapeHtml(save?.seedName || "")} | ${standaloneEscapeHtml(standaloneFormatShortTime(save?.updatedAt))}</div>
+          <div class="standaloneSeedProgressTrack"><div class="standaloneSeedProgressFill" style="--seedProgress:${pct.toFixed(2)}%"></div></div>
+          <div class="standaloneSeedLoadPrompt" aria-hidden="${pending ? "false" : "true"}">
+            <button class="standaloneSeedLoadBtn" type="button" data-seed-load-id="${escapeAttr(save?.id || "")}">LOAD?</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+    list.querySelectorAll("[data-seed-load-id]").forEach((btn)=>{
+      btn.onclick = (event)=>standaloneHandleSeedLoadActivation(event, btn.dataset.seedLoadId || "");
+    });
+    list.querySelectorAll("[data-seed-save-id]").forEach((row)=>{
+      row.onclick = (event)=>standaloneHandleSeedSaveActivation(event, row);
+      row.onkeydown = (event)=>{
+        if(event.key !== "Enter" && event.key !== " ") return;
+        standaloneHandleSeedSaveActivation(event, row);
+      };
+    });
+  }
+
+  function standaloneAllAchievementDefs(){
+    try{
+      if(typeof achEnsureExtendedStore === "function") achEnsureExtendedStore();
+      const defs = typeof achBuildAllDefs === "function" ? achBuildAllDefs() : null;
+      return (defs?.tableDefs || []).concat(defs?.randomDefs || []).filter((def)=>String(def?.id || "").trim());
+    }catch(_){}
+    return [];
+  }
+
+  function standaloneAchievementById(achievementId){
+    const id = String(achievementId || "").trim();
+    if(!id) return null;
+    return standaloneAllAchievementDefs().find((def)=>String(def?.id || "") === id) || null;
+  }
+
+  function standaloneNextClosestAchievement(){
+    try{
+      const allDefs = standaloneAllAchievementDefs();
+      const rows = allDefs
+        .filter((def)=>!achStore?.unlocked?.[String(def?.id || "")])
+        .map((def)=>{
+          const pr = typeof achDefProgress === "function" ? achDefProgress(def) : { cur:0, goal:1, pct:0 };
+          const goal = Math.max(1, Number(pr?.goal || 1));
+          const cur = Math.max(0, Math.min(goal, Number(pr?.cur || 0)));
+          const pct = Math.max(0, Math.min(1, Number(pr?.pct ?? (cur / goal)) || 0));
+          return { def, pr:{ cur, goal, pct } };
+        });
+      rows.sort((a, b)=>{
+        const aStarted = a.pr.pct > 0 ? 1 : 0;
+        const bStarted = b.pr.pct > 0 ? 1 : 0;
+        return (bStarted - aStarted)
+          || (b.pr.pct - a.pr.pct)
+          || ((b.pr.cur || 0) - (a.pr.cur || 0))
+          || ((a.pr.goal - a.pr.cur) - (b.pr.goal - b.pr.cur))
+          || String(a.def?.title || "").localeCompare(String(b.def?.title || ""));
+      });
+      return rows[0] || null;
+    }catch(_){}
+    return null;
+  }
+
+  function standaloneRenderNextAchievement(){
+    const btn = document.getElementById("standaloneNextAchievementBtn");
+    if(!btn) return;
+    const next = standaloneNextClosestAchievement();
+    if(!next?.def){
+      btn.disabled = true;
+      btn.onclick = null;
+      btn.removeAttribute("data-achievement-id");
+      btn.innerHTML = `
+        <div class="standaloneNextAchievementEyebrow">NEXT CLOSEST ACHIEVEMENT</div>
+        <div class="standaloneNextAchievementTitle">All caught up</div>
+        <div class="standaloneNextAchievementDesc">No locked achievements are available for the current profile catalog.</div>
+      `;
+      return;
+    }
+    const def = next.def;
+    const id = String(def?.id || "");
+    const title = String(def?.title || id || "Achievement");
+    const desc = (()=>{ try{ return achGetDisplayDesc(def); }catch(_){ return String(def?.desc || ""); } })();
+    const pct = Math.max(0, Math.min(100, Math.round(next.pr.pct * 100)));
+    const points = (()=>{ try{ return Math.max(0, Number(achPointsForPayload(def) || 0)); }catch(_){ return 0; } })();
+    btn.disabled = false;
+    btn.onclick = (event)=>standaloneHandleNextAchievementClick(event, btn);
+    btn.dataset.achievementId = id;
+    btn.dataset.achievementTitle = title;
+    btn.innerHTML = `
+      <div class="standaloneNextAchievementEyebrow">NEXT CLOSEST ACHIEVEMENT</div>
+      <div class="standaloneNextAchievementTitle">${standaloneEscapeHtml(title)}</div>
+      <div class="standaloneNextAchievementMeta">PROGRESS; ${standaloneEscapeHtml(String(next.pr.cur))}/${standaloneEscapeHtml(String(next.pr.goal))} | REWARD; +${points} FLPRP</div>
+      <div class="standaloneNextAchievementBar"><span style="--nextAchProgress:${pct}%"></span></div>
+      <div class="standaloneNextAchievementDesc">${standaloneEscapeHtml(desc || "Open the Achievements panel to view this goal.")}</div>
+    `;
+  }
+
+  function standaloneFindAchievementElement(achievementId, title){
+    const panel = document.getElementById("achievementsControlsPanel");
+    if(!panel) return null;
+    const wantedTitle = String(title || "").trim();
+    const def = standaloneAchievementById(achievementId);
+    const derivedTitle = wantedTitle || String(def?.title || "").trim();
+    const items = Array.from(panel.querySelectorAll(".achCtlItem"));
+    if(!items.length) return null;
+    if(derivedTitle){
+      const exact = items.find((item)=>String(item.querySelector(".n")?.textContent || "").trim().includes(derivedTitle));
+      if(exact) return exact;
+      const loose = items.find((item)=>String(item.textContent || "").includes(derivedTitle));
+      if(loose) return loose;
+    }
+    return panel.querySelector(".achClosestItem") || items[0] || null;
+  }
+
+  function standaloneOpenAchievementFromSingleplayer(achievementId){
+    const def = standaloneAchievementById(achievementId) || standaloneNextClosestAchievement()?.def || null;
+    const id = String(def?.id || achievementId || "");
+    const title = String(def?.title || "");
+    try{
+      if(typeof achEnsureExtendedStore === "function") achEnsureExtendedStore();
+      achStore.sortPrefs = achStore.sortPrefs && typeof achStore.sortPrefs === "object" ? achStore.sortPrefs : {};
+      achStore.sortPrefs.achPanel = "trophies";
+      achStore.sortPrefs.achievements = "progress";
+      if(typeof achSaveStore === "function") achSaveStore();
+      if(typeof renderAchievementsControlsPanel === "function") renderAchievementsControlsPanel();
+    }catch(_){}
+    try{ setControlTab("achievements"); }catch(_){}
+    try{
+      const panel = document.querySelector('.controlsTabPanel[data-ctrl-panel="achievements"]');
+      window.__flprStandaloneLastAchievementOpen = {
+        id,
+        title,
+        panelActive:!!panel?.classList?.contains("active"),
+        panelDisplay:panel ? getComputedStyle(panel).display : "",
+        ts:Date.now()
+      };
+    }catch(_){}
+    window.setTimeout(()=>{
+      try{
+        if(typeof renderAchievementsControlsPanel === "function") renderAchievementsControlsPanel();
+        const item = standaloneFindAchievementElement(id, title);
+        if(item){
+          item.classList.add("standaloneAchFocusPulse");
+          item.scrollIntoView({ block:"center", inline:"nearest", behavior:"smooth" });
+          window.setTimeout(()=>{ try{ item.classList.remove("standaloneAchFocusPulse"); }catch(_){} }, 3600);
+        }
+      }catch(_){}
+    }, 90);
+  }
+
+  function standaloneHandleNextAchievementClick(event, btn){
+    if(event?.__flprStandaloneNextAchievementHandled) return;
+    if(event) event.__flprStandaloneNextAchievementHandled = true;
+    if(event?.preventDefault) event.preventDefault();
+    const target = btn || document.getElementById("standaloneNextAchievementBtn");
+    if(!target || target.disabled) return;
+    try{ playClick(); }catch(_){}
+    standaloneOpenAchievementFromSingleplayer(target.dataset.achievementId || "");
+  }
+
+  function standaloneRenderRunBriefing(){
+    const seedEl = document.getElementById("standaloneRunSeedSummary");
+    const checkEl = document.getElementById("standaloneRunCheckSummary");
+    const keyEl = document.getElementById("standaloneRunBossKeySummary");
+    const resourceEl = document.getElementById("standaloneRunResourceSummary");
+    if(!seedEl && !checkEl && !keyEl && !resourceEl) return;
+    const progress = standaloneSeedProgressSnapshot();
+    const seedName = String(ap?.seedName || state?.bossTableSeed || "").trim();
+    if(seedEl) seedEl.textContent = ap?.inherentSeedActive && seedName ? `${standaloneSeedWord(seedName)} | ${seedName}` : "No seed loaded";
+    if(checkEl) checkEl.textContent = `${Math.max(0, Number(progress.checked || 0))} / ${Math.max(0, Number(progress.total || 0))} (${Math.round(Number(progress.pct || 0))}%)`;
+    if(keyEl){
+      let got = 0;
+      let total = 3;
+      try{
+        if(Array.isArray(bossKeysState)){
+          total = Math.max(1, bossKeysState.length || total);
+          got = bossKeysState.reduce((n, key)=> n + (key?.acquired ? 1 : 0), 0);
+        }else{
+          got = Math.max(0, Math.round(Number(window.__apBossKeyCount || 0)));
+          total = Math.max(1, Math.round(Number(ap?.slotData?.boss_keys_total || ap?.slotData?.boss_keys_required || 3)));
+        }
+      }catch(_){}
+      keyEl.textContent = ap?.inherentSeedActive || ap?.connected ? `${got} / ${total}` : "Searching";
+    }
+    if(resourceEl){
+      let fragments = 0;
+      let extraBalls = 0;
+      try{ fragments = Math.max(0, Math.round(Number(standaloneLoadRewardState()?.currentFragments || 0))); }catch(_){}
+      try{ extraBalls = Math.max(0, Math.round(Number(state?.extraBallTokens || 0))); }catch(_){}
+      resourceEl.textContent = `Fragments ${fragments}/5 | EB ${extraBalls}`;
+    }
+  }
+
+  function standaloneEnsureProfileHud(){
+    let hud = document.getElementById("standaloneProfileHud");
+    if(!hud){
+      hud = document.createElement("div");
+      hud.id = "standaloneProfileHud";
+      hud.className = "standaloneProfileHud";
+      document.body.appendChild(hud);
+    }
+    if(hud.__flprStandaloneProfileHudBound !== true){
+      hud.__flprStandaloneProfileHudBound = true;
+      hud.addEventListener("click", (event)=>{
+        const btn = event.target.closest?.("#standaloneProfileHudBtn");
+        if(btn){
+          event.preventDefault();
+          event.stopPropagation();
+          try{ event.stopImmediatePropagation(); }catch(_){}
+          try{ playClick(); }catch(_){}
+          const menu = document.getElementById("standaloneProfileMenu");
+          if(menu) menu.hidden = !menu.hidden;
+          return;
+        }
+        const action = event.target.closest?.("[data-profile-menu-action]");
+        if(action){
+          event.preventDefault();
+          event.stopPropagation();
+          try{ event.stopImmediatePropagation(); }catch(_){}
+          try{ playClick(); }catch(_){}
+          const menu = document.getElementById("standaloneProfileMenu");
+          if(menu) menu.hidden = true;
+          const name = String(action.dataset.profileMenuAction || "");
+          if(name === "change") standaloneOpenProfileGate(true, "choose");
+          else if(name === "edit") standaloneOpenProfileGate(true, "edit");
+          else if(name === "signout") standaloneSignOutProfile();
+        }
+      }, true);
+      document.addEventListener("click", (event)=>{
+        if(hud.contains(event.target)) return;
+        const menu = document.getElementById("standaloneProfileMenu");
+        if(menu) menu.hidden = true;
+      }, true);
+    }
+    return hud;
+  }
+
+  function standaloneEnsureModeHud(){
+    let hud = document.getElementById("standaloneModeHud");
+    if(!hud){
+      hud = document.createElement("div");
+      hud.id = "standaloneModeHud";
+      hud.className = "standaloneModeHud";
+      document.body.appendChild(hud);
+    }
+    if(hud.__flprStandaloneModeHudBound !== true){
+      hud.__flprStandaloneModeHudBound = true;
+      hud.addEventListener("click", (event)=>{
+        const btn = event.target.closest?.("[data-standalone-mode-toggle]");
+        if(!btn || !hud.contains(btn)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        try{ event.stopImmediatePropagation(); }catch(_){}
+        try{ playClick(); }catch(_){}
+        standaloneSwitchHomeMode(btn.dataset.standaloneModeToggle || "archipelago");
+      }, true);
+    }
+    return hud;
+  }
+
+  function standalonePositionModeHud(){
+    try{
+      const hud = document.getElementById("standaloneModeHud");
+      if(!hud) return;
+      const controls = document.querySelector(".controlsBody") || document.querySelector(".controlsHead, .controlsHeadTitle") || document.querySelector(".controls");
+      const rect = controls?.getBoundingClientRect?.();
+      if(rect && Number.isFinite(rect.left) && rect.left > 0){
+        hud.style.setProperty("left", `${Math.max(8, Math.round(rect.left))}px`, "important");
+      }
+    }catch(_){}
+  }
+
+  function standaloneRenderModeHud(){
+    const hud = standaloneEnsureModeHud();
+    if(!hud) return;
+    const hasProfile = !!standaloneActiveProfile();
+    hud.hidden = !hasProfile;
+    standalonePositionModeHud();
+    const mode = standaloneCurrentMenuMode();
+    hud.innerHTML = `
+      <img class="standaloneModeHudLogo" src="Flippermizer Images/FlippermizerLogo.png" alt="Flippermizer">
+      <div class="standaloneModeHudButtons" aria-label="Home Edition mode">
+        <button class="standaloneModeHudBtn${mode === "singleplayer" ? " active" : ""}" data-standalone-mode-toggle="singleplayer" type="button" aria-pressed="${mode === "singleplayer" ? "true" : "false"}">SP</button>
+        <button class="standaloneModeHudBtn${mode === "archipelago" ? " active" : ""}" data-standalone-mode-toggle="archipelago" type="button" aria-pressed="${mode === "archipelago" ? "true" : "false"}">MP</button>
+      </div>
+    `;
+    [0, 80, 240, 520].forEach((delay)=>setTimeout(standalonePositionModeHud, delay));
+  }
+
+  function standaloneRenderProfileHud(){
+    const bar = standaloneEnsureProfileHud();
+    if(!bar) return;
+    const active = standaloneActiveProfile();
+    const keepMenuOpen = !!bar.querySelector("#standaloneProfileMenu:not([hidden])");
+    if(!active){
+      bar.innerHTML = `
+        <div class="standaloneProfilePoints">FLPRP 0</div>
+        <div class="standaloneProfileHudWrap">
+          <button class="standaloneProfileHudBtn" id="standaloneProfileHudBtn" type="button">
+            <span class="standaloneProfileAvatar">${standaloneEscapeHtml(standaloneDefaultProfileAvatar())}</span>
+            <span class="standaloneProfileName">No Profile</span>
+          </button>
+          <div class="standaloneProfileMenu" id="standaloneProfileMenu" hidden>
+            <button class="cBtn" type="button" data-profile-menu-action="change">CREATE / CHOOSE PROFILE</button>
+          </div>
+        </div>
+      `;
+      if(keepMenuOpen){
+        const menu = document.getElementById("standaloneProfileMenu");
+        if(menu) menu.hidden = false;
+      }
+      return;
+    }
+    bar.style.setProperty("--profileColor", standaloneNormalizeProfileColor(active.color));
+    bar.innerHTML = `
+      <div class="standaloneProfilePoints">FLPRP ${standaloneProfilePoints(active)}</div>
+      <div class="standaloneProfileHudWrap">
+        <button class="standaloneProfileHudBtn" id="standaloneProfileHudBtn" type="button" style="--profileColor:${escapeAttr(standaloneNormalizeProfileColor(active.color))}">
+          <span class="standaloneProfileAvatar">${standaloneEscapeHtml(active.avatar || standaloneDefaultProfileAvatar())}</span>
+          <span class="standaloneProfileName">${standaloneEscapeHtml(active.name || "Player")}</span>
+        </button>
+        <div class="standaloneProfileMenu" id="standaloneProfileMenu" hidden>
+          <button class="cBtn" type="button" data-profile-menu-action="change">CHANGE PROFILE</button>
+          <button class="cBtn" type="button" data-profile-menu-action="edit">CHANGE NAME / EMOJI</button>
+          <button class="cBtn danger" type="button" data-profile-menu-action="signout">SIGN OUT</button>
+        </div>
+      </div>
+    `;
+    if(keepMenuOpen){
+      const menu = document.getElementById("standaloneProfileMenu");
+      if(menu) menu.hidden = false;
+    }
+  }
+
+  function standaloneProfileGateHtml(){
+    const stateData = standaloneProfileState();
+    const profiles = stateData.profiles || [];
+    const active = standaloneActiveProfile(stateData);
+    const mode = standaloneProfileRuntime.profileGateMode === "edit" && active ? "edit" : "choose";
+    const avatar = mode === "edit" ? (active?.avatar || standaloneDefaultProfileAvatar()) : standaloneDefaultProfileAvatar();
+    const color = mode === "edit" ? standaloneNormalizeProfileColor(active?.color) : "#00ffd5";
+    const name = mode === "edit" ? standaloneSanitizeProfileName(active?.name || "Player") : "";
+    const emojis = standaloneProfileEmojiList();
+    const emojiGrid = emojis.map((emoji)=>`
+      <button class="standaloneEmojiChoice${emoji === avatar ? " active" : ""}" type="button" data-profile-emoji="${escapeAttr(emoji)}" aria-label="Use ${escapeAttr(emoji)} avatar">${standaloneEscapeHtml(emoji)}</button>
+    `).join("");
+    const existing = mode !== "edit" && profiles.length
+      ? `<div class="standaloneProfileExisting">${profiles.map((profile)=>`
+          <button class="standaloneProfilePick" type="button" data-profile-id="${escapeAttr(profile.id)}" style="--profileColor:${escapeAttr(standaloneNormalizeProfileColor(profile.color))}">
+            <span class="standaloneProfileAvatar">${standaloneEscapeHtml(profile.avatar || standaloneDefaultProfileAvatar())}</span>
+            <span>${standaloneEscapeHtml(profile.name || "Player")}</span>
+          </button>
+        `).join("")}</div>`
+      : "";
+    return `
+      <div class="standaloneProfileCard" role="dialog" aria-modal="true" aria-labelledby="standaloneProfileTitle">
+        <div class="standaloneProfileTitle" id="standaloneProfileTitle">${mode === "edit" ? "Edit Home Profile" : "Home Profile"}</div>
+        <div class="standaloneProfileSub">${mode === "edit" ? "Update the profile name, emoji, or color shown in the Home Edition HUD." : "Create or choose a profile before opening the randomizer. Achievements, FLPRP, relic progress, and local seed saves are kept on this profile."}</div>
+        ${existing}
+        <form class="standaloneProfileForm" id="standaloneProfileForm">
+          <label>
+            <span class="cLabel">NAME</span>
+            <input class="cInput" id="standaloneProfileNameInput" type="text" maxlength="28" autocomplete="off" placeholder="Profile name" value="${escapeAttr(name)}">
+          </label>
+          <label class="standaloneEmojiPicker">
+            <span class="cLabel">AVATAR</span>
+            <input id="standaloneProfileAvatarInput" type="hidden" value="${escapeAttr(avatar)}" aria-label="Emoji avatar">
+            <button class="standaloneEmojiPickerButton" id="standaloneEmojiPickerButton" type="button" aria-expanded="false">${standaloneEscapeHtml(avatar)}</button>
+            <div class="standaloneEmojiGrid" id="standaloneEmojiGrid" hidden>${emojiGrid}</div>
+          </label>
+          <label>
+            <span class="cLabel">COLOR</span>
+            <input class="cInput" id="standaloneProfileColorInput" type="color" value="${escapeAttr(color)}" aria-label="Profile color">
+          </label>
+        </form>
+        <div class="standaloneProfileHint">Pick an emoji avatar and color so save files and achievement progress feel like yours.</div>
+        <div class="standaloneProfileActions">
+          ${active ? `<button class="cBtn danger" id="standaloneProfileCloseBtn" type="button">CLOSE</button>` : ""}
+          <button class="cBtn" id="standaloneProfileCreateBtn" type="button">${mode === "edit" ? "SAVE CHANGES" : "SAVE PROFILE"}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function standaloneEnsureProfileGate(){
+    let gate = document.getElementById("standaloneProfileGate");
+    if(!gate){
+      gate = document.createElement("div");
+      gate.id = "standaloneProfileGate";
+      gate.className = "standaloneProfileGate";
+      document.body.appendChild(gate);
+    }
+    if(gate.dataset.rendered !== "1"){
+      gate.innerHTML = standaloneProfileGateHtml();
+      gate.dataset.rendered = "1";
+    }
+    if(gate.__flprStandaloneBound !== true){
+      gate.__flprStandaloneBound = true;
+      gate.addEventListener("click", (event)=>{
+        const emojiToggle = event.target.closest?.("#standaloneEmojiPickerButton");
+        if(emojiToggle){
+          event.preventDefault();
+          try{ playClick(); }catch(_){}
+          const grid = document.getElementById("standaloneEmojiGrid");
+          if(grid){
+            grid.hidden = !grid.hidden;
+            emojiToggle.setAttribute("aria-expanded", grid.hidden ? "false" : "true");
+          }
+          return;
+        }
+        const emojiChoice = event.target.closest?.("[data-profile-emoji]");
+        if(emojiChoice){
+          event.preventDefault();
+          try{ playClick(); }catch(_){}
+          const emoji = standaloneSanitizeProfileAvatar(emojiChoice.dataset.profileEmoji || "");
+          const input = document.getElementById("standaloneProfileAvatarInput");
+          const button = document.getElementById("standaloneEmojiPickerButton");
+          const grid = document.getElementById("standaloneEmojiGrid");
+          if(input) input.value = emoji;
+          if(button){
+            button.textContent = emoji;
+            button.setAttribute("aria-expanded", "false");
+          }
+          document.querySelectorAll(".standaloneEmojiChoice").forEach((choice)=>{
+            choice.classList.toggle("active", choice === emojiChoice);
+          });
+          if(grid) grid.hidden = true;
+          return;
+        }
+        const pick = event.target.closest?.("[data-profile-id]");
+        if(pick){
+          event.preventDefault();
+          try{ playClick(); }catch(_){}
+          standaloneSwitchProfile(pick.dataset.profileId || "");
+          return;
+        }
+        if(event.target.closest?.("#standaloneProfileCreateBtn")){
+          event.preventDefault();
+          try{ playClick(); }catch(_){}
+          const data = {
+            name: document.getElementById("standaloneProfileNameInput")?.value || "",
+            avatar: document.getElementById("standaloneProfileAvatarInput")?.value || "",
+            color: document.getElementById("standaloneProfileColorInput")?.value || ""
+          };
+          if(standaloneProfileRuntime.profileGateMode === "edit" && standaloneActiveProfile()){
+            standaloneUpdateActiveProfile(data);
+          }else{
+            standaloneCreateProfile(data);
+          }
+          return;
+        }
+        if(event.target.closest?.("#standaloneProfileCloseBtn")){
+          event.preventDefault();
+          try{ playClick(); }catch(_){}
+          standaloneCloseProfileGate({ force:true });
+          standaloneRefreshProfileUi();
+        }
+      }, true);
+    }
+    return gate;
+  }
+
+  function standaloneOpenProfileGate(forceRender, mode){
+    standaloneProfileRuntime.profileGateMode = String(mode || "choose") === "edit" ? "edit" : "choose";
+    if(forceRender || mode || !standaloneActiveProfile()) standaloneProfileRuntime.profileGateManualOpen = true;
+    const gate = standaloneEnsureProfileGate();
+    if(forceRender){
+      gate.dataset.rendered = "0";
+      gate.innerHTML = standaloneProfileGateHtml();
+      gate.dataset.rendered = "1";
+    }
+    gate.hidden = false;
+    try{
+      const input = document.getElementById("standaloneProfileNameInput");
+      if(input) setTimeout(()=>input.focus({ preventScroll:true }), 60);
+    }catch(_){}
+  }
+
+  function standaloneCloseProfileGate(opts){
+    opts = opts || {};
+    if(opts.auto && standaloneProfileRuntime.profileGateManualOpen) return;
+    const gate = standaloneEnsureProfileGate();
+    gate.hidden = true;
+    standaloneProfileRuntime.profileGateManualOpen = false;
+    standaloneProfileRuntime.profileGateMode = "choose";
+  }
+
+  function standaloneModeGateHtml(){
+    return `
+      <div class="standaloneModeCard" role="dialog" aria-modal="true" aria-labelledby="standaloneModeTitle">
+        <div class="standaloneModeTitle" id="standaloneModeTitle">Choose Your Home Edition Mode</div>
+        <div class="standaloneModeChoices">
+          <button class="standaloneModeChoice" type="button" data-standalone-mode-choice="singleplayer">
+            <span class="standaloneModeChoiceIcon">${standaloneEscapeHtml(String.fromCodePoint(0x1F3B2))}</span>
+            <span class="standaloneModeChoiceTitle">Singleplayer</span>
+            <span class="standaloneModeChoiceText">Create or continue a local Home Edition seed, save progress to this profile, and play without AP chat or item logs.</span>
+            <span class="standaloneModeChoiceCue">Local seed and profile progression</span>
+          </button>
+          <button class="standaloneModeChoice" type="button" data-standalone-mode-choice="archipelago">
+            <span class="standaloneModeChoiceIcon">${standaloneEscapeHtml(String.fromCodePoint(0x1F310))}</span>
+            <span class="standaloneModeChoiceTitle">Multiplayer</span>
+            <span class="standaloneModeChoiceText">Connect to an Archipelago multiworld, use the AP text log, and track received and sent items from the server.</span>
+            <span class="standaloneModeChoiceCue">AP connection, item log, and server text</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function standaloneEnsureModeGate(){
+    let gate = document.getElementById("standaloneModeGate");
+    if(!gate){
+      gate = document.createElement("div");
+      gate.id = "standaloneModeGate";
+      gate.className = "standaloneModeGate";
+      document.body.appendChild(gate);
+    }
+    if(gate.dataset.rendered !== "1"){
+      gate.innerHTML = standaloneModeGateHtml();
+      gate.dataset.rendered = "1";
+    }
+    if(gate.__flprStandaloneBound !== true){
+      gate.__flprStandaloneBound = true;
+      gate.addEventListener("click", (event)=>{
+        const btn = event.target.closest?.("[data-standalone-mode-choice]");
+        if(!btn || !gate.contains(btn)) return;
+        event.preventDefault();
+        standaloneChooseMode(btn.dataset.standaloneModeChoice || "archipelago", event);
+      }, true);
+    }
+    return gate;
+  }
+
+  function standaloneOpenModeGate(forceRender){
+    const gate = standaloneEnsureModeGate();
+    if(forceRender && !gate.classList.contains("choosing")){
+      gate.dataset.rendered = "0";
+      gate.innerHTML = standaloneModeGateHtml();
+      gate.dataset.rendered = "1";
+    }
+    gate.hidden = false;
+    try{
+      const first = gate.querySelector("[data-standalone-mode-choice]");
+      if(first && document.activeElement === document.body) setTimeout(()=>first.focus({ preventScroll:true }), 60);
+    }catch(_){}
+  }
+
+  function standaloneCloseModeGate(){
+    const gate = standaloneEnsureModeGate();
+    gate.hidden = true;
+    gate.classList.remove("choosing");
+    gate.querySelectorAll(".standaloneModeChoice").forEach((btn)=>{
+      btn.classList.remove("selected");
+      btn.disabled = false;
+    });
+  }
+
+  function standaloneCaptureMultiplayerSnapshot(reason){
+    const stateData = standaloneProfileState();
+    const active = standaloneActiveProfile(stateData);
+    if(!active) return null;
+    let receivedAll = [];
+    let sent = [];
+    try{
+      receivedAll = Array.isArray(ap?.receivedAll)
+        ? standaloneCloneJson(ap.receivedAll, [])
+        : (typeof loadReceivedList === "function" ? standaloneCloneJson(loadReceivedList() || [], []) : []);
+    }catch(_){
+      receivedAll = [];
+    }
+    try{
+      standaloneLoadSentItems();
+      standaloneSaveSentItems();
+      sent = standaloneCloneJson(standaloneItemPanel.sent || [], []);
+    }catch(_){
+      sent = [];
+    }
+    try{ if(Array.isArray(ap?.receivedAll) && typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll); }catch(_){}
+    const snapshot = {
+      version: 1,
+      updatedAt: Date.now(),
+      reason: String(reason || "mode-switch"),
+      cfg: standaloneCloneJson(apCfg(), {}),
+      receivedAll,
+      sent,
+      lastReceivedIndex: Math.max(0, Math.round(Number(ap?.lastReceivedIndex || 0)) || 0)
+    };
+    active.multiplayerSnapshot = snapshot;
+    active.updatedAt = Date.now();
+    standaloneSaveProfileState(stateData);
+    return snapshot;
+  }
+
+  function standaloneApplyMultiplayerSnapshot(profile){
+    const active = profile || standaloneActiveProfile();
+    const snapshot = active?.multiplayerSnapshot && typeof active.multiplayerSnapshot === "object"
+      ? active.multiplayerSnapshot
+      : null;
+    if(!snapshot) return false;
+    try{
+      const cfg = snapshot.cfg && typeof snapshot.cfg === "object" ? snapshot.cfg : null;
+      if(cfg && typeof ap !== "undefined" && ap?.cfg){
+        ["server", "player", "game", "pass"].forEach((key)=>{
+          if(cfg[key] != null) ap.cfg[key] = String(cfg[key] || "");
+        });
+        try{ if(typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
+        standaloneControlAll("#apServer").forEach((node)=>{ node.value = ap.cfg.server || ""; });
+        standaloneControlAll("#apPlayer").forEach((node)=>{ node.value = ap.cfg.player || "Ashodin"; });
+        standaloneControlAll("#apGame").forEach((node)=>{ node.value = ap.cfg.game || ""; });
+        standaloneControlAll("#apPass").forEach((node)=>{ node.value = ap.cfg.pass || ""; });
+      }
+    }catch(_){}
+    try{
+      if(Array.isArray(snapshot.receivedAll) && (!ap?.connected || ap?.inherentSeedActive)){
+        ap.receivedAll = standaloneCloneJson(snapshot.receivedAll, []);
+        if(typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll);
+      }
+    }catch(_){}
+    try{
+      if(Array.isArray(snapshot.sent)){
+        standaloneItemPanel.sent = standaloneCloneJson(snapshot.sent, []).slice(-standaloneItemPanel.maxSent);
+        standaloneItemPanel.sentLoaded = true;
+        standaloneSaveSentItems();
+      }
+    }catch(_){}
+    try{
+      const lastIndex = Math.max(0, Math.round(Number(snapshot.lastReceivedIndex || 0)) || 0);
+      if(lastIndex){
+        ap.lastReceivedIndex = Math.max(Number(ap?.lastReceivedIndex || 0) || 0, lastIndex);
+        localStorage.setItem("flpr_ap_last_received_index", String(ap.lastReceivedIndex));
+      }
+    }catch(_){}
+    try{ standaloneRenderItemPanel(); }catch(_){}
+    return true;
+  }
+
+  function standaloneDisconnectForModeSwitch(){
+    try{ standaloneCaptureMultiplayerSnapshot("mode-switch-mp-to-sp"); }catch(_){}
+    try{
+      if(typeof apDisconnect === "function" && ap?.connected && !ap?.inherentSeedActive){
+        apDisconnect({ manual:true });
+      }
+    }catch(err){ try{ console.error(err); }catch(_){} }
+    try{
+      if(typeof ap !== "undefined" && ap){
+        ap.connected = false;
+        ap.inherentSeedActive = false;
+      }
+    }catch(_){}
+    try{ if(typeof updateApConnectButtons === "function") updateApConnectButtons("offline"); }catch(_){}
+  }
+
+  function standaloneSwitchHomeMode(mode, opts){
+    opts = opts || {};
+    const wanted = standaloneConnectionModeName(mode);
+    const current = standaloneCurrentMenuMode();
+    const hadSelectedMode = !!String(standaloneProfileRuntime.selectedMode || "").trim();
+    if(current === wanted && hadSelectedMode){
+      setControlTab(wanted === "singleplayer" ? "singleplayer" : "multiplayer");
+      standaloneRenderModeHud();
+      return true;
+    }
+    if(standaloneProfileRuntime.switchingMode) return false;
+    standaloneProfileRuntime.switchingMode = true;
+    try{
+      if(current === "singleplayer" && wanted === "archipelago"){
+        try{ standaloneUpsertCurrentSeedSave({ reason:"mode-switch-sp-to-mp" }); }catch(_){}
+        try{
+          if(ap?.inherentSeedActive){
+            ap.inherentSeedActive = false;
+            ap.connected = false;
+            if(typeof setApIndicator === "function") setApIndicator("red", "OFFLINE");
+            const host = document.getElementById("apConnectedHost");
+            if(host) host.textContent = "DISCONNECTED";
+            if(typeof updateApConnectButtons === "function") updateApConnectButtons("offline");
+          }
+        }catch(_){}
+      }else if(current === "archipelago" && wanted === "singleplayer" && (hadSelectedMode || ap?.connected)){
+        standaloneDisconnectForModeSwitch();
+      }
+
+      standaloneSetSelectedMode(wanted);
+      setControlTab(wanted === "singleplayer" ? "singleplayer" : "multiplayer");
+
+      if(wanted === "archipelago"){
+        standaloneApplyMultiplayerSnapshot();
+        if(!ap?.connected && !ap?.inherentSeedActive) standaloneMarkRandomizerClosed();
+      }else if(!ap?.inherentSeedActive){
+        standaloneMarkRandomizerClosed();
+      }
+      try{
+        window.__flprStandaloneLastModeSwitch = {
+          from: current,
+          to: wanted,
+          ts: Date.now(),
+          selectedBefore: hadSelectedMode
+        };
+      }catch(_){}
+      return true;
+    }finally{
+      standaloneProfileRuntime.switchingMode = false;
+      try{ standaloneRenderModeHud(); }catch(_){}
+    }
+  }
+  try{ window.flprStandaloneSwitchHomeMode = standaloneSwitchHomeMode; }catch(_){}
+
+  function standaloneChooseMode(mode, event){
+    if(event){
+      event.preventDefault();
+      event.stopPropagation();
+      try{ event.stopImmediatePropagation(); }catch(_){}
+    }
+    const wanted = standaloneConnectionModeName(mode);
+    const gate = standaloneEnsureModeGate();
+    if(gate.classList.contains("choosing")) return false;
+    try{ playClick(); }catch(_){}
+    gate.classList.add("choosing");
+    gate.querySelectorAll(".standaloneModeChoice").forEach((btn)=>{
+      const active = standaloneConnectionModeName(btn.dataset.standaloneModeChoice || "") === wanted;
+      btn.classList.toggle("selected", active);
+      btn.disabled = true;
+    });
+    setTimeout(()=>{
+      try{
+        standaloneSwitchHomeMode(wanted, { fromGate:true });
+        standaloneCloseModeGate();
+      }catch(_){}
+    }, 620);
+    return false;
+  }
+
+  function standaloneSetSelectedMode(mode){
+    standaloneProfileRuntime.selectedMode = standaloneConnectionModeName(mode);
+    standaloneRenderMenuTabs(activeControlTab());
+    standaloneRenderModeHud();
+    standaloneRefreshProfileUi();
+  }
+  try{ window.flprStandaloneSetHomeMode = standaloneSwitchHomeMode; }catch(_){}
+
+  function standaloneRandomizerReadyKey(){
+    try{
+      if(!standaloneProfileRuntime.randomizerReady) return "";
+      return `${standaloneProfileRuntime.randomizerReason || "ready"}|${standaloneRewardSeedKey()}`;
+    }catch(_){
+      return standaloneProfileRuntime.randomizerReady ? "ready" : "";
+    }
+  }
+
+  function standaloneShowClosedRandomizerDoor(message){
+    try{
+      const wrap = document.getElementById("randomizerIntro");
+      const sign = document.getElementById("randomizerIntroSign");
+      const btn = document.getElementById("randomizerIntroStartBtn");
+      if(!wrap || !btn) return;
+      wrap.classList.add("show", "flprStandaloneClosed");
+      wrap.classList.remove("opening", "closing");
+      wrap.setAttribute("aria-hidden", "false");
+      if(sign) sign.textContent = message || "RANDOMIZER CLOSED";
+      btn.disabled = true;
+      btn.style.display = "";
+      btn.textContent = "START!";
+      try{
+        const openingState = typeof getOpeningRandomizerPersistState === "function" ? getOpeningRandomizerPersistState() : null;
+        if(openingState){
+          openingState.visible = false;
+          openingState.shownForSpoiler = false;
+        }
+      }catch(_){}
+    }catch(_){}
+  }
+
+  function standaloneShowReadyRandomizerDoor(){
+    if(standaloneProfileRuntime.randomizerStarted) return;
+    try{
+      const wrap = document.getElementById("randomizerIntro");
+      const btn = document.getElementById("randomizerIntroStartBtn");
+      if(wrap) wrap.classList.remove("flprStandaloneClosed");
+      if(btn) btn.disabled = false;
+      if(typeof showOpeningRandomizerIntro === "function"){
+        const fx = window.__openingRandomizerFx || {};
+        const key = standaloneRandomizerReadyKey();
+        if(standaloneProfileRuntime.readyDoorKey === key && (fx.active || wrap?.classList?.contains("show"))) return;
+        standaloneProfileRuntime.readyDoorKey = key;
+        showOpeningRandomizerIntro({ reason:"standalone-home-ready", playSound:false });
+      }
+    }catch(_){}
+  }
+
+  function standaloneMarkRandomizerReady(reason){
+    const active = standaloneActiveProfile();
+    if(!active) return;
+    const nextReason = String(reason || standaloneProfileRuntime.selectedMode || "ready");
+    const wasReady = !!standaloneProfileRuntime.randomizerReady;
+    const reasonChanged = String(standaloneProfileRuntime.randomizerReason || "") !== nextReason;
+    standaloneProfileRuntime.randomizerReady = true;
+    if(!wasReady || reasonChanged) standaloneProfileRuntime.randomizerStarted = false;
+    standaloneProfileRuntime.randomizerReason = nextReason;
+    standaloneShowReadyRandomizerDoor();
+    standaloneRefreshProfileUi();
+  }
+
+  function standaloneMarkRandomizerClosed(){
+    standaloneProfileRuntime.randomizerReady = false;
+    standaloneProfileRuntime.randomizerStarted = false;
+    standaloneProfileRuntime.randomizerReason = "";
+    standaloneProfileRuntime.readyDoorKey = "";
+    standaloneRefreshProfileUi();
+  }
+
+  function standaloneRefreshRandomizerGate(){
+    const active = standaloneActiveProfile();
+    const body = document.body;
+    if(!body) return;
+    const hasProfile = !!active;
+    const modePicked = !!standaloneProfileRuntime.selectedMode;
+    body.classList.toggle("flprStandaloneNeedsProfile", !hasProfile);
+    body.classList.toggle("flprStandaloneModePicking", hasProfile && !modePicked && !standaloneProfileRuntime.randomizerReady);
+    body.classList.toggle("flprStandaloneRandomizerClosed", hasProfile && !standaloneProfileRuntime.randomizerReady);
+    body.classList.toggle("flprStandaloneRandomizerReady", hasProfile && standaloneProfileRuntime.randomizerReady);
+    standaloneFlushBossKeysIfNoLoadedSeed();
+    if(!hasProfile){
+      standaloneShowClosedRandomizerDoor("CREATE HOME PROFILE");
+      standaloneCloseModeGate();
+      standaloneOpenProfileGate(false);
+      return;
+    }
+    standaloneCloseProfileGate({ auto:true });
+    if(!standaloneProfileRuntime.randomizerReady){
+      const message = modePicked
+        ? (standaloneProfileRuntime.selectedMode === "singleplayer" ? "START A LOCAL SEED" : "CONNECT TO ARCHIPELAGO")
+        : "CHOOSE A MODE";
+      standaloneShowClosedRandomizerDoor(message);
+      if(!modePicked) standaloneOpenModeGate(false);
+      else standaloneCloseModeGate();
+    }else{
+      standaloneCloseModeGate();
+      standaloneShowReadyRandomizerDoor();
+    }
+  }
+
+  function standaloneRefreshProfileUi(){
+    standaloneRenderProfileHud();
+    standaloneRenderModeHud();
+    standaloneRenderSeedSaveList();
+    standaloneRenderNextAchievement();
+    standaloneRenderRunBriefing();
+    standaloneRefreshRandomizerGate();
+  }
+
+  function standaloneEnsureActiveProfileApplied(){
+    const active = standaloneActiveProfile();
+    if(!active){
+      standaloneProfileRuntime.appliedProfileId = "";
+      return;
+    }
+    if(standaloneProfileRuntime.appliedProfileId === active.id) return;
+    standaloneProfileRuntime.appliedProfileId = active.id;
+    standaloneApplyProfileSnapshots(active);
+  }
+
+  function installStandaloneAchievementProfileBridge(){
+    try{
+      if(typeof achSaveStore === "function" && achSaveStore.__flprStandaloneProfileBridge !== true){
+        const original = achSaveStore;
+        const bridged = function standaloneAchSaveStoreBridge(){
+          const result = original.apply(this, arguments);
+          try{ standaloneCaptureActiveProfileSnapshots(); }catch(_){}
+          try{ standaloneRenderNextAchievement(); }catch(_){}
+          try{ standaloneRenderRunBriefing(); }catch(_){}
+          return result;
+        };
+        bridged.__flprStandaloneProfileBridge = true;
+        bridged.__flprStandaloneOriginalAchSaveStore = original;
+        achSaveStore = bridged;
+        try{ window.achSaveStore = bridged; }catch(_){}
+      }
+    }catch(_){}
+    try{
+      if(typeof renderAchievementsControlsPanel === "function" && renderAchievementsControlsPanel.__flprStandaloneProfileBridge !== true){
+        const originalRenderAchievements = renderAchievementsControlsPanel;
+        const bridgedRenderAchievements = function standaloneRenderAchievementsControlsPanelBridge(){
+          const result = originalRenderAchievements.apply(this, arguments);
+          try{ standaloneRenderNextAchievement(); }catch(_){}
+          return result;
+        };
+        bridgedRenderAchievements.__flprStandaloneProfileBridge = true;
+        bridgedRenderAchievements.__flprStandaloneOriginalRenderAchievementsControlsPanel = originalRenderAchievements;
+        renderAchievementsControlsPanel = bridgedRenderAchievements;
+        try{ window.renderAchievementsControlsPanel = bridgedRenderAchievements; }catch(_){}
+      }
+    }catch(_){}
+    try{
+      if(typeof episodeSaveState === "function" && episodeSaveState.__flprStandaloneProfileBridge !== true){
+        const originalEpisodeSave = episodeSaveState;
+        const bridgedEpisodeSave = function standaloneEpisodeSaveStateBridge(){
+          const result = originalEpisodeSave.apply(this, arguments);
+          try{ standaloneCaptureActiveProfileSnapshots(); }catch(_){}
+          return result;
+        };
+        bridgedEpisodeSave.__flprStandaloneProfileBridge = true;
+        bridgedEpisodeSave.__flprStandaloneOriginalEpisodeSaveState = originalEpisodeSave;
+        episodeSaveState = bridgedEpisodeSave;
+        try{ window.episodeSaveState = bridgedEpisodeSave; }catch(_){}
+      }
+    }catch(_){}
+    try{
+      if(typeof handleCheckedLocations === "function" && handleCheckedLocations.__flprStandaloneSeedSaveBridge !== true){
+        const originalChecked = handleCheckedLocations;
+        const bridgedChecked = function standaloneHandleCheckedLocationsBridge(){
+          const result = originalChecked.apply(this, arguments);
+          try{ standaloneUpsertCurrentSeedSave({ reason:"checked" }); }catch(_){}
+          try{ standaloneRenderNextAchievement(); }catch(_){}
+          try{ standaloneRenderRunBriefing(); }catch(_){}
+          return result;
+        };
+        bridgedChecked.__flprStandaloneSeedSaveBridge = true;
+        bridgedChecked.__flprStandaloneOriginalHandleCheckedLocations = originalChecked;
+        handleCheckedLocations = bridgedChecked;
+        try{ window.handleCheckedLocations = bridgedChecked; }catch(_){}
+      }
+    }catch(_){}
+  }
+
+  function installStandaloneAchievementDismissBridge(){
+    const decorateToast = (node)=>{
+      try{
+        if(!node || node.nodeType !== 1 || !node.classList?.contains("achievementToast")) return;
+        if(node.querySelector(".achievementToastClose")) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "achievementToastClose";
+        btn.setAttribute("aria-label", "Dismiss achievement notification");
+        btn.textContent = "X";
+        btn.addEventListener("click", (event)=>{
+          event.preventDefault();
+          event.stopPropagation();
+          try{ if(typeof achDismissActiveToast === "function") achDismissActiveToast(); else node.remove(); }catch(_){ try{ node.remove(); }catch(__){} }
+          try{ if(typeof achPumpQueue === "function") achPumpQueue(); }catch(_){}
+        }, true);
+        node.appendChild(btn);
+      }catch(_){}
+    };
+    const decorateModal = ()=>{
+      try{
+        const card = document.querySelector("#achievementModal .achievementModalCard");
+        if(!card || card.querySelector(".achievementModalClose")) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "achievementModalClose";
+        btn.setAttribute("aria-label", "Dismiss achievement details");
+        btn.textContent = "X";
+        btn.addEventListener("click", (event)=>{
+          event.preventDefault();
+          event.stopPropagation();
+          try{ if(typeof achHideModal === "function") achHideModal(); else document.getElementById("achievementModal")?.classList.add("hidden"); }catch(_){}
+        }, true);
+        card.appendChild(btn);
+      }catch(_){}
+    };
+    try{ document.querySelectorAll(".achievementToast").forEach(decorateToast); }catch(_){}
+    decorateModal();
+    const stack = document.getElementById("achievementStack");
+    if(stack && stack.__flprStandaloneDismissObserver !== true){
+      stack.__flprStandaloneDismissObserver = true;
+      const obs = new MutationObserver((mutations)=>{
+        mutations.forEach((mutation)=>{
+          Array.from(mutation.addedNodes || []).forEach(decorateToast);
+        });
+      });
+      obs.observe(stack, { childList:true });
+    }
+  }
+
+  function installStandaloneRandomizerConnectionBridge(){
+    try{
+      if(typeof updateApConnectButtons === "function" && updateApConnectButtons.__flprStandaloneRandomizerGateBridge !== true){
+        const original = updateApConnectButtons;
+        const bridged = function standaloneUpdateApConnectButtonsBridge(stateName){
+          const result = original.apply(this, arguments);
+          try{
+            const status = String(stateName || "").toLowerCase();
+            if(status === "connected"){
+              if(!standaloneProfileRuntime.selectedMode) standaloneProfileRuntime.selectedMode = ap?.inherentSeedActive ? "singleplayer" : "archipelago";
+              standaloneMarkRandomizerReady(ap?.inherentSeedActive ? "singleplayer" : "archipelago");
+            }else if(status === "offline" || status === "disconnected"){
+              if(!ap?.inherentSeedActive) standaloneMarkRandomizerClosed();
+            }
+          }catch(_){}
+          return result;
+        };
+        bridged.__flprStandaloneRandomizerGateBridge = true;
+        bridged.__flprStandaloneOriginalUpdateApConnectButtons = original;
+        updateApConnectButtons = bridged;
+        try{ window.updateApConnectButtons = bridged; }catch(_){}
+      }
+    }catch(_){}
+    if(!standaloneProfileRuntime.gateTimer){
+      standaloneProfileRuntime.gateTimer = setInterval(()=>{
+        try{
+          if(ap?.connected || ap?.inherentSeedActive){
+            if(ap?.inherentSeedActive || standaloneProfileRuntime.selectedMode === "archipelago"){
+              standaloneMarkRandomizerReady(ap?.inherentSeedActive ? "singleplayer" : "archipelago");
+            }
+          }else if(standaloneProfileRuntime.randomizerReady && !ap?.connected && !ap?.inherentSeedActive){
+            standaloneMarkRandomizerClosed();
+          }else{
+            standaloneRefreshProfileUi();
+          }
+          standaloneUpsertCurrentSeedSave({ reason:"poll" });
+        }catch(_){}
+      }, 1000);
+    }
+    if(!window.__flprStandaloneRandomizerStartGateBound){
+      window.__flprStandaloneRandomizerStartGateBound = true;
+      document.addEventListener("click", (event)=>{
+        const start = event.target.closest?.("#randomizerIntroStartBtn");
+        if(!start) return;
+        const hasProfile = !!standaloneActiveProfile();
+        if(!hasProfile || !standaloneProfileRuntime.randomizerReady){
+          event.preventDefault();
+          event.stopPropagation();
+          try{ event.stopImmediatePropagation(); }catch(_){}
+          try{ if(typeof toast === "function") toast("warn", "RANDOMIZER CLOSED", hasProfile ? "Connect to Archipelago or start a local seed first." : "Create a Home profile first.", 2500); }catch(_){}
+          return;
+        }
+        standaloneProfileRuntime.randomizerStarted = true;
+        standaloneRefreshProfileUi();
+      }, true);
+    }
   }
 
   function ensurePanel(panels, key){
@@ -2633,6 +5080,7 @@
       panel.setAttribute("aria-hidden", active ? "false" : "true");
     });
     try{ window.__flprStandaloneConnectionMode = wanted; }catch(_){}
+    if(event) standaloneSetSelectedMode(wanted);
     return false;
   }
 
@@ -2656,10 +5104,11 @@
     const start = document.getElementById("standaloneStartSeedBtn");
     if(start && !start.__flprStandaloneBound){
       start.__flprStandaloneBound = true;
-      start.onclick = ()=>{
+      start.onclick = async ()=>{
         playClick();
+        standaloneSetSelectedMode("singleplayer");
         try{
-          loadStandaloneSingleplayerSeed();
+          await loadStandaloneSingleplayerSeed();
         }catch(err){
           try{ console.error(err); }catch(_){}
         }
@@ -2670,9 +5119,52 @@
       reset.__flprStandaloneBound = true;
       reset.onclick = ()=>{
         playClick();
+        standaloneMarkRandomizerClosed();
         try{ if(typeof apDisconnect === "function") apDisconnect(); }catch(_){}
         try{ if(typeof loadState === "function"){ state = loadState(); } }catch(_){}
         try{ if(typeof renderAll === "function") renderAll(); }catch(_){}
+        standaloneRefreshProfileUi();
+      };
+    }
+    const saveList = document.getElementById("standaloneSeedSaveList");
+    if(saveList && !saveList.__flprStandaloneBound){
+      saveList.__flprStandaloneBound = true;
+      saveList.addEventListener("click", async (event)=>{
+        const load = event.target.closest?.("[data-seed-load-id]");
+        if(load){
+          standaloneHandleSeedLoadActivation(event, load.dataset.seedLoadId || "");
+          return;
+        }
+        const row = event.target.closest?.("[data-seed-save-id]");
+        if(row && saveList.contains(row)){
+          standaloneHandleSeedSaveActivation(event, row);
+        }
+      }, true);
+      saveList.addEventListener("keydown", (event)=>{
+        const row = event.target.closest?.("[data-seed-save-id]");
+        if(!row || !saveList.contains(row)) return;
+        if(event.key !== "Enter" && event.key !== " ") return;
+        standaloneHandleSeedSaveActivation(event, row);
+      }, true);
+      document.addEventListener("pointerdown", (event)=>{
+        if(saveList.contains(event.target)) return;
+        standaloneClearSeedLoadConfirm();
+      }, true);
+    }
+    const nextAchievement = document.getElementById("standaloneNextAchievementBtn");
+    if(nextAchievement && !nextAchievement.__flprStandaloneBound){
+      nextAchievement.__flprStandaloneBound = true;
+      nextAchievement.addEventListener("click", (event)=>{
+        standaloneHandleNextAchievementClick(event, nextAchievement);
+      }, true);
+    }
+    const profileBtn = document.getElementById("standaloneProfileManageBtn");
+    if(profileBtn && !profileBtn.__flprStandaloneBound){
+      profileBtn.__flprStandaloneBound = true;
+      profileBtn.onclick = (event)=>{
+        event.preventDefault();
+        playClick();
+        standaloneOpenProfileGate(true);
       };
     }
     const slider = document.getElementById("standaloneControlsFontSlider");
@@ -2690,6 +5182,8 @@
     renderStandaloneCounters();
     try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
     try{ if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
+    standaloneRenderNextAchievement();
+    standaloneRenderRunBriefing();
   }
 
   function renderStandaloneCounters(){
@@ -4106,10 +6600,101 @@
     }
   }
 
+  function standaloneShouldQuietSingleplayerReceivedNotification(itemName, it, opts){
+    try{
+      if(!ap?.inherentSeedActive) return false;
+      if(opts?.isSnapshot || opts?.isFlush || opts?.noPopup === true) return false;
+      const name = String(itemName || "").trim();
+      if(!name) return false;
+      if(standaloneProgressiveBallTarget(name)) return false;
+      if(standaloneIsBossKeyRewardName(name)) return false;
+      if(standaloneIsBossSegmentRewardName(name)) return false;
+      if(standaloneIsTrapRewardName(name, it?.flags)) return false;
+      if(standaloneIsBallHintRewardName(name)) return false;
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+  try{ window.flprStandaloneShouldQuietSingleplayerReceivedItem = standaloneShouldQuietSingleplayerReceivedNotification; }catch(_){}
+
   function standaloneScheduleChecksRestoreAfterReward(){
     [680, 960, 1320].forEach((delay)=>{
       setTimeout(()=>standaloneRestoreChecksViewForReward(), delay);
     });
+  }
+
+  function standaloneCaptureChecksSelectionForReward(reason){
+    try{
+      if(!standaloneChecksViewActive()) return "";
+      const key = standaloneCurrentChecksSelectionCandidate() || standalonePinnedChecksTableKey();
+      const parsed = standaloneParseTableKey(key);
+      if(!parsed) return "";
+      standaloneRememberChecksWorldSelection(parsed.worldKey, reason || "reward-capture");
+      standaloneChecksSelection.key = parsed.key;
+      standaloneChecksSelection.ts = Date.now();
+      standaloneChecksSelection.source = String(reason || "reward-capture");
+      return parsed.key;
+    }catch(_){
+      return "";
+    }
+  }
+
+  function standaloneRestoreChecksSelectionKey(tableKey, reason){
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed || !standaloneChecksTableExists(parsed.key)) return false;
+    try{
+      if(standaloneQueuedSiegeWaiting() || standaloneBesiegedTarget()) return false;
+    }catch(_){}
+    try{ standaloneRememberChecksWorldSelection(parsed.worldKey, reason || "reward-return"); }catch(_){}
+    standaloneChecksSelection.key = parsed.key;
+    standaloneChecksSelection.ts = Date.now();
+    standaloneChecksSelection.source = String(reason || "reward-return");
+    const work = ()=>{
+      try{ if(typeof showView === "function") showView("checks"); else activeView = "checks"; }catch(_){}
+      try{ standaloneRememberChecksWorldSelection(parsed.worldKey, reason || "reward-return"); }catch(_){}
+      try{
+        ap.currentWorld = parsed.worldKey;
+        state.nowPlaying = state.nowPlaying || {};
+        state.nowPlaying[parsed.worldKey] = parsed.idx;
+      }catch(_){}
+      standaloneChecksSelection.key = parsed.key;
+      standaloneChecksSelection.ts = Date.now();
+      standaloneChecksSelection.source = String(reason || "reward-return");
+      try{ if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs(); }catch(_){}
+      try{ if(typeof renderChecks === "function") renderChecks(); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
+      try{ standaloneEnforceChecksWorldSelection(reason || "reward-return", { save:false }); }catch(_){}
+      try{ standaloneEnforceChecksSelectionPin(reason || "reward-return", { save:false }); }catch(_){}
+      try{ standaloneDirectChecksHighlightPinned(); }catch(_){}
+      return true;
+    };
+    try{ return standalonePreserveChecksSelectionDuring(work, reason || "reward-return"); }catch(_){}
+    try{ return work(); }catch(_){}
+    return false;
+  }
+
+  function standaloneScheduleProgressiveReturnToRedeemedCheck(tableKey, reason, durationMs, opts){
+    opts = opts || {};
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed) return false;
+    const ms = Math.max(0, Number(durationMs || 0) || 0);
+    const returnWindow = [];
+    if(ms > 0){
+      for(let offset = -900; offset <= 760; offset += 220){
+        returnWindow.push(ms + offset);
+      }
+    }
+    const delays = opts.immediate === false
+      ? [Math.max(420, ms - 1400), ...returnWindow, ms + 1240, ms + 2200]
+      : [0, 160, 520, 1180, 2280, 3880, 5600, 7600, 9400];
+    if(ms > 0) delays.push(Math.max(0, ms - 900), Math.max(0, ms - 120), ms + 420, ms + 1240);
+    Array.from(new Set(delays.map((delay)=>Math.max(0, Math.round(delay))))).sort((a, b)=>a-b).forEach((delay)=>{
+      setTimeout(()=>standaloneRestoreChecksSelectionKey(parsed.key, reason || "progressive-return"), delay);
+    });
+    try{ standaloneScheduleChecksSelectionHold(reason || "progressive-return", Math.max(ms + 1400, 8800)); }catch(_){}
+    return true;
   }
 
   function installStandaloneBossHintBridge(){
@@ -4423,6 +7008,36 @@
     return standaloneCurrentBossKeyCount();
   }
 
+  function standaloneHasLoadedSeedOrApConnection(){
+    try{
+      if(ap?.connected || ap?.inherentSeedActive) return true;
+    }catch(_){}
+    return !!standaloneProfileRuntime.randomizerReady;
+  }
+
+  function standaloneFlushBossKeysIfNoLoadedSeed(){
+    if(standaloneHasLoadedSeedOrApConnection()) return false;
+    const hadBossKeys = (() => {
+      try{ if(standaloneCurrentBossKeyCount() > 0) return true; }catch(_){}
+      try{ if(Array.isArray(bossKeysState) && bossKeysState.some((key)=>!!key?.acquired)) return true; }catch(_){}
+      return false;
+    })();
+    if(!hadBossKeys) return false;
+    try{
+      if(Array.isArray(bossKeysState)){
+        bossKeysState.forEach((key)=>{
+          if(key) key.acquired = false;
+        });
+      }
+    }catch(_){}
+    try{ if(typeof bossKeysSyncLegacyMirror === "function") bossKeysSyncLegacyMirror(0); }catch(_){}
+    try{ window.__apBossKeyCount = 0; }catch(_){}
+    try{ window.__prevApBossKeyCount = 0; }catch(_){}
+    try{ if(typeof bossKeysSave === "function") bossKeysSave(); }catch(_){}
+    try{ if(typeof bossKeysRender === "function") bossKeysRender(); }catch(_){}
+    return true;
+  }
+
   function standaloneBossKeyRewardKey(it, itemIndex, locId, itemName){
     const name = standaloneNormalizeLoose(itemName || "");
     const loc = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc);
@@ -4641,6 +7256,7 @@
       let bossKeyPreviousCount = 0;
       let duplicateProgressive = false;
       let restoreChecksAfterReward = false;
+      let quietSingleplayerNotice = false;
       try{
         receivedName = standaloneReceivedItemName(it);
         if(standaloneIsBallHintRewardName(receivedName)){
@@ -4665,6 +7281,7 @@
           bossKeyRewardKey = standaloneBossKeyRewardKey(it, itemIndex, locId, receivedName);
           bossKeyPreviousCount = standaloneCurrentBossKeyCount();
         }
+        quietSingleplayerNotice = standaloneShouldQuietSingleplayerReceivedNotification(receivedName, it, opts);
       }catch(_){}
       if(duplicateProgressive){
         try{ window.__flprStandaloneProgressiveDuplicateSuppressed = Number(window.__flprStandaloneProgressiveDuplicateSuppressed || 0) + 1; }catch(_){}
@@ -4675,7 +7292,9 @@
       const isolateReplay = standaloneShouldIsolateReceivedReplay(it, opts);
       const touchesReward = isolateReplay || standaloneReceivedItemTouchesRewardCounters(it);
       const snapshot = isolateReplay ? standaloneSnapshotRewardCounters() : null;
-      const callOpts = isolateReplay ? { ...opts, noPopup:true, noFeed:true } : opts;
+      const callOpts = isolateReplay
+        ? { ...opts, noPopup:true, noFeed:true }
+        : (quietSingleplayerNotice ? { ...opts, noPopup:true, noFeed:true } : opts);
       const result = isolateReplay
         ? standaloneWithCounterDrawerFxSuppressed(()=>original.call(this, it, itemIndex, locId, callOpts))
         : original.call(this, it, itemIndex, locId, callOpts);
@@ -8136,18 +10755,21 @@
       const holdMs = Math.max(2200, Number(opts.holdMs || 3200) || 3200);
       const modalMeta = String(opts.modalMeta || "").trim();
       const thisArg = this;
+      const checksReturnKey = standaloneCaptureChecksSelectionForReward("progressive-reward-before")
+        || standalonePinnedChecksTableKey();
       const targetTableKey = (()=> {
         try{ return tableName && typeof getTableKeyForName === "function" ? String(getTableKeyForName(tableName) || "") : ""; }catch(_){}
         return "";
       })();
-      if(targetTableKey && standaloneChecksTableExists(targetTableKey)){
-        const parsedTarget = standaloneParseTableKey(targetTableKey);
-        standaloneChecksSelection.key = targetTableKey;
+      const focusTableKey = standaloneParseTableKey(checksReturnKey) ? checksReturnKey : targetTableKey;
+      if(focusTableKey && standaloneChecksTableExists(focusTableKey)){
+        const parsedTarget = standaloneParseTableKey(focusTableKey);
+        standaloneChecksSelection.key = focusTableKey;
         standaloneChecksSelection.ts = Date.now();
-        standaloneChecksSelection.source = "progressive-reward";
-        if(parsedTarget) standaloneRememberChecksWorldSelection(parsedTarget.worldKey, "progressive-reward");
-        try{ standaloneEnforceChecksSelectionPin("progressive-reward", { save:false }); }catch(_){}
-        standaloneScheduleChecksSelectionHold("progressive-reward", holdMs + 6800);
+        standaloneChecksSelection.source = checksReturnKey ? "progressive-reward-return" : "progressive-reward";
+        if(parsedTarget) standaloneRememberChecksWorldSelection(parsedTarget.worldKey, standaloneChecksSelection.source);
+        try{ standaloneEnforceChecksSelectionPin(standaloneChecksSelection.source, { save:false }); }catch(_){}
+        standaloneScheduleChecksSelectionHold(standaloneChecksSelection.source, holdMs + 6800);
       }
       const runOverviewReward = ()=>{
         const nextOpts = {
@@ -8168,6 +10790,7 @@
         }catch(_){}
         const result = original.call(thisArg, table, nextOpts);
         try{ standaloneColorizeReceivedProgressiveModal(itemName, holdMs); }catch(_){}
+        if(checksReturnKey) standaloneScheduleProgressiveReturnToRedeemedCheck(checksReturnKey, "progressive-overview-return", holdMs + 5600, { immediate:false });
         return result;
       };
       const runOverviewPipelineForQueuedSiege = ()=>{
@@ -8241,6 +10864,7 @@
             standaloneDirectChecksHighlightPinned();
           }catch(_){}
         }, holdMs + 180);
+        if(checksReturnKey) standaloneScheduleProgressiveReturnToRedeemedCheck(checksReturnKey, "progressive-checks-return", holdMs + 900);
         try{
           window.__flprStandaloneProgressiveChecksReward = {
             tableName,
@@ -9085,14 +11709,35 @@
 
   function bindStandaloneApControls(){
     installStandaloneTextClientDelegates();
-    const s = document.getElementById("apServer");
-    const p = document.getElementById("apPlayer");
-    const g = document.getElementById("apGame");
-    const pw = document.getElementById("apPass");
-    const btnC = document.getElementById("apConnectBtn");
-    const btnD = document.getElementById("apDisconnectBtn");
-    const btnSaveAp = document.getElementById("saveApCfgBtn");
+    const s = standalonePrimaryControl("#apServer");
+    const p = standalonePrimaryControl("#apPlayer");
+    const g = standalonePrimaryControl("#apGame");
+    const pw = standalonePrimaryControl("#apPass");
+    const btnC = standalonePrimaryControl("#apConnectBtn");
+    const btnD = standalonePrimaryControl("#apDisconnectBtn");
+    const btnSaveAp = standalonePrimaryControl("#saveApCfgBtn");
     const cfg = apCfg();
+    const syncApFieldsFromStandalone = ()=>{
+      const next = {
+        server: (s?.value || "").trim(),
+        player: (p?.value || "Ashodin").trim(),
+        game: (g?.value || "").trim(),
+        pass: (pw?.value || "")
+      };
+      try{ standaloneControlAll("#apServer").forEach((node)=>{ node.value = next.server; }); }catch(_){}
+      try{ standaloneControlAll("#apPlayer").forEach((node)=>{ node.value = next.player; }); }catch(_){}
+      try{ standaloneControlAll("#apGame").forEach((node)=>{ node.value = next.game; }); }catch(_){}
+      try{ standaloneControlAll("#apPass").forEach((node)=>{ node.value = next.pass; }); }catch(_){}
+      try{
+        if(typeof ap !== "undefined" && ap?.cfg){
+          ap.cfg.server = next.server;
+          ap.cfg.player = next.player;
+          ap.cfg.game = next.game;
+          ap.cfg.pass = next.pass;
+        }
+      }catch(_){}
+      return next;
+    };
 
     if(s && !s.__flprStandaloneValueLoaded){ s.value = cfg.server || ""; s.__flprStandaloneValueLoaded = true; }
     if(p && !p.__flprStandaloneValueLoaded){ p.value = cfg.player || "Ashodin"; p.__flprStandaloneValueLoaded = true; }
@@ -9107,20 +11752,21 @@
 
     if(btnC) btnC.onclick = ()=>{
       playClick();
+      standaloneSetSelectedMode("archipelago");
+      syncApFieldsFromStandalone();
       try{ if(typeof safeApConnect === "function") safeApConnect(); }catch(err){ try{ console.error(err); }catch(_){} }
     };
     if(btnD) btnD.onclick = ()=>{
       playClick();
+      try{ standaloneCaptureMultiplayerSnapshot("manual-disconnect"); }catch(_){}
       try{ if(typeof apDisconnect === "function") apDisconnect(); }catch(err){ try{ console.error(err); }catch(_){} }
+      standaloneMarkRandomizerClosed();
     };
     if(btnSaveAp) btnSaveAp.onclick = ()=>{
       playClick();
       try{
         if(typeof ap !== "undefined" && ap?.cfg){
-          ap.cfg.server = (s?.value || "").trim();
-          ap.cfg.player = (p?.value || "Ashodin").trim();
-          ap.cfg.game = (g?.value || "").trim();
-          ap.cfg.pass = (pw?.value || "");
+          syncApFieldsFromStandalone();
           if(typeof saveApCfg === "function") saveApCfg(ap.cfg);
           if(typeof apLog === "function") apLog("AP settings saved");
           if(typeof toast === "function") toast("good", "AP SETTINGS SAVED", ap.cfg.server || "server not set", 1800);
@@ -9128,8 +11774,8 @@
       }catch(err){ try{ console.error(err); }catch(_){} }
     };
 
-    const btnSR = document.getElementById("apSyncReceivedBtn");
-    const btnCR = document.getElementById("apClearReceivedBtn");
+    const btnSR = standalonePrimaryControl("#apSyncReceivedBtn");
+    const btnCR = standalonePrimaryControl("#apClearReceivedBtn");
     if(btnSR) btnSR.onclick = ()=>{
       playClick();
       try{ if(typeof forceReceivedSync === "function") forceReceivedSync(); }catch(_){}
@@ -9229,16 +11875,16 @@
     try{ if(typeof renderApLogTab === "function") renderApLogTab(); }catch(_){}
 
     if(s) s.onchange = ()=>{
-      try{ if(typeof ap !== "undefined" && ap?.cfg){ ap.cfg.server = s.value.trim(); if(typeof saveApCfg === "function") saveApCfg(ap.cfg); } }catch(_){}
+      try{ syncApFieldsFromStandalone(); if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
     };
     if(p) p.onchange = ()=>{
-      try{ if(typeof ap !== "undefined" && ap?.cfg){ ap.cfg.player = p.value.trim(); if(typeof saveApCfg === "function") saveApCfg(ap.cfg); } }catch(_){}
+      try{ syncApFieldsFromStandalone(); if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
     };
     if(g) g.onchange = ()=>{
-      try{ if(typeof ap !== "undefined" && ap?.cfg){ ap.cfg.game = g.value.trim(); if(typeof saveApCfg === "function") saveApCfg(ap.cfg); } }catch(_){}
+      try{ syncApFieldsFromStandalone(); if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
     };
     if(pw) pw.onchange = ()=>{
-      try{ if(typeof ap !== "undefined" && ap?.cfg){ ap.cfg.pass = pw.value; if(typeof saveApCfg === "function") saveApCfg(ap.cfg); } }catch(_){}
+      try{ syncApFieldsFromStandalone(); if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
     };
   }
 
@@ -9250,37 +11896,35 @@
     if(!tabs || !panels) return false;
 
     const firstStandalonePass = !document.body.classList.contains("flprStandaloneOriginalClient");
-    const current = firstStandalonePass ? "connect" : activeControlTab();
+    let current = firstStandalonePass ? (localStorage.getItem("flpr_controls_tab_v1") || "multiplayer") : activeControlTab();
+    if(current === "connect" || current === "archipelago") current = "multiplayer";
+    if(current !== "singleplayer" && current !== "multiplayer" && current !== "visuals" && current !== "achievements") current = "multiplayer";
     document.body.classList.add("flprStandaloneOriginalClient");
     injectStandaloneStyles();
+    installStandaloneAchievementProfileBridge();
+    installStandaloneAchievementDismissBridge();
+    installStandaloneRandomizerConnectionBridge();
+    standaloneEnsureActiveProfileApplied();
     applyStandaloneWindowScale();
 
     const controlsHead = document.querySelector(".controlsHead, .controlsHeadTitle");
-    if(controlsHead) controlsHead.textContent = "CONTROLS";
+    if(controlsHead) controlsHead.textContent = "MENU";
 
     const needsTabs =
       tabs.dataset.flprStandaloneTabs !== "1" ||
-      !tabs.querySelector('[data-ctrl-tab="connect"]') ||
       !tabs.querySelector('[data-ctrl-tab="visuals"]') ||
       !tabs.querySelector('[data-ctrl-tab="achievements"]') ||
+      !tabs.querySelector('[data-ctrl-tab="singleplayer"], [data-ctrl-tab="multiplayer"]') ||
+      tabs.querySelector('[data-ctrl-tab="connect"]') ||
       tabs.querySelector('[data-ctrl-tab="testing"]');
 
     if(needsTabs){
-      tabs.dataset.flprStandaloneTabs = "1";
-      tabs.innerHTML = `
-        <button class="controlsTabBtn active" data-ctrl-tab="connect" type="button">CONNECT</button>
-        <button class="controlsTabBtn" data-ctrl-tab="visuals" type="button">VISUALS / MUSIC</button>
-        <button class="controlsTabBtn" data-ctrl-tab="achievements" type="button">ACHIEVEMENTS</button>
-      `;
-      tabs.addEventListener("click", (event)=>{
-        const btn = event.target.closest(".controlsTabBtn");
-        if(!btn) return;
-        playClick();
-        setControlTab(btn.dataset.ctrlTab || "connect");
-      });
+      tabs.dataset.flprStandaloneModeTabs = "";
     }
+    standaloneRenderMenuTabs(current);
 
-    const connect = ensurePanel(panels, "connect");
+    const singleplayer = ensurePanel(panels, "singleplayer");
+    const multiplayer = ensurePanel(panels, "multiplayer");
     const visuals = ensurePanel(panels, "visuals");
     const achievements = ensurePanel(panels, "achievements");
     if(!achievements.id) achievements.id = "achievementsControlsPanel";
@@ -9294,28 +11938,39 @@
     }catch(_){}
 
     if(
-      connect.dataset.flprStandaloneConnect !== "1" ||
-      !connect.querySelector("#standaloneStartSeedBtn") ||
-      !connect.querySelector(".standaloneArchipelagoSection") ||
-      !connect.querySelector("#receivedBody")
+      singleplayer.dataset.flprStandaloneSingleplayer !== "1" ||
+      !singleplayer.querySelector("#standaloneStartSeedBtn") ||
+      !singleplayer.querySelector("#standaloneSeedSaveList")
     ){
-      connect.dataset.flprStandaloneConnect = "1";
-      connect.innerHTML = connectPanelHtml(apCfg());
+      singleplayer.dataset.flprStandaloneSingleplayer = "1";
+      singleplayer.innerHTML = standaloneSingleplayerPanelHtml();
+    }
+
+    if(
+      multiplayer.dataset.flprStandaloneConnect !== "1" ||
+      !multiplayer.querySelector(".standaloneArchipelagoSection") ||
+      !multiplayer.querySelector("#receivedBody") ||
+      multiplayer.querySelector(".standaloneConnectionModeShell")
+    ){
+      multiplayer.dataset.flprStandaloneConnect = "1";
+      multiplayer.innerHTML = connectPanelHtml(apCfg());
     }
 
     Array.from(panels.children).forEach((panel)=>{
-      if(panel === connect || panel === visuals || panel === achievements) return;
+      if(panel === singleplayer || panel === multiplayer || panel === visuals || panel === achievements) return;
       panel.style.display = "none";
       panel.classList.remove("active");
     });
-    panels.appendChild(connect);
+    panels.appendChild(singleplayer);
+    panels.appendChild(multiplayer);
     panels.appendChild(visuals);
     panels.appendChild(achievements);
 
     try{ if(typeof renderAchievementsControlsPanel === "function") renderAchievementsControlsPanel(); }catch(_){}
     bindStandaloneControls();
+    standaloneRefreshProfileUi();
     applyControlFontScale();
-    setControlTab(current === "achievements" ? "achievements" : (current === "visuals" ? "visuals" : "connect"));
+    setControlTab(current);
     return true;
   }
 
@@ -9333,11 +11988,17 @@
         installStandaloneChecksSelectionBridge();
         installStandaloneProgressiveChecksRewardBridge();
         installStandaloneChecksBackgroundBridge();
+        installStandaloneAchievementProfileBridge();
+        installStandaloneAchievementDismissBridge();
+        installStandaloneRandomizerConnectionBridge();
+        installStandaloneNoChatHangmanBridge();
         installStandaloneLocationCheckBridge();
         installStandaloneBossCheckRoutingBridge();
         installStandaloneBossHintBridge();
         installStandaloneReceivedAddBridge();
         rebuildStandaloneControls();
+        standaloneRefreshProfileUi();
+        installStandaloneNoChatHangmanBridge();
         applyStandaloneWindowScale();
       }catch(err){ try{ console.error(err); }catch(_){} }
     };
