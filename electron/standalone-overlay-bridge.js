@@ -10,6 +10,8 @@
   const STANDALONE_ACHIEVEMENT_LS_KEY = "flpr_achievements_v1";
   const STANDALONE_ACHIEVEMENT_UI_LS_KEY = "flpr_achievements_ui_v1";
   const STANDALONE_EPISODE_LS_KEY = "flpr_episode_v1";
+  const STANDALONE_DEFAULT_SWAP_SECONDS = 60;
+  const STANDALONE_SWAP_DEFAULT_VERSION = 2;
   const STANDALONE_KNOWN_AP_ITEM_NAMES = Object.freeze({
     "370001": "Ethereal Crossbow",
     "heretic|370001": "Ethereal Crossbow"
@@ -598,13 +600,13 @@
       }
       body.flprStandaloneOriginalClient .standaloneModeHud{
         position:fixed !important;
-        top:10px !important;
+        top:42px !important;
         left:calc(var(--captureW) + var(--bonusLeaderboardW) + var(--gutter) + 16px) !important;
         z-index:2147483644 !important;
         display:flex !important;
         align-items:center !important;
         gap:14px !important;
-        max-width:min(590px, calc(100vw - 36px)) !important;
+        max-width:min(940px, calc(100vw - 36px)) !important;
         pointer-events:auto !important;
         font-family:var(--pixelFont, inherit) !important;
       }
@@ -612,9 +614,9 @@
         display:none !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeHudLogo{
-        width:300px !important;
-        height:64px !important;
-        flex:0 0 300px !important;
+        width:min(600px, 46vw) !important;
+        height:128px !important;
+        flex:0 0 min(600px, 46vw) !important;
         display:block !important;
         object-fit:contain !important;
         object-position:left center !important;
@@ -1181,6 +1183,7 @@
       body.flprStandaloneOriginalClient .standaloneLogStack{
         grid-row:2 !important;
         gap:10px !important;
+        overflow:hidden !important;
       }
       body.flprStandaloneOriginalClient .standaloneSingleplayerSaveStack,
       body.flprStandaloneOriginalClient .standaloneSingleplayerInfoStack{
@@ -1321,6 +1324,12 @@
       body.flprStandaloneOriginalClient .recvWrap{
         display:flex !important;
         flex-direction:column !important;
+      }
+      body.flprStandaloneOriginalClient .apConnLog{
+        display:flex !important;
+        flex-direction:column !important;
+        height:100% !important;
+        min-height:0 !important;
       }
       body.flprStandaloneOriginalClient .recvBody,
       body.flprStandaloneOriginalClient #apConnLogBody{
@@ -4953,6 +4962,27 @@
     }catch(_){}
   }
 
+  function standaloneEnsureAutoSwapDefault(){
+    try{
+      const settings = standaloneReadOverlaySettings() || {};
+      const saved = Number(settings.swapSeconds);
+      const migrated = Number(settings.homeEditionSwapDefaultVersion || 0) >= STANDALONE_SWAP_DEFAULT_VERSION;
+      if(Number.isFinite(saved) && (migrated || saved !== 6)) return false;
+      const nextSeconds = STANDALONE_DEFAULT_SWAP_SECONDS;
+      standaloneSaveOverlaySettings({
+        swapSeconds: nextSeconds,
+        homeEditionSwapDefaultVersion: STANDALONE_SWAP_DEFAULT_VERSION
+      });
+      const input = document.getElementById("swapSeconds");
+      if(input) input.value = String(nextSeconds);
+      try{ if(typeof restartTimer === "function") restartTimer(); }catch(_){}
+      try{ window.__flprStandaloneAutoSwapDefault = { seconds:nextSeconds, migratedFrom:Number.isFinite(saved) ? saved : null, ts:Date.now() }; }catch(_){}
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
   function standaloneEnsureChecksBgOptions(){
     const select = document.getElementById("checksBgMode");
     if(!select) return null;
@@ -8217,6 +8247,40 @@
     standaloneTextClient.renderTimer = setTimeout(run, 16);
   }
 
+  function standaloneCaptureScrollState(node){
+    if(!node) return null;
+    try{
+      const top = Number(node.scrollTop || 0) || 0;
+      const height = Number(node.scrollHeight || 0) || 0;
+      const client = Number(node.clientHeight || 0) || 0;
+      return {
+        top,
+        height,
+        client,
+        atStart: top <= 24,
+        atEnd: Math.abs((height - client) - top) < 28
+      };
+    }catch(_){
+      return null;
+    }
+  }
+
+  function standaloneRestoreScrollState(node, snap, opts){
+    if(!node || !snap) return;
+    opts = opts || {};
+    try{
+      if(opts.followEnd && snap.atEnd){
+        node.scrollTop = node.scrollHeight;
+        return;
+      }
+      if(opts.preservePrepended && !snap.atStart){
+        node.scrollTop = Math.max(0, snap.top + ((Number(node.scrollHeight || 0) || 0) - snap.height));
+        return;
+      }
+      node.scrollTop = Math.max(0, snap.top);
+    }catch(_){}
+  }
+
   function standaloneTextRender(){
     const bodies = standaloneControlAll("#apConnLogBody");
     if(!bodies.length) return;
@@ -8231,7 +8295,7 @@
       if(body.__flprStandaloneLogRenderKey === renderKey && body.childNodes.length){
         return;
       }
-      const shouldStickToBottom = Math.abs((body.scrollHeight - body.clientHeight) - body.scrollTop) < 24;
+      const scrollSnap = standaloneCaptureScrollState(body);
       const frag = document.createDocumentFragment();
       if(lines.length){
         lines.forEach((line)=>frag.appendChild(standaloneBuildLogLine(line)));
@@ -8243,9 +8307,7 @@
       }
       body.replaceChildren(frag);
       body.__flprStandaloneLogRenderKey = renderKey;
-      if(shouldStickToBottom || lines.length){
-        body.scrollTop = body.scrollHeight;
-      }
+      standaloneRestoreScrollState(body, scrollSnap, { followEnd:true });
     });
   }
 
@@ -8396,18 +8458,38 @@
       hdr.textContent = `ITEM LOG (${receivedCount} RECEIVED / ${sentCount} SENT)`;
     });
     const rows = tab === "sent" ? standaloneSentRows() : standaloneReceivedRows();
+    const emptyText = tab === "sent" ? "No sent items recorded yet." : "No received items yet; click SYNC RECEIVED after connecting.";
+    const renderKey = JSON.stringify({
+      tab,
+      rows: rows.map((row)=>({
+        key: row.key,
+        time: row.time,
+        flags: row.flags,
+        itemName: row.itemName,
+        lineA: row.lineA,
+        lineB: row.lineB,
+        lineC: row.lineC
+      })),
+      emptyText
+    });
     bodies.forEach((body)=>{
       if(!body.closest(".flprStandaloneConnectLayout")) return;
+      if(body.__flprStandaloneItemRenderKey === renderKey && body.childNodes.length) return;
+      const scrollSnap = standaloneCaptureScrollState(body);
       body.innerHTML = "";
       if(!rows.length){
         const d = document.createElement("div");
         d.style.color = "rgba(232,250,255,0.65)";
         d.style.fontSize = "inherit";
-        d.textContent = tab === "sent" ? "No sent items recorded yet." : "No received items yet; click SYNC RECEIVED after connecting.";
+        d.textContent = emptyText;
         body.appendChild(d);
+        body.__flprStandaloneItemRenderKey = renderKey;
+        standaloneRestoreScrollState(body, scrollSnap, { preservePrepended:true });
         return;
       }
       rows.forEach((row)=>standaloneAppendItemRow(body, row));
+      body.__flprStandaloneItemRenderKey = renderKey;
+      standaloneRestoreScrollState(body, scrollSnap, { preservePrepended:true });
     });
   }
 
@@ -8425,6 +8507,14 @@
     standaloneRenderItemPanel();
     return false;
   }
+  try{
+    window.flprStandaloneRenderItemPanel = standaloneRenderItemPanel;
+    window.flprStandaloneSetItemTab = (tab)=>activateStandaloneItemTab(tab);
+    Object.defineProperty(window, "__flprStandaloneItemTabName", {
+      configurable:true,
+      get:()=>standaloneItemTabName(standaloneItemPanel.activeTab)
+    });
+  }catch(_){}
 
   function standaloneCopyTextFallback(text){
     try{
@@ -11906,6 +11996,7 @@
     installStandaloneRandomizerConnectionBridge();
     standaloneEnsureActiveProfileApplied();
     applyStandaloneWindowScale();
+    standaloneEnsureAutoSwapDefault();
 
     const controlsHead = document.querySelector(".controlsHead, .controlsHeadTitle");
     if(controlsHead) controlsHead.textContent = "MENU";
