@@ -909,7 +909,7 @@ async function run() {
       const hud = document.querySelector('#standaloneModeHud');
       const logo = document.querySelector('#standaloneModeHud .standaloneModeHudLogo');
       const buttons = Array.from(document.querySelectorAll('#standaloneModeHud [data-standalone-mode-toggle]'));
-      const controls = document.querySelector('.controlsBody') || document.querySelector('.controls');
+      const controls = document.querySelector('.controls') || document.querySelector('.controlsBody');
       const rect = hud?.getBoundingClientRect?.();
       const logoRect = logo?.getBoundingClientRect?.();
       const controlsRect = controls?.getBoundingClientRect?.();
@@ -919,19 +919,28 @@ async function run() {
         logoSrc: logo?.getAttribute('src') || '',
         logoAlt: logo?.getAttribute('alt') || '',
         logoSize: logoRect ? Math.round(Math.min(logoRect.width, logoRect.height)) : 0,
+        logoWidth: logoRect ? Math.round(logoRect.width) : 0,
+        logoHeight: logoRect ? Math.round(logoRect.height) : 0,
         text: buttons.map((btn) => btn.innerText || ''),
         active: buttons.find((btn) => btn.classList.contains('active'))?.dataset?.standaloneModeToggle || '',
         left: rect ? Math.round(rect.left) : null,
         right: rect ? Math.round(rect.right) : null,
         controlsLeft: controlsRect ? Math.round(controlsRect.left) : null,
         controlsRight: controlsRect ? Math.round(controlsRect.right) : null,
-        aboveMenu: !!(rect && controlsRect && rect.bottom <= controlsRect.top + 6),
+        overhangsMenu: !!(rect && controlsRect && rect.top < controlsRect.top && rect.bottom > controlsRect.top + 8),
         leftAligned: !!(rect && controlsRect && Math.abs(rect.left - controlsRect.left) < 42)
       };
     })()
   `);
-  if(!modeToggleProbe.exists || modeToggleProbe.hidden || !/FlippermizerLogo\.png/i.test(modeToggleProbe.logoSrc) || !/Flippermizer/i.test(modeToggleProbe.logoAlt) || modeToggleProbe.logoSize < 48 || !modeToggleProbe.text.includes("SP") || !modeToggleProbe.text.includes("MP") || modeToggleProbe.active !== "archipelago" || !modeToggleProbe.aboveMenu || !modeToggleProbe.leftAligned){
-    throw new Error(`Standalone logo and SP/MP mode toggle were not positioned above Menu: ${JSON.stringify(modeToggleProbe)}`);
+  if(!modeToggleProbe.exists || modeToggleProbe.hidden || !/FlippermizerLogo\.png/i.test(modeToggleProbe.logoSrc) || !/Flippermizer/i.test(modeToggleProbe.logoAlt) || modeToggleProbe.logoWidth < 520 || modeToggleProbe.logoHeight < 110 || !modeToggleProbe.text.includes("SP") || !modeToggleProbe.text.includes("MP") || modeToggleProbe.active !== "archipelago" || !modeToggleProbe.overhangsMenu || !modeToggleProbe.leftAligned){
+    throw new Error(`Standalone logo and SP/MP mode toggle were not enlarged/positioned above Menu: ${JSON.stringify(modeToggleProbe)}`);
+  }
+  const autoSwapDefaultProbe = await page.evaluate(`(() => ({
+    inputValue: document.getElementById("swapSeconds")?.value || "",
+    saved: JSON.parse(localStorage.getItem("flpr_settings_v1") || "{}")
+  }))()`);
+  if(Number(autoSwapDefaultProbe.inputValue) !== 60 || Number(autoSwapDefaultProbe.saved?.swapSeconds) !== 60){
+    throw new Error(`Home Edition auto-swap default was not migrated to 60 seconds: ${JSON.stringify(autoSwapDefaultProbe)}`);
   }
   await page.evaluate(`(() => {
     window.flprStandaloneSetHomeMode && window.flprStandaloneSetHomeMode("singleplayer");
@@ -3343,6 +3352,113 @@ async function run() {
     !logRenderStability.afterNativeHtmlSame
   ){
     throw new Error(`AP log render path still rewrites stable log DOM: ${JSON.stringify(logRenderStability)}`);
+  }
+
+  const liveScrollProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const logBody = document.querySelector(".flprStandaloneConnectLayout #apConnLogBody");
+    const logWrap = document.querySelector(".flprStandaloneConnectLayout .apConnLog");
+    const sayWrap = document.querySelector(".flprStandaloneConnectLayout .apClientSayWrap");
+    const logStyle = logWrap ? getComputedStyle(logWrap) : null;
+    const logRect = logWrap?.getBoundingClientRect?.();
+    const bodyRect = logBody?.getBoundingClientRect?.();
+    const sayRect = sayWrap?.getBoundingClientRect?.();
+    const logLayout = {
+      missing: !logBody || !logWrap,
+      display: logStyle?.display || "",
+      flexDirection: logStyle?.flexDirection || "",
+      logHeight: logRect ? Math.round(logRect.height) : 0,
+      bodyHeight: bodyRect ? Math.round(bodyRect.height) : 0,
+      sayTop: sayRect ? Math.round(sayRect.top) : 0,
+      sayBottom: sayRect ? Math.round(sayRect.bottom) : 0,
+      logBottom: logRect ? Math.round(logRect.bottom) : 0,
+      bodyBottom: bodyRect ? Math.round(bodyRect.bottom) : 0
+    };
+    if(logBody){
+      for(let i = 0; i < 48; i++){
+        if(typeof apLog === "function") apLog(`ALTTPP3: scroll retention ${i}`, { tab:"status", mirrorTabs:["chat"] });
+      }
+      if(typeof window.flprStandaloneTextClientRender === "function") window.flprStandaloneTextClientRender();
+      logBody.scrollTop = Math.max(32, Math.floor(logBody.scrollHeight / 3));
+    }
+    const logBefore = logBody ? logBody.scrollTop : 0;
+    if(typeof apLog === "function") apLog(`ALTTPP3: scroll retention new ${Date.now()}`, { tab:"status", mirrorTabs:["chat"] });
+    await delay(80);
+    const logAfter = logBody ? logBody.scrollTop : 0;
+
+    const receivedBody = document.querySelector(".flprStandaloneConnectLayout #receivedBody");
+    const oldReceived = Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row) => ({ ...row })) : [];
+    const oldTab = window.__flprStandaloneItemTabName || "";
+    let itemBefore = 0;
+    let itemAfter = 0;
+    try{
+      if(window.flprStandaloneSetItemTab) window.flprStandaloneSetItemTab("received");
+      ap.receivedAll = Array.from({ length: 60 }, (_, index) => ({
+        recvIndex:index,
+        time:"12:00:00",
+        itemName:`Easy Junk Item ${index}`,
+        baseItemName:`Easy Junk Item ${index}`,
+        locationName:`Scroll Test - Location ${index}`,
+        checkName:`Scroll Test - Location ${index}`,
+        sourcePlayerName:"ALTTPP3",
+        sourceGame:"A Link to the Past",
+        flags:0,
+        itemId:900000 + index,
+        locId:800000 + index
+      }));
+      if(typeof renderReceivedList === "function") renderReceivedList(ap.receivedAll);
+      if(typeof window.flprStandaloneRenderItemPanel === "function") window.flprStandaloneRenderItemPanel();
+      await delay(30);
+      if(receivedBody) receivedBody.scrollTop = Math.max(48, Math.floor(receivedBody.scrollHeight / 3));
+      itemBefore = receivedBody ? receivedBody.scrollTop : 0;
+      ap.receivedAll.push({
+        recvIndex:99,
+        time:"12:00:01",
+        itemName:"Rupees (20)",
+        baseItemName:"Rupees (20)",
+        locationName:"Scroll Test - Newest",
+        checkName:"Scroll Test - Newest",
+        sourcePlayerName:"ALTTPP3",
+        sourceGame:"A Link to the Past",
+        flags:0,
+        itemId:900099,
+        locId:800099
+      });
+      if(typeof renderReceivedList === "function") renderReceivedList(ap.receivedAll);
+      if(typeof window.flprStandaloneRenderItemPanel === "function") window.flprStandaloneRenderItemPanel();
+      await delay(30);
+      itemAfter = receivedBody ? receivedBody.scrollTop : 0;
+    }finally{
+      try{
+        ap.receivedAll = oldReceived;
+        if(typeof saveReceivedList === "function") saveReceivedList(oldReceived);
+        if(typeof renderReceivedList === "function") renderReceivedList(oldReceived);
+        if(typeof window.flprStandaloneRenderItemPanel === "function") window.flprStandaloneRenderItemPanel();
+        if(oldTab && window.flprStandaloneSetItemTab) window.flprStandaloneSetItemTab(oldTab);
+      }catch(_){}
+    }
+    return {
+      logLayout,
+      logBefore,
+      logAfter,
+      itemBefore,
+      itemAfter,
+      logScrollHeight: logBody ? logBody.scrollHeight : 0,
+      itemScrollHeight: receivedBody ? receivedBody.scrollHeight : 0
+    };
+  });
+  if(
+    liveScrollProbe.logLayout.missing ||
+    liveScrollProbe.logLayout.display !== "flex" ||
+    liveScrollProbe.logLayout.flexDirection !== "column" ||
+    liveScrollProbe.logLayout.bodyHeight < 80 ||
+    liveScrollProbe.logLayout.bodyBottom > liveScrollProbe.logLayout.sayTop + 4 ||
+    Math.abs(liveScrollProbe.logLayout.logBottom - liveScrollProbe.logLayout.sayBottom) > 8 ||
+    Math.abs(liveScrollProbe.logAfter - liveScrollProbe.logBefore) > 12 ||
+    liveScrollProbe.itemBefore < 24 ||
+    liveScrollProbe.itemAfter < liveScrollProbe.itemBefore - 12
+  ){
+    throw new Error(`Connected AP log/item scroll space or scroll retention failed: ${JSON.stringify(liveScrollProbe)}`);
   }
 
   const bossKeyLiveSnapshotProbe = await page.evaluate(async () => {
