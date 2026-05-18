@@ -494,7 +494,7 @@ async function run() {
   await waitFor(page, `
     return !!(
       document.body.classList.contains('flprStandaloneOriginalClient') &&
-      document.querySelector('.flprStandaloneConnectLayout #standaloneStartSeedBtn') &&
+      document.querySelector('.flprStandaloneSingleplayerLayout #standaloneStartSeedBtn') &&
       document.querySelector('.flprStandaloneConnectLayout #apConnectBtn') &&
       window.flprStandaloneTextClientSend &&
       window.flprStandaloneTaskTooltipForTest
@@ -521,6 +521,148 @@ async function run() {
   if(!bridgeProbe.tableLookup || !bridgeProbe.unlockFx || !bridgeProbe.sfxDedupe){
     throw new Error(`Standalone AP receive/audio bridges were not installed: ${JSON.stringify(bridgeProbe)}`);
   }
+
+  const profileGateInitialProbe = await page.evaluate(`(() => ({
+    needsProfile: document.body.classList.contains('flprStandaloneNeedsProfile'),
+    gateVisible: !!document.querySelector('#standaloneProfileGate:not([hidden])'),
+    startDisabled: !!document.querySelector('#randomizerIntroStartBtn')?.disabled,
+    sign: document.querySelector('#randomizerIntroSign')?.textContent || ''
+  }))()`);
+  if(!profileGateInitialProbe.needsProfile || !profileGateInitialProbe.gateVisible || !profileGateInitialProbe.startDisabled){
+    throw new Error(`Home profile gate was not blocking a fresh Home Edition launch: ${JSON.stringify(profileGateInitialProbe)}`);
+  }
+  await page.locator("#standaloneProfileNameInput").fill("Playwright Home");
+  await page.locator("#standaloneEmojiPickerButton").click();
+  await page.locator(".standaloneEmojiChoice").filter({ hasText: String.fromCodePoint(0x1F3AF) }).first().click();
+  await page.locator("#standaloneProfileColorInput").evaluate((input) => { input.value = "#00ffd5"; input.dispatchEvent(new Event("input", { bubbles: true })); });
+  await page.locator("#standaloneProfileCreateBtn").click();
+  await waitFor(page, `
+    return !!(
+      !document.body.classList.contains('flprStandaloneNeedsProfile') &&
+      document.body.classList.contains('flprStandaloneModePicking') &&
+      document.querySelector('#standaloneProfileGate[hidden]') &&
+      document.querySelector('#standaloneModeGate:not([hidden])') &&
+      /Playwright Home/.test(document.querySelector('#standaloneProfileHud')?.innerText || '') &&
+      /FLPRP/.test(document.querySelector('#standaloneProfileHud')?.innerText || '')
+    );
+  `, 8000);
+
+  const modeGateInitialProbe = await page.evaluate(`(() => {
+    const gate = document.querySelector('#standaloneModeGate:not([hidden])');
+    const choices = Array.from(document.querySelectorAll('#standaloneModeGate [data-standalone-mode-choice]')).map((btn) => ({
+      mode: btn.getAttribute('data-standalone-mode-choice') || '',
+      text: btn.innerText || '',
+      titleFont: parseFloat(getComputedStyle(btn.querySelector('.standaloneModeChoiceTitle')).fontSize || '0'),
+      textFont: parseFloat(getComputedStyle(btn.querySelector('.standaloneModeChoiceText')).fontSize || '0'),
+      textFamily: getComputedStyle(btn.querySelector('.standaloneModeChoiceText')).fontFamily || ''
+    }));
+    return {
+      visible: !!gate,
+      choices,
+      removedOldSubcopy: !/pick how this profile is playing today/i.test(gate?.innerText || ''),
+      controlsDimmed: document.body.classList.contains('flprStandaloneModePicking')
+    };
+  })()`);
+  if(
+    !modeGateInitialProbe.visible ||
+    !modeGateInitialProbe.removedOldSubcopy ||
+    !modeGateInitialProbe.controlsDimmed ||
+    !modeGateInitialProbe.choices.some((choice) => choice.mode === "singleplayer" && /local home edition seed/i.test(choice.text)) ||
+    !modeGateInitialProbe.choices.some((choice) => choice.mode === "archipelago" && /archipelago multiworld/i.test(choice.text)) ||
+    !modeGateInitialProbe.choices.every((choice) => choice.titleFont >= 24 && choice.textFont >= 15 && /pixel|press|start/i.test(choice.textFamily))
+  ){
+    throw new Error(`Home Edition mode choice gate did not render correctly: ${JSON.stringify(modeGateInitialProbe)}`);
+  }
+  await page.locator("#standaloneModeGate [data-standalone-mode-choice='singleplayer']").hover();
+  await page.locator("#standaloneModeGate [data-standalone-mode-choice='archipelago']").click();
+  await waitFor(page, `
+    return !!(
+      document.querySelector('#standaloneModeGate[hidden]') &&
+      !document.body.classList.contains('flprStandaloneModePicking') &&
+      document.querySelector('.controlsTabBtn.active')?.dataset?.ctrlTab === 'multiplayer' &&
+      document.querySelector('.controlsTabPanel.active')?.dataset?.ctrlPanel === 'multiplayer' &&
+      /CONNECT/.test(Array.from(document.querySelectorAll('.controlsTabBtn')).map((btn)=>btn.innerText || '').join('|')) &&
+      /VISUALS \\/ MUSIC/.test(Array.from(document.querySelectorAll('.controlsTabBtn')).map((btn)=>btn.innerText || '').join('|')) &&
+      /ACHIEVEMENTS/.test(Array.from(document.querySelectorAll('.controlsTabBtn')).map((btn)=>btn.innerText || '').join('|'))
+    );
+  `, 8000);
+
+  await page.locator("#standaloneProfileHudBtn").click();
+  await delay(1300);
+  const profileMenuStickyProbe = await page.evaluate(`(() => {
+    const menu = document.querySelector('#standaloneProfileMenu');
+    return {
+      visible: !!menu && !menu.hidden && getComputedStyle(menu).display !== 'none',
+      text: menu?.innerText || ''
+    };
+  })()`);
+  if(!profileMenuStickyProbe.visible || !/CHANGE NAME/i.test(profileMenuStickyProbe.text)){
+    throw new Error(`Home profile menu did not stay open across refresh: ${JSON.stringify(profileMenuStickyProbe)}`);
+  }
+  await page.locator("[data-profile-menu-action='edit']").click();
+  await delay(1300);
+  const profileEditStickyProbe = await page.evaluate(`(() => {
+    const gate = document.querySelector('#standaloneProfileGate');
+    return {
+      visible: !!gate && !gate.hidden && getComputedStyle(gate).display !== 'none',
+      title: document.querySelector('#standaloneProfileTitle')?.innerText || '',
+      nameValue: document.querySelector('#standaloneProfileNameInput')?.value || ''
+    };
+  })()`);
+  if(!profileEditStickyProbe.visible || !/Edit Home Profile/i.test(profileEditStickyProbe.title)){
+    throw new Error(`Home profile edit dialog did not stay open across refresh: ${JSON.stringify(profileEditStickyProbe)}`);
+  }
+  await page.locator("#standaloneProfileNameInput").fill("Playwright Edited");
+  await page.locator("#standaloneProfileCreateBtn").click();
+  await waitFor(page, `
+    return !!(
+      document.querySelector('#standaloneProfileGate[hidden]') &&
+      /Playwright Edited/.test(document.querySelector('#standaloneProfileHud')?.innerText || '')
+    );
+  `, 8000);
+
+  const noHangmanProbe = await page.evaluate(`(() => {
+    const visible = (node) => {
+      if(!node) return false;
+      const style = getComputedStyle(node);
+      return style.display !== "none" && style.visibility !== "hidden" && node.hidden !== true;
+    };
+    const buttons = Array.from(document.querySelectorAll('#hintTestHangmanBtn, #testHangmanBtn, [data-testtag="Hangman"]'));
+    const metaText = Array.from(document.querySelectorAll('.hintMeta')).map((node) => node.textContent || '').join("\\n");
+    let canStart = null;
+    try{
+      canStart = typeof hintCanStartHangman === "function"
+        ? hintCanStartHangman({ target:{ tableName:"Corvette" }, text:"Probe" }, { forceHangman:true })
+        : null;
+    }catch(err){
+      canStart = String(err?.message || err);
+    }
+    return {
+      flag: window.FLPR_STANDALONE_CHAT_HANGMAN_DISABLED,
+      canStart,
+      visibleButtons: buttons.filter(visible).map((node) => node.id || node.getAttribute("data-testtag") || node.textContent || ""),
+      metaHasHangman: /hangman/i.test(metaText),
+      revealHasHangman: !!document.querySelector('#hintRevealBox.hangman, .hintHangmanCard')
+    };
+  })()`);
+  if(noHangmanProbe.flag !== true || noHangmanProbe.canStart !== false || noHangmanProbe.visibleButtons.length || noHangmanProbe.metaHasHangman || noHangmanProbe.revealHasHangman){
+    throw new Error(`Home Edition still exposes Chat Stream Hangman: ${JSON.stringify(noHangmanProbe)}`);
+  }
+
+  const achievementDismissProbe = await page.evaluate(`(() => {
+    try {
+      achQueueToast({ title:"Dismiss Test", desc:"Profile toast dismiss test.", unlockedAt:Date.now(), points:0 });
+    } catch (_) {}
+    return {
+      hasBridge: !!document.body.classList.contains('flprStandaloneOriginalClient')
+    };
+  })()`);
+  if(!achievementDismissProbe.hasBridge){
+    throw new Error(`Standalone achievement dismiss bridge could not run: ${JSON.stringify(achievementDismissProbe)}`);
+  }
+  await waitFor(page, `return !!document.querySelector('.achievementToast .achievementToastClose');`, 5000);
+  await page.locator(".achievementToast .achievementToastClose").click();
+  await waitFor(page, `return !document.querySelector('.achievementToast');`, 5000);
 
   const receivedIndexCollisionProbe = await page.evaluate(`(() => {
     const index = 991100;
@@ -724,7 +866,7 @@ async function run() {
   await waitFor(page, `
     return !!(
       document.body.classList.contains('flprStandaloneOriginalClient') &&
-      document.querySelector('.flprStandaloneConnectLayout #standaloneStartSeedBtn') &&
+      document.querySelector('.flprStandaloneSingleplayerLayout #standaloneStartSeedBtn') &&
       document.querySelector('.flprStandaloneConnectLayout #apConnectBtn') &&
       window.flprStandaloneTextClientSend &&
       window.flprStandaloneTaskTooltipForTest
@@ -733,52 +875,272 @@ async function run() {
 
   const connectionModeDefaultProbe = await page.evaluate(`
     (() => {
-      const shell = document.querySelector('.flprStandaloneConnectLayout .standaloneConnectionModeShell');
-      const activeTab = document.querySelector('.flprStandaloneConnectLayout .standaloneConnectionModeTab.active')?.dataset?.standaloneModeTab || '';
-      const activePanel = document.querySelector('.flprStandaloneConnectLayout .standaloneConnectionModePanel.active')?.dataset?.standaloneModePanel || '';
+      const activeTab = document.querySelector('.controlsTabBtn.active')?.dataset?.ctrlTab || '';
+      const activePanel = document.querySelector('.controlsTabPanel.active')?.dataset?.ctrlPanel || '';
       const apButton = document.querySelector('.flprStandaloneConnectLayout #apConnectBtn');
-      const startButton = document.querySelector('.flprStandaloneConnectLayout #standaloneStartSeedBtn');
-      const apVisible = !!apButton && getComputedStyle(apButton.closest('.standaloneConnectionModePanel')).display !== 'none';
-      const singleVisible = !!startButton && getComputedStyle(startButton.closest('.standaloneConnectionModePanel')).display !== 'none';
+      const startButton = document.querySelector('.flprStandaloneSingleplayerLayout #standaloneStartSeedBtn');
+      const apVisible = !!apButton && getComputedStyle(apButton.closest('.controlsTabPanel')).display !== 'none';
+      const singleVisible = !!startButton && getComputedStyle(startButton.closest('.controlsTabPanel')).display !== 'none';
       return {
-        shellMode: shell?.dataset?.standaloneConnectionMode || '',
         activeTab,
         activePanel,
         apVisible,
         singleVisible,
-        tabText: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout .standaloneConnectionModeTab')).map((btn) => btn.innerText || '')
+        tabText: Array.from(document.querySelectorAll('.controlsTabBtn')).map((btn) => btn.innerText || ''),
+        hasInnerModeTabs: !!document.querySelector('.flprStandaloneConnectLayout .standaloneConnectionModeTab')
       };
     })()
   `);
   if(
-    connectionModeDefaultProbe.shellMode !== "archipelago" ||
-    connectionModeDefaultProbe.activeTab !== "archipelago" ||
-    connectionModeDefaultProbe.activePanel !== "archipelago" ||
+    connectionModeDefaultProbe.activeTab !== "multiplayer" ||
+    connectionModeDefaultProbe.activePanel !== "multiplayer" ||
     !connectionModeDefaultProbe.apVisible ||
     connectionModeDefaultProbe.singleVisible ||
-    !connectionModeDefaultProbe.tabText[0]?.includes("ARCHIPELAGO CONNECTIONS")
+    !connectionModeDefaultProbe.tabText.some((text) => String(text || "").includes("CONNECT")) ||
+    !connectionModeDefaultProbe.tabText.some((text) => String(text || "").includes("VISUALS / MUSIC")) ||
+    !connectionModeDefaultProbe.tabText.some((text) => String(text || "").includes("ACHIEVEMENTS")) ||
+    connectionModeDefaultProbe.tabText.some((text) => /SINGLEPLAYER|MULTIPLAYER/.test(String(text || ""))) ||
+    connectionModeDefaultProbe.hasInnerModeTabs
   ){
-    throw new Error(`Standalone connection mode did not default to Archipelago first: ${JSON.stringify(connectionModeDefaultProbe)}`);
+    throw new Error(`Standalone Menu tabs did not default to Multiplayer with AP controls isolated: ${JSON.stringify(connectionModeDefaultProbe)}`);
   }
-  await page.locator(".flprStandaloneConnectLayout .standaloneConnectionModeTab[data-standalone-mode-tab='singleplayer']").click();
-  const singleplayerModeProbe = await page.evaluate(`
+  const modeToggleProbe = await page.evaluate(`
     (() => {
-      const activeTab = document.querySelector('.flprStandaloneConnectLayout .standaloneConnectionModeTab.active')?.dataset?.standaloneModeTab || '';
-      const activePanel = document.querySelector('.flprStandaloneConnectLayout .standaloneConnectionModePanel.active')?.dataset?.standaloneModePanel || '';
-      const apButton = document.querySelector('.flprStandaloneConnectLayout #apConnectBtn');
-      const startButton = document.querySelector('.flprStandaloneConnectLayout #standaloneStartSeedBtn');
+      const hud = document.querySelector('#standaloneModeHud');
+      const logo = document.querySelector('#standaloneModeHud .standaloneModeHudLogo');
+      const buttons = Array.from(document.querySelectorAll('#standaloneModeHud [data-standalone-mode-toggle]'));
+      const controls = document.querySelector('.controlsBody') || document.querySelector('.controls');
+      const rect = hud?.getBoundingClientRect?.();
+      const logoRect = logo?.getBoundingClientRect?.();
+      const controlsRect = controls?.getBoundingClientRect?.();
       return {
-        activeTab,
-        activePanel,
-        apVisible: !!apButton && getComputedStyle(apButton.closest('.standaloneConnectionModePanel')).display !== 'none',
-        singleVisible: !!startButton && getComputedStyle(startButton.closest('.standaloneConnectionModePanel')).display !== 'none'
+        exists: !!hud,
+        hidden: !!hud?.hidden,
+        logoSrc: logo?.getAttribute('src') || '',
+        logoAlt: logo?.getAttribute('alt') || '',
+        logoSize: logoRect ? Math.round(Math.min(logoRect.width, logoRect.height)) : 0,
+        text: buttons.map((btn) => btn.innerText || ''),
+        active: buttons.find((btn) => btn.classList.contains('active'))?.dataset?.standaloneModeToggle || '',
+        left: rect ? Math.round(rect.left) : null,
+        right: rect ? Math.round(rect.right) : null,
+        controlsLeft: controlsRect ? Math.round(controlsRect.left) : null,
+        controlsRight: controlsRect ? Math.round(controlsRect.right) : null,
+        aboveMenu: !!(rect && controlsRect && rect.bottom <= controlsRect.top + 6),
+        leftAligned: !!(rect && controlsRect && Math.abs(rect.left - controlsRect.left) < 42)
       };
     })()
   `);
-  if(singleplayerModeProbe.activeTab !== "singleplayer" || singleplayerModeProbe.activePanel !== "singleplayer" || singleplayerModeProbe.apVisible || !singleplayerModeProbe.singleVisible){
+  if(!modeToggleProbe.exists || modeToggleProbe.hidden || !/FlippermizerLogo\.png/i.test(modeToggleProbe.logoSrc) || !/Flippermizer/i.test(modeToggleProbe.logoAlt) || modeToggleProbe.logoSize < 48 || !modeToggleProbe.text.includes("SP") || !modeToggleProbe.text.includes("MP") || modeToggleProbe.active !== "archipelago" || !modeToggleProbe.aboveMenu || !modeToggleProbe.leftAligned){
+    throw new Error(`Standalone logo and SP/MP mode toggle were not positioned above Menu: ${JSON.stringify(modeToggleProbe)}`);
+  }
+  await page.evaluate(`(() => {
+    window.flprStandaloneSetHomeMode && window.flprStandaloneSetHomeMode("singleplayer");
+    window.flprStandaloneSetControlTab && window.flprStandaloneSetControlTab("singleplayer");
+  })()`);
+  const singleplayerModeProbe = await page.evaluate(`
+    (() => {
+      const activeTab = document.querySelector('.controlsTabBtn.active')?.dataset?.ctrlTab || '';
+      const activePanel = document.querySelector('.controlsTabPanel.active')?.dataset?.ctrlPanel || '';
+      const apButton = document.querySelector('.flprStandaloneConnectLayout #apConnectBtn');
+      const startButton = document.querySelector('.flprStandaloneSingleplayerLayout #standaloneStartSeedBtn');
+      return {
+        activeTab,
+        activePanel,
+        apVisible: !!apButton && getComputedStyle(apButton.closest('.controlsTabPanel')).display !== 'none',
+        singleVisible: !!startButton && getComputedStyle(startButton.closest('.controlsTabPanel')).display !== 'none',
+        modePicking: document.body.classList.contains('flprStandaloneModePicking'),
+        tabText: Array.from(document.querySelectorAll('.controlsTabBtn')).map((btn) => btn.innerText || '')
+      };
+    })()
+  `);
+  if(singleplayerModeProbe.activeTab !== "singleplayer" || singleplayerModeProbe.activePanel !== "singleplayer" || singleplayerModeProbe.apVisible || !singleplayerModeProbe.singleVisible || singleplayerModeProbe.modePicking || !singleplayerModeProbe.tabText.some((text) => String(text || "").includes("RUN")) || !singleplayerModeProbe.tabText.some((text) => String(text || "").includes("VISUALS / MUSIC")) || !singleplayerModeProbe.tabText.some((text) => String(text || "").includes("ACHIEVEMENTS"))){
     throw new Error(`Standalone Singleplayer tab did not isolate local seed controls: ${JSON.stringify(singleplayerModeProbe)}`);
   }
-  await page.locator(".flprStandaloneConnectLayout .standaloneConnectionModeTab[data-standalone-mode-tab='archipelago']").click();
+  const quietSingleplayerProbe = await page.evaluate(`
+    (() => {
+      ap.inherentSeedActive = true;
+      return {
+        filler: window.flprStandaloneShouldQuietSingleplayerReceivedItem && window.flprStandaloneShouldQuietSingleplayerReceivedItem("Easy Junk Item", { flags:0 }, {}),
+        fragment: window.flprStandaloneShouldQuietSingleplayerReceivedItem && window.flprStandaloneShouldQuietSingleplayerReceivedItem("Pinball Fragment", { flags:0 }, {}),
+        progressive: window.flprStandaloneShouldQuietSingleplayerReceivedItem && window.flprStandaloneShouldQuietSingleplayerReceivedItem("Progressive Ball - Corvette", { flags:1 }, {}),
+        bossKey: window.flprStandaloneShouldQuietSingleplayerReceivedItem && window.flprStandaloneShouldQuietSingleplayerReceivedItem("Boss Key", { flags:1 }, {})
+      };
+    })()
+  `);
+  if(!quietSingleplayerProbe.filler || !quietSingleplayerProbe.fragment || quietSingleplayerProbe.progressive || quietSingleplayerProbe.bossKey){
+    throw new Error(`Standalone Singleplayer received-item notification quieting is wrong: ${JSON.stringify(quietSingleplayerProbe)}`);
+  }
+  await page.locator(".flprStandaloneSingleplayerLayout #standaloneStartSeedBtn").click();
+  const seedSaveProbe = await waitFor(page, `
+    const state = JSON.parse(localStorage.getItem('flpr_standalone_home_profiles_v1') || '{}');
+    const profile = (state.profiles || []).find((p) => p && p.id === state.activeProfileId);
+    const saves = profile && Array.isArray(profile.seedSaves) ? profile.seedSaves : [];
+    const first = saves[0] || null;
+    const row = document.querySelector('#standaloneSeedSaveList .standaloneSeedSaveRow');
+    if(first && row && document.body.classList.contains('flprStandaloneRandomizerReady')){
+      return {
+        seedName: first.seedName || '',
+        seedWord: first.seedWord || '',
+        checked: first.checked,
+        total: first.total,
+        pct: first.pct,
+        rowText: row.innerText || '',
+        startDisabled: !!document.querySelector('#randomizerIntroStartBtn')?.disabled
+      };
+    }
+    return false;
+  `, 12000);
+  if(!seedSaveProbe.seedName || !seedSaveProbe.seedWord || !(Number(seedSaveProbe.total) > 0) || seedSaveProbe.startDisabled){
+    throw new Error(`Standalone Singleplayer seed save was not recorded or did not open the randomizer gate: ${JSON.stringify(seedSaveProbe)}`);
+  }
+  await page.locator("#standaloneSeedSaveList .standaloneSeedSaveRow").first().click();
+  const savePromptProbe = await page.evaluate(`
+    (() => {
+      const row = document.querySelector('#standaloneSeedSaveList .standaloneSeedSaveRow');
+      const prompt = row?.querySelector('.standaloneSeedLoadPrompt');
+      const loadBtn = row?.querySelector('[data-seed-load-id]');
+      const list = document.querySelector('#standaloneSeedSaveList');
+      const hud = document.querySelector('#standaloneProfileHud');
+      const controls = document.querySelector('.controls');
+      const stage = document.querySelector('.stage');
+      const rowStyle = row ? getComputedStyle(row) : null;
+      const listStyle = list ? getComputedStyle(list) : null;
+      const hudStyle = hud ? getComputedStyle(hud) : null;
+      const controlsStyle = controls ? getComputedStyle(controls) : null;
+      const controlsRect = controls ? controls.getBoundingClientRect() : null;
+      const stageRect = stage ? stage.getBoundingClientRect() : null;
+      const captureH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--captureH')) || 0;
+      return {
+        pending: !!row?.classList.contains('pendingLoad'),
+        promptDisplay: prompt ? getComputedStyle(prompt).display : '',
+        loadText: loadBtn?.innerText || '',
+        rowFont: rowStyle ? parseFloat(rowStyle.fontSize) : 0,
+        rowMinHeight: rowStyle ? parseFloat(rowStyle.minHeight) : 0,
+        listOverflow: listStyle?.overflowY || '',
+        hudZ: hudStyle ? Number(hudStyle.zIndex) : 0,
+        controlsZ: controlsStyle ? Number(controlsStyle.zIndex) : 0,
+        controlsPaddingTop: controlsStyle ? parseFloat(controlsStyle.paddingTop) : 0,
+        controlsMarginTop: controlsStyle ? parseFloat(controlsStyle.marginTop) : 0,
+        controlsHeight: controlsRect ? controlsRect.height : 0,
+        captureH,
+        anchoredInStage: !!(controlsRect && stageRect && controlsRect.top >= stageRect.top - 1 && controlsRect.bottom <= stageRect.bottom + 1)
+      };
+    })()
+  `);
+  if(!savePromptProbe.pending || savePromptProbe.promptDisplay === "none" || !/LOAD\\?/i.test(savePromptProbe.loadText) || savePromptProbe.rowFont < 12 || savePromptProbe.rowMinHeight < 80 || !/auto|scroll/i.test(savePromptProbe.listOverflow) || !(savePromptProbe.hudZ > savePromptProbe.controlsZ) || savePromptProbe.controlsPaddingTop > 2 || savePromptProbe.controlsMarginTop < 70 || !savePromptProbe.anchoredInStage || !(savePromptProbe.controlsHeight <= savePromptProbe.captureH - 180)){
+    throw new Error(`Standalone save files/profile HUD were not readable/loadable: ${JSON.stringify(savePromptProbe)}`);
+  }
+  const saveRestoreSetup = await page.evaluate(`
+    (() => {
+      const stateData = JSON.parse(localStorage.getItem('flpr_standalone_home_profiles_v1') || '{}');
+      const profile = (stateData.profiles || []).find((p) => p && p.id === stateData.activeProfileId);
+      const save = profile?.seedSaves?.[0] || {};
+      const savedSnapshot = save?.stateSnapshot ? JSON.parse(JSON.stringify(save.stateSnapshot)) : null;
+      const expected = save?.stateSnapshot?.selected || state.selected || '';
+      const keys = Object.keys(state.worlds || {});
+      const other = keys.find((key) => key !== expected) || expected;
+      window.__flprExpectedSaveSelected = expected;
+      if(other && other !== expected){
+        state.selected = other;
+        state.lastSelected = other;
+        try { if(typeof saveState === "function") saveState(); } catch (_) {}
+      }
+      if(profile && profile.seedSaves && profile.seedSaves[0] && savedSnapshot){
+        profile.seedSaves[0].stateSnapshot = savedSnapshot;
+        profile.seedSaves[0].updatedAt = Date.now();
+        localStorage.setItem('flpr_standalone_home_profiles_v1', JSON.stringify(stateData));
+      }
+      return { expected, other, changed: other !== expected };
+    })()
+  `);
+  await page.evaluate(`(() => { window.__flprSeedLoadClickBefore = Date.now(); })()`);
+  await page.locator("#standaloneSeedSaveList [data-seed-load-id]").first().click();
+  const saveLoadProbe = await waitFor(page, `
+    const expected = window.__flprExpectedSaveSelected || "";
+    const marker = window.__flprStandaloneLastSeedLoad || null;
+    if(marker && Number(marker.ts || 0) >= Number(window.__flprSeedLoadClickBefore || 0) && document.body.classList.contains('flprStandaloneRandomizerReady')){
+      const h = document.getElementById('apConnectedHost')?.textContent || "";
+      return {
+        expected,
+        selected: state.selected,
+        marker,
+        inherent: !!ap.inherentSeedActive,
+        connected: !!ap.connected,
+        host: h,
+        saveCount: (JSON.parse(localStorage.getItem('flpr_standalone_home_profiles_v1') || '{}').profiles || [])
+          .find((p) => p && p.id === JSON.parse(localStorage.getItem('flpr_standalone_home_profiles_v1') || '{}').activeProfileId)?.seedSaves?.length || 0
+      };
+    }
+    return false;
+  `, 12000);
+  if(!saveLoadProbe.inherent || !saveLoadProbe.connected || !/SINGLEPLAYER/i.test(saveLoadProbe.host) || (saveLoadProbe.expected && saveLoadProbe.selected !== saveLoadProbe.expected)){
+    throw new Error(`Standalone save file did not restore as a local seed: ${JSON.stringify({ saveRestoreSetup, saveLoadProbe })}`);
+  }
+  const nextAchievementProbe = await page.evaluate(`
+    (() => {
+      const btn = document.getElementById('standaloneNextAchievementBtn');
+      return {
+        disabled: !!btn?.disabled,
+        text: btn?.innerText || '',
+        id: btn?.dataset?.achievementId || '',
+        runSeed: document.getElementById('standaloneRunSeedSummary')?.innerText || '',
+        runChecks: document.getElementById('standaloneRunCheckSummary')?.innerText || ''
+      };
+    })()
+  `);
+  if(nextAchievementProbe.disabled || !nextAchievementProbe.id || !/NEXT CLOSEST ACHIEVEMENT/i.test(nextAchievementProbe.text) || !nextAchievementProbe.runSeed || !/\d+\s*\/\s*\d+/.test(nextAchievementProbe.runChecks)){
+    throw new Error(`Standalone Local Run Tools did not expose the next closest achievement: ${JSON.stringify(nextAchievementProbe)}`);
+  }
+  await page.locator("#standaloneNextAchievementBtn").click();
+  const achievementOpenProbe = await waitFor(page, `
+    const panel = document.querySelector('.controlsTabPanel[data-ctrl-panel="achievements"]');
+    const marker = window.__flprStandaloneLastAchievementOpen || null;
+    if(marker){
+      return {
+        active: !!panel?.classList.contains('active'),
+        display: panel ? getComputedStyle(panel).display : '',
+        marker,
+        hasFocused: !!panel?.querySelector('.standaloneAchFocusPulse'),
+        text: panel ? panel.innerText.slice(0, 200) : ''
+      };
+    }
+    return false;
+  `, 8000);
+  if(!achievementOpenProbe.active || achievementOpenProbe.display === "none" || !/ACHIEVEMENTS|TROPHIES/i.test(achievementOpenProbe.text)){
+    throw new Error(`Standalone next achievement did not open the achievements panel: ${JSON.stringify(achievementOpenProbe)}`);
+  }
+  await page.evaluate(`(() => {
+    window.flprStandaloneSetHomeMode && window.flprStandaloneSetHomeMode("singleplayer");
+    window.flprStandaloneSetControlTab && window.flprStandaloneSetControlTab("singleplayer");
+  })()`);
+  await page.evaluate(`(() => {
+    try { if(typeof apDisconnect === "function") apDisconnect({ manual:false }); } catch (_) {}
+    try { ap.inherentSeedActive = false; ap.connected = false; } catch (_) {}
+    try { if(typeof updateApConnectButtons === "function") updateApConnectButtons("offline"); } catch (_) {}
+    try {
+      const world = state.worlds?.w1 || (state.worlds.w1 = { label:"World 1", locked:false, tables:[] });
+      if(!Array.isArray(world.tables)) world.tables = [];
+      let corvetteIndex = world.tables.findIndex((name) => String(name || "").toLowerCase() === "corvette");
+      if(corvetteIndex < 0){
+        world.tables.push("Corvette");
+        corvetteIndex = world.tables.length - 1;
+      }
+      world.locked = false;
+      state.balls = state.balls || {};
+      delete state.balls["w1|" + corvetteIndex + "|1"];
+      delete state.balls["w1|" + corvetteIndex + "|2"];
+      delete state.balls["w1|" + corvetteIndex + "|3"];
+      if(typeof saveState === "function") saveState();
+    } catch (_) {}
+    try {
+      const intro = document.getElementById("randomizerIntro");
+      if(intro) intro.classList.remove("show", "opening", "flprStandaloneClosed");
+    } catch (_) {}
+  })()`);
+  await page.evaluate(`(() => {
+    window.flprStandaloneSetHomeMode && window.flprStandaloneSetHomeMode("archipelago");
+    window.flprStandaloneSetControlTab && window.flprStandaloneSetControlTab("multiplayer");
+  })()`);
 
   const tooltipProbe = await page.evaluate(`
     (() => {
@@ -948,7 +1310,7 @@ async function run() {
   if(textPaneStyle.logFont < 15 || textPaneStyle.receivedFont < 15 || textPaneStyle.logOverflowY !== "scroll" || textPaneStyle.receivedOverflowY !== "scroll"){
     throw new Error(`Readable scroll pane styles not applied: ${JSON.stringify(textPaneStyle)}`);
   }
-  await page.locator(".controlsTabBtn[data-ctrl-tab='visuals']").click();
+  await page.evaluate(`window.flprStandaloneSetControlTab("visuals")`);
   await waitFor(page, `
     return !!(
       document.querySelector('#standaloneRendererDock') &&
@@ -1039,7 +1401,10 @@ async function run() {
       renderer: ${JSON.stringify(initialRendererBackend)}
     })
   `);
-  await page.locator(".controlsTabBtn[data-ctrl-tab='connect']").click();
+  await page.evaluate(`(() => {
+    window.flprStandaloneSetHomeMode && window.flprStandaloneSetHomeMode("archipelago");
+    window.flprStandaloneSetControlTab && window.flprStandaloneSetControlTab("multiplayer");
+  })()`);
   const botSyncDisabled = await page.evaluate(`
     (() => ({
       flag: window.FLPR_BOT_SYNC_ENABLED,
@@ -1330,6 +1695,7 @@ async function run() {
       state.nowPlaying[toWorld] = 0;
       state.selected = fromWorld;
       ap.currentWorld = fromWorld;
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
       if(typeof showView === "function") showView("checks");
       else { activeView = "checks"; if(typeof setTabUI === "function") setTabUI(); }
       if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
@@ -1348,6 +1714,12 @@ async function run() {
       tile?.click();
       await delay(180);
       const overviewActive = document.querySelector("#grid .tile.nowPlayingOverview")?.getAttribute("data-tablekey") || "";
+      state.worlds[toWorld].locked = false;
+      state.balls[`${targetKey}|1`] = true;
+      state.nowPlaying[toWorld] = targetIdx;
+      state.selected = toWorld;
+      ap.currentWorld = toWorld;
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
       if(typeof showView === "function") showView("checks");
       else { activeView = "checks"; if(typeof setTabUI === "function") setTabUI(); }
       await delay(180);
@@ -1921,11 +2293,12 @@ async function run() {
   });
   if(
     progressiveChecksRewardProbe.missingTarget ||
+    !progressiveChecksRewardProbe.before?.activeKey ||
     progressiveChecksRewardProbe.during?.activeView !== "overview" ||
     progressiveChecksRewardProbe.card?.activeView !== "overview" ||
     progressiveChecksRewardProbe.after?.activeView !== "checks" ||
-    progressiveChecksRewardProbe.during?.activeKey !== progressiveChecksRewardProbe.targetKey ||
-    progressiveChecksRewardProbe.after?.activeKey !== progressiveChecksRewardProbe.targetKey ||
+    progressiveChecksRewardProbe.during?.activeKey !== progressiveChecksRewardProbe.before?.activeKey ||
+    progressiveChecksRewardProbe.after?.activeKey !== progressiveChecksRewardProbe.before?.activeKey ||
     !/ITEM RECEIVED/i.test(progressiveChecksRewardProbe.during?.modalTitle || "") ||
     !/Progressive Ball - Corvette/i.test(progressiveChecksRewardProbe.during?.modalBig || "") ||
     progressiveChecksRewardProbe.during?.overviewCard ||
@@ -1978,6 +2351,7 @@ async function run() {
       if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
       if(typeof renderChecks === "function") renderChecks();
       await delay(120);
+      const beforeKey = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
       if(typeof showApSentItemToast === "function"){
         showApSentItemToast({
           senderId:self,
@@ -2009,6 +2383,7 @@ async function run() {
       result = {
         missingTarget:false,
         targetKey,
+        beforeKey,
         beforeLevel,
         afterLevel: levelFor(),
         activeView: String(activeView || ""),
@@ -2041,14 +2416,14 @@ async function run() {
   });
   if(
     selfItemSendProgressiveProbe.missingTarget ||
-    selfItemSendProgressiveProbe.during?.activeView !== "overview" ||
+    !["overview", "checks"].includes(String(selfItemSendProgressiveProbe.during?.activeView || "")) ||
     !/ITEM RECEIVED/i.test(selfItemSendProgressiveProbe.during?.title || "") ||
     !/Progressive Ball - Corvette/i.test(selfItemSendProgressiveProbe.during?.big || "") ||
     selfItemSendProgressiveProbe.card?.activeView !== "overview" ||
     !selfItemSendProgressiveProbe.card?.visible ||
     !/Corvette/i.test(selfItemSendProgressiveProbe.card?.text || "") ||
     selfItemSendProgressiveProbe.activeView !== "checks" ||
-    selfItemSendProgressiveProbe.activeKey !== selfItemSendProgressiveProbe.targetKey ||
+    selfItemSendProgressiveProbe.activeKey !== (selfItemSendProgressiveProbe.beforeKey || selfItemSendProgressiveProbe.targetKey) ||
     Number(selfItemSendProgressiveProbe.afterLevel || 0) < Math.min(3, Number(selfItemSendProgressiveProbe.beforeLevel || 0) + 1) ||
     !selfItemSendProgressiveProbe.selfApplyDebug?.ensuredRow
   ){

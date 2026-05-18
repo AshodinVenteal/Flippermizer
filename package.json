@@ -32,6 +32,7 @@
       "electron/preload.js",
       "electron/standalone-overlay-bridge.js",
       "flippermizer_overlay_tower_v3.html",
+      "flippermizer_yaml_options.html",
       "flippermizer_table_repository.js",
       "flippermizer_task_explanations.js",
       "vendor/**/*",
