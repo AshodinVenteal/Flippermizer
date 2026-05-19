@@ -4132,13 +4132,32 @@ async function run() {
       extraBallTokens: Number(state?.extraBallTokens || 0),
       junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : { easy:0, medium:0 }
     };
-    const readDrawers = () => Array.from(document.querySelectorAll('#checksCountersDock .counterDrawer')).map((drawer) => ({
-      key: drawer.dataset.counter || "",
-      text: drawer.innerText || drawer.textContent || "",
-      badge: drawer.querySelector('.counterDrawerReadyBadge')?.textContent || "",
-      progress: drawer.querySelector('.drawerVal')?.textContent || "",
-      readyLine: drawer.querySelector('.counterReadyLine')?.textContent || ""
-    }));
+    const forceCollapsed = () => {
+      const dock = document.querySelector('#checksCountersDock');
+      if(dock) dock.classList.remove('expanded', 'active', 'retreating', 'showRetreatBar');
+      document.querySelectorAll('#checksCountersDock .counterDrawer').forEach((drawer) => {
+        drawer.classList.remove('open', 'autoOpen', 'pulse', 'redeemFx');
+      });
+    };
+    const readDrawers = () => {
+      forceCollapsed();
+      return Array.from(document.querySelectorAll('#checksCountersDock .counterDrawer')).map((drawer) => {
+        const chip = drawer.querySelector('.flprStandaloneCollapsedRedeemCounter');
+        const chipStyle = chip ? getComputedStyle(chip) : null;
+        return {
+          key: drawer.dataset.counter || "",
+          text: drawer.innerText || drawer.textContent || "",
+          badge: drawer.querySelector('.counterDrawerReadyBadge')?.textContent || "",
+          progress: drawer.querySelector('.drawerVal')?.textContent || "",
+          readyLine: drawer.querySelector('.counterReadyLine')?.textContent || "",
+          collapsed: chip?.innerText || chip?.textContent || "",
+          collapsedCount: chip?.dataset?.count || "",
+          collapsedLabel: chip?.dataset?.label || "",
+          collapsedDisplay: chipStyle?.display || "",
+          collapsedOpacity: chipStyle?.opacity || ""
+        };
+      });
+    };
     try{
       if(typeof showView === "function") showView("checks");
       state.junkRedeems = { easy:2, medium:1 };
@@ -4175,9 +4194,17 @@ async function run() {
     drawerByKeyBefore.frag?.progress !== "4/5" ||
     drawerByKeyBefore.frag?.badge !== "3" ||
     drawerByKeyBefore.frag?.readyLine !== "READY: 3" ||
+    drawerByKeyBefore.easy?.collapsedCount !== "2" ||
+    drawerByKeyBefore.easy?.collapsedLabel !== "RDY" ||
+    drawerByKeyBefore.easy?.collapsedDisplay === "none" ||
+    drawerByKeyBefore.med?.collapsedCount !== "1" ||
+    drawerByKeyBefore.med?.collapsedLabel !== "RDY" ||
+    drawerByKeyBefore.frag?.collapsedCount !== "3" ||
+    drawerByKeyBefore.frag?.collapsedLabel !== "EB" ||
     !junkCounterDrawerProbe.consumed ||
     drawerByKeyAfter.easy?.badge !== "1" ||
-    drawerByKeyAfter.easy?.readyLine !== "READY: 1"
+    drawerByKeyAfter.easy?.readyLine !== "READY: 1" ||
+    drawerByKeyAfter.easy?.collapsedCount !== "1"
   ){
     throw new Error(`Junk counter drawer UI did not simplify ready/progress display: ${JSON.stringify(junkCounterDrawerProbe)}`);
   }
