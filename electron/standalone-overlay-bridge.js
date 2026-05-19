@@ -82,6 +82,7 @@
     activeSeedLoadConfirmId: ""
   };
   try{ window.__flprStandaloneProfileRuntime = standaloneProfileRuntime; }catch(_){}
+  try{ window.__flprStandaloneRollExplicitFillerJunk = true; }catch(_){}
   const standaloneSlotTaskPayload = {
     byLocation: new Map(),
     byLocationNormalized: new Map(),

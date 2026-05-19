@@ -4093,6 +4093,64 @@ async function run() {
     throw new Error(`Repeated Sync triggered counter drawer animation: ${JSON.stringify(activeDrawerFx)}`);
   }
 
+  const explicitFillerJunkRollProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const previous = {
+      junk: ap?.junk ? { ...ap.junk } : null,
+      receivedAll: Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row) => ({ ...row })) : null,
+      receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : null,
+      activeView: String(activeView || ""),
+      selected: String(state?.selected || ""),
+      currentWorld: String(ap?.currentWorld || "")
+    };
+    const runtimeErrors = [];
+    const onError = (event) => runtimeErrors.push(String(event?.message || event?.error?.message || event || ""));
+    const onReject = (event) => runtimeErrors.push(String(event?.reason?.message || event?.reason || event || ""));
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onReject);
+    try{
+      document.querySelectorAll(".junkRollOverlay").forEach((node) => node.remove());
+      if(typeof processReceivedItem !== "function") return { missingProcess:true };
+      processReceivedItem({ item:1006, location:3008, player:1, flags:0 }, 880001, 3008, { noPopup:false, noFeed:true });
+      await delay(3980);
+      const overlayDuring = !!document.querySelector(".junkRollOverlay");
+      const dieDuring = document.querySelector(".junkRollDie")?.textContent || "";
+      await delay(2820);
+      const overlayAfter = !!document.querySelector(".junkRollOverlay");
+      return {
+        flag: !!window.__flprStandaloneRollExplicitFillerJunk,
+        overlayDuring,
+        dieDuring,
+        overlayAfter,
+        activeView: String(activeView || ""),
+        errors: runtimeErrors.slice()
+      };
+    }finally{
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onReject);
+      try{ document.querySelectorAll(".junkRollOverlay").forEach((node) => node.remove()); }catch(_){}
+      try{ if(previous.junk) ap.junk = { ...previous.junk }; }catch(_){}
+      try{ if(previous.receivedAll) ap.receivedAll = previous.receivedAll.map((row) => ({ ...row })); }catch(_){}
+      try{ ap.receivedKeySet = new Set(previous.receivedKeySet || []); }catch(_){}
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll || []); }catch(_){}
+      try{ state.selected = previous.selected; ap.currentWorld = previous.currentWorld; }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+      try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs(); }catch(_){}
+      try{ if(typeof renderChecks === "function") renderChecks(); }catch(_){}
+    }
+  });
+  if(
+    !explicitFillerJunkRollProbe.flag ||
+    explicitFillerJunkRollProbe.missingProcess ||
+    !explicitFillerJunkRollProbe.overlayDuring ||
+    explicitFillerJunkRollProbe.overlayAfter ||
+    explicitFillerJunkRollProbe.errors.length
+  ){
+    throw new Error(`Home Edition explicit filler junk did not play the easy/medium roll animation: ${JSON.stringify(explicitFillerJunkRollProbe)}`);
+  }
+
   const junkTaskRedeemProbe = await page.evaluate(async () => {
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const runtimeErrors = [];
