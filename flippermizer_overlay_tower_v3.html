@@ -17908,6 +17908,29 @@ body.flprShopSparksSlime .spark{
   position:relative;
   z-index:1;
 }
+.counterDrawerReadyBadge{
+  position:absolute;
+  left:-10px;
+  top:-9px;
+  z-index:4;
+  min-width:24px;
+  height:24px;
+  padding:0 6px;
+  border-radius:999px;
+  display:none;
+  place-items:center;
+  pointer-events:none;
+  color:rgba(5,18,22,.98);
+  font-family:'Press Start 2P', monospace;
+  font-size:10px;
+  line-height:1;
+  background:linear-gradient(180deg, rgba(170,255,210,.98), rgba(34,255,136,.92));
+  border:1px solid rgba(224,255,240,.86);
+  box-shadow:0 0 12px rgba(34,255,136,.34), 0 4px 10px rgba(0,0,0,.38);
+}
+.counterDrawer.hasReady .counterDrawerReadyBadge{
+  display:grid;
+}
 #viewChecks #checksCountersDock:not(.expanded) .counterDrawer:not(.open):not(.autoOpen) .counterDrawerHead{
   min-height: 46px;
   padding: 6px 4px;
@@ -17995,6 +18018,9 @@ body.flprShopSparksSlime .spark{
   font-size: 8px;
   color: rgba(232,250,255,.82);
 }
+.counterDrawerHead .drawerTot:empty{
+  display:none;
+}
 .counterDrawerBody{
   position: absolute;
   right: calc(100% + 10px);
@@ -18064,11 +18090,24 @@ body.flprShopSparksSlime .spark{
   line-height: 1.4;
 }
 #viewChecks #checksCountersDock .counterDrawerBody .barNote{
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  line-height: 1.55;
-  letter-spacing: .35px;
-  opacity: .92;
+  display:none !important;
+}
+.counterReadyLine{
+  display:none;
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid rgba(34,255,136,.32);
+  color:rgba(186,255,216,.98);
+  font-family:'Press Start 2P', monospace;
+  font-size:10px;
+  line-height:1.35;
+  letter-spacing:.2px;
+  background:linear-gradient(180deg, rgba(34,255,136,.12), rgba(0,0,0,.18));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05), 0 0 12px rgba(34,255,136,.12);
+}
+.counterDrawer.hasReady .counterReadyLine{
+  display:block;
 }
 @keyframes counterDrawerArmFillKF{
   0%{
@@ -19178,13 +19217,13 @@ body.flprShopSparksSlime .spark{
           <div class="checksHeadRow">
             <div class="checksTitle">CHECKS; BY WORLD</div>
             <div class="checksHint"></div>
-          </div><div id="checksCountersDock" style="margin: 10px 0px 8px; padding: 10px 12px; border: 2px solid rgba(0, 166, 255, 0.28); border-radius: 16px; background: rgba(0, 166, 255, 0.05);" data-drawer-init="1"><div class="cSectionTitle" style="margin-top: 12px; display: none;">ITEM COUNTERS</div><div class="counterDrawers"><div class="counterDrawer canRedeem" data-counter="easy"><button type="button" class="counterDrawerHead" title="Easy Junk Item counter. At 3/3, it banks one EASY Junk Redeem. Click this drawer to target a matching Easy check." data-tip="Easy Junk Item counter. At 3/3, it banks one EASY Junk Redeem. Click this drawer to target a matching Easy check." aria-label="Easy Junk Item counter. At 3/3, it banks one EASY Junk Redeem. Click this drawer to target a matching Easy check."><span class="drawerLabel">EASY</span><span class="drawerVal" id="drawerVal-easy">Now 0/3</span><span class="drawerTot" id="drawerTot-easy">Banked 0 | Redeems 74</span></button><div class="counterDrawerBody"><div class="barBlock">
+          </div><div id="checksCountersDock" style="margin: 10px 0px 8px; padding: 10px 12px; border: 2px solid rgba(0, 166, 255, 0.28); border-radius: 16px; background: rgba(0, 166, 255, 0.05);" data-drawer-init="1"><div class="cSectionTitle" style="margin-top: 12px; display: none;">ITEM COUNTERS</div><div class="counterDrawers"><div class="counterDrawer canRedeem" data-counter="easy"><button type="button" class="counterDrawerHead" title="Easy Junk Item counter. At 3/3, it creates one READY Easy redeem. Click this drawer to target a matching Easy check." data-tip="Easy Junk Item counter. At 3/3, it creates one READY Easy redeem. Click this drawer to target a matching Easy check." aria-label="Easy Junk Item counter. At 3/3, it creates one READY Easy redeem. Click this drawer to target a matching Easy check."><span class="drawerLabel">EASY</span><span class="drawerVal" id="drawerVal-easy">0/3</span><span class="drawerTot" id="drawerTot-easy"></span></button><div class="counterDrawerBody"><div class="barBlock">
         <div class="barTop"><span>EASY JUNK ITEM</span><span id="barEasyTxt">0/3</span></div>
         <div class="barOuter"><div class="barFill" id="barEasyFill" style="width: 0%;"></div></div>
-      </div></div></div><div class="counterDrawer canRedeem" data-counter="med"><button type="button" class="counterDrawerHead" title="Medium Junk Item counter. At 3/3, it banks one MEDIUM Junk Redeem. Click this drawer to target a matching Medium check." data-tip="Medium Junk Item counter. At 3/3, it banks one MEDIUM Junk Redeem. Click this drawer to target a matching Medium check." aria-label="Medium Junk Item counter. At 3/3, it banks one MEDIUM Junk Redeem. Click this drawer to target a matching Medium check."><span class="drawerLabel">MED</span><span class="drawerVal" id="drawerVal-med">Now 0/3</span><span class="drawerTot" id="drawerTot-med">Banked 0 | Redeems 113</span></button><div class="counterDrawerBody"><div class="barBlock">
+      </div></div></div><div class="counterDrawer canRedeem" data-counter="med"><button type="button" class="counterDrawerHead" title="Medium Junk Item counter. At 3/3, it creates one READY Medium redeem. Click this drawer to target a matching Medium check." data-tip="Medium Junk Item counter. At 3/3, it creates one READY Medium redeem. Click this drawer to target a matching Medium check." aria-label="Medium Junk Item counter. At 3/3, it creates one READY Medium redeem. Click this drawer to target a matching Medium check."><span class="drawerLabel">MED</span><span class="drawerVal" id="drawerVal-med">0/3</span><span class="drawerTot" id="drawerTot-med"></span></button><div class="counterDrawerBody"><div class="barBlock">
         <div class="barTop"><span>MEDIUM JUNK ITEM</span><span id="barMedTxt">0/3</span></div>
         <div class="barOuter"><div class="barFill" id="barMedFill" style="width: 0%;"></div></div>
-      </div></div></div><div class="counterDrawer" data-counter="frag"><button type="button" class="counterDrawerHead" title="Pinball Fragment counter. At 5/5, it awards one ExtraBall token." data-tip="Pinball Fragment counter. At 5/5, it awards one ExtraBall token." aria-label="Pinball Fragment counter. At 5/5, it awards one ExtraBall token."><span class="drawerLabel">FRAG</span><span class="drawerVal" id="drawerVal-frag">Now 0/5</span><span class="drawerTot" id="drawerTot-frag">Collected 0</span></button><div class="counterDrawerBody"><div class="barBlock">
+      </div></div></div><div class="counterDrawer" data-counter="frag"><button type="button" class="counterDrawerHead" title="Pinball Fragment counter. At 5/5, it creates one READY Extra Ball token." data-tip="Pinball Fragment counter. At 5/5, it creates one READY Extra Ball token." aria-label="Pinball Fragment counter. At 5/5, it creates one READY Extra Ball token."><span class="drawerLabel">FRAG</span><span class="drawerVal" id="drawerVal-frag">0/5</span><span class="drawerTot" id="drawerTot-frag"></span></button><div class="counterDrawerBody"><div class="barBlock">
         <div class="barTop"><span>PINBALL FRAGMENTS</span><span id="barFragTxt">0/5</span></div>
         <div class="barOuter silver"><div class="barFill" id="barFragFill" style="width: 0%;"></div><div class="silverBall">&#9673;</div></div>
       </div></div></div></div></div>
@@ -24800,6 +24839,7 @@ function consumeJunkRedeemBalance(diff, amount){
   const have = getJunkRedeemBalance(key);
   if(have < take) return false;
   addJunkRedeemBalance(key, -take);
+  try{ updateCounterBars(); }catch(_){}
   return true;
 }
 function getActiveJunkRedeemDifficulty(){
@@ -32032,14 +32072,65 @@ function bossTriggerVictoryCelebration(){
   }, durationMs + 250);
 }
 
+function getCounterDrawerReadyCount(key){
+  const k = String(key || "").trim().toLowerCase();
+  if(k === "frag"){
+    return Math.max(0, Math.round(Number(state?.extraBallTokens || 0) || 0));
+  }
+  if(k === "med") return getJunkRedeemBalance("medium");
+  if(k === "easy") return getJunkRedeemBalance("easy");
+  return 0;
+}
+
+function ensureCounterDrawerReadyUi(drawer, key){
+  if(!drawer) return { badge:null, line:null };
+  let badge = Array.from(drawer.children || []).find(el => el && el.classList && el.classList.contains("counterDrawerReadyBadge"));
+  if(!badge){
+    badge = document.createElement("span");
+    badge.className = "counterDrawerReadyBadge";
+    badge.setAttribute("aria-hidden", "true");
+    drawer.appendChild(badge);
+  }
+  let line = null;
+  const body = drawer.querySelector(".counterDrawerBody");
+  if(body){
+    line = body.querySelector(".counterReadyLine");
+    if(!line){
+      line = document.createElement("div");
+      line.className = "counterReadyLine";
+      const barBlock = body.querySelector(".barBlock");
+      if(barBlock && barBlock.nextElementSibling !== line) barBlock.insertAdjacentElement("afterend", line);
+      else body.appendChild(line);
+    }
+  }
+  return { badge, line };
+}
+
+function syncCounterDrawerReadyUi(key, readyCount){
+  const drawer = document.querySelector(`#checksCountersDock .counterDrawer[data-counter="${key}"]`);
+  if(!drawer) return;
+  const ready = Math.max(0, Math.round(Number(readyCount) || 0));
+  const { badge, line } = ensureCounterDrawerReadyUi(drawer, key);
+  drawer.classList.toggle("hasReady", ready > 0);
+  if(badge){
+    badge.textContent = ready > 0 ? String(ready) : "";
+    badge.setAttribute("aria-label", ready > 0 ? `${ready} ready` : "none ready");
+  }
+  if(line){
+    line.textContent = ready > 0 ? `READY: ${ready}` : "";
+  }
+}
+
 function setCounterDrawerSummary(key, cur, max, total){
   const val = document.getElementById(`drawerVal-${key}`);
-  if(val) val.textContent = `Now ${cur}/${max}`;
+  if(val) val.textContent = `${cur}/${max}`;
   const ttl = document.getElementById(`drawerTot-${key}`);
   const drawer = document.querySelector(`#checksCountersDock .counterDrawer[data-counter="${key}"]`);
   const activeDiff = getActiveJunkRedeemDifficulty();
+  const readyCount = getCounterDrawerReadyCount(key);
+  if(ttl) ttl.textContent = "";
+  syncCounterDrawerReadyUi(key, readyCount);
   if(key === "frag"){
-    if(ttl) ttl.textContent = `Collected ${total}`;
     if(drawer){
       drawer.classList.remove("canRedeem");
       drawer.classList.remove("targetArmed");
@@ -32047,10 +32138,8 @@ function setCounterDrawerSummary(key, cur, max, total){
     return;
   }
   const diff = (key === "med") ? "medium" : "easy";
-  const redeemBal = getJunkRedeemBalance(diff);
-  if(ttl) ttl.textContent = `Banked ${total} | Redeems ${redeemBal}`;
   if(drawer){
-    drawer.classList.toggle("canRedeem", redeemBal > 0);
+    drawer.classList.toggle("canRedeem", readyCount > 0);
     drawer.classList.toggle("targetArmed", !!activeDiff && activeDiff === diff);
   }
 }
@@ -32302,7 +32391,10 @@ function initCounterDrawers(){
   const existingDrawers = Array.from(dock.querySelectorAll(".counterDrawer[data-counter]"));
   if(existingDrawers.length){
     repairExistingDrawerContent();
-    existingDrawers.forEach(bindExistingDrawer);
+    existingDrawers.forEach((drawer)=>{
+      ensureCounterDrawerReadyUi(drawer, drawer.dataset.counter || "");
+      bindExistingDrawer(drawer);
+    });
     dock.classList.remove("active");
     dock.classList.remove("expanded");
     dock.__flprDrawerInit = true;
@@ -32325,11 +32417,11 @@ function initCounterDrawers(){
     const head = document.createElement("button");
     head.type = "button";
     head.className = "counterDrawerHead";
-    head.innerHTML = `<span class="drawerLabel">${label}</span><span class="drawerVal" id="drawerVal-${key}">0/${max}</span><span class="drawerTot" id="drawerTot-${key}">Total 0</span>`;
+    head.innerHTML = `<span class="drawerLabel">${label}</span><span class="drawerVal" id="drawerVal-${key}">0/${max}</span><span class="drawerTot" id="drawerTot-${key}"></span>`;
     const tipMap = {
-      easy: "Easy Junk Item counter. At 3/3, it banks one EASY Junk Redeem. Click this drawer to target a matching Easy check.",
-      med: "Medium Junk Item counter. At 3/3, it banks one MEDIUM Junk Redeem. Click this drawer to target a matching Medium check.",
-      frag: "Pinball Fragment counter. At 5/5, it awards one ExtraBall token."
+      easy: "Easy Junk Item counter. At 3/3, it creates one READY Easy redeem. Click this drawer to target a matching Easy check.",
+      med: "Medium Junk Item counter. At 3/3, it creates one READY Medium redeem. Click this drawer to target a matching Medium check.",
+      frag: "Pinball Fragment counter. At 5/5, it creates one READY Extra Ball token."
     };
     const tip = String(tipMap[key] || "Item counter details.");
     head.title = tip;
@@ -32363,6 +32455,7 @@ function initCounterDrawers(){
 
     drawer.appendChild(head);
     drawer.appendChild(body);
+    ensureCounterDrawerReadyUi(drawer, key);
     setCounterDrawerSummary(key, 0, max, Number(document.getElementById(totalId)?.textContent || "0"));
     return drawer;
   };
@@ -33464,7 +33557,7 @@ function besiegedSpendPenaltyResource(){
     if(Number(state.extraBallTokens || 0) > 0){
       state.extraBallTokens = Math.max(0, Math.round(Number(state.extraBallTokens || 0)) - 1);
       normalizeExtraBallState(state);
-      return "Banked Extra Ball -1";
+      return "Ready Extra Ball -1";
     }
     if(getJunkRedeemBalance("easy") > 0){
       consumeJunkRedeemBalance("easy", 1);
@@ -34309,6 +34402,7 @@ function refreshExtraBallViews(opts){
   try{ renderSelected(); }catch(_){}
   try{ renderOverviewGrid(); }catch(_){}
   try{ renderOverviewFeed(); }catch(_){}
+  try{ updateCounterBars(); }catch(_){}
   if(opts.renderChecks !== false){
     try{ renderChecks(); }catch(_){}
   }
@@ -37384,7 +37478,7 @@ function reconcileWorldStateFromReceivedInventory(reason) {
     if (w1) w1.locked = false;
 
     // Update counters from recompute.
-    // Junk bars show remainder pieces; every full 3-piece set is tracked as "Banked" total.
+    // Junk bars show remainder pieces; every full 3-piece set creates one ready redeem.
     ap.junk.easy = Math.max(0, easy % 3);
     ap.junk.med = Math.max(0, med % 3);
     ap.junk.frag = Math.max(0, frag % 5);
