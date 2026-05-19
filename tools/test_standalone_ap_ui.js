@@ -1621,6 +1621,43 @@ async function run() {
           const entry = window.flprGetBundledTaskCatalog?.()?.byTable?.["rolling stones"];
           return entry?.tasksByDifficulty || {};
         })(),
+        grandLizardCatalog: (() => {
+          const entry = window.flprGetBundledTaskCatalog?.()?.byTable?.["grand lizard"];
+          return entry?.tasksByDifficulty || {};
+        })(),
+        grandLizardPickedSets: (() => {
+          const entry = window.flprGetBundledTaskCatalog?.()?.byTable?.["grand lizard"];
+          const tasks = entry?.tasksByDifficulty || {};
+          const pick = (list, tableIndex, offset) => {
+            const pool = Array.isArray(list) ? list.map((value) => String(value || "").trim()).filter(Boolean) : [];
+            if(!pool.length) return "";
+            const idx = Math.abs((Math.max(0, Number(tableIndex) || 0) * 7) + Number(offset || 0)) % pool.length;
+            return pool[idx] || "";
+          };
+          return Array.from({ length: 8 }, (_, tableIndex) => [
+            pick(tasks.easy, tableIndex, 0),
+            pick(tasks.medium, tableIndex, 2),
+            pick(tasks.hard, tableIndex, 4)
+          ]);
+        })(),
+        grandLizardMediumTip: window.flprStandaloneTaskTooltipForTest("Grand Lizard", "Shoot the Upper Playfield Twice", {
+          table: "Grand Lizard",
+          target_table: "Grand Lizard",
+          source_table: "Grand Lizard",
+          source_location: "Shoot the Upper Playfield Twice",
+          objective: "Shoot the Upper Playfield Twice",
+          display_name: "Shoot the Upper Playfield Twice",
+          title: "Shoot the Upper Playfield Twice"
+        }),
+        grandLizardHardTip: window.flprStandaloneTaskTooltipForTest("Grand Lizard", "Collect a Multiball Jackpot", {
+          table: "Grand Lizard",
+          target_table: "Grand Lizard",
+          source_table: "Grand Lizard",
+          source_location: "Collect a Multiball Jackpot",
+          objective: "Collect a Multiball Jackpot",
+          display_name: "Collect a Multiball Jackpot",
+          title: "Collect a Multiball Jackpot"
+        }),
         rollingMediumTip: window.flprStandaloneTaskTooltipForTest("Rolling Stones", "Collect Bonus", {
           table: "Rolling Stones",
           target_table: "Rolling Stones",
@@ -1678,6 +1715,16 @@ async function run() {
     !Array.isArray(tooltipProbe.rollingCatalog?.hard) ||
     tooltipProbe.rollingCatalog.hard.join("|") !== "Collect 20-40-60 Bonus" ||
     /multiball|jackpot/i.test([...(tooltipProbe.rollingCatalog?.medium || []), ...(tooltipProbe.rollingCatalog?.hard || [])].join("|")) ||
+    !Array.isArray(tooltipProbe.grandLizardCatalog?.easy) ||
+    tooltipProbe.grandLizardCatalog.easy.join("|") !== "Shoot to Access the Upper Playfield|Complete 1 Upper Playfield Lane Set" ||
+    !Array.isArray(tooltipProbe.grandLizardCatalog?.medium) ||
+    tooltipProbe.grandLizardCatalog.medium.join("|") !== "Shoot the Upper Playfield Twice|Start Multiball (Lock Balls)" ||
+    !Array.isArray(tooltipProbe.grandLizardCatalog?.hard) ||
+    tooltipProbe.grandLizardCatalog.hard.join("|") !== "Collect a Multiball Jackpot|Complete 2 Upper Playfield Objectives" ||
+    !Array.isArray(tooltipProbe.grandLizardPickedSets) ||
+    tooltipProbe.grandLizardPickedSets.some((set) => !Array.isArray(set) || set.length !== 3 || new Set(set).size !== 3 || set.some((value) => !value)) ||
+    !String(tooltipProbe.grandLizardMediumTip || "").includes("Reach the upper playfield twice") ||
+    !String(tooltipProbe.grandLizardHardTip || "").includes("Start Multiball from locked balls") ||
     !String(tooltipProbe.rollingMediumTip || "").includes("Remove the Collect Bonus target") ||
     !String(tooltipProbe.rollingHardTip || "").includes("Collect 1-5 targets") ||
     !String(tooltipProbe.rollingTargetTip || "").includes("upper-right drop target bank") ||

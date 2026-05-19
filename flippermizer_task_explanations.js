@@ -364,7 +364,13 @@
     },
     "grand lizard": {
       "shoot to access the upper playfield": "A-B ramps and upper playfield - Shoot either the A or B ramp all the way to the dragon head so the ball is fed onto the upper playfield. Once there, complete the 4-bank or 3-bank drop targets for the upper-playfield awards.",
-      "complete 1 upper playfield objective": "Upper playfield - Get to the upper playfield through the A or B ramp, then finish either drop-target objective: clear the 4-bank before the scan timer ends for its lit value, or clear the 3-bank to build the cave value and collect its award."
+      "complete 1 upper playfield lane set": "Upper playfield - Get to the upper playfield through the A or B ramp, then finish either drop-target objective: clear the 4-bank before the scan timer ends for its lit value, or clear the 3-bank to build the cave value and collect its award.",
+      "complete 1 upper playfield objective": "Upper playfield - Get to the upper playfield through the A or B ramp, then finish either drop-target objective: clear the 4-bank before the scan timer ends for its lit value, or clear the 3-bank to build the cave value and collect its award.",
+      "shoot the upper playfield twice": "A-B ramps and upper playfield - Reach the upper playfield twice through the A or B ramp. Prioritize controlled ramp feeds, then use the upper flipper time to clear either drop-target objective before the bank resets.",
+      "start multiball lock balls": "Multiball locks - Raise the lock path, then lock balls for Multiball. Locked balls can be stolen in multiplayer rules, so treat each lock as progress you may need to resecure.",
+      "start multiball": "Multiball locks - Raise the lock path, then lock balls for Multiball. Locked balls can be stolen in multiplayer rules, so treat each lock as progress you may need to resecure.",
+      "collect a multiball jackpot": "Multiball jackpot - Start Multiball from locked balls, then keep control long enough to shoot the lit jackpot shot once before the mode collapses.",
+      "complete 2 upper playfield objectives": "Upper playfield endurance - Reach the upper playfield through the A or B ramp and complete two upper-playfield drop-target objectives in one game. Favor controlled ramp entries over risky recovery shots."
     },
     "deadpool": {
       "start any battle mode": "At the start of a ball, or after completing the DEAD targets, shoot the scoop to start a Battle. Hit flashing shots to damage the enemy, then shoot the scoop within 10 seconds after winning to finish them off.",
@@ -2483,6 +2489,11 @@
   });
 
   const TABLE_TASK_CATALOG_OVERRIDES_BY_TABLE = Object.freeze({
+    [normalizeTableKey("Grand Lizard")]: Object.freeze({
+      easy: Object.freeze(["Shoot to Access the Upper Playfield", "Complete 1 Upper Playfield Lane Set"]),
+      medium: Object.freeze(["Shoot the Upper Playfield Twice", "Start Multiball (Lock Balls)"]),
+      hard: Object.freeze(["Collect a Multiball Jackpot", "Complete 2 Upper Playfield Objectives"])
+    }),
     [normalizeTableKey("Rolling Stones")]: Object.freeze({
       medium: Object.freeze(["Collect Bonus"]),
       hard: Object.freeze(["Collect 20-40-60 Bonus"])
