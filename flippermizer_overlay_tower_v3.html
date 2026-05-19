@@ -36145,19 +36145,48 @@ function processReceivedItem(it, itemIndex, locId, opts){
     }
   };
 
+  const shouldRollExplicitFillerJunk = !!(
+    window.__flprStandaloneRollExplicitFillerJunk &&
+    !opts.isFlush &&
+    !opts.noPopup &&
+    (junkTier === "easy" || junkTier === "medium")
+  );
+  const runExplicitFillerJunkRoll = (tier, triggerName)=>{
+    const resolved = normalizeRedeemDifficulty(tier);
+    const launch = ()=>{
+      runJunkDieRollAnimation(resolved).then((rolledTier)=>{
+        applyResolvedJunkTier(rolledTier || resolved, triggerName, {
+          isTest:false,
+          waitMs: 220,
+          drawerWaitMs: 0
+        });
+      });
+    };
+    const afterPopupDelay = Math.max(0, Number(junkPopupDelayMs) || 0);
+    if(afterPopupDelay > 0) setTimeout(launch, afterPopupDelay);
+    else setTimeout(launch, 3200);
+  };
   if(junkTier === "easy"){
-    applyResolvedJunkTier("easy", effectiveName, {
-      isTest:false,
-      waitMs: Math.max(3200, Number(junkPopupDelayMs) || 0),
-      drawerWaitMs: Math.max(3200, Number(junkPopupDelayMs) || 0)
-    });
+    if(shouldRollExplicitFillerJunk){
+      runExplicitFillerJunkRoll("easy", effectiveName);
+    }else{
+      applyResolvedJunkTier("easy", effectiveName, {
+        isTest:false,
+        waitMs: Math.max(3200, Number(junkPopupDelayMs) || 0),
+        drawerWaitMs: Math.max(3200, Number(junkPopupDelayMs) || 0)
+      });
+    }
   }
   if(junkTier === "medium"){
-    applyResolvedJunkTier("medium", effectiveName, {
-      isTest:false,
-      waitMs: Math.max(3200, Number(junkPopupDelayMs) || 0),
-      drawerWaitMs: Math.max(3200, Number(junkPopupDelayMs) || 0)
-    });
+    if(shouldRollExplicitFillerJunk){
+      runExplicitFillerJunkRoll("medium", effectiveName);
+    }else{
+      applyResolvedJunkTier("medium", effectiveName, {
+        isTest:false,
+        waitMs: Math.max(3200, Number(junkPopupDelayMs) || 0),
+        drawerWaitMs: Math.max(3200, Number(junkPopupDelayMs) || 0)
+      });
+    }
   }
   if(junkTier === "generic"){
     const resolvedTier = resolveGenericJunkTier(itemIndex, locId, paired?.locationName || locNm || "");
