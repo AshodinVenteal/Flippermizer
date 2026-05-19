@@ -6,8 +6,14 @@ Thumbs.db
 *.log
 *.tmp
 *.bak
+*.backup
+*.backup-*
+*_backup.*
 *.zip
 *.apworld
+*.md
+!README.md
+*.sfc
 __pycache__/
 *.pyc
 
@@ -18,3 +24,9 @@ build/*
 !build/
 !build/icon.ico
 !build/icon.png
+
+# Local AP generation/test output
+ap_multiworld_test/ap_user/basepatch.sfc
+ap_multiworld_test/ap_user/logs/
+ap_multiworld_test/output/
+ap_multiworld_test/upload_bundle_*/

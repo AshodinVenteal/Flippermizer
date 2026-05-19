@@ -1,7 +1,0 @@
-name: ChecksFinderP2
-description: "Lightweight stock AP game for Flippermizer multiworld checks redemption testing."
-game: ChecksFinder
-
-ChecksFinder:
-  progression_balancing: 50
-  accessibility: items
