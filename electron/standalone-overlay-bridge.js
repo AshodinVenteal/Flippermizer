@@ -704,6 +704,65 @@
         color:rgba(190,226,238,.84) !important;
         font-family:'Press Start 2P', var(--mono, monospace) !important;
       }
+      body.flprStandaloneOriginalClient #viewChecks #checksCountersDock:not(.expanded) .counterDrawer:not(.open):not(.autoOpen){
+        opacity:.34 !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksCountersDock:not(.expanded) .counterDrawer.flprStandaloneHasCollapsedRedeems:not(.open):not(.autoOpen){
+        opacity:.82 !important;
+        filter:saturate(1.18) brightness(1.06) !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksCountersDock:not(.expanded) .counterDrawer:not(.open):not(.autoOpen):hover,
+      body.flprStandaloneOriginalClient #viewChecks #checksCountersDock:not(.expanded) .counterDrawer:not(.open):not(.autoOpen):focus-within{
+        opacity:.92 !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneCollapsedRedeemCounter{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksCountersDock:not(.expanded) .counterDrawer:not(.open):not(.autoOpen) .flprStandaloneCollapsedRedeemCounter{
+        position:absolute !important;
+        left:-76px !important;
+        top:50% !important;
+        z-index:8 !important;
+        display:grid !important;
+        grid-template-columns:auto auto !important;
+        align-items:center !important;
+        justify-content:center !important;
+        gap:4px !important;
+        min-width:56px !important;
+        min-height:22px !important;
+        padding:4px 6px !important;
+        transform:translateY(-50%) !important;
+        pointer-events:none !important;
+        border-radius:999px !important;
+        border:1px solid rgba(126,220,255,.54) !important;
+        background:linear-gradient(180deg, rgba(8,30,50,.94), rgba(2,10,18,.96)) !important;
+        box-shadow:0 0 10px rgba(0,217,255,.20), inset 0 0 0 1px rgba(255,255,255,.08) !important;
+        color:rgba(207,235,246,.72) !important;
+        font-family:'Press Start 2P', var(--mono, monospace) !important;
+        font-size:7px !important;
+        line-height:1 !important;
+        letter-spacing:0 !important;
+        text-shadow:0 0 8px rgba(0,217,255,.18) !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksCountersDock:not(.expanded) .counterDrawer.flprStandaloneHasCollapsedRedeems:not(.open):not(.autoOpen) .flprStandaloneCollapsedRedeemCounter{
+        border-color:rgba(34,255,136,.78) !important;
+        color:rgba(224,255,238,.98) !important;
+        background:
+          radial-gradient(120% 130% at 18% 0%, rgba(34,255,136,.24), rgba(0,0,0,0) 58%),
+          linear-gradient(180deg, rgba(8,42,34,.98), rgba(2,14,20,.98)) !important;
+        box-shadow:0 0 14px rgba(34,255,136,.32), inset 0 0 0 1px rgba(255,255,255,.10) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneCollapsedRedeemCounter .flprStandaloneCollapsedRedeemLabel{
+        color:rgba(126,220,255,.78) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneHasCollapsedRedeems .flprStandaloneCollapsedRedeemCounter .flprStandaloneCollapsedRedeemLabel{
+        color:rgba(168,255,214,.96) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneCollapsedRedeemCounter .flprStandaloneCollapsedRedeemValue{
+        min-width:9px !important;
+        color:rgba(245,252,255,.98) !important;
+        text-align:right !important;
+      }
       body.flprStandaloneOriginalClient .standaloneModeChoiceCue{
         margin-top:auto !important;
         font-size:14px !important;
@@ -8027,8 +8086,47 @@
     }
   }
 
+  function standaloneCollapsedCounterReadyCount(key){
+    const k = String(key || "").trim().toLowerCase();
+    try{
+      if(k === "frag") return Math.max(0, Math.round(Number(state?.extraBallTokens || 0)));
+      const redeems = standaloneEnsureJunkRedeemState();
+      if(k === "med") return Math.max(0, Math.round(Number(redeems.medium || 0)));
+      if(k === "easy") return Math.max(0, Math.round(Number(redeems.easy || 0)));
+    }catch(_){}
+    return 0;
+  }
+
+  function standaloneSyncCollapsedCounterRedeemBadges(){
+    try{
+      const drawers = Array.from(document.querySelectorAll("#checksCountersDock .counterDrawer[data-counter]"));
+      drawers.forEach((drawer)=>{
+        const key = String(drawer?.dataset?.counter || "").trim().toLowerCase();
+        if(key !== "easy" && key !== "med" && key !== "frag") return;
+        const ready = standaloneCollapsedCounterReadyCount(key);
+        const label = key === "frag" ? "EB" : "RDY";
+        let chip = drawer.querySelector(":scope > .flprStandaloneCollapsedRedeemCounter");
+        if(!chip){
+          chip = document.createElement("span");
+          chip.className = "flprStandaloneCollapsedRedeemCounter";
+          chip.setAttribute("aria-hidden", "true");
+          chip.innerHTML = '<span class="flprStandaloneCollapsedRedeemLabel"></span><span class="flprStandaloneCollapsedRedeemValue"></span>';
+          drawer.appendChild(chip);
+        }
+        const labelEl = chip.querySelector(".flprStandaloneCollapsedRedeemLabel");
+        const valueEl = chip.querySelector(".flprStandaloneCollapsedRedeemValue");
+        if(labelEl) labelEl.textContent = label;
+        if(valueEl) valueEl.textContent = String(ready);
+        chip.dataset.count = String(ready);
+        chip.dataset.label = label;
+        drawer.classList.toggle("flprStandaloneHasCollapsedRedeems", ready > 0);
+      });
+    }catch(_){}
+  }
+
   function standalonePrimeCounterDrawerPrev(){
     try{ window.__counterDrawerPrev = standaloneCounterSnapshotFromAp(); }catch(_){}
+    standaloneSyncCollapsedCounterRedeemBadges();
   }
 
   function standaloneCloseAutoCounterDrawers(){
@@ -8076,9 +8174,12 @@
           const result = originalUpdate.apply(this, arguments);
           standalonePrimeCounterDrawerPrev();
           standaloneCloseAutoCounterDrawers();
+          standaloneSyncCollapsedCounterRedeemBadges();
           return result;
         }
-        return originalUpdate.apply(this, arguments);
+        const result = originalUpdate.apply(this, arguments);
+        standaloneSyncCollapsedCounterRedeemBadges();
+        return result;
       };
       bridgedUpdate.__flprStandaloneCounterSuppressBridge = true;
       bridgedUpdate.__flprStandaloneOriginalUpdateCounterBars = originalUpdate;
@@ -8098,6 +8199,7 @@
       try{ window.apReconcileWorldStateFromReceived = bridgedReconcile; }catch(_){}
       try{ apReconcileWorldStateFromReceived = bridgedReconcile; }catch(_){}
     }
+    try{ standaloneSyncCollapsedCounterRedeemBadges(); }catch(_){}
   }
 
   function standaloneApplyRewardInventoryState(opts){
