@@ -3024,6 +3024,195 @@
         "requires": "|Progressive Ball - Theatre of Magic:3|"
     },
     {
+        "name": "Genesis - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Genesis:1|"
+    },
+    {
+        "name": "Genesis - Easy Score (500,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Genesis:1|"
+    },
+    {
+        "name": "Genesis - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Genesis:2|"
+    },
+    {
+        "name": "Genesis - Medium Score (1,500,000+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Genesis:2|"
+    },
+    {
+        "name": "Genesis - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Genesis:3|"
+    },
+    {
+        "name": "Genesis - Hard Score (3,500,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Genesis:3|"
+    },
+    {
+        "name": "Haunted House - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Haunted House:1|"
+    },
+    {
+        "name": "Haunted House - Easy Score (250,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Haunted House:1|"
+    },
+    {
+        "name": "Haunted House - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Haunted House:2|"
+    },
+    {
+        "name": "Haunted House - Medium Score (750,000+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Haunted House:2|"
+    },
+    {
+        "name": "Haunted House - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Haunted House:3|"
+    },
+    {
+        "name": "Haunted House - Hard Score (1,500,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Haunted House:3|"
+    },
+    {
+        "name": "The Incredible Hulk - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:1|"
+    },
+    {
+        "name": "The Incredible Hulk - Easy Score (75,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:1|"
+    },
+    {
+        "name": "The Incredible Hulk - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:2|"
+    },
+    {
+        "name": "The Incredible Hulk - Medium Score (175,000+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:2|"
+    },
+    {
+        "name": "The Incredible Hulk - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:3|"
+    },
+    {
+        "name": "The Incredible Hulk - Hard Score (350,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:3|"
+    },
+    {
         "name": "Batman Forever - Easy Task",
         "region": "Ball 1 Sphere",
         "category": [
@@ -5414,5 +5603,320 @@
             "Score"
         ],
         "requires": "|Progressive Ball - Space Invaders:3|"
+    },
+    {
+        "name": "Monopoly - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Monopoly:1|"
+    },
+    {
+        "name": "Monopoly - Easy Score (5,000,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monopoly:1|"
+    },
+    {
+        "name": "Monopoly - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Monopoly:2|"
+    },
+    {
+        "name": "Monopoly - Medium Score (20,000,000+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monopoly:2|"
+    },
+    {
+        "name": "Monopoly - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Monopoly:3|"
+    },
+    {
+        "name": "Monopoly - Hard Score (75,000,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monopoly:3|"
+    },
+    {
+        "name": "Dungeons & Dragons - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:1|"
+    },
+    {
+        "name": "Dungeons & Dragons - Easy Score (600,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:1|"
+    },
+    {
+        "name": "Dungeons & Dragons - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:2|"
+    },
+    {
+        "name": "Dungeons & Dragons - Medium Score (1,750,000+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:2|"
+    },
+    {
+        "name": "Dungeons & Dragons - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:3|"
+    },
+    {
+        "name": "Dungeons & Dragons - Hard Score (4,500,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:3|"
+    },
+    {
+        "name": "World Poker Tour - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:1|"
+    },
+    {
+        "name": "World Poker Tour - Easy Score (25,000,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:1|"
+    },
+    {
+        "name": "World Poker Tour - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:2|"
+    },
+    {
+        "name": "World Poker Tour - Medium Score (90,000,000+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:2|"
+    },
+    {
+        "name": "World Poker Tour - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:3|"
+    },
+    {
+        "name": "World Poker Tour - Hard Score (250,000,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:3|"
+    },
+    {
+        "name": "High Roller Casino - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:1|"
+    },
+    {
+        "name": "High Roller Casino - Easy Score (10,000,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:1|"
+    },
+    {
+        "name": "High Roller Casino - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:2|"
+    },
+    {
+        "name": "High Roller Casino - Medium Score (45,000,000+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:2|"
+    },
+    {
+        "name": "High Roller Casino - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:3|"
+    },
+    {
+        "name": "High Roller Casino - Hard Score (125,000,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:3|"
+    },
+    {
+        "name": "Who Dunnit - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:1|"
+    },
+    {
+        "name": "Who Dunnit - Easy Score (50,000,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:1|"
+    },
+    {
+        "name": "Who Dunnit - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:2|"
+    },
+    {
+        "name": "Who Dunnit - Medium Score (175,000,000+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:2|"
+    },
+    {
+        "name": "Who Dunnit - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:3|"
+    },
+    {
+        "name": "Who Dunnit - Hard Score (500,000,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:3|"
     }
 ]

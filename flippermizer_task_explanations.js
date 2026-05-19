@@ -382,6 +382,20 @@
       "collect an air raid award": "Shoot the Air Raid side ramp to send the ball to the lower-left kickback. Press the left diamond button to fire it back out, then hit the lit drop target to collect the Air Raid award.",
       "start multiball": "Spell JUDGE in order on the center drop targets to light locks, then shoot the left ramp for each lock. The first JUDGE completion lights all three locks; later multiballs need one JUDGE completion per lock."
     },
+    "party zone": {
+      "start dance contest": "Complete the three B-O-P top rollover lanes to light Dance Contest. Use flipper lane-change to rotate the lit lanes, then shoot Back-2-Bop, the lane just right of the left ramp, to start Dance Contest.",
+      "complete way out of control": "Hit all four W-O-O-C standup targets on the right side to light the PayOff lane. Once the award is lit, stop shooting the targets and shoot the right-side PayOff lane behind them to collect it.",
+      "start multiball": "Invite Party Animals, Party Monsters, then Party Dudes through the Cosmic Cottage to start Happy Hour multiball. If the Bouncer blocks the Cottage, make a Request at the DJ eject first; a lit Comic can also award Surprise multiball."
+    },
+    "rolling stones": {
+      "collect bonus": "Remove the Collect Bonus target, then put the ball into the scoop to collect the lit bonus award.",
+      "collect any bonus at the scoop": "Remove the Collect Bonus target, then put the ball into the scoop to collect the lit bonus award.",
+      "collect 20-40-60 bonus": "Collect 1-5 targets to build the bonus value to at least 20,000, then shoot the scoop. Continue through the 20/40/60 bonus progression when available.",
+      "collect 20-40-60 bonus at scoop": "Collect 1-5 targets to build the bonus value to at least 20,000, then shoot the scoop. Continue through the 20/40/60 bonus progression when available.",
+      "collect 20 40 60 bonus": "Collect 1-5 targets to build the bonus value to at least 20,000, then shoot the scoop. Continue through the 20/40/60 bonus progression when available.",
+      "collect 20 40 60 bonus at scoop": "Collect 1-5 targets to build the bonus value to at least 20,000, then shoot the scoop. Continue through the 20/40/60 bonus progression when available.",
+      "complete one target bank": "Shoot the upper-right drop target bank until every target in that bank is down. Use controlled shots from the left flipper, recover from the rebound, and keep picking off standing targets until the final drop registers the bank completion."
+    },
     "medieval madness": {
       "destroy the castle gate": "Shoot the castle entrance repeatedly until the gate breaks. A normal gate takes three solid castle hits; later castle shots continue the castle-destruction path.",
       "start castle multiball": "Complete a major Madness shot or finish Trolls! to light Multiball Madness at the scoop. Shoot the scoop to start it; the shots you completed before starting become the higher-value jackpot shots.",
@@ -468,6 +482,198 @@
     return resolveNearestTableTaskGuide(tableGuides, lookupKeys);
   }
 
+  const SCORE_STRATEGY_OVERRIDES_BY_TABLE = Object.freeze({
+    [normalizeTableKey("Rolling Stones")]: "Score {target} on Rolling Stones. Best scoring: Collect Bonus - drop the Collect Bonus target, build 20/40/60 with 1-5 targets, then shoot the scoop. Target bank - clear the upper-right drops."
+  });
+  const SCORE_STRATEGY_ROUTE_MAX_CHARS = 86;
+  const SCORE_STRATEGY_TOTAL_MAX_CHARS = 340;
+
+  function resolveScoreTaskMatch(rawTask){
+    const text = String(rawTask || "").trim();
+    if(!text) return null;
+    let match = text.match(/^(easy|medium|hard)\s+score\s*\(([^)]+)\)\s*$/i);
+    if(match){
+      return {
+        tier: String(match[1] || "").toLowerCase(),
+        target: String(match[2] || "").trim().replace(/\+$/, "") + "+"
+      };
+    }
+    match = text.match(/(?:score(?: target)?(?: of)?|score)\s*\(?([\d,]+\+?)\)?/i);
+    if(match){
+      return {
+        tier: "",
+        target: String(match[1] || "").trim().replace(/\+$/, "") + "+"
+      };
+    }
+    return null;
+  }
+
+  function scoreStrategyFallbackTierHint(tier){
+    const key = String(tier || "").toLowerCase();
+    if(key === "easy") return "Start with safer repeatable shots and build bonus or spinner value before taking bigger risks.";
+    if(key === "medium") return "Blend safe feeds with one high-value feature, then cash it out before chasing harder stacks.";
+    if(key === "hard") return "Stack multipliers, valuable modes, multiball, jackpots, or large bonus collects before draining.";
+    return "Prioritize the table's safest repeatable value, then add higher-value features when they are lit.";
+  }
+
+  function formatScoreStrategyOverride(value, target, tier, tableName){
+    const text = String(value || "").trim();
+    if(!text) return "";
+    return text
+      .replace(/\{target\}/g, String(target || "the target"))
+      .replace(/\{tier\}/g, String(tier || "score"))
+      .replace(/\{table\}/g, String(tableName || "this table"));
+  }
+
+  function scoreStrategyGuideBucket(label, guideText){
+    const text = normalizeTaskKey(String(label || "") + " " + String(guideText || ""));
+    if(/\b(2x|3x|double|triple|multiplier|playfield multiplier|bonus x)\b/.test(text)) return "multiplier";
+    if(/\b(super jackpot|mega jackpot|wizard|rule the universe|final)\b/.test(text)) return "super";
+    if(/\b(multiball|lock)\b/.test(text)) return "multiball";
+    if(/\b(jackpot)\b/.test(text)) return "jackpot";
+    if(/\b(hurry up|hurryup)\b/.test(text)) return "hurry";
+    if(/\b(bonus|collect bonus|bonus collect|end of ball)\b/.test(text)) return "bonus";
+    if(/\b(mode|mission|battle|race|song|tale)\b/.test(text)) return "mode";
+    if(/\b(spinner|loop|ramp|orbit|scoop|saucer)\b/.test(text)) return "shot";
+    if(/\b(target|bank|drop)\b/.test(text)) return "target";
+    return "other";
+  }
+
+  function scoreStrategyGuideValue(label, guideText, tier){
+    const raw = String(label || "") + " " + String(guideText || "");
+    const text = normalizeTaskKey(raw);
+    if(!text || isLooseGuideText(raw)) return -999;
+    let score = 0;
+    if(/\b(no multiball|no jackpot|not a strong strategy|forgettable)\b/i.test(raw)) score -= 90;
+    if(/\b(points?|score|worth|value|bonus)\b/i.test(raw)) score += 12;
+    if(/\b(2x|3x|double scoring|double|triple|playfield multiplier|multiplier)\b/i.test(raw)) score += 52;
+    if(/\b(super jackpot|mega jackpot|wizard|rule the universe|final match|final draw)\b/i.test(raw)) score += 48;
+    if(/\b(multiball|lock)\b/i.test(raw)) score += 40;
+    if(/\b(jackpot)\b/i.test(raw)) score += 38;
+    if(/\b(hurry[- ]?up|quick score)\b/i.test(raw)) score += 30;
+    if(/\b(collect bonus|bonus collect|bonus multiplier|end of ball bonus|bonus x)\b/i.test(raw)) score += 28;
+    if(/\b(mode|mission|battle|race|song|tale|award)\b/i.test(raw)) score += 18;
+    if(/\b(spinner|loop|ramp|orbit|scoop|saucer|target bank|drop target)\b/i.test(raw)) score += 14;
+    if(/\b(shoot|hit|complete|spell|light|lock|start|collect|qualif|cash|score)\b/i.test(raw)) score += 10;
+    const key = String(tier || "").toLowerCase();
+    if(key === "easy" && /\b(spinner|bonus|target|ramp|orbit|safe|repeatable)\b/i.test(raw)) score += 12;
+    if(key === "medium" && /\b(mode|hurry|bonus|multiball|jackpot)\b/i.test(raw)) score += 12;
+    if(key === "hard" && /\b(multiball|super jackpot|jackpot|2x|3x|wizard|final|rule the universe)\b/i.test(raw)) score += 14;
+    if(/^start\b/.test(text) && /\bmultiball|mode|hurry/.test(text)) score += 8;
+    if(/^collect\b/.test(text) && /\bjackpot|bonus|award/.test(text)) score += 8;
+    return score;
+  }
+
+  function scoreStrategyRouteLabel(guideKey){
+    const label = humanizeTaskCatalogLabel(guideKey);
+    return label || String(guideKey || "").trim();
+  }
+
+  function scoreStrategySentenceValue(label, sentence){
+    const raw = String(label || "") + " " + String(sentence || "");
+    let score = scoreGuideSummarySentence(sentence, guideMatchTokens(label), 0);
+    if(/\b(2x|3x|double scoring|double|triple|playfield multiplier|multiplier|bonus x)\b/i.test(raw)) score += 34;
+    if(/\b(multiball|lock|jackpot|super jackpot|mega jackpot|wizard|final)\b/i.test(raw)) score += 28;
+    if(/\b(hurry[- ]?up|quick score|collect bonus|bonus collect|mode|mission|award)\b/i.test(raw)) score += 18;
+    if(/\b(shoot|hit|complete|spell|light|lock|start|collect|qualif|cash|score)\b/i.test(raw)) score += 12;
+    if(String(sentence || "").length > 170) score -= 8;
+    return score;
+  }
+
+  function scoreStrategyCandidateSummary(label, guideText){
+    const clean = cleanGuideText(guideText);
+    if(!clean) return "";
+    const split = splitGuideHeading(clean);
+    const body = split.body || clean;
+    const taskTokens = guideMatchTokens(`${label || ""} score points multiball jackpot bonus multiplier`);
+    let sentences = splitGuideSentences(body);
+    if(!sentences.length) sentences = [body];
+    const ranked = sentences.map(function(sentence, index){
+      return {
+        sentence,
+        index,
+        score: scoreStrategySentenceValue(label, sentence)
+      };
+    }).sort(function(a, b){
+      return b.score - a.score || a.index - b.index;
+    });
+    const chosen = ranked[0]?.sentence || sentences[0] || clean;
+    return compactGuideSummary(
+      compressGuideSentence(chosen, taskTokens, SCORE_STRATEGY_ROUTE_MAX_CHARS),
+      SCORE_STRATEGY_ROUTE_MAX_CHARS
+    );
+  }
+
+  function resolveScoreStrategyGuide(tableName, tier, target){
+    const tableKey = normalizeTableKey(tableName);
+    const normalizedTarget = String(target || "").trim().replace(/\+$/, "") + "+";
+    if(tableKey && SCORE_STRATEGY_OVERRIDES_BY_TABLE[tableKey]){
+      return formatScoreStrategyOverride(SCORE_STRATEGY_OVERRIDES_BY_TABLE[tableKey], normalizedTarget, tier, tableName);
+    }
+    const tableGuides = TABLE_TASK_GUIDES[tableKey];
+    const overrideGuides = TABLE_TASK_GUIDE_OVERRIDES[tableKey];
+    const combined = {};
+    if(tableGuides) Object.assign(combined, tableGuides);
+    if(overrideGuides) Object.assign(combined, overrideGuides);
+    const guideKeys = Object.keys(combined);
+    const tableLabel = String(tableName || "this table").trim() || "this table";
+    const base = `Score ${normalizedTarget} on ${tableLabel}.`;
+    if(!guideKeys.length){
+      return `${base} ${scoreStrategyFallbackTierHint(tier)}`;
+    }
+
+    const candidates = guideKeys.map(function(guideKey, index){
+      const label = scoreStrategyRouteLabel(guideKey);
+      const text = String(combined[guideKey] || "").trim();
+      return {
+        guideKey,
+        label,
+        text,
+        index,
+        bucket: scoreStrategyGuideBucket(label, text),
+        score: scoreStrategyGuideValue(label, text, tier)
+      };
+    }).filter(function(candidate){
+      return candidate.text && candidate.score >= 22;
+    }).sort(function(a, b){
+      return b.score - a.score || a.index - b.index;
+    });
+
+    const maxRoutes = 2;
+    const chosen = [];
+    const usedBuckets = new Set();
+    const usedSummaries = new Set();
+    candidates.forEach(function(candidate){
+      if(chosen.length >= maxRoutes) return;
+      const summary = scoreStrategyCandidateSummary(candidate.label, candidate.text);
+      const summaryKey = normalizeTaskKey(summary);
+      if(!summary || usedSummaries.has(summaryKey)) return;
+      if(usedBuckets.has(candidate.bucket) && candidates.some(function(other){
+        return other.bucket !== candidate.bucket && other.score >= candidate.score - 16 && !usedBuckets.has(other.bucket);
+      })) return;
+      chosen.push({ label: candidate.label, summary, bucket: candidate.bucket });
+      usedBuckets.add(candidate.bucket);
+      usedSummaries.add(summaryKey);
+    });
+    if(chosen.length < Math.min(2, maxRoutes)){
+      candidates.forEach(function(candidate){
+        if(chosen.length >= Math.min(2, maxRoutes)) return;
+        const summary = scoreStrategyCandidateSummary(candidate.label, candidate.text);
+        const summaryKey = normalizeTaskKey(summary);
+        if(!summary || usedSummaries.has(summaryKey)) return;
+        chosen.push({ label: candidate.label, summary, bucket: candidate.bucket });
+        usedSummaries.add(summaryKey);
+      });
+    }
+    if(!chosen.length){
+      return `${base} ${scoreStrategyFallbackTierHint(tier)}`;
+    }
+    const routes = chosen.map(function(route){
+      return `${route.label}: ${route.summary}`;
+    }).join(" ");
+    return compactGuideSummary(`${base} Best scoring from the guide: ${routes}`, SCORE_STRATEGY_TOTAL_MAX_CHARS);
+  }
+
   const EXACT = Object.freeze({
     "boss victory": "Reduce Boss HP to 0%. Keep completing boss-damage checks until the boss life bar is empty, then clear the Boss Victory check.",
     "destroy the castle gate": "Shoot the castle repeatedly until the gate is destroyed (typically 3 clean castle hits).",
@@ -520,7 +726,7 @@
     "start battle royale": "Complete the villain requirements that light Battle Royale, then start it at the lit shot.",
     "qualify war machine multiball": "Advance Iron Man enough to light War Machine Multiball without needing to start it yet.",
     "reach mark 6 to light jericho": "Build Iron Man armor progress to Mark 6 so Jericho becomes lit.",
-    "light do or die hurry up": "Complete the required setup to light the Do or Die hurry-up shot.",
+    "light do or die hurry up": "Light the five Do or Die character inserts on the same ball: Iron Man, Iron Monger, War Machine, Whiplash, and Drones. Then shoot the center spinner lane to start the hurry-up.",
     "collect a door prize": "Shoot the lit Party Animal scoop/award shot to collect one Door Prize.",
     "collect a party animal letter": "Light and collect one PARTY ANIMAL letter award.",
     "collect the party bonus": "Light the Party Bonus, then shoot the collect shot while it is active.",
@@ -901,7 +1107,7 @@
       "collect an iron monger super jackpot": "Iron Monger + multiball - When the Monger is raised, the goal is to hit it 6 times. Be very careful how you go about this; hitting Monger straight-on will trigger the magnet in front of him, putting the ball wildly out of control and at high risk for a center drain. It is preferable to shoot Monger with glancing blows, aiming for the near left corner from the left flipper and near right corner from the right flipper, to avoid activating the magnet in front of him. While the Monger is up, each hit to him scores 100,000 points, plus an additional 7,500 for each spin registered on any spinner since the last Monger hit.",
       "collect a whiplash super jackpot": "Whiplash + multiball - The Whiplash mechanism consists of the two standup targets and magnet positioned between the center spinner lane and the right ramp. Hit either target to score 50,000 points and one shot of credit toward Whiplash multiball. When either target is hit, the magnet is pulsed, which helps send the ball out of control. After 5 hits (for the first Whiplash Multiball) or 10 hits (anytime after that), Whiplash Multiball instantly begins, which comes with the now-standard 250,000 points and one Mark. Whiplash starts as a 2-ball multiball.",
       "reach mark 6 to light jericho": "Jericho Missile Mayhem: mini-wizard mode - Reaching Mark 6 lights the center spinner lane for Jericho, the game's mini-wizard mode. Marks are awarded any time a multiball is started, an Iron Man scoring round is started, Bogey is started (see below), or a War Machine multiball is lit. Also, completing all 6 rollover lanes (the two top lanes and 4 in/out lanes) will award a Mark, but this can only be done once unless Jericho is played.",
-      "start do or die hurry up": "Quick strategy synopsis - There are 5 main types of progress in the game: complete the Iron Man targets, hit enough Drone targets to light War Machine Multiball, actually play War Machine Multiball, hit the Whiplash targets and magnet enough to play Whiplash Multiball, and shoot orbits then the Monger toy to play Iron Monger Multiball. Do any of these a total of 6 times to light the Jericho min-wizard mode at the center spinner. Do all of these at least once in a single ball to light the Do or Die Hurry-up at the center spinner, worth up to 35,000,000 points."
+      "start do or die hurry up": "Do or Die Hurry-Up - Light all five character inserts on the same ball, then shoot the center spinner lane to start the hurry-up. The five requirements are: Iron Man, by completing the Iron Man standup targets and starting an Iron Man scoring mode; Drones, by collecting all 8 lit Drone targets; War Machine, by shooting War Machine after Drone progress lights War Machine Multiball; Iron Monger, by raising Monger and hitting it 6 times to start Iron Monger Multiball; and Whiplash, by hitting the Whiplash standup/magnet area enough times to start Whiplash Multiball. This is separate from Jericho, which is lit by Mark 6 progress."
     },
     "ac dc": {
       "start any multiball": "There are super jackpots available after collecting twenty jackpots in any given multiball (14 in Album, since that's how many albums there are), which are awarded by a cannon shot to the bell. The super is worth the lump sum of all jackpots scored up to that point, which is great value. Not only that, you keep progress on how many jackpots you've scored during multiballs - which is good to know for what Album or Tour you've made it up to. There's some merit in going for the stacked multiballs in that the points are far more frenetic and plentiful all at once, though it's also argued that playing three single multiballs is better than playing one triple multiball.",
@@ -1194,17 +1400,19 @@
     },
     "rolling stones": {
       "start any song mode": "Wizard Mode - It's at this point that we give those who prefer to find out these things for themselves a chance to jump past the next section and re-join us immediately after it. If you don't want to know about the wizard mode, just click this and we'll see you after we've spilled the beans on all the cool stuff. The Rolling Stone's wizard mode, Encore, is split into two sections and which parts you get to play depends on how well you've done so far.",
-      "complete one target bank": "The super jackpot target - Sounds pretty easy, right? Well, Mick has other ideas and just as he did with the Rock Star super jackpot, he plants himself right in front of the target, blocking your shot. This time you can do something about it though. Hit Mick with the ball and he very briefly moves out of the way to reveal the target before resuming his guard. The length of time he moves aside is too brief to make a second shot with the same ball, so you're going to have to use one ball to move him and another to hit the target.",
+      "collect bonus": "Collect Bonus - Remove the Collect Bonus target, then put the ball into the scoop to collect the lit bonus award.",
+      "collect 20-40-60 bonus": "Collect Bonus - Collect 1-5 targets to build the bonus value to at least 20,000, then shoot the scoop. Continue through the 20/40/60 bonus progression when available.",
+      "complete one target bank": "Upper-right drop target bank - Shoot the upper-right bank until every target in that bank is down. Use controlled shots from the left flipper, recover from the rebound, and keep picking off standing targets until the final drop registers the bank completion.",
       "light lock for multiball": "Encore Multiball - The rules are basically the same as for regular Encore, but this time you've got four balls to play with. The scoring is the same, starting at 500K and increasing by 50K with each successful shot, and the super jackpot builds in the same way. We hinted before how the V-I-P mystery award might not be as much help as you'd hope. That's because with all four balls in play, you can still be awarded...",
       "collect a mystery award": "Bonus multiplier increases +1X - The V-I-P award is pseudo-random because the 'More mode time' and 'Add-a-ball' are context sensitive. If you're playing one of the timed modes such as World Tour, Fast Scoring or any of the record modes, the next V-I-P award will almost certainly extend the time available to complete it. Similarly, the 'Add-a-ball' award is usually given the first time you complete V-I-P during one of the multiball features. But more on those later.",
       "shoot the main ramp 3 times": "The left ramp note is lit - So basically Mick moves between the unlit or flashing arrow positions so you can light all six inserts solidly by hitting him with the ball. You get 20K for the first lit note and an extra 5K for each subsequent one. Depending on how the machine is set up, it might be possible to register a hit if you make one of the orbit shots and Mick him from the back. That's certainly the safest option because hitting him from the front is almost an open invitation for the ball to drain, so you need to be on your guard if you shoot him straight on.",
       "complete any song mode": "Wizard Mode - It's at this point that we give those who prefer to find out these things for themselves a chance to jump past the next section and re-join us immediately after it. If you don't want to know about the wizard mode, just click this and we'll see you after we've spilled the beans on all the cool stuff. The Rolling Stone's wizard mode, Encore, is split into two sections and which parts you get to play depends on how well you've done so far.",
-      "lock 1 ball for multiball": "Encore Multiball - The rules are basically the same as for regular Encore, but this time you've got four balls to play with. The scoring is the same, starting at 500K and increasing by 50K with each successful shot, and the super jackpot builds in the same way. We hinted before how the V-I-P mystery award might not be as much help as you'd hope. That's because with all four balls in play, you can still be awarded...",
-      "start multiball": "Encore Multiball - The rules are basically the same as for regular Encore, but this time you've got four balls to play with. The scoring is the same, starting at 500K and increasing by 50K with each successful shot, and the super jackpot builds in the same way. We hinted before how the V-I-P mystery award might not be as much help as you'd hope. That's because with all four balls in play, you can still be awarded...",
-      "collect a jackpot": "The super jackpot target - Sounds pretty easy, right? Well, Mick has other ideas and just as he did with the Rock Star super jackpot, he plants himself right in front of the target, blocking your shot. This time you can do something about it though. Hit Mick with the ball and he very briefly moves out of the way to reveal the target before resuming his guard. The length of time he moves aside is too brief to make a second shot with the same ball, so you're going to have to use one ball to move him and another to hit the target.",
+      "lock 1 ball for multiball": "Collect Bonus - Rolling Stones has no multiball objective here. Use Collect Bonus instead: remove the Collect Bonus target, then put the ball into the scoop.",
+      "start multiball": "Collect Bonus - Rolling Stones has no multiball objective here. Use Collect Bonus instead: remove the Collect Bonus target, then put the ball into the scoop.",
+      "collect a jackpot": "Collect Bonus - Rolling Stones has no jackpot objective here. Use Collect Bonus instead: remove the Collect Bonus target, then put the ball into the scoop.",
       "collect a song award": "Bonus multiplier increases +1X - The V-I-P award is pseudo-random because the 'More mode time' and 'Add-a-ball' are context sensitive. If you're playing one of the timed modes such as World Tour, Fast Scoring or any of the record modes, the next V-I-P award will almost certainly extend the time available to complete it. Similarly, the 'Add-a-ball' award is usually given the first time you complete V-I-P during one of the multiball features. But more on those later.",
-      "lock 2 balls toward multiball": "Encore Multiball - The rules are basically the same as for regular Encore, but this time you've got four balls to play with. The scoring is the same, starting at 500K and increasing by 50K with each successful shot, and the super jackpot builds in the same way. We hinted before how the V-I-P mystery award might not be as much help as you'd hope. That's because with all four balls in play, you can still be awarded...",
-      "start multiball and collect a jackpot": "The super jackpot target - Sounds pretty easy, right? Well, Mick has other ideas and just as he did with the Rock Star super jackpot, he plants himself right in front of the target, blocking your shot. This time you can do something about it though. Hit Mick with the ball and he very briefly moves out of the way to reveal the target before resuming his guard. The length of time he moves aside is too brief to make a second shot with the same ball, so you're going to have to use one ball to move him and another to hit the target.",
+      "lock 2 balls toward multiball": "Collect Bonus - Rolling Stones has no multiball objective here. Use Collect 20-40-60 Bonus instead: collect 1-5 targets, build at least 20,000 bonus, then shoot the scoop.",
+      "start multiball and collect a jackpot": "Collect Bonus - Rolling Stones has no multiball or jackpot objective here. Use Collect 20-40-60 Bonus instead: collect 1-5 targets, build at least 20,000 bonus, then shoot the scoop.",
       "complete 2 song modes in one game": "Mixed Emotions - All of them are timed modes with the clock being set at 45 seconds on factory settings, though this can be adjusted for each mode through the settings menu. Although the Records modes continue through multiball modes, they cannot be started during a multiball. All four modes are very similar in that they light one or more record inserts on the six major shots and you have to shoot the lit shots to score points. The only variations are in which shots are lit, how they change during the mode, and how many points they score.",
       "collect a super jackpot": "The super jackpot target - Sounds pretty easy, right? Well, Mick has other ideas and just as he did with the Rock Star super jackpot, he plants himself right in front of the target, blocking your shot. This time you can do something about it though. Hit Mick with the ball and he very briefly moves out of the way to reveal the target before resuming his guard. The length of time he moves aside is too brief to make a second shot with the same ball, so you're going to have to use one ball to move him and another to hit the target.",
       "start a wizard mode": "Wizard Mode - It's at this point that we give those who prefer to find out these things for themselves a chance to jump past the next section and re-join us immediately after it. If you don't want to know about the wizard mode, just click this and we'll see you after we've spilled the beans on all the cool stuff. The Rolling Stone's wizard mode, Encore, is split into two sections and which parts you get to play depends on how well you've done so far."
@@ -2159,16 +2367,11 @@
 
     if(EXACT[key]) return { text: makeHowTo(EXACT[key]), kind:"exact", rawTask, key };
 
-    const rawScoreMatch = rawTask.match(/^(easy|medium|hard)\s+score\s*\(([^)]+)\)\s*$/i);
-    if(rawScoreMatch){
-      const tier = String(rawScoreMatch[1] || "").toLowerCase();
-      const target = String(rawScoreMatch[2] || "").trim().replace(/\+$/, "") + "+";
-      const tierHint = tier === "easy"
-        ? "Use safer repeatable shots and bonus building."
-        : (tier === "medium"
-          ? "Blend safe feeds with mode progress and controlled risk."
-          : "Stack multipliers, modes, and multiball scoring before cashing out.");
-      return { text: makeHowTo("Reach at least " + target + " points in a valid game on that table. " + tierHint), kind:"score", rawTask, key };
+    const scoreMatch = resolveScoreTaskMatch(rawTask);
+    if(scoreMatch){
+      const tableName = getTableNameFromNode(node);
+      const scoreText = resolveScoreStrategyGuide(tableName, scoreMatch.tier, scoreMatch.target);
+      return { text: makeHowTo(scoreText), kind:"score", rawTask, key, tableName, scoreTarget: scoreMatch.target, scoreTier: scoreMatch.tier };
     }
 
     const counterMeta = resolveTaskCounterMeta(rawTask);
@@ -2260,7 +2463,7 @@
       [normalizeTaskKey("Start a Wizard Mode")]: "Complete 3 Drop-Target Banks in One Game"
     }),
     [normalizeTableKey("Rolling Stones")]: Object.freeze({
-      [normalizeTaskKey("Start a Wizard Mode")]: "Collect 2 Song Awards in One Game"
+      [normalizeTaskKey("Start a Wizard Mode")]: "Collect 20-40-60 Bonus"
     }),
     [normalizeTableKey("Judge Dredd")]: Object.freeze({
       [normalizeTaskKey("Start Ultimate Challenge")]: "Complete 3 Chain Feature Modes in One Game"
@@ -2277,6 +2480,13 @@
     [normalizeTableKey("Grand Lizard")]: Object.freeze(["Start Multiball", "Complete 2 Upper Playfield Objectives"]),
     [normalizeTableKey("Bride of Pinbot")]: Object.freeze(["Complete the Bride", "Advance 3 Metamorphosis Steps"]),
     [normalizeTableKey("AC/DC")]: Object.freeze(["Collect a Super Jackpot", "Collect 2 Song Jackpots in One Game"])
+  });
+
+  const TABLE_TASK_CATALOG_OVERRIDES_BY_TABLE = Object.freeze({
+    [normalizeTableKey("Rolling Stones")]: Object.freeze({
+      medium: Object.freeze(["Collect Bonus"]),
+      hard: Object.freeze(["Collect 20-40-60 Bonus"])
+    })
   });
 
   function isForbiddenHardTaskLabel(label){
@@ -2375,6 +2585,15 @@
               : fallbackHardTaskCatalog(tableName || tableKey));
         }
       });
+      const catalogOverride = TABLE_TASK_CATALOG_OVERRIDES_BY_TABLE[normalizeTableKey(tableName || tableKey)];
+      if(catalogOverride){
+        ["easy", "medium", "hard"].forEach(function(difficulty){
+          const overrideTasks = catalogOverride[difficulty];
+          if(Array.isArray(overrideTasks) && overrideTasks.length){
+            entry.tasksByDifficulty[difficulty] = overrideTasks.slice();
+          }
+        });
+      }
       byTable[normalizeTableKey(tableName || tableKey)] = entry;
       byTable[tableKey] = entry;
       tables.push(entry);
@@ -2387,6 +2606,7 @@
     normalizeTableKey: normalizeTableKey,
     resolveTaskExplanation: resolveTaskExplanation,
     resolveTaskExplanationMeta: resolveTaskExplanationMeta,
+    resolveScoreStrategyGuide: resolveScoreStrategyGuide,
     resolveTaskCounterMeta: resolveTaskCounterMeta,
     getBundledTaskCatalog: getBundledTaskCatalog
   });

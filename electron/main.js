@@ -296,12 +296,23 @@ function createWindow(){
     win.webContents.executeJavaScript(`document.title = ${JSON.stringify(APP_TITLE)};`).catch(()=>{});
     fitOverlayZoom(win);
     const bridgePath = path.join(__dirname, "standalone-overlay-bridge.js");
+    const giftHousePath = path.join(__dirname, "standalone-gift-house-test.js");
     fs.readFile(bridgePath, "utf8", (err, source)=>{
       if(err){
         console.error("Failed to load standalone overlay bridge", err);
         return;
       }
-      win.webContents.executeJavaScript(source).catch((executeErr)=>{
+      win.webContents.executeJavaScript(source).then(()=>{
+        fs.readFile(giftHousePath, "utf8", (giftErr, giftSource)=>{
+          if(giftErr){
+            console.error("Failed to load standalone gift house test", giftErr);
+            return;
+          }
+          win.webContents.executeJavaScript(giftSource).catch((giftExecuteErr)=>{
+            console.error("Failed to execute standalone gift house test", giftExecuteErr);
+          });
+        });
+      }).catch((executeErr)=>{
         console.error("Failed to execute standalone overlay bridge", executeErr);
       });
     });

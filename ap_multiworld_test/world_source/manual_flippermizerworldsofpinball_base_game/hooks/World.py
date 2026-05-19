@@ -1518,22 +1518,7 @@ def before_set_rules(world: World, multiworld: MultiWorld, player: int):
 
 # Called after rules for accessing regions and locations are created, in case you want to see or modify that information.
 def after_set_rules(world: World, multiworld: MultiWorld, player: int):
-    required_boss_keys = get_option_value(multiworld, player, "boss_keys_required_for_boss_table_open")
-    if not isinstance(required_boss_keys, int):
-        required_boss_keys = 3
-    required_boss_keys = max(1, min(10, required_boss_keys))
-
-    try:
-        boss_region = multiworld.get_region("Boss Sphere", player)
-    except Exception:
-        logging.warning("Manual Pinball: Could not find Boss Sphere region to apply boss key requirement.")
-        return
-
-    # Replace the generated requirement so this can be tuned per-player via option.
-    for entrance in boss_region.entrances:
-        entrance.access_rule = lambda state, p=player, req=required_boss_keys: state.has("Boss Key", p, req)
-
-    logging.info("Manual Pinball: Boss table unlock requirement set to %d Boss Keys.", required_boss_keys)
+    logging.info("Manual Pinball: Boss Key AP item emission disabled; Home Edition handles boss unlocks locally.")
 
 # The item name to create is provided before the item is created, in case you want to make changes to it
 def before_create_item(item_name: str, world: World, multiworld: MultiWorld, player: int) -> str:
@@ -1545,48 +1530,7 @@ def after_create_item(item: ManualItem, world: World, multiworld: MultiWorld, pl
 
 # This method is run towards the end of pre-generation, before the place_item options have been handled and before AP generation occurs
 def before_generate_basic(world: World, multiworld: MultiWorld, player: int):
-    # Keep Easy checks spicy: guarantee exactly one Easy location can (and will) hold a Boss Key.
-    easy_candidates: list[dict] = []
-    for location in multiworld.get_unfilled_locations(player=player):
-        manual_location = location_name_to_location.get(location.name)
-        if not manual_location:
-            continue
-        if str(manual_location.get("region", "")).strip() != "Ball 1 Sphere":
-            continue
-        easy_candidates.append(manual_location)
-
-    if not easy_candidates:
-        logging.warning("Manual Pinball: No Easy (Ball 1 Sphere) locations found for Boss Key placement.")
-        return
-
-    forced_location_name = str(_get_ut_regen_slot_data(world).get(FORCED_EASY_BOSS_KEY_SLOT_KEY, "") or "").strip()
-    chosen = None
-    if forced_location_name:
-        chosen = next((location for location in easy_candidates if str(location.get("name", "")).strip() == forced_location_name), None)
-    if chosen is None:
-        chosen = world.random.choice(easy_candidates)
-    world._forced_easy_boss_key_location = str(chosen.get("name", "") or "").strip()
-
-    # Remove any explicit Boss Key forbids on the chosen Easy location.
-    dont_place_item = chosen.get("dont_place_item")
-    if isinstance(dont_place_item, list):
-        chosen["dont_place_item"] = [item for item in dont_place_item if str(item) != "Boss Key"]
-        if not chosen["dont_place_item"]:
-            chosen.pop("dont_place_item", None)
-    elif dont_place_item is not None and str(dont_place_item) == "Boss Key":
-        chosen.pop("dont_place_item", None)
-
-    # Guarantee one Easy Boss Key by locking one Boss Key onto this Easy check.
-    place_item = chosen.get("place_item")
-    if isinstance(place_item, list):
-        if "Boss Key" not in place_item:
-            place_item.append("Boss Key")
-    elif place_item is None:
-        chosen["place_item"] = ["Boss Key"]
-    else:
-        chosen["place_item"] = [str(place_item), "Boss Key"]
-
-    logging.info("Manual Pinball: Boss Key guaranteed on Easy check: %s", chosen.get("name", "Unknown"))
+    pass
 
 # This method is run at the very end of pre-generation, once the place_item options have been handled and before AP generation occurs
 def after_generate_basic(world: World, multiworld: MultiWorld, player: int):
@@ -1645,8 +1589,6 @@ def after_fill_slot_data(slot_data: dict, world: World, multiworld: MultiWorld, 
     slot_data[GENERIC_CHECKS_SLOT_KEY] = generic_checks_payload
     slot_data[TASK_SHUFFLE_SLOT_KEY] = task_shuffle_payload
     slot_data[PROGRESSIVE_BALL_STARTS_SLOT_KEY] = _get_progressive_ball_start_payload(world)
-    if getattr(world, "_forced_easy_boss_key_location", None):
-        slot_data[FORCED_EASY_BOSS_KEY_SLOT_KEY] = str(world._forced_easy_boss_key_location)
     if metasizer_payload.get("enabled"):
         world_groups = metasizer_payload.get("selected_group_keys", [])
         logging.info(

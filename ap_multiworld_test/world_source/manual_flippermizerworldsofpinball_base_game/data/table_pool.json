@@ -1,5 +1,5 @@
 {
-    "version": 4,
+    "version": 5,
     "base_variant": "Base Game - Worlds of Pinball",
     "variant": "Base Game",
     "notes": [
@@ -496,7 +496,11 @@
             "pool_tier": "candidate",
             "group_key": "the_show_must_go_on",
             "group_label": "The Show Must Go On",
-            "notes": "Use the newer TastyWasps update when sourcing the VPX build."
+            "notes": "Use the newer TastyWasps update when sourcing the VPX build.",
+            "world_group_keys": [
+                "the_show_must_go_on",
+                "toccata_terror"
+            ]
         },
         {
             "code": "TOM",
@@ -505,7 +509,11 @@
             "pool_tier": "candidate",
             "group_key": "the_show_must_go_on",
             "group_label": "The Show Must Go On",
-            "notes": "Reassigned from Legendary Williams into the new performance-themed world."
+            "notes": "Reassigned from Legendary Williams into the new performance-themed world; also used as the Toccata-adjacent fifth.",
+            "world_group_keys": [
+                "the_show_must_go_on",
+                "toccata_terror"
+            ]
         },
         {
             "code": "BFOR",
@@ -914,6 +922,102 @@
             "world_group_keys": [
                 "pixel_quest"
             ]
+        },
+        {
+            "code": "MONOP",
+            "name": "Monopoly",
+            "generation_ready": true,
+            "pool_tier": "base",
+            "group_key": "tabletop_rumblespot",
+            "group_label": "Tabletop Rumblespot",
+            "notes": "Tabletop Rumblespot generation-ready tabletop-games world.",
+            "world_group_keys": [
+                "tabletop_rumblespot"
+            ]
+        },
+        {
+            "code": "DND",
+            "name": "Dungeons & Dragons",
+            "generation_ready": true,
+            "pool_tier": "base",
+            "group_key": "tabletop_rumblespot",
+            "group_label": "Tabletop Rumblespot",
+            "notes": "Tabletop Rumblespot generation-ready tabletop-games world.",
+            "world_group_keys": [
+                "tabletop_rumblespot"
+            ]
+        },
+        {
+            "code": "WPT",
+            "name": "World Poker Tour",
+            "generation_ready": true,
+            "pool_tier": "base",
+            "group_key": "tabletop_rumblespot",
+            "group_label": "Tabletop Rumblespot",
+            "notes": "Tabletop Rumblespot generation-ready tabletop-games world.",
+            "world_group_keys": [
+                "tabletop_rumblespot"
+            ]
+        },
+        {
+            "code": "HRC",
+            "name": "High Roller Casino",
+            "generation_ready": true,
+            "pool_tier": "base",
+            "group_key": "tabletop_rumblespot",
+            "group_label": "Tabletop Rumblespot",
+            "notes": "Tabletop Rumblespot generation-ready tabletop-games world.",
+            "world_group_keys": [
+                "tabletop_rumblespot"
+            ]
+        },
+        {
+            "code": "WHOD",
+            "name": "Who Dunnit",
+            "generation_ready": true,
+            "pool_tier": "base",
+            "group_key": "tabletop_rumblespot",
+            "group_label": "Tabletop Rumblespot",
+            "notes": "Tabletop Rumblespot generation-ready tabletop-games world.",
+            "world_group_keys": [
+                "tabletop_rumblespot"
+            ]
+        },
+        {
+            "code": "GEN",
+            "name": "Genesis",
+            "generation_ready": true,
+            "pool_tier": "base",
+            "group_key": "toccata_terror",
+            "group_label": "Toccata Terror",
+            "notes": "Bach Toccata and Fugue world entry; VPX builds are available for Gottlieb 1986 Genesis.",
+            "world_group_keys": [
+                "toccata_terror"
+            ]
+        },
+        {
+            "code": "HH",
+            "name": "Haunted House",
+            "generation_ready": true,
+            "pool_tier": "base",
+            "group_key": "toccata_terror",
+            "group_label": "Toccata Terror",
+            "notes": "Bach Toccata and Fugue world entry; VPX builds are available for Gottlieb 1982 Haunted House.",
+            "world_group_keys": [
+                "toccata_terror"
+            ]
+        },
+        {
+            "code": "HULK",
+            "name": "The Incredible Hulk",
+            "generation_ready": true,
+            "pool_tier": "base",
+            "group_key": "toccata_terror",
+            "group_label": "Toccata Terror",
+            "notes": "Bach Toccata and Fugue world entry; VPX builds are available for Gottlieb 1979 The Incredible Hulk.",
+            "world_group_keys": [
+                "toccata_terror"
+            ]
         }
     ],
     "world_groups": [
@@ -1047,6 +1151,30 @@
                 "QBERT",
                 "MMPAC",
                 "SINV"
+            ]
+        },
+        {
+            "key": "tabletop_rumblespot",
+            "label": "Tabletop Rumblespot",
+            "generation_ready": true,
+            "table_codes": [
+                "MONOP",
+                "DND",
+                "WPT",
+                "HRC",
+                "WHOD"
+            ]
+        },
+        {
+            "key": "toccata_terror",
+            "label": "Toccata Terror",
+            "generation_ready": true,
+            "table_codes": [
+                "GEN",
+                "POTO",
+                "HH",
+                "HULK",
+                "TOM"
             ]
         }
     ]

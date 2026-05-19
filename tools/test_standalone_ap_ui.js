@@ -123,6 +123,39 @@ const receivedItems = {
   ]
 };
 
+const serverHintsForOtherPlayers = [
+  {
+    receiving_player: 2,
+    finding_player: 1,
+    location: 3020,
+    item: 4004,
+    item_flags: 1,
+    found: false,
+    entrance: "Vanilla"
+  },
+  {
+    receiving_player: 2,
+    finding_player: 1,
+    location: 3012,
+    item: 4005,
+    item_flags: 0,
+    found: true,
+    entrance: "Vanilla"
+  }
+];
+
+function makeRetrievedHintPacket(keys) {
+  const values = {};
+  (Array.isArray(keys) ? keys : []).forEach((key) => {
+    if(/^_read_hints_0_2$/.test(String(key || ""))) {
+      values[key] = serverHintsForOtherPlayers.map((hint) => ({ ...hint }));
+    } else if(/^_read_hints_\d+_\d+$/.test(String(key || ""))) {
+      values[key] = [];
+    }
+  });
+  return { cmd: "Retrieved", keys: values };
+}
+
 function encodeFrame(text) {
   const payload = Buffer.from(text, "utf8");
   let header;
@@ -403,6 +436,13 @@ function createApTestServer() {
         if (pkt.cmd === "Sync") {
           setTimeout(() => send(receivedItemsSnapshot()), 120);
         }
+        if (pkt.cmd === "Get") {
+          const keys = Array.isArray(pkt.keys) ? pkt.keys : [];
+          const response = makeRetrievedHintPacket(keys);
+          if(Object.keys(response.keys || {}).length) {
+            setTimeout(() => send(response), 70);
+          }
+        }
         if (pkt.cmd === "LocationChecks") {
           const locs = Array.isArray(pkt.locations) ? pkt.locations.map(Number) : [];
           if (locs.includes(3010)) {
@@ -531,6 +571,26 @@ async function run() {
   if(!profileGateInitialProbe.needsProfile || !profileGateInitialProbe.gateVisible || !profileGateInitialProbe.startDisabled){
     throw new Error(`Home profile gate was not blocking a fresh Home Edition launch: ${JSON.stringify(profileGateInitialProbe)}`);
   }
+  const profileGateVisualProbe = await page.evaluate(`(() => {
+    const card = document.querySelector('.standaloneProfileCard');
+    const preview = document.querySelector('#standaloneProfilePreview');
+    const nameInput = document.querySelector('#standaloneProfileNameInput');
+    const emojiChoices = document.querySelectorAll('.standaloneEmojiChoice');
+    const cardRect = card?.getBoundingClientRect?.();
+    const nameRect = nameInput?.getBoundingClientRect?.();
+    return {
+      hasPreview: !!preview,
+      emojiCount: emojiChoices.length,
+      nameMaxLength: Number(nameInput?.getAttribute('maxlength') || 0),
+      cardWidth: cardRect ? Math.round(cardRect.width) : 0,
+      cardHeight: cardRect ? Math.round(cardRect.height) : 0,
+      nameWidth: nameRect ? Math.round(nameRect.width) : 0,
+      nameHeight: nameRect ? Math.round(nameRect.height) : 0
+    };
+  })()`);
+  if(!profileGateVisualProbe.hasPreview || profileGateVisualProbe.emojiCount < 80 || profileGateVisualProbe.nameMaxLength < 40 || profileGateVisualProbe.cardWidth < 1160 || profileGateVisualProbe.cardHeight < 680 || profileGateVisualProbe.nameWidth < 360 || profileGateVisualProbe.nameHeight < 58){
+    throw new Error(`Home profile gate was not enlarged/snazzed up enough: ${JSON.stringify(profileGateVisualProbe)}`);
+  }
   await page.locator("#standaloneProfileNameInput").fill("Playwright Home");
   await page.locator("#standaloneEmojiPickerButton").click();
   await page.locator(".standaloneEmojiChoice").filter({ hasText: String.fromCodePoint(0x1F3AF) }).first().click();
@@ -647,6 +707,66 @@ async function run() {
   })()`);
   if(noHangmanProbe.flag !== true || noHangmanProbe.canStart !== false || noHangmanProbe.visibleButtons.length || noHangmanProbe.metaHasHangman || noHangmanProbe.revealHasHangman){
     throw new Error(`Home Edition still exposes Chat Stream Hangman: ${JSON.stringify(noHangmanProbe)}`);
+  }
+
+  const noEpisodeProbe = await page.evaluate(`(() => {
+    const toastCalls = [];
+    const originalToast = window.toast;
+    try{
+      window.toast = function(type, title, message){
+        toastCalls.push({ type:String(type || ""), title:String(title || ""), message:String(message || "") });
+        return null;
+      };
+      let startResult = null;
+      let endResult = null;
+      let markResult = null;
+      let gateResult = null;
+      let canTrack = null;
+      try{ startResult = typeof episodeStartOrResume === "function" ? episodeStartOrResume() : "missing"; }catch(err){ startResult = String(err?.message || err); }
+      try{ endResult = typeof episodeEndEarly === "function" ? episodeEndEarly() : "missing"; }catch(err){ endResult = String(err?.message || err); }
+      try{ markResult = typeof episodeMarkBossComplete === "function" ? episodeMarkBossComplete() : "missing"; }catch(err){ markResult = String(err?.message || err); }
+      try{ gateResult = typeof episodeNeedsManualStartGate === "function" ? episodeNeedsManualStartGate() : "missing"; }catch(err){ gateResult = String(err?.message || err); }
+      try{ canTrack = typeof episodeCanTrack === "function" ? episodeCanTrack() : "missing"; }catch(err){ canTrack = String(err?.message || err); }
+      try{ if(typeof updateEpisodeControlsUi === "function") updateEpisodeControlsUi(); }catch(_){}
+      const profileRaw = localStorage.getItem("flpr_standalone_home_profiles_v1") || "";
+      return {
+        disabled: window.__flprStandaloneEpisodeDisabled,
+        canTrack,
+        startResult,
+        endResult,
+        markResult,
+        gateResult,
+        storage: localStorage.getItem("flpr_episode_v1"),
+        toastCalls,
+        uiCount: document.querySelectorAll("#episodeSectionTitle, #episodeCtlRow, #episodeStateTxt").length,
+        sectionText: Array.from(document.querySelectorAll(".connectPanelSection")).map((node)=>node.innerText || "").join("\\n"),
+        markers: {
+          start: window.episodeStartOrResume?.__flprStandaloneNoEpisode || "",
+          canTrack: window.episodeCanTrack?.__flprStandaloneNoEpisode || "",
+          gate: window.episodeNeedsManualStartGate?.__flprStandaloneNoEpisode || "",
+          ui: window.updateEpisodeControlsUi?.__flprStandaloneNoEpisode || ""
+        },
+        profileHasEpisodeState: /episodeState/i.test(profileRaw)
+      };
+    }finally{
+      try{ window.toast = originalToast; }catch(_){}
+    }
+  })()`);
+  if(
+    noEpisodeProbe.disabled !== true ||
+    noEpisodeProbe.canTrack !== true ||
+    noEpisodeProbe.startResult !== false ||
+    noEpisodeProbe.endResult !== false ||
+    noEpisodeProbe.markResult !== false ||
+    noEpisodeProbe.gateResult !== false ||
+    noEpisodeProbe.storage !== null ||
+    noEpisodeProbe.toastCalls.length ||
+    noEpisodeProbe.uiCount !== 0 ||
+    /episode\s+tracking/i.test(noEpisodeProbe.sectionText || "") ||
+    Object.values(noEpisodeProbe.markers || {}).some((marker) => !marker) ||
+    noEpisodeProbe.profileHasEpisodeState
+  ){
+    throw new Error(`Home Edition still exposes Episode flow: ${JSON.stringify(noEpisodeProbe)}`);
   }
 
   const achievementDismissProbe = await page.evaluate(`(() => {
@@ -907,24 +1027,40 @@ async function run() {
   const modeToggleProbe = await page.evaluate(`
     (() => {
       const hud = document.querySelector('#standaloneModeHud');
+      const switchHud = document.querySelector('#standaloneModeSwitchHud');
       const logo = document.querySelector('#standaloneModeHud .standaloneModeHudLogo');
-      const buttons = Array.from(document.querySelectorAll('#standaloneModeHud [data-standalone-mode-toggle]'));
+      const buttons = Array.from(document.querySelectorAll('#standaloneModeSwitchHud [data-standalone-mode-toggle]'));
+      const logoButtons = Array.from(document.querySelectorAll('#standaloneModeHud [data-standalone-mode-toggle]'));
       const controls = document.querySelector('.controls') || document.querySelector('.controlsBody');
       const rect = hud?.getBoundingClientRect?.();
+      const switchRect = switchHud?.getBoundingClientRect?.();
       const logoRect = logo?.getBoundingClientRect?.();
       const controlsRect = controls?.getBoundingClientRect?.();
+      const profileRect = document.querySelector('#standaloneProfileHud')?.getBoundingClientRect?.();
+      const pointsRect = document.querySelector('#standaloneProfileHud .standaloneProfilePoints')?.getBoundingClientRect?.();
+      const visualsRect = document.querySelector('.controlsTabBtn[data-ctrl-tab="visuals"]')?.getBoundingClientRect?.();
       return {
         exists: !!hud,
+        switchExists: !!switchHud,
         hidden: !!hud?.hidden,
+        switchHidden: !!switchHud?.hidden,
         logoSrc: logo?.getAttribute('src') || '',
         logoAlt: logo?.getAttribute('alt') || '',
         logoSize: logoRect ? Math.round(Math.min(logoRect.width, logoRect.height)) : 0,
         logoWidth: logoRect ? Math.round(logoRect.width) : 0,
         logoHeight: logoRect ? Math.round(logoRect.height) : 0,
         text: buttons.map((btn) => btn.innerText || ''),
+        logoButtonCount: logoButtons.length,
         active: buttons.find((btn) => btn.classList.contains('active'))?.dataset?.standaloneModeToggle || '',
         left: rect ? Math.round(rect.left) : null,
         right: rect ? Math.round(rect.right) : null,
+        switchCenter: switchRect ? Math.round((switchRect.left + switchRect.right) / 2) : null,
+        switchRight: switchRect ? Math.round(switchRect.right) : null,
+        profileLeft: profileRect ? Math.round(profileRect.left) : null,
+        windowCenter: Math.round(window.innerWidth / 2),
+        visualsCenter: visualsRect ? Math.round((visualsRect.left + visualsRect.right) / 2) : null,
+        sameRowAsPoints: !!(switchRect && pointsRect && Math.abs(((switchRect.top + switchRect.bottom) / 2) - ((pointsRect.top + pointsRect.bottom) / 2)) < 28),
+        separatedFromProfile: !!(switchRect && profileRect && switchRect.right <= profileRect.left - 8),
         controlsLeft: controlsRect ? Math.round(controlsRect.left) : null,
         controlsRight: controlsRect ? Math.round(controlsRect.right) : null,
         overhangsMenu: !!(rect && controlsRect && rect.top < controlsRect.top && rect.bottom > controlsRect.top + 8),
@@ -932,8 +1068,8 @@ async function run() {
       };
     })()
   `);
-  if(!modeToggleProbe.exists || modeToggleProbe.hidden || !/FlippermizerLogo\.png/i.test(modeToggleProbe.logoSrc) || !/Flippermizer/i.test(modeToggleProbe.logoAlt) || modeToggleProbe.logoWidth < 520 || modeToggleProbe.logoHeight < 110 || !modeToggleProbe.text.includes("SP") || !modeToggleProbe.text.includes("MP") || modeToggleProbe.active !== "archipelago" || !modeToggleProbe.overhangsMenu || !modeToggleProbe.leftAligned){
-    throw new Error(`Standalone logo and SP/MP mode toggle were not enlarged/positioned above Menu: ${JSON.stringify(modeToggleProbe)}`);
+  if(!modeToggleProbe.exists || !modeToggleProbe.switchExists || modeToggleProbe.hidden || modeToggleProbe.switchHidden || !/FlippermizerLogo\.png/i.test(modeToggleProbe.logoSrc) || !/Flippermizer/i.test(modeToggleProbe.logoAlt) || modeToggleProbe.logoWidth < 520 || modeToggleProbe.logoHeight < 110 || modeToggleProbe.logoButtonCount !== 0 || !modeToggleProbe.text.includes("SP") || !modeToggleProbe.text.includes("MP") || !modeToggleProbe.text.includes("HOUSE") || modeToggleProbe.active !== "archipelago" || !modeToggleProbe.overhangsMenu || !modeToggleProbe.leftAligned || !modeToggleProbe.separatedFromProfile || !modeToggleProbe.sameRowAsPoints){
+    throw new Error(`Standalone logo and shifted SP/MP/HOUSE mode toggle were not positioned correctly above Menu: ${JSON.stringify(modeToggleProbe)}`);
   }
   const autoSwapDefaultProbe = await page.evaluate(`(() => ({
     inputValue: document.getElementById("swapSeconds")?.value || "",
@@ -1002,6 +1138,126 @@ async function run() {
   if(!seedSaveProbe.seedName || !seedSaveProbe.seedWord || !(Number(seedSaveProbe.total) > 0) || seedSaveProbe.startDisabled){
     throw new Error(`Standalone Singleplayer seed save was not recorded or did not open the randomizer gate: ${JSON.stringify(seedSaveProbe)}`);
   }
+  const bossIncomingDoorGateProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const runtime = window.__flprStandaloneProfileRuntime || {};
+    const wrap = document.getElementById("randomizerIntro");
+    const fx = window.__openingRandomizerFx || {};
+    const previous = {
+      ready: !!runtime.randomizerReady,
+      started: !!runtime.randomizerStarted,
+      reason: runtime.randomizerReason || "",
+      wrapClass: wrap ? wrap.className : "",
+      wrapHidden: wrap ? wrap.getAttribute("aria-hidden") : null,
+      fxActive: !!fx.active,
+      fxOpening: !!fx.opening,
+      threatDelay: Number(window.__bossThreatDelayUntil || 0)
+    };
+    try{
+      if(typeof stopBossIncomingAlert === "function") stopBossIncomingAlert();
+      const clearedSeenKey = typeof window.flprStandaloneClearBossIncomingSeenForTest === "function"
+        ? window.flprStandaloneClearBossIncomingSeenForTest()
+        : "";
+      runtime.randomizerReady = true;
+      runtime.randomizerStarted = false;
+      runtime.randomizerReason = ap?.inherentSeedActive ? "singleplayer" : (ap?.connected ? "archipelago" : "test");
+      if(wrap){
+        wrap.classList.add("show");
+        wrap.classList.remove("opening", "closing");
+        wrap.setAttribute("aria-hidden", "false");
+      }
+      if(window.__openingRandomizerFx){
+        window.__openingRandomizerFx.active = true;
+        window.__openingRandomizerFx.opening = false;
+        window.__openingRandomizerFx.closing = false;
+      }
+      const beforeThreat = Number(window.__bossThreatDelayUntil || 0);
+      if(typeof startBossIncomingAlert === "function") startBossIncomingAlert(1900);
+      await delay(80);
+      const queued = typeof window.flprStandaloneBossIncomingGateState === "function"
+        ? window.flprStandaloneBossIncomingGateState()
+        : null;
+      const threatAfterQueue = Number(window.__bossThreatDelayUntil || 0);
+      runtime.randomizerStarted = true;
+      if(wrap){
+        wrap.classList.remove("show", "opening", "closing");
+        wrap.setAttribute("aria-hidden", "true");
+      }
+      if(window.__openingRandomizerFx){
+        window.__openingRandomizerFx.active = false;
+        window.__openingRandomizerFx.opening = false;
+        window.__openingRandomizerFx.closing = false;
+      }
+      const flushed = typeof window.flprStandaloneFlushBossIncomingGateForTest === "function"
+        ? window.flprStandaloneFlushBossIncomingGateForTest("test-door-open")
+        : false;
+      await delay(80);
+      const after = typeof window.flprStandaloneBossIncomingGateState === "function"
+        ? window.flprStandaloneBossIncomingGateState()
+        : null;
+      const threatAfterFlush = Number(window.__bossThreatDelayUntil || 0);
+      const seenAfterFlush = typeof window.flprStandaloneBossIncomingGateState === "function"
+        ? window.flprStandaloneBossIncomingGateState()
+        : null;
+      try{ if(typeof stopBossIncomingAlert === "function") stopBossIncomingAlert(); }catch(_){}
+      window.__bossThreatDelayUntil = 0;
+      const beforeRepeatThreat = Number(window.__bossThreatDelayUntil || 0);
+      const repeatResult = typeof startBossIncomingAlert === "function"
+        ? startBossIncomingAlert(1900)
+        : null;
+      await delay(80);
+      const repeatState = typeof window.flprStandaloneBossIncomingGateState === "function"
+        ? window.flprStandaloneBossIncomingGateState()
+        : null;
+      const threatAfterRepeat = Number(window.__bossThreatDelayUntil || 0);
+      return {
+        queued,
+        after,
+        flushed,
+        clearedSeenKey,
+        seenAfterFlush,
+        repeatResult,
+        repeatState,
+        beforeThreat,
+        threatAfterQueue,
+        threatAfterFlush,
+        beforeRepeatThreat,
+        threatAfterRepeat
+      };
+    }finally{
+      try{ if(typeof stopBossIncomingAlert === "function") stopBossIncomingAlert(); }catch(_){}
+      try{ if(typeof window.flprStandaloneClearBossIncomingSeenForTest === "function") window.flprStandaloneClearBossIncomingSeenForTest(); }catch(_){}
+      runtime.randomizerReady = previous.ready;
+      runtime.randomizerStarted = previous.started;
+      runtime.randomizerReason = previous.reason;
+      if(wrap){
+        wrap.className = previous.wrapClass;
+        if(previous.wrapHidden == null) wrap.removeAttribute("aria-hidden");
+        else wrap.setAttribute("aria-hidden", previous.wrapHidden);
+      }
+      if(window.__openingRandomizerFx){
+        window.__openingRandomizerFx.active = previous.fxActive;
+        window.__openingRandomizerFx.opening = previous.fxOpening;
+      }
+      window.__bossThreatDelayUntil = previous.threatDelay;
+      try{ if(typeof standaloneRefreshProfileUi === "function") standaloneRefreshProfileUi(); }catch(_){}
+    }
+  });
+  if(
+    !bossIncomingDoorGateProbe.queued?.pending ||
+    bossIncomingDoorGateProbe.queued?.doorOpen ||
+    bossIncomingDoorGateProbe.threatAfterQueue !== bossIncomingDoorGateProbe.beforeThreat ||
+    !bossIncomingDoorGateProbe.flushed ||
+    bossIncomingDoorGateProbe.after?.pending ||
+    !bossIncomingDoorGateProbe.after?.doorOpen ||
+    !(bossIncomingDoorGateProbe.threatAfterFlush > bossIncomingDoorGateProbe.beforeThreat) ||
+    !bossIncomingDoorGateProbe.seenAfterFlush?.seen ||
+    bossIncomingDoorGateProbe.repeatResult !== false ||
+    !bossIncomingDoorGateProbe.repeatState?.suppressedSeen ||
+    bossIncomingDoorGateProbe.threatAfterRepeat !== bossIncomingDoorGateProbe.beforeRepeatThreat
+  ){
+    throw new Error(`Boss table incoming alert was not gated behind the randomizer door: ${JSON.stringify(bossIncomingDoorGateProbe)}`);
+  }
   await page.locator("#standaloneSeedSaveList .standaloneSeedSaveRow").first().click();
   const savePromptProbe = await page.evaluate(`
     (() => {
@@ -1018,6 +1274,12 @@ async function run() {
       const controlsStyle = controls ? getComputedStyle(controls) : null;
       const controlsRect = controls ? controls.getBoundingClientRect() : null;
       const stageRect = stage ? stage.getBoundingClientRect() : null;
+      const capture = document.querySelector('.capture');
+      const viewport = document.querySelector('.viewport');
+      const bossDock = document.querySelector('#bossDock');
+      const captureRect = capture ? capture.getBoundingClientRect() : null;
+      const viewportRect = viewport ? viewport.getBoundingClientRect() : null;
+      const bossRect = bossDock ? bossDock.getBoundingClientRect() : null;
       const captureH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--captureH')) || 0;
       return {
         pending: !!row?.classList.contains('pendingLoad'),
@@ -1031,12 +1293,15 @@ async function run() {
         controlsPaddingTop: controlsStyle ? parseFloat(controlsStyle.paddingTop) : 0,
         controlsMarginTop: controlsStyle ? parseFloat(controlsStyle.marginTop) : 0,
         controlsHeight: controlsRect ? controlsRect.height : 0,
+        controlsBottomGap: (controlsRect && stageRect) ? Math.round(stageRect.bottom - controlsRect.bottom) : null,
+        viewportHeight: viewportRect ? Math.round(viewportRect.height) : 0,
+        captureBottomGap: (captureRect && bossRect) ? Math.round(captureRect.bottom - bossRect.bottom) : null,
         captureH,
         anchoredInStage: !!(controlsRect && stageRect && controlsRect.top >= stageRect.top - 1 && controlsRect.bottom <= stageRect.bottom + 1)
       };
     })()
   `);
-  if(!savePromptProbe.pending || savePromptProbe.promptDisplay === "none" || !/LOAD\\?/i.test(savePromptProbe.loadText) || savePromptProbe.rowFont < 12 || savePromptProbe.rowMinHeight < 80 || !/auto|scroll/i.test(savePromptProbe.listOverflow) || !(savePromptProbe.hudZ > savePromptProbe.controlsZ) || savePromptProbe.controlsPaddingTop > 2 || savePromptProbe.controlsMarginTop < 70 || !savePromptProbe.anchoredInStage || !(savePromptProbe.controlsHeight <= savePromptProbe.captureH - 180)){
+  if(!savePromptProbe.pending || savePromptProbe.promptDisplay === "none" || !/LOAD\\?/i.test(savePromptProbe.loadText) || savePromptProbe.rowFont < 12 || savePromptProbe.rowMinHeight < 80 || !/auto|scroll/i.test(savePromptProbe.listOverflow) || !(savePromptProbe.hudZ > savePromptProbe.controlsZ) || savePromptProbe.controlsPaddingTop > 2 || savePromptProbe.controlsMarginTop < 70 || !savePromptProbe.anchoredInStage || !(savePromptProbe.controlsHeight >= savePromptProbe.captureH - 130) || !(savePromptProbe.controlsHeight <= savePromptProbe.captureH - 80) || !(savePromptProbe.controlsBottomGap <= 24) || !(savePromptProbe.viewportHeight >= 1120) || !(savePromptProbe.captureBottomGap <= 40)){
     throw new Error(`Standalone save files/profile HUD were not readable/loadable: ${JSON.stringify(savePromptProbe)}`);
   }
   const saveRestoreSetup = await page.evaluate(`
@@ -1212,6 +1477,114 @@ async function run() {
       bindCheckTaskHover(hoverButton, hoverTip);
       hoverButton.focus();
       const card = document.getElementById("checkTaskHoverCard");
+      const initialHoverHeader = card?.querySelector(".standaloneStrategyGuideHeader")?.innerText || "";
+      const initialHoverBody = card?.querySelector(".standaloneStrategyGuideBody")?.innerText || "";
+      const rollingTargetTip = window.flprStandaloneTaskTooltipForTest("Rolling Stones", "Complete one target bank", {
+        table: "Rolling Stones",
+        target_table: "Rolling Stones",
+        source_table: "Rolling Stones",
+        source_location: "Complete one target bank",
+        objective: "Complete one target bank",
+        display_name: "Complete one target bank",
+        title: "Complete one target bank"
+      });
+      const marioScoreTip = window.flprStandaloneTaskTooltipForTest("Super Mario Bros.", "Hard Score (69,593,091+)", {
+        table: "Super Mario Bros.",
+        target_table: "Super Mario Bros.",
+        source_table: "Super Mario Bros.",
+        source_location: "Super Mario Bros. - Hard Score (69,593,091+)",
+        objective: "Hard Score (69,593,091+)",
+        display_name: "Hard Score (69,593,091+)",
+        title: "Hard Score (69,593,091+)",
+        explanation: "Build score to at least 69,593,091 before drain. Focus lit modes, jackpots, and bonus multipliers."
+      });
+      const rollingScoreTip = window.flprStandaloneTaskTooltipForTest("Rolling Stones", "Medium Score (104,843+)", {
+        table: "Rolling Stones",
+        target_table: "Rolling Stones",
+        source_table: "Rolling Stones",
+        source_location: "Rolling Stones - Medium Score (104,843+)",
+        objective: "Medium Score (104,843+)",
+        display_name: "Medium Score (104,843+)",
+        title: "Medium Score (104,843+)",
+        explanation: "Build score to at least 104,843 before drain. Focus lit modes, jackpots, and bonus multipliers."
+      });
+      const attackScoreMeta = window.FLPR_TASK_EXPLANATIONS?.resolveTaskExplanationMeta?.("Hard Score (1,794,034,514+)", {
+        tableName: "Attack from Mars",
+        table: "Attack from Mars",
+        target_table: "Attack from Mars",
+        full: "Attack from Mars - Hard Score (1,794,034,514+)",
+        location: "Attack from Mars - Hard Score (1,794,034,514+)"
+      }) || null;
+      const partyDanceTip = window.flprStandaloneTaskTooltipForTest("Party Zone", "Start Dance Contest", {
+        table: "Party Zone",
+        target_table: "Party Zone",
+        source_table: "Party Zone",
+        source_location: "Start Dance Contest",
+        objective: "Start Dance Contest",
+        display_name: "Start Dance Contest",
+        title: "Start Dance Contest",
+        explanation: "Light the Dance Contest mode and shoot the start shot to begin it."
+      });
+      const partyWayOutTip = window.flprStandaloneTaskTooltipForTest("Party Zone", "Complete Way Out Of Control", {
+        table: "Party Zone",
+        target_table: "Party Zone",
+        source_table: "Party Zone",
+        source_location: "Complete Way Out Of Control",
+        objective: "Complete Way Out Of Control",
+        display_name: "Complete Way Out Of Control",
+        title: "Complete Way Out Of Control",
+        explanation: "Start Way Out Of Control and finish its required lit shots before the timer expires."
+      });
+      const partyMultiballTip = window.flprStandaloneTaskTooltipForTest("Party Zone", "Start multiball", {
+        table: "Party Zone",
+        target_table: "Party Zone",
+        source_table: "Party Zone",
+        source_location: "Start multiball",
+        objective: "Start multiball",
+        display_name: "Start multiball",
+        title: "Start multiball",
+        explanation: "Complete the table's lock or numbered qualifier, then shoot the lit multiball start shot once it is ready."
+      });
+      const stickyHover = (() => {
+        try{
+          const host = document.createElement("div");
+          host.style.position = "fixed";
+          host.style.left = "64px";
+          host.style.top = "64px";
+          host.style.zIndex = "2147483647";
+          const first = document.createElement("button");
+          first.type = "button";
+          first.className = "nodeBtn taskNode";
+          first.style.width = "180px";
+          first.style.height = "64px";
+          first.textContent = "Sticky hover probe";
+          host.appendChild(first);
+          document.body.appendChild(host);
+          bindCheckTaskHover(first, rollingTargetTip);
+          const moveEvent = typeof PointerEvent === "function"
+            ? new PointerEvent("pointermove", { clientX: 84, clientY: 84, bubbles: true })
+            : new MouseEvent("pointermove", { clientX: 84, clientY: 84, bubbles: true });
+          document.dispatchEvent(moveEvent);
+          first.focus();
+          const replacement = first.cloneNode(true);
+          bindCheckTaskHover(replacement, rollingTargetTip);
+          host.replaceChild(replacement, first);
+          const kept = !!window.flprStandaloneReanchorStrategyHoverForTest?.("test-repaint");
+          const repaintCard = document.getElementById("checkTaskHoverCard");
+          const visible = !!repaintCard?.classList?.contains("visible");
+          const body = repaintCard?.querySelector(".standaloneStrategyGuideBody")?.innerText || repaintCard?.innerText || "";
+          host.remove();
+          try{ if(typeof hideCheckTaskHoverCard === "function") hideCheckTaskHoverCard(); }catch(_){}
+          return {
+            kept,
+            visible,
+            body,
+            anchorStillOld: document.body.contains(first)
+          };
+        }catch(err){
+          return { error: String(err?.message || err) };
+        }
+      })();
       return {
         short: node.short,
         tip: getTaskExplanationForNode(node),
@@ -1244,9 +1617,39 @@ async function run() {
           title: "Light extra ball from villain lamps",
           explanation: "Use Qube, pyramid, villain, drop-bank, and figure-eight loop progress."
         }),
+        rollingCatalog: (() => {
+          const entry = window.flprGetBundledTaskCatalog?.()?.byTable?.["rolling stones"];
+          return entry?.tasksByDifficulty || {};
+        })(),
+        rollingMediumTip: window.flprStandaloneTaskTooltipForTest("Rolling Stones", "Collect Bonus", {
+          table: "Rolling Stones",
+          target_table: "Rolling Stones",
+          source_table: "Rolling Stones",
+          source_location: "Collect Bonus",
+          objective: "Collect Bonus",
+          display_name: "Collect Bonus",
+          title: "Collect Bonus"
+        }),
+        rollingHardTip: window.flprStandaloneTaskTooltipForTest("Rolling Stones", "Collect 20-40-60 Bonus", {
+          table: "Rolling Stones",
+          target_table: "Rolling Stones",
+          source_table: "Rolling Stones",
+          source_location: "Collect 20-40-60 Bonus",
+          objective: "Collect 20-40-60 Bonus",
+          display_name: "Collect 20-40-60 Bonus",
+          title: "Collect 20-40-60 Bonus"
+        }),
+        rollingTargetTip,
+        marioScoreTip,
+        rollingScoreTip,
+        attackScoreMeta,
+        partyDanceTip,
+        partyWayOutTip,
+        partyMultiballTip,
+        stickyHover,
         marioNodeTip: getTaskExplanationForNode(marioNode),
-        hoverHeader: card?.querySelector(".standaloneStrategyGuideHeader")?.innerText || "",
-        hoverBody: card?.querySelector(".standaloneStrategyGuideBody")?.innerText || "",
+        hoverHeader: initialHoverHeader,
+        hoverBody: initialHoverBody,
         genericExplanation: node.genericEntry?.explanation || "",
         shuffledExplanation: node.taskShuffleEntry?.explanation || "",
         preservedSource: node.taskShuffleEntry?.standalone_source_explanation || node.genericEntry?.standalone_source_explanation || ""
@@ -1270,6 +1673,38 @@ async function run() {
     String(tooltipProbe.qbertCodeTip || "").includes("Use Qube, pyramid") ||
     !String(tooltipProbe.qbertDisplayTip || "").includes("villain lamps toward Extra Ball") ||
     String(tooltipProbe.qbertDisplayTip || "").includes("Use Qube, pyramid") ||
+    !Array.isArray(tooltipProbe.rollingCatalog?.medium) ||
+    tooltipProbe.rollingCatalog.medium.join("|") !== "Collect Bonus" ||
+    !Array.isArray(tooltipProbe.rollingCatalog?.hard) ||
+    tooltipProbe.rollingCatalog.hard.join("|") !== "Collect 20-40-60 Bonus" ||
+    /multiball|jackpot/i.test([...(tooltipProbe.rollingCatalog?.medium || []), ...(tooltipProbe.rollingCatalog?.hard || [])].join("|")) ||
+    !String(tooltipProbe.rollingMediumTip || "").includes("Remove the Collect Bonus target") ||
+    !String(tooltipProbe.rollingHardTip || "").includes("Collect 1-5 targets") ||
+    !String(tooltipProbe.rollingTargetTip || "").includes("upper-right drop target bank") ||
+    !String(tooltipProbe.marioScoreTip || "").includes("Best scoring from the guide") ||
+    !/castle|multiball/i.test(String(tooltipProbe.marioScoreTip || "")) ||
+    String(tooltipProbe.marioScoreTip || "").length > 420 ||
+    /Focus lit modes, jackpots, and bonus multipliers/i.test(String(tooltipProbe.marioScoreTip || "")) ||
+    !String(tooltipProbe.rollingScoreTip || "").includes("Collect Bonus") ||
+    String(tooltipProbe.rollingScoreTip || "").length > 300 ||
+    /Rolling Stones[\s\S]*(Score routes|Best scoring)[\s\S]*(Encore Multiball|super jackpot target)/i.test(String(tooltipProbe.rollingScoreTip || "")) ||
+    !String(tooltipProbe.attackScoreMeta?.text || "").includes("Best scoring from the guide") ||
+    !/saucer|multiball|jackpot/i.test(String(tooltipProbe.attackScoreMeta?.text || "")) ||
+    String(tooltipProbe.attackScoreMeta?.text || "").length > 380 ||
+    !String(tooltipProbe.partyDanceTip || "").includes("B-O-P top rollover lanes") ||
+    !String(tooltipProbe.partyDanceTip || "").includes("Back-2-Bop") ||
+    String(tooltipProbe.partyDanceTip || "").includes("Light the Dance Contest mode") ||
+    !String(tooltipProbe.partyWayOutTip || "").includes("W-O-O-C standup targets") ||
+    !String(tooltipProbe.partyWayOutTip || "").includes("PayOff lane") ||
+    String(tooltipProbe.partyWayOutTip || "").includes("finish its required lit shots") ||
+    !String(tooltipProbe.partyMultiballTip || "").includes("Cosmic Cottage") ||
+    !String(tooltipProbe.partyMultiballTip || "").includes("Party Animals") ||
+    !/Comic[\s\S]*Surprise/i.test(String(tooltipProbe.partyMultiballTip || "")) ||
+    String(tooltipProbe.partyMultiballTip || "").includes("numbered qualifier") ||
+    !tooltipProbe.stickyHover?.kept ||
+    !tooltipProbe.stickyHover?.visible ||
+    !String(tooltipProbe.stickyHover?.body || "").toLowerCase().includes("upper-right drop target bank") ||
+    tooltipProbe.stickyHover?.anchorStillOld ||
     String(tooltipProbe.hoverHeader || "").toLowerCase() !== "strategy guide" ||
     !String(tooltipProbe.hoverBody || "").toLowerCase().includes("build shell/key progress") ||
     tooltipProbe.genericExplanation ||
@@ -1341,6 +1776,67 @@ async function run() {
   `);
   if(!rendererInitial.hasVulkan || typeof rendererInitial.response?.settings?.hardwareAcceleration !== "boolean" || typeof rendererInitial.response?.applied?.hardwareAcceleration !== "boolean"){
     throw new Error(`Standalone renderer controls did not initialize correctly: ${JSON.stringify(rendererInitial)}`);
+  }
+  const logoAndMusicProbe = await page.evaluate(`
+    (() => {
+      const row = document.querySelector('[data-music-scenario="randomizer_open"], [data-music-preview="randomizer_open"], [data-music-clear="randomizer_open"], [data-music-mode="randomizer_open"], [data-music-volume="randomizer_open"]');
+      const toggle = document.getElementById('standaloneLogoDevToggle');
+      const panel = document.getElementById('standaloneLogoDevPanel');
+      const beforeHidden = panel ? !!panel.hidden : null;
+      if(toggle) toggle.click();
+      const afterHidden = panel ? !!panel.hidden : null;
+      const lock = document.getElementById('standaloneLogoLockToggle');
+      try{
+        if(typeof musicGetRefs === 'function') musicGetRefs().randomizer_open = 'sounds/randomizer-open.mp3';
+      }catch(_){}
+      let setResult = null;
+      try{
+        setResult = (typeof musicSetScenarioRef === 'function') ? musicSetScenarioRef('randomizer_open', 'sounds/test.mp3', { fileName:'test.mp3', sourcePath:'sounds/test.mp3' }) : null;
+      }catch(err){
+        setResult = 'error:' + err.message;
+      }
+      let playResult = null;
+      let lockResult = null;
+      try{ playResult = (typeof musicPlayScenario === 'function') ? musicPlayScenario('randomizer_open', { force:true, forceStopIfMissing:true }) : null; }catch(err){ playResult = 'error:' + err.message; }
+      try{ lockResult = (typeof musicLockScenario === 'function') ? musicLockScenario('randomizer_open', 1000) : null; }catch(err){ lockResult = 'error:' + err.message; }
+      const refAfterSet = (() => {
+        try{ return typeof musicGetRawScenarioRef === 'function' ? musicGetRawScenarioRef('randomizer_open') : String(state?.musicRefs?.randomizer_open || ''); }catch(_){ return ''; }
+      })();
+      const metaAfterSet = (() => {
+        try{ return typeof musicGetRawScenarioMeta === 'function' ? musicGetRawScenarioMeta('randomizer_open') : (state?.musicMeta?.randomizer_open || null); }catch(_){ return null; }
+      })();
+      const mgr = (() => {
+        try{ return typeof musicEnsureManager === 'function' ? musicEnsureManager() : window.__flprMusic; }catch(_){ return null; }
+      })();
+      return {
+        hasRandomizerOpenControls: !!row,
+        hasDevToggle: !!toggle,
+        beforeHidden,
+        afterHidden,
+        hasLockAfterOpen: !!lock,
+        setResult,
+        playResult,
+        lockResult,
+        refAfterSet,
+        metaAfterSet,
+        current: mgr?.current || ''
+      };
+    })()
+  `);
+  if(
+    logoAndMusicProbe.hasRandomizerOpenControls ||
+    !logoAndMusicProbe.hasDevToggle ||
+    logoAndMusicProbe.beforeHidden !== true ||
+    logoAndMusicProbe.afterHidden !== false ||
+    !logoAndMusicProbe.hasLockAfterOpen ||
+    logoAndMusicProbe.setResult !== false ||
+    logoAndMusicProbe.playResult !== false ||
+    logoAndMusicProbe.lockResult !== false ||
+    logoAndMusicProbe.refAfterSet ||
+    logoAndMusicProbe.metaAfterSet ||
+    logoAndMusicProbe.current === "randomizer_open"
+  ){
+    throw new Error(`Standalone logo dev tools or randomizer-open music suppression failed: ${JSON.stringify(logoAndMusicProbe)}`);
   }
   const checksBgProbe = await page.evaluate(() => {
     const select = document.querySelector("#checksBgMode");
@@ -1415,16 +1911,129 @@ async function run() {
     window.flprStandaloneSetControlTab && window.flprStandaloneSetControlTab("multiplayer");
   })()`);
   const botSyncDisabled = await page.evaluate(`
-    (() => ({
-      flag: window.FLPR_BOT_SYNC_ENABLED,
-      enabled: typeof flprBotSyncEnabled === 'function' ? flprBotSyncEnabled() : null,
-      cfg: localStorage.getItem('flpr_bot_sync_cfg_v1') || ''
-    }))()
+    (() => {
+      const names = [
+        "flprBotSyncEnabled",
+        "flprBotSyncBaseUrl",
+        "flprBotSyncToken",
+        "postFlprBotSync",
+        "getFlprBotSync",
+        "syncFlprBotTableFromNowPlaying",
+        "getFlprBotNowPlayingCandidateForWorld",
+        "syncFlprBotCurrentTableSnapshot",
+        "syncFlprBotCurrentTable",
+        "syncFlprBotBossKeys",
+        "syncFlprBotBossStatus",
+        "syncFlprBotEpisodeState",
+        "ensureFlprBotUtilityControl"
+      ];
+      const markers = {};
+      names.forEach((name) => {
+        markers[name] = window[name]?.__flprStandaloneNoFlprBotSync || "";
+      });
+      const previous = {
+        selected: String(state?.selected || ""),
+        currentWorld: String(state?.currentWorld || ""),
+        currentTable: String(state?.currentTable || "")
+      };
+      const candidate = Object.entries(state?.worlds || {}).find(([wk, world]) => {
+        return wk !== "boss" && Array.isArray(world?.tables) && world.tables.length > 1;
+      });
+      const targetWorld = candidate ? candidate[0] : previous.selected;
+      const targetIdx = candidate ? 1 : 0;
+      state.nowPlaying = state.nowPlaying || {};
+      const previousNowPlaying = targetWorld ? state.nowPlaying[targetWorld] : undefined;
+      const beforeCalls = {
+        selected: String(state?.selected || ""),
+        currentWorld: String(state?.currentWorld || ""),
+        currentTable: String(state?.currentTable || ""),
+        nowPlaying: targetWorld ? Number(state.nowPlaying[targetWorld]) : null
+      };
+      const fetchCalls = [];
+      const nativeFetch = window.fetch;
+      try{
+        window.fetch = function(){
+          fetchCalls.push(String(arguments[0] || ""));
+          return Promise.resolve({ ok:true, json:async()=>({}) });
+        };
+        if(targetWorld) state.nowPlaying[targetWorld] = 0;
+        const results = {
+          table: typeof syncFlprBotTableFromNowPlaying === "function" ? syncFlprBotTableFromNowPlaying(targetWorld, targetIdx, true) : "missing",
+          candidate: typeof getFlprBotNowPlayingCandidateForWorld === "function" ? getFlprBotNowPlayingCandidateForWorld(targetWorld) : "missing",
+          snapshot: typeof syncFlprBotCurrentTableSnapshot === "function" ? syncFlprBotCurrentTableSnapshot() : "missing",
+          current: typeof syncFlprBotCurrentTable === "function" ? syncFlprBotCurrentTable(true) : "missing",
+          bossKeys: typeof syncFlprBotBossKeys === "function" ? syncFlprBotBossKeys(true) : "missing",
+          bossStatus: typeof syncFlprBotBossStatus === "function" ? syncFlprBotBossStatus(true) : "missing",
+          episode: typeof syncFlprBotEpisodeState === "function" ? syncFlprBotEpisodeState(true) : "missing"
+        };
+        const afterCalls = {
+          selected: String(state?.selected || ""),
+          currentWorld: String(state?.currentWorld || ""),
+          currentTable: String(state?.currentTable || ""),
+          nowPlaying: targetWorld ? Number(state.nowPlaying[targetWorld]) : null
+        };
+        return {
+          flag: window.FLPR_BOT_SYNC_ENABLED,
+          bridgeFlag: window.__flprStandaloneFlprBotSyncDisabled,
+          enabled: typeof flprBotSyncEnabled === 'function' ? flprBotSyncEnabled() : null,
+          baseUrl: typeof flprBotSyncBaseUrl === 'function' ? flprBotSyncBaseUrl() : null,
+          token: typeof flprBotSyncToken === 'function' ? flprBotSyncToken() : null,
+          cfg: localStorage.getItem('flpr_bot_sync_cfg_v1') || '',
+          utilityVisible: !!document.querySelector('#flprBotRunUtilityWrap'),
+          markers,
+          targetWorld,
+          beforeCalls,
+          afterCalls,
+          results,
+          fetchCalls
+        };
+      }finally{
+        try{ window.fetch = nativeFetch; }catch(_){}
+        try{
+          state.selected = previous.selected;
+          state.currentWorld = previous.currentWorld;
+          state.currentTable = previous.currentTable;
+          if(targetWorld){
+            if(previousNowPlaying === undefined) delete state.nowPlaying[targetWorld];
+            else state.nowPlaying[targetWorld] = previousNowPlaying;
+          }
+        }catch(_){}
+      }
+    })()
   `);
-  if(botSyncDisabled.flag !== false || botSyncDisabled.enabled !== false || !botSyncDisabled.cfg.includes('"enabled":false')){
+  if(
+    botSyncDisabled.flag !== false ||
+    botSyncDisabled.bridgeFlag !== true ||
+    botSyncDisabled.enabled !== false ||
+    botSyncDisabled.baseUrl ||
+    botSyncDisabled.token ||
+    botSyncDisabled.utilityVisible ||
+    !botSyncDisabled.cfg.includes('"enabled":false') ||
+    Object.values(botSyncDisabled.markers || {}).some((marker) => !marker) ||
+    (botSyncDisabled.fetchCalls || []).length ||
+    botSyncDisabled.results?.candidate !== null ||
+    botSyncDisabled.results?.snapshot !== null ||
+    botSyncDisabled.afterCalls?.selected !== botSyncDisabled.beforeCalls?.selected ||
+    botSyncDisabled.afterCalls?.currentWorld !== botSyncDisabled.beforeCalls?.currentWorld ||
+    botSyncDisabled.afterCalls?.currentTable !== botSyncDisabled.beforeCalls?.currentTable
+  ){
     throw new Error(`FLPR-Bot sync is still enabled in standalone: ${JSON.stringify(botSyncDisabled)}`);
   }
   await page.locator(".flprStandaloneConnectLayout #apConnectBtn").click();
+  const savedApCfgProbe = await page.evaluate(`(() => {
+    const raw = localStorage.getItem('flpr_ap_cfg_v1') || '';
+    let parsed = null;
+    try{ parsed = JSON.parse(raw || '{}'); }catch(_){}
+    return { raw, parsed };
+  })()`);
+  if(
+    savedApCfgProbe.parsed?.server !== `ws://127.0.0.1:${PORT}` ||
+    savedApCfgProbe.parsed?.player !== "AshodinNoTrap" ||
+    savedApCfgProbe.parsed?.game !== GAME ||
+    savedApCfgProbe.parsed?.pass !== ""
+  ){
+    throw new Error(`AP CFG was not saved as soon as the standalone client connected: ${JSON.stringify(savedApCfgProbe)}`);
+  }
 
   try {
     await waitFor(page, `
@@ -2143,6 +2752,40 @@ async function run() {
     throw new Error(`No-op ReceivedItems refresh still re-rendered Checks: ${JSON.stringify(receivedRefreshNoopProbe)}`);
   }
 
+  const duplicateReceivedPacketProbe = await page.evaluate((pkt) => {
+    const beforeStats = { ...(window.__flprStandaloneReceivedRefreshStats || {}) };
+    const beforeGate = typeof window.flprStandaloneReceivedPacketGateState === "function"
+      ? window.flprStandaloneReceivedPacketGateState()
+      : null;
+    const beforeHtml = document.querySelector("#checksBody")?.innerHTML || "";
+    const suppressed = typeof window.flprStandaloneShouldSuppressReceivedItemsPacketForTest === "function"
+      ? window.flprStandaloneShouldSuppressReceivedItemsPacketForTest(pkt)
+      : false;
+    const afterStats = { ...(window.__flprStandaloneReceivedRefreshStats || {}) };
+    const afterGate = typeof window.flprStandaloneReceivedPacketGateState === "function"
+      ? window.flprStandaloneReceivedPacketGateState()
+      : null;
+    const afterHtml = document.querySelector("#checksBody")?.innerHTML || "";
+    return {
+      suppressed,
+      beforeStats,
+      afterStats,
+      beforeGate,
+      afterGate,
+      bodyHtmlStable: beforeHtml === afterHtml
+    };
+  }, receivedItems);
+  if(
+    !duplicateReceivedPacketProbe.suppressed ||
+    Number(duplicateReceivedPacketProbe.afterGate?.blockedPackets || 0) <= Number(duplicateReceivedPacketProbe.beforeGate?.blockedPackets || 0) ||
+    Number(duplicateReceivedPacketProbe.afterStats?.rendered || 0) !== Number(duplicateReceivedPacketProbe.beforeStats?.rendered || 0) ||
+    Number(duplicateReceivedPacketProbe.afterStats?.reconciled || 0) !== Number(duplicateReceivedPacketProbe.beforeStats?.reconciled || 0) ||
+    Number(duplicateReceivedPacketProbe.afterStats?.noops || 0) <= Number(duplicateReceivedPacketProbe.beforeStats?.noops || 0) ||
+    !duplicateReceivedPacketProbe.bodyHtmlStable
+  ){
+    throw new Error(`Duplicate ReceivedItems packet was not suppressed before replay: ${JSON.stringify(duplicateReceivedPacketProbe)}`);
+  }
+
   const bossRoutingProbe = await page.evaluate((params) => {
     const {
       tableName,
@@ -2160,6 +2803,36 @@ async function run() {
     const bossKey = (() => {
       try { return normKey("Boss Table"); } catch (_) { return "boss"; }
     })();
+    const previousBossReveal = {
+      apBossKeyCount: window.__apBossKeyCount,
+      prevApBossKeyCount: window.__prevApBossKeyCount,
+      selected: state.selected,
+      bossKeys: Array.isArray(window.bossKeysState || bossKeysState)
+        ? (window.bossKeysState || bossKeysState).map((key) => key ? { ...key } : key)
+        : null
+    };
+    const addBossSlot = (full, id) => {
+      const parts = String(full || "").split(" - ");
+      const short = parts.slice(1).join(" - ") || full;
+      const node = {
+        id,
+        full,
+        short,
+        tableName: "Boss Table",
+        tableCode: "BOSS_TABLE",
+        tableKey: bossKey,
+        standaloneBossCheck: true
+      };
+      ap.locNameById.set(id, full);
+      ap.locById.set(id, node);
+      if(!ap.locsByTableKey.has(bossKey)) ap.locsByTableKey.set(bossKey, []);
+      const list = ap.locsByTableKey.get(bossKey);
+      if(!list.some((existing) => Number(existing?.id) === id)) list.push(node);
+    };
+    for(let i = 0; i < 10; i += 1){
+      addBossSlot(`Boss Table - Generic Boss Slot ${i + 1}`, 3910 + i);
+    }
+    addBossSlot("Boss Table - Boss Victory", 3925);
     const worldKey = "w1";
     const world = state.worlds[worldKey] || (state.worlds[worldKey] = { tables: [] });
     if (!Array.isArray(world.tables)) world.tables = [];
@@ -2172,17 +2845,85 @@ async function run() {
     state.balls[`${worldKey}|${idx}|1`] = true;
     state.balls[`${worldKey}|${idx}|2`] = true;
     state.balls[`${worldKey}|${idx}|3`] = true;
+    state.balls["boss|0|1"] = true;
+    state.balls["boss|0|2"] = true;
+    state.balls["boss|0|3"] = true;
+    state.bossTable = tableName;
+    state.bossHpLive = { max:100, cur:100, name:tableName, inited:true };
+    state.bossHpTest = { ...(state.bossHpTest || {}), show:true, name:tableName, max:100, cur:100, forceShowCard:false };
+    const bossRequired = typeof getBossKeysRequiredForOpen === "function" ? Number(getBossKeysRequiredForOpen()) || 3 : 3;
+    window.__apBossKeyCount = bossRequired;
+    window.__prevApBossKeyCount = bossRequired;
+    try{
+      const keys = window.bossKeysState || bossKeysState;
+      if(Array.isArray(keys)){
+        keys.forEach((key, keyIndex) => {
+          if(key) key.acquired = keyIndex < bossRequired;
+        });
+      }
+      if(typeof bossKeysSyncLegacyMirror === "function") bossKeysSyncLegacyMirror(bossRequired);
+    }catch(_){}
+    if(state.worlds.boss){
+      state.worlds.boss.locked = false;
+      state.worlds.boss.tables = [tableName];
+    }
     ap.currentWorld = worldKey;
     saveState();
     renderChecksWorldTabs();
     renderChecks();
     const block = document.querySelector(`#checksBody .tableBlock[data-tablekey="${worldKey}|${idx}"]`);
+    try{ if(typeof showView === "function") showView("checks"); else activeView = "checks"; }catch(_){}
+    try{
+      state.worldPage = typeof getWorldPageForWorldKey === "function" ? getWorldPageForWorldKey("boss") : state.worldPage;
+    }catch(_){}
+    ap.currentWorld = "boss";
+    renderChecksWorldTabs();
+    const bossTabBeforeClick = document.querySelector('#checksWorldTabs .wTab[data-world-tab="boss"]');
+    try{
+      const bossTab = bossTabBeforeClick;
+      if(bossTab){
+        bossTab.dispatchEvent(new PointerEvent("pointerdown", { bubbles:true, pointerId:73 }));
+        bossTab.click();
+      }
+    }catch(_){}
+    ap.currentWorld = "boss";
+    renderChecks();
+    try{ if(typeof window.__flprStandaloneApplyBossCardPresentationForTest === "function") window.__flprStandaloneApplyBossCardPresentationForTest(); }catch(_){}
+    const bossDerivedNodes = typeof resolveBossChecksNodes === "function" ? resolveBossChecksNodes() : [];
+    const bossDerivedLabels = bossDerivedNodes.map((node) => String(node.short || node.full || ""));
+    const bossCards = Array.from(document.querySelectorAll("#checksBody .nodeBtn.bossNode")).map((btn) => ({
+      hidden: !!btn.closest(".nodeCell")?.classList.contains("flprStandaloneBossVictoryHidden"),
+      subtag: btn.querySelector(".flprStandaloneBossAttackSubtag")?.textContent || "",
+      title: btn.querySelector(".nodeTitle")?.innerText || "",
+      small: btn.querySelector(".small")?.textContent || "",
+      damage: Number(btn.dataset.bossDamage || 0) || 0,
+      isVictory: /boss victory/i.test(btn.querySelector(".nodeTitle")?.innerText || "")
+    }));
+    const bossBlock = document.querySelector('#checksBody .tableBlock[data-tablekey="boss|0"]');
     const normalBucket = (ap.locsByTableKey?.get?.(normalKey) || []).map((node) => node.full || node.short || "");
     const bossBucket = (ap.locsByTableKey?.get?.(bossKey) || []).map((node) => node.full || node.short || "");
-    return {
+    const result = {
       normalBucket,
       bossBucket,
       blockText: block?.innerText || "",
+      bossBlockText: bossBlock?.innerText || "",
+      bossDerivedCount: bossDerivedNodes.length,
+      bossDerivedAttackCount: bossDerivedNodes.filter((node) => !/victory/i.test(String(node.short || node.full || ""))).length,
+      bossDerivedHasVictory: bossDerivedLabels.some((label) => /boss victory/i.test(label)),
+      bossDamageValues: bossDerivedNodes.filter((node) => !/victory/i.test(String(node.short || node.full || ""))).map((node) => Number(node.standaloneBossDamagePct || node.bossDamagePct || 0) || 0),
+      bossDerivedLabels,
+      bossCards,
+      bossSpecificState: window.__flprStandaloneBossSpecificChecks || null,
+      currentWorldAfterBossRender: ap.currentWorld,
+      selectedAfterBossRender: state.selected,
+      bossUnlocked: typeof isBossUnlocked === "function" ? !!isBossUnlocked() : null,
+      bossRevealReady: typeof isBossTableRevealReady === "function" ? !!isBossTableRevealReady() : null,
+      bossTabFound: !!bossTabBeforeClick,
+      worldPage: state.worldPage,
+      checksWorldOrder: typeof getChecksWorldOrder === "function" ? getChecksWorldOrder() : [],
+      bridgeState: typeof window.flprStandaloneChecksSelectionBridgeState === "function" ? window.flprStandaloneChecksSelectionBridgeState() : null,
+      tableBlockKeys: Array.from(document.querySelectorAll("#checksBody .tableBlock")).map((node) => node.getAttribute("data-tablekey") || ""),
+      checksBodyText: document.querySelector("#checksBody")?.innerText || "",
       normalExplicitBossCount: (ap.locsByTableKey?.get?.(normalKey) || []).filter((node) => window.flprStandaloneIsExplicitBossCheckNode?.(node)).length,
       regularPresent: normalBucket.some((name) => String(name).includes(regularLocation)),
       regular2Present: normalBucket.some((name) => String(name).includes(regularLocation2)),
@@ -2190,6 +2931,20 @@ async function run() {
       bossPresentInNormal: (block?.innerText || "").includes(bossLocation.replace(/^.+? - /, "")) || (block?.innerText || "").includes(victoryLocation.replace(/^.+? - /, "")),
       bossBucketHasBoss: bossBucket.some((name) => String(name).includes(bossLocation)) && bossBucket.some((name) => String(name).includes(victoryLocation))
     };
+    try{
+      window.__apBossKeyCount = previousBossReveal.apBossKeyCount;
+      window.__prevApBossKeyCount = previousBossReveal.prevApBossKeyCount;
+      state.selected = previousBossReveal.selected;
+      const keys = window.bossKeysState || bossKeysState;
+      if(Array.isArray(keys) && Array.isArray(previousBossReveal.bossKeys)){
+        keys.forEach((key, keyIndex) => {
+          if(key && previousBossReveal.bossKeys[keyIndex]){
+            Object.assign(key, previousBossReveal.bossKeys[keyIndex]);
+          }
+        });
+      }
+    }catch(_){}
+    return result;
   }, {
     tableName: BOSS_ROUTING_TABLE,
     regularLocation: BOSS_ROUTING_REGULAR_LOCATION,
@@ -2203,9 +2958,256 @@ async function run() {
     !bossRoutingProbe.regular2Present ||
     bossRoutingProbe.bossPresentInRegularBucket ||
     bossRoutingProbe.bossPresentInNormal ||
-    !bossRoutingProbe.bossBucketHasBoss
+    !bossRoutingProbe.bossBucketHasBoss ||
+    bossRoutingProbe.bossDerivedAttackCount !== 10 ||
+    !bossRoutingProbe.bossDerivedHasVictory ||
+    !bossRoutingProbe.bossDerivedLabels.some((label) => /Skill Shot/i.test(label)) ||
+    bossRoutingProbe.bossDerivedLabels.filter((label) => /score/i.test(label)).length < 6 ||
+    !bossRoutingProbe.bossDamageValues.every((value) => value >= 7 && value <= 22) ||
+    new Set(bossRoutingProbe.bossDamageValues).size < 2 ||
+    bossRoutingProbe.bossCards.filter((card) => !card.hidden).length !== 10 ||
+    !bossRoutingProbe.bossCards.filter((card) => !card.hidden).every((card) => card.subtag && /DAMAGE; \d+%/.test(card.small)) ||
+    !bossRoutingProbe.bossCards.some((card) => card.hidden && card.isVictory) ||
+    bossRoutingProbe.bossDerivedLabels.some((label) => /Generic Boss Slot|Boss Damage 16%/i.test(label)) ||
+    !/Skill Shot/i.test(bossRoutingProbe.bossBlockText || "")
   ){
     throw new Error(`Boss-table checks leaked into regular table checks: ${JSON.stringify(bossRoutingProbe)}`);
+  }
+
+  const bossPhase2MusicProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const previous = {
+      bossTable: state.bossTable,
+      bossHpLive: { ...(state.bossHpLive || {}) },
+      bossHpTest: { ...(state.bossHpTest || {}) },
+      bossWorldLocked: state.worlds?.boss?.locked,
+      bossBalls: [state.balls?.["boss|0|1"], state.balls?.["boss|0|2"], state.balls?.["boss|0|3"]],
+      musicRefs: { ...(state.musicRefs || {}) },
+      musicRefreshScenario: typeof musicRefreshScenario === "function" ? musicRefreshScenario : null,
+      musicCrossfadeToScenario: typeof musicCrossfadeToScenario === "function" ? musicCrossfadeToScenario : null,
+      damageSeen: window.__bossDamageSeen instanceof Set ? new Set(window.__bossDamageSeen) : null
+    };
+    const calls = [];
+    try{
+      state.bossTable = "Vector Test Table";
+      if(state.worlds?.boss) state.worlds.boss.locked = false;
+      state.balls = state.balls || {};
+      state.balls["boss|0|1"] = true;
+      state.balls["boss|0|2"] = true;
+      state.balls["boss|0|3"] = true;
+      state.bossHpLive = { max:100, cur:60, name:"Vector Test Table", inited:true };
+      state.bossHpTest = { ...(state.bossHpTest || {}), show:true, max:100, cur:60, name:"Vector Test Table", forceShowCard:false };
+      state.musicRefs = { ...(state.musicRefs || {}), boss_battle_beginning:"data:audio/mp3;base64,AA==", boss_battle_phase2:"data:audio/mp3;base64,AA==" };
+      const mgr = typeof musicEnsureManager === "function" ? musicEnsureManager() : (window.__flprMusic ||= {});
+      mgr.current = "boss_battle_beginning";
+      mgr.currentUrl = "phase1-test";
+      mgr.crossfadeTarget = "";
+      mgr.audio = { paused:false, volume:1, pause(){ this.paused = true; } };
+      musicRefreshScenario = function standalonePhaseMusicRefreshProbe(){};
+      window.musicRefreshScenario = musicRefreshScenario;
+      musicCrossfadeToScenario = function standalonePhaseMusicCrossfadeProbe(name, opts){
+        calls.push({ name, durationMs: opts?.durationMs || 0, force: !!opts?.force });
+        mgr.crossfadeTarget = name;
+        return true;
+      };
+      window.musicCrossfadeToScenario = musicCrossfadeToScenario;
+      if(window.__bossDamageSeen instanceof Set) window.__bossDamageSeen.delete("standalone-phase2-music-test");
+      if(typeof bossApplyDamagePct === "function"){
+        bossApplyDamagePct(20, "standalone-phase2-music-test", { fromCheck:true, sourceLabel:"Phase Music Test" });
+      }
+      await delay(80);
+      return {
+        hpPct: Math.round((Number(state.bossHpLive.cur || 0) / Math.max(1, Number(state.bossHpLive.max || 100))) * 100),
+        calls,
+        phaseState: window.__flprStandaloneBossPhase2MusicState || null
+      };
+    }finally{
+      state.bossTable = previous.bossTable;
+      state.bossHpLive = previous.bossHpLive;
+      state.bossHpTest = previous.bossHpTest;
+      if(state.worlds?.boss) state.worlds.boss.locked = previous.bossWorldLocked;
+      if(previous.bossBalls[0] === undefined) delete state.balls["boss|0|1"]; else state.balls["boss|0|1"] = previous.bossBalls[0];
+      if(previous.bossBalls[1] === undefined) delete state.balls["boss|0|2"]; else state.balls["boss|0|2"] = previous.bossBalls[1];
+      if(previous.bossBalls[2] === undefined) delete state.balls["boss|0|3"]; else state.balls["boss|0|3"] = previous.bossBalls[2];
+      state.musicRefs = previous.musicRefs;
+      if(previous.musicRefreshScenario) { musicRefreshScenario = previous.musicRefreshScenario; window.musicRefreshScenario = previous.musicRefreshScenario; }
+      if(previous.musicCrossfadeToScenario) { musicCrossfadeToScenario = previous.musicCrossfadeToScenario; window.musicCrossfadeToScenario = previous.musicCrossfadeToScenario; }
+      if(previous.damageSeen) window.__bossDamageSeen = previous.damageSeen;
+    }
+  });
+  if(
+    bossPhase2MusicProbe.hpPct !== 40 ||
+    !bossPhase2MusicProbe.calls.some((call) => call.name === "boss_battle_phase2" && call.durationMs >= 3000 && call.force) ||
+    !bossPhase2MusicProbe.phaseState?.crossed ||
+    bossPhase2MusicProbe.phaseState?.pct !== 40
+  ){
+    throw new Error(`Boss phase 2 music did not crossfade after boss damage crossed 50%: ${JSON.stringify(bossPhase2MusicProbe)}`);
+  }
+
+  const bossVictoryAutoAwardProbe = await page.evaluate((params) => {
+    const tableName = params.tableName || "Vector Test Table";
+    const directId = 3931;
+    const autoId = 3932;
+    const victoryId = 3939;
+    const storeKey = "flpr_standalone_boss_victory_auto_checks_v1";
+    const previous = {
+      checked: [directId, autoId, victoryId].map((id) => [id, !!ap?.checked?.has?.(id)]),
+      pending: [directId, autoId, victoryId].map((id) => [id, ap?.pendingByLoc?.get?.(id)]),
+      locById: [directId, autoId, victoryId].map((id) => [id, ap?.locById?.get?.(id)]),
+      locNameById: [directId, autoId, victoryId].map((id) => [id, ap?.locNameById?.get?.(id)]),
+      autoStoreRaw: localStorage.getItem(storeKey),
+      achievementStore: (() => { try { return JSON.stringify(achStore || {}); } catch (_) { return ""; } })(),
+      flprRun: (() => { try { return JSON.stringify(flprStats?.currentRun || null); } catch (_) { return ""; } })(),
+      bossVictorySent: !!state?.bossVictorySent,
+      bossVictoryPending: !!state?.bossVictoryPending,
+      bossVictoryFinalizing: !!state?.bossVictoryFinalizing,
+      bossTable: state?.bossTable
+    };
+    const bossKey = (() => {
+      try { return normKey("Boss Table"); } catch (_) { return "bosstable"; }
+    })();
+    const makeNode = (id, full, short) => ({
+      id,
+      full,
+      short,
+      tableName: "Boss Table",
+      tableCode: "BOSS_TABLE",
+      tableKey: bossKey,
+      standaloneBossCheck: true
+    });
+    const directNode = makeNode(directId, `Boss Table - ${tableName} Direct Pending Hit`, `${tableName} Direct Pending Hit`);
+    const autoNode = makeNode(autoId, `Boss Table - ${tableName} Cleanup Hit`, `${tableName} Cleanup Hit`);
+    const victoryNode = makeNode(victoryId, "Boss Table - Boss Victory", "Boss Victory");
+    const upsertNode = (node) => {
+      ap.locById.set(node.id, node);
+      ap.locNameById.set(node.id, node.full);
+      if(!ap.locsByTableKey.has(bossKey)) ap.locsByTableKey.set(bossKey, []);
+      const list = ap.locsByTableKey.get(bossKey);
+      const idx = list.findIndex((existing) => Number(existing?.id) === Number(node.id));
+      if(idx >= 0) list[idx] = node;
+      else list.push(node);
+    };
+    const restore = () => {
+      try{
+        [directId, autoId, victoryId].forEach((id) => {
+          const checked = previous.checked.find((entry) => entry[0] === id)?.[1];
+          if(checked) ap.checked.add(id);
+          else ap.checked.delete(id);
+          const pendingEntry = previous.pending.find((entry) => entry[0] === id);
+          if(pendingEntry && pendingEntry[1]) ap.pendingByLoc.set(id, pendingEntry[1]);
+          else ap.pendingByLoc.delete(id);
+          const locEntry = previous.locById.find((entry) => entry[0] === id);
+          if(locEntry && locEntry[1]) ap.locById.set(id, locEntry[1]);
+          else ap.locById.delete(id);
+          const nameEntry = previous.locNameById.find((entry) => entry[0] === id);
+          if(nameEntry && nameEntry[1]) ap.locNameById.set(id, nameEntry[1]);
+          else ap.locNameById.delete(id);
+        });
+        const list = ap.locsByTableKey.get(bossKey);
+        if(Array.isArray(list)){
+          ap.locsByTableKey.set(bossKey, list.filter((node) => ![directId, autoId, victoryId].includes(Number(node?.id))));
+          previous.locById.forEach(([id, node]) => {
+            if(node && String(node.tableKey || "") === bossKey){
+              const current = ap.locsByTableKey.get(bossKey) || [];
+              if(!current.some((existing) => Number(existing?.id) === Number(id))) current.push(node);
+              ap.locsByTableKey.set(bossKey, current);
+            }
+          });
+        }
+        if(previous.autoStoreRaw == null) localStorage.removeItem(storeKey);
+        else localStorage.setItem(storeKey, previous.autoStoreRaw);
+        window.__flprStandaloneBossVictoryAutoChecks = null;
+        if(previous.achievementStore){
+          const restoredAch = JSON.parse(previous.achievementStore);
+          achStore = restoredAch;
+          window.flprAchievementStore = restoredAch;
+          localStorage.setItem("flpr_achievements_v1", previous.achievementStore);
+        }
+        if(previous.flprRun && typeof flprStats === "object" && flprStats){
+          flprStats.currentRun = JSON.parse(previous.flprRun);
+        }
+        state.bossVictorySent = previous.bossVictorySent;
+        state.bossVictoryPending = previous.bossVictoryPending;
+        state.bossVictoryFinalizing = previous.bossVictoryFinalizing;
+        state.bossTable = previous.bossTable;
+      }catch(_){}
+    };
+    try{
+      if(typeof window.flprStandaloneClearBossVictoryAutoChecksForTest === "function"){
+        window.flprStandaloneClearBossVictoryAutoChecksForTest();
+      }
+      [directId, autoId, victoryId].forEach((id) => {
+        ap.checked.delete(id);
+        ap.pendingByLoc?.delete?.(id);
+      });
+      upsertNode(directNode);
+      upsertNode(autoNode);
+      upsertNode(victoryNode);
+      state.bossTable = tableName;
+      state.bossVictorySent = false;
+      state.bossVictoryPending = false;
+      state.bossVictoryFinalizing = false;
+      ap.pendingByLoc = ap.pendingByLoc || new Map();
+      ap.pendingQueue = Array.isArray(ap.pendingQueue) ? ap.pendingQueue : [];
+      ap.pendingByLoc.set(directId, { id:directId, sentAt:Date.now(), isBossCheck:true, locationName:directNode.full });
+      ap.pendingQueue.push({ id:directId, sentAt:Date.now(), isBossCheck:true, locationName:directNode.full });
+      const preDetect = typeof window.flprStandaloneDetectBossVictoryAutoIdsForTest === "function"
+        ? window.flprStandaloneDetectBossVictoryAutoIdsForTest([victoryId, directId, autoId], { awardAchievements:true, source:"room-update" })
+        : null;
+      const preDebug = typeof window.flprStandaloneBossVictoryAutoDebugForTest === "function"
+        ? window.flprStandaloneBossVictoryAutoDebugForTest([victoryId, directId, autoId], { awardAchievements:true, source:"room-update" })
+        : null;
+      if(typeof handleCheckedLocations === "function"){
+        handleCheckedLocations([victoryId, directId, autoId], { awardAchievements:true, source:"room-update" });
+      }
+      const autoState = typeof window.flprStandaloneBossVictoryAutoCheckState === "function"
+        ? window.flprStandaloneBossVictoryAutoCheckState()
+        : null;
+      const checkedLocMap = flprStats?.currentRun?.checkedLocMap || {};
+      const directContext = typeof achGetContextForLocId === "function" ? achGetContextForLocId(directId) : null;
+      const autoContext = typeof achGetContextForLocId === "function" ? achGetContextForLocId(autoId) : null;
+      const result = {
+        preDetect,
+        preDebug,
+        handleFilter: !!(handleCheckedLocations && handleCheckedLocations.__flprStandaloneBossVictoryAwardFilter),
+        statsFilter: !!(flprStatsRecordCheckClearedByLocId && flprStatsRecordCheckClearedByLocId.__flprStandaloneBossVictoryAwardFilter),
+        achContextFilter: !!(achGetContextForLocId && achGetContextForLocId.__flprStandaloneBossVictoryAwardFilter),
+        autoDetect: typeof window.flprStandaloneDetectBossVictoryAutoIdsForTest === "function"
+          ? window.flprStandaloneDetectBossVictoryAutoIdsForTest([victoryId, directId, autoId], { awardAchievements:true, source:"room-update" })
+          : null,
+        checkedDirect: !!ap.checked.has(directId),
+        checkedAuto: !!ap.checked.has(autoId),
+        checkedVictory: !!ap.checked.has(victoryId),
+        autoIds: autoState?.ids || [],
+        split: autoState?.lastSplit || null,
+        checkedLocDirect: !!checkedLocMap[directId],
+        checkedLocAuto: !!checkedLocMap[autoId],
+        directContext: !!directContext,
+        autoContext: !!autoContext,
+        lastSkip: autoState?.lastSkip || null
+      };
+      restore();
+      return result;
+    }catch(err){
+      const result = { error:String(err?.message || err) };
+      restore();
+      return result;
+    }
+  }, { tableName: BOSS_ROUTING_TABLE });
+  if(
+    bossVictoryAutoAwardProbe.error ||
+    !bossVictoryAutoAwardProbe.checkedDirect ||
+    !bossVictoryAutoAwardProbe.checkedAuto ||
+    !bossVictoryAutoAwardProbe.checkedVictory ||
+    !bossVictoryAutoAwardProbe.autoIds.includes(3932) ||
+    bossVictoryAutoAwardProbe.autoIds.includes(3931) ||
+    bossVictoryAutoAwardProbe.autoIds.includes(3939) ||
+    !bossVictoryAutoAwardProbe.checkedLocDirect ||
+    bossVictoryAutoAwardProbe.checkedLocAuto ||
+    !bossVictoryAutoAwardProbe.directContext ||
+    bossVictoryAutoAwardProbe.autoContext
+  ){
+    throw new Error(`Boss victory auto-completed checks still qualified for stats/achievements: ${JSON.stringify(bossVictoryAutoAwardProbe)}`);
   }
 
   await page.evaluate(() => {
@@ -2770,7 +3772,45 @@ async function run() {
   ){
     throw new Error(`False Skateball receipt was not repaired: ${JSON.stringify(repairedReceivedProbe)}`);
   }
+  const receivedItemLogColorProbe = await page.evaluate(`(() => ({
+    rows: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #receivedBody .recvRow')).map((row) => ({
+      text: row.innerText || '',
+      rowCls: row.className || '',
+      itemSpans: Array.from(row.querySelectorAll('.recvItem')).map((node) => ({ text: node.innerText || '', cls: node.className || '' })),
+      players: Array.from(row.querySelectorAll('.recvPlayer')).map((node) => node.innerText || ''),
+      locations: Array.from(row.querySelectorAll('.recvLocation')).map((node) => node.innerText || '')
+    }))
+  }))()`);
+  if(
+    !receivedItemLogColorProbe.rows.some((row) => row.text.includes('Arrows (10)') && row.rowCls.includes('apItem-useful') && row.itemSpans.some((span) => span.cls.includes('apItem-useful'))) ||
+    !receivedItemLogColorProbe.rows.some((row) => row.text.includes('Tome of Power') && row.rowCls.includes('apItem-progression') && row.itemSpans.some((span) => span.cls.includes('apItem-progression'))) ||
+    !receivedItemLogColorProbe.rows.some((row) => row.text.includes('Easy Junk Item') && row.rowCls.includes('apItem-filler') && row.itemSpans.some((span) => span.cls.includes('apItem-filler'))) ||
+    !receivedItemLogColorProbe.rows.some((row) => row.players.some((text) => text.includes('ALTTPP3')) && row.locations.some((text) => text.includes('Secret Passage')))
+  ){
+    throw new Error(`Received Item Log did not color-code item/player/location spans: ${JSON.stringify(receivedItemLogColorProbe)}`);
+  }
   await page.locator(".flprStandaloneConnectLayout .standaloneItemTab[data-standalone-item-tab='sent']").click();
+  await waitFor(page, `
+    const body = document.querySelector('.flprStandaloneConnectLayout #receivedBody')?.innerText || '';
+    return body.includes('ITEM; Ethereal Crossbow') && body.includes('ITEM; Bug-Catching Net') && body.includes('ITEM; Rupees (300)');
+  `, 5000);
+  const sentItemLogColorProbe = await page.evaluate(`(() => ({
+    rows: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #receivedBody .recvRow')).map((row) => ({
+      text: row.innerText || '',
+      rowCls: row.className || '',
+      itemSpans: Array.from(row.querySelectorAll('.recvItem')).map((node) => ({ text: node.innerText || '', cls: node.className || '' })),
+      players: Array.from(row.querySelectorAll('.recvPlayer')).map((node) => node.innerText || ''),
+      locations: Array.from(row.querySelectorAll('.recvLocation')).map((node) => node.innerText || '')
+    }))
+  }))()`);
+  if(
+    !sentItemLogColorProbe.rows.some((row) => row.text.includes('Ethereal Crossbow') && row.rowCls.includes('apItem-progression') && row.itemSpans.some((span) => span.cls.includes('apItem-progression'))) ||
+    !sentItemLogColorProbe.rows.some((row) => row.text.includes('Bug-Catching Net') && row.rowCls.includes('apItem-useful') && row.itemSpans.some((span) => span.cls.includes('apItem-useful'))) ||
+    !sentItemLogColorProbe.rows.some((row) => row.text.includes('Rupees (300)') && row.rowCls.includes('apItem-filler') && row.itemSpans.some((span) => span.cls.includes('apItem-filler'))) ||
+    !sentItemLogColorProbe.rows.some((row) => row.players.some((text) => text.includes('HereticP2')) && row.locations.some((text) => text.includes('Dirty Harry')))
+  ){
+    throw new Error(`Sent Item Log did not color-code item/player/location spans: ${JSON.stringify(sentItemLogColorProbe)}`);
+  }
   const sentRow = page.locator(".flprStandaloneConnectLayout #receivedBody .recvRow").filter({ hasText: "Ethereal Crossbow" }).first();
   await sentRow.click();
   const selectedSent = await page.evaluate(`
@@ -3268,6 +4308,250 @@ async function run() {
     throw new Error(`Easy/Medium task junk redeem flow crashed or failed: ${JSON.stringify(junkTaskRedeemProbe)}`);
   }
 
+  const checksVisibleOpenTableProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const worldKey = Object.keys(state?.worlds || {}).find((wk) => {
+      if(!wk || wk === "boss") return false;
+      return Array.isArray(state.worlds[wk]?.tables) && state.worlds[wk].tables.length >= 2;
+    });
+    if(!worldKey) return { missingWorld:true };
+    const firstKey = `${worldKey}|0`;
+    const targetKey = `${worldKey}|1`;
+    const ballKeys = [1, 2, 3].flatMap((ball) => [`${firstKey}|${ball}`, `${targetKey}|${ball}`]);
+    const previous = {
+      selected: state.selected,
+      currentWorld: ap.currentWorld,
+      nowPlaying: state.nowPlaying ? state.nowPlaying[worldKey] : undefined,
+      activeView: typeof activeView !== "undefined" ? activeView : "",
+      extraBallAssignments: { ...(state.extraBallAssignments || {}) },
+      balls: Object.fromEntries(ballKeys.map((key) => [key, state.balls ? state.balls[key] : undefined]))
+    };
+    const restoreBall = (key, value) => {
+      state.balls = state.balls || {};
+      if(value === undefined) delete state.balls[key];
+      else state.balls[key] = value;
+    };
+    try{
+      if(typeof showView === "function") showView("tower");
+      await delay(60);
+      state.balls = state.balls || {};
+      state.extraBallAssignments = state.extraBallAssignments || {};
+      state.nowPlaying = state.nowPlaying || {};
+      [1, 2, 3].forEach((ball) => {
+        state.balls[`${firstKey}|${ball}`] = ball === 1;
+        delete state.balls[`${targetKey}|${ball}`];
+      });
+      state.extraBallAssignments[targetKey] = 1;
+      state.selected = worldKey;
+      ap.currentWorld = worldKey;
+      state.nowPlaying[worldKey] = 0;
+      if(typeof showView === "function") showView("checks");
+      if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+      if(typeof renderChecks === "function") renderChecks();
+      await delay(60);
+      const keyEsc = CSS && CSS.escape ? CSS.escape(targetKey) : targetKey;
+      const target = document.querySelector(`#checksBody .tableBlock[data-tablekey="${keyEsc}"]`);
+      const before = {
+        targetExists: !!target,
+        targetLocked: !!target?.classList?.contains("lockedTable"),
+        baseLevel: typeof getBallLevelByTableKey === "function" ? Number(getBallLevelByTableKey(targetKey) || 0) : null,
+        displayLevel: typeof getDisplayBallStateForTableKey === "function" ? Number(getDisplayBallStateForTableKey(targetKey)?.level || 0) : null,
+        nowPlaying: Number(state.nowPlaying[worldKey])
+      };
+      if(!target) return { before, missingTarget:true, worldKey, targetKey };
+      target.dispatchEvent(new PointerEvent("pointerdown", { bubbles:true, button:0, pointerId:9 }));
+      target.dispatchEvent(new MouseEvent("mousedown", { bubbles:true, button:0 }));
+      target.dispatchEvent(new MouseEvent("click", { bubbles:true, button:0 }));
+      for(let n = 0; n < 8; n++){
+        target.dispatchEvent(new PointerEvent("pointerdown", { bubbles:true, button:0, pointerId:19 + n }));
+        target.dispatchEvent(new MouseEvent("mousedown", { bubbles:true, button:0 }));
+        target.dispatchEvent(new MouseEvent("click", { bubbles:true, button:0 }));
+      }
+      await delay(120);
+      const syncResult = (typeof syncNowPlayingIndexesToUnlockedTables === "function")
+        ? syncNowPlayingIndexesToUnlockedTables({ save:false, render:true })
+        : null;
+      if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+      if(typeof renderChecks === "function") renderChecks();
+      await delay(260);
+      const activeCard = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      const bridge = typeof window.flprStandaloneChecksSelectionBridgeState === "function"
+        ? window.flprStandaloneChecksSelectionBridgeState()
+        : null;
+      return {
+        worldKey,
+        targetKey,
+        targetName: state.worlds[worldKey]?.tables?.[1] || "",
+        before,
+        syncResult,
+        afterNowPlaying: Number(state.nowPlaying[worldKey]),
+        activeCard,
+        bridge,
+        schedulerStats: { ...(window.__flprStandaloneChecksSelectionSchedulerStats || {}) },
+        lastPrime: window.__flprStandaloneLastChecksTablePrime || null
+      };
+    }finally{
+      try{
+        if(typeof showView === "function") showView("tower");
+        await delay(60);
+        ballKeys.forEach((key) => restoreBall(key, previous.balls[key]));
+        state.extraBallAssignments = previous.extraBallAssignments;
+        state.selected = previous.selected;
+        ap.currentWorld = previous.currentWorld;
+        if(previous.nowPlaying === undefined) delete state.nowPlaying[worldKey];
+        else state.nowPlaying[worldKey] = previous.nowPlaying;
+        if(typeof showView === "function") showView(previous.activeView || "checks");
+        if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+        if(typeof renderChecks === "function") renderChecks();
+      }catch(_){}
+    }
+  });
+  if(
+    checksVisibleOpenTableProbe.missingWorld ||
+    checksVisibleOpenTableProbe.missingTarget ||
+    checksVisibleOpenTableProbe.before?.targetLocked ||
+    checksVisibleOpenTableProbe.before?.baseLevel !== 0 ||
+    !(checksVisibleOpenTableProbe.before?.displayLevel > 0) ||
+    checksVisibleOpenTableProbe.syncResult !== false ||
+    checksVisibleOpenTableProbe.afterNowPlaying !== 1 ||
+    checksVisibleOpenTableProbe.activeCard !== checksVisibleOpenTableProbe.targetKey ||
+    Number(checksVisibleOpenTableProbe.schedulerStats?.applyTimers || 0) > 6 ||
+    Number(checksVisibleOpenTableProbe.schedulerStats?.holdTimers || 0) > 11 ||
+    checksVisibleOpenTableProbe.bridge?.key !== checksVisibleOpenTableProbe.targetKey
+  ){
+    throw new Error(`Checks visible-open table selection did not stick: ${JSON.stringify(checksVisibleOpenTableProbe)}`);
+  }
+
+  const checksTowerSelectionSyncProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const worldKey = Object.keys(state?.worlds || {}).find((wk) => {
+      if(!wk || wk === "boss") return false;
+      return Array.isArray(state.worlds[wk]?.tables) && state.worlds[wk].tables.length >= 2;
+    });
+    if(!worldKey) return { missingWorld:true };
+    const targetKey = `${worldKey}|0`;
+    const fallbackKey = `${worldKey}|1`;
+    const ballKeys = [1, 2, 3].flatMap((ball) => [`${targetKey}|${ball}`, `${fallbackKey}|${ball}`]);
+    const previous = {
+      selected: state.selected,
+      currentWorld: ap.currentWorld,
+      nowPlaying: state.nowPlaying ? state.nowPlaying[worldKey] : undefined,
+      activeView: typeof activeView !== "undefined" ? activeView : "",
+      extraBallAssignments: { ...(state.extraBallAssignments || {}) },
+      balls: Object.fromEntries(ballKeys.map((key) => [key, state.balls ? state.balls[key] : undefined]))
+    };
+    const restoreBall = (key, value) => {
+      state.balls = state.balls || {};
+      if(value === undefined) delete state.balls[key];
+      else state.balls[key] = value;
+    };
+    try{
+      if(typeof showView === "function") showView("tower");
+      await delay(60);
+      state.balls = state.balls || {};
+      state.extraBallAssignments = state.extraBallAssignments || {};
+      state.nowPlaying = state.nowPlaying || {};
+      [1, 2, 3].forEach((ball) => {
+        delete state.balls[`${targetKey}|${ball}`];
+        state.balls[`${fallbackKey}|${ball}`] = ball === 1;
+      });
+      state.extraBallAssignments[targetKey] = 1;
+      delete state.extraBallAssignments[fallbackKey];
+      state.selected = worldKey;
+      ap.currentWorld = worldKey;
+      state.nowPlaying[worldKey] = 0;
+      if(typeof showView === "function") showView("tower");
+      if(typeof showView === "function") showView("checks");
+      if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+      if(typeof renderChecks === "function") renderChecks();
+      await delay(120);
+      const beforeActive = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      const beforeBridge = typeof window.flprStandaloneChecksSelectionBridgeState === "function"
+        ? window.flprStandaloneChecksSelectionBridgeState()
+        : null;
+      const syncResult = (typeof syncNowPlayingIndexesToUnlockedTables === "function")
+        ? syncNowPlayingIndexesToUnlockedTables({ save:false, render:true })
+        : null;
+      if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+      if(typeof renderChecks === "function") renderChecks();
+      await delay(420);
+      const afterActive = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      await delay(10500);
+      const syncAfterTenSecondsResult = (typeof syncNowPlayingIndexesToUnlockedTables === "function")
+        ? syncNowPlayingIndexesToUnlockedTables({ save:false, render:true })
+        : null;
+      if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+      if(typeof renderChecks === "function") renderChecks();
+      await delay(160);
+      const afterTenSecondsActive = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      const logTextBeforeReconcile = Object.values(apLogBuffers || {}).flat().join("\\n");
+      const resyncLogCountBefore = (logTextBeforeReconcile.match(/Now Playing resynced to currently open table\\(s\\)\\./g) || []).length;
+      if(typeof apReconcileWorldStateFromReceived === "function") apReconcileWorldStateFromReceived();
+      await delay(260);
+      const afterReconcileActive = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      const logTextAfterReconcile = Object.values(apLogBuffers || {}).flat().join("\\n");
+      const resyncLogCountAfter = (logTextAfterReconcile.match(/Now Playing resynced to currently open table\\(s\\)\\./g) || []).length;
+      const directWriteBefore = Number(state.nowPlaying[worldKey]);
+      state.nowPlaying[worldKey] = 1;
+      if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+      if(typeof renderChecks === "function") renderChecks();
+      await delay(120);
+      const afterDirectWriteActive = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      const afterBridge = typeof window.flprStandaloneChecksSelectionBridgeState === "function"
+        ? window.flprStandaloneChecksSelectionBridgeState()
+        : null;
+      return {
+        worldKey,
+        targetKey,
+        fallbackKey,
+        beforeActive,
+        syncResult,
+        afterActive,
+        syncAfterTenSecondsResult,
+        afterTenSecondsActive,
+        afterReconcileActive,
+        resyncLogCountBefore,
+        resyncLogCountAfter,
+        afterDirectWriteActive,
+        directWriteBefore,
+        nowPlaying: Number(state.nowPlaying[worldKey]),
+        beforeBridge,
+        afterBridge,
+        trace: Array.isArray(window.__flprStandaloneChecksSelectionTrace) ? window.__flprStandaloneChecksSelectionTrace.slice(-12) : []
+      };
+    }finally{
+      try{
+        if(typeof showView === "function") showView("tower");
+        await delay(60);
+        ballKeys.forEach((key) => restoreBall(key, previous.balls[key]));
+        state.extraBallAssignments = previous.extraBallAssignments;
+        state.selected = previous.selected;
+        ap.currentWorld = previous.currentWorld;
+        if(previous.nowPlaying === undefined) delete state.nowPlaying[worldKey];
+        else state.nowPlaying[worldKey] = previous.nowPlaying;
+        if(typeof showView === "function") showView(previous.activeView || "checks");
+        if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+        if(typeof renderChecks === "function") renderChecks();
+      }catch(_){}
+    }
+  });
+  if(
+    checksTowerSelectionSyncProbe.missingWorld ||
+    checksTowerSelectionSyncProbe.beforeActive !== checksTowerSelectionSyncProbe.targetKey ||
+    checksTowerSelectionSyncProbe.syncResult !== false ||
+    checksTowerSelectionSyncProbe.afterActive !== checksTowerSelectionSyncProbe.targetKey ||
+    checksTowerSelectionSyncProbe.syncAfterTenSecondsResult !== false ||
+    checksTowerSelectionSyncProbe.afterTenSecondsActive !== checksTowerSelectionSyncProbe.targetKey ||
+    checksTowerSelectionSyncProbe.afterReconcileActive !== checksTowerSelectionSyncProbe.targetKey ||
+    checksTowerSelectionSyncProbe.resyncLogCountAfter !== checksTowerSelectionSyncProbe.resyncLogCountBefore ||
+    checksTowerSelectionSyncProbe.afterDirectWriteActive !== checksTowerSelectionSyncProbe.targetKey ||
+    checksTowerSelectionSyncProbe.directWriteBefore !== 0 ||
+    checksTowerSelectionSyncProbe.nowPlaying !== 0 ||
+    checksTowerSelectionSyncProbe.afterBridge?.key !== checksTowerSelectionSyncProbe.targetKey
+  ){
+    throw new Error(`Checks view-open table selection was still overwritten by sync: ${JSON.stringify(checksTowerSelectionSyncProbe)}`);
+  }
+
   await page.locator(".flprStandaloneConnectLayout #apClientSayInput").fill("!hint Secret Passage");
   await page.locator(".flprStandaloneConnectLayout #apClientSayBtn").click();
 
@@ -3288,11 +4572,42 @@ async function run() {
     throw err;
   }
 
+  const hintTabProbe = await page.evaluate(`(() => ({
+    activeTab: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #apLogTabs .apLogTab')).find((btn) => btn.classList.contains('active'))?.dataset?.aplogTab || '',
+    hintCards: document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apHintCard').length,
+    serverHintCards: document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apServerHintCard').length,
+    text: document.querySelector('.flprStandaloneConnectLayout #apConnLogBody')?.innerText || ''
+  }))()`);
+  if(
+    hintTabProbe.activeTab !== "hints" ||
+    hintTabProbe.hintCards < 1 ||
+    hintTabProbe.serverHintCards < 2 ||
+    !hintTabProbe.text.includes("[Hint]: Secret Passage contains Arrows (10) for AshodinNoTrap.") ||
+    !hintTabProbe.text.includes("SERVER HINTS FOR OUR CHECKS") ||
+    !hintTabProbe.text.includes("Pegasus Boots") ||
+    !hintTabProbe.text.includes("Vector Test Table - Skill Shot") ||
+    !hintTabProbe.text.includes("UNCOLLECTED") ||
+    !hintTabProbe.text.includes("PRIORITY; PROGRESSION") ||
+    !hintTabProbe.text.includes("Rupees (300)") ||
+    !hintTabProbe.text.includes("FOUND") ||
+    !hintTabProbe.text.includes("PRIORITY; FILLER") ||
+    !hintTabProbe.text.includes("ALTTPP3")
+  ){
+    throw new Error(`AP Hint tab did not capture the hint request/response: ${JSON.stringify(hintTabProbe)}`);
+  }
+  await page.locator(".flprStandaloneConnectLayout .apLogTab[data-aplog-tab='status']").click();
+
   const logColorStats = await page.evaluate(`
     (() => ({
       timestamps: document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apLogTimestamp').length,
       players: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apLogPlayer')).map((node) => node.innerText),
-      items: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apLogItem')).map((node) => ({ text: node.innerText, cls: node.className })),
+      items: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apLogItem')).map((node) => ({
+        text: node.innerText,
+        cls: node.className,
+        title: node.getAttribute('title') || '',
+        tip: node.getAttribute('data-ap-item-tooltip') || '',
+        type: node.getAttribute('data-ap-item-type') || ''
+      })),
       locations: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apLogLocation')).map((node) => node.innerText),
       hints: Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apLogHint')).map((node) => node.innerText)
     }))()
@@ -3304,10 +4619,53 @@ async function run() {
     !logColorStats.items.some((item) => item.text.includes("Bug-Catching Net") && item.cls.includes("apItem-useful")) ||
     !logColorStats.items.some((item) => item.text.includes("Progressive Ball") && item.cls.includes("apItem-progression")) ||
     !logColorStats.items.some((item) => item.text.includes("Arrows (10)") && item.cls.includes("apItem-useful")) ||
+    !logColorStats.items.some((item) => item.text.includes("Ethereal Crossbow") && item.title === "" && item.tip === "Progression Item" && item.type === "progression") ||
+    !logColorStats.items.some((item) => item.text.includes("Bug-Catching Net") && item.title === "" && item.tip === "Useful Item" && item.type === "useful") ||
+    !logColorStats.items.some((item) => item.text.includes("Rupees (300)") && item.title === "" && item.tip === "Filler Item" && item.type === "filler") ||
     !logColorStats.locations.some((text) => text.includes("Link's Uncle")) ||
     !logColorStats.hints.some((text) => text.includes("[Hint]") || text.includes("!hint"))
   ){
     throw new Error(`AP log color coding did not render expected spans: ${JSON.stringify(logColorStats)}`);
+  }
+
+  const logItemTooltipProbe = await page.evaluate(`
+    (() => {
+      const item = Array.from(document.querySelectorAll('.flprStandaloneConnectLayout #apConnLogBody .apLogItem[data-ap-item-tooltip]'))
+        .find((node) => (node.innerText || '').includes('Bug-Catching Net'));
+      if(!item) return { missing:true };
+      const rect = item.getBoundingClientRect();
+      const x = rect.left + Math.max(2, rect.width / 2);
+      const y = rect.top + Math.max(2, rect.height / 2);
+      item.dispatchEvent(new PointerEvent('pointerover', { bubbles:true, clientX:x, clientY:y, pointerId:42 }));
+      item.dispatchEvent(new PointerEvent('pointermove', { bubbles:true, clientX:x + 6, clientY:y + 4, pointerId:42 }));
+      const tip = document.getElementById('standaloneApItemHoverTip');
+      const result = {
+        missing:false,
+        itemTitle: item.getAttribute('title') || '',
+        itemTip: item.getAttribute('data-ap-item-tooltip') || '',
+        itemType: item.getAttribute('data-ap-item-type') || '',
+        visible: !!tip?.classList?.contains('visible'),
+        text: tip?.innerText || '',
+        cls: tip?.className || '',
+        left: tip?.style?.left || '',
+        top: tip?.style?.top || ''
+      };
+      item.dispatchEvent(new PointerEvent('pointerout', { bubbles:true, clientX:x + 6, clientY:y + 4, pointerId:42, relatedTarget:null }));
+      return result;
+    })()
+  `);
+  if(
+    logItemTooltipProbe.missing ||
+    logItemTooltipProbe.itemTitle !== "" ||
+    logItemTooltipProbe.itemTip !== "Useful Item" ||
+    logItemTooltipProbe.itemType !== "useful" ||
+    !logItemTooltipProbe.visible ||
+    !/^useful item$/i.test(String(logItemTooltipProbe.text || "")) ||
+    !logItemTooltipProbe.cls.includes("apItem-useful") ||
+    !logItemTooltipProbe.left ||
+    !logItemTooltipProbe.top
+  ){
+    throw new Error(`AP log item hover tooltip did not render: ${JSON.stringify(logItemTooltipProbe)}`);
   }
 
   const logRenderStability = await page.evaluate(async () => {
@@ -3359,16 +4717,24 @@ async function run() {
     const logBody = document.querySelector(".flprStandaloneConnectLayout #apConnLogBody");
     const logWrap = document.querySelector(".flprStandaloneConnectLayout .apConnLog");
     const sayWrap = document.querySelector(".flprStandaloneConnectLayout .apClientSayWrap");
+    const controls = document.querySelector(".controls");
+    const stage = document.querySelector(".stage");
+    const receivedBody = document.querySelector(".flprStandaloneConnectLayout #receivedBody");
     const logStyle = logWrap ? getComputedStyle(logWrap) : null;
     const logRect = logWrap?.getBoundingClientRect?.();
     const bodyRect = logBody?.getBoundingClientRect?.();
     const sayRect = sayWrap?.getBoundingClientRect?.();
+    const controlsRect = controls?.getBoundingClientRect?.();
+    const stageRect = stage?.getBoundingClientRect?.();
+    const itemBodyRect = receivedBody?.getBoundingClientRect?.();
     const logLayout = {
       missing: !logBody || !logWrap,
       display: logStyle?.display || "",
       flexDirection: logStyle?.flexDirection || "",
       logHeight: logRect ? Math.round(logRect.height) : 0,
       bodyHeight: bodyRect ? Math.round(bodyRect.height) : 0,
+      itemBodyHeight: itemBodyRect ? Math.round(itemBodyRect.height) : 0,
+      controlsBottomGap: (controlsRect && stageRect) ? Math.round(stageRect.bottom - controlsRect.bottom) : null,
       sayTop: sayRect ? Math.round(sayRect.top) : 0,
       sayBottom: sayRect ? Math.round(sayRect.bottom) : 0,
       logBottom: logRect ? Math.round(logRect.bottom) : 0,
@@ -3386,7 +4752,6 @@ async function run() {
     await delay(80);
     const logAfter = logBody ? logBody.scrollTop : 0;
 
-    const receivedBody = document.querySelector(".flprStandaloneConnectLayout #receivedBody");
     const oldReceived = Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row) => ({ ...row })) : [];
     const oldTab = window.__flprStandaloneItemTabName || "";
     let itemBefore = 0;
@@ -3451,7 +4816,10 @@ async function run() {
     liveScrollProbe.logLayout.missing ||
     liveScrollProbe.logLayout.display !== "flex" ||
     liveScrollProbe.logLayout.flexDirection !== "column" ||
-    liveScrollProbe.logLayout.bodyHeight < 80 ||
+    liveScrollProbe.logLayout.logHeight < 500 ||
+    liveScrollProbe.logLayout.bodyHeight < 200 ||
+    liveScrollProbe.logLayout.itemBodyHeight < 200 ||
+    liveScrollProbe.logLayout.controlsBottomGap > 24 ||
     liveScrollProbe.logLayout.bodyBottom > liveScrollProbe.logLayout.sayTop + 4 ||
     Math.abs(liveScrollProbe.logLayout.logBottom - liveScrollProbe.logLayout.sayBottom) > 8 ||
     Math.abs(liveScrollProbe.logAfter - liveScrollProbe.logBefore) > 12 ||
@@ -3473,11 +4841,17 @@ async function run() {
       receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : [],
       receivedByIndex: ap?.receivedByIndex instanceof Map ? Array.from(ap.receivedByIndex.entries()).map(([key, value]) => [key, { ...value }]) : [],
       pendingByLoc: ap?.pendingByLoc instanceof Map ? Array.from(ap.pendingByLoc.entries()).map(([key, value]) => [key, { ...value }]) : [],
-      lastPopup: localStorage.getItem("flpr_ap_last_popup_index")
+      lastPopup: localStorage.getItem("flpr_ap_last_popup_index"),
+      apConnected: !!ap?.connected,
+      apInherentSeedActive: !!ap?.inherentSeedActive,
+      randomizerReady: !!window.__flprStandaloneProfileRuntime?.randomizerReady
     };
     const restore = () => {
       try{ if(typeof bossKeyClearCinematic === "function") bossKeyClearCinematic(); }catch(_){}
       try{ window.__bossKeyCinematicNextAt = 0; }catch(_){}
+      try{ ap.connected = previous.apConnected; }catch(_){}
+      try{ ap.inherentSeedActive = previous.apInherentSeedActive; }catch(_){}
+      try{ if(window.__flprStandaloneProfileRuntime) window.__flprStandaloneProfileRuntime.randomizerReady = previous.randomizerReady; }catch(_){}
       try{
         if(Array.isArray(bossKeysState)){
           for(let i = 0; i < bossKeysState.length; i++){
@@ -3511,6 +4885,9 @@ async function run() {
       }
       window.__apBossKeyCount = 0;
       window.__prevApBossKeyCount = 0;
+      ap.connected = true;
+      ap.inherentSeedActive = false;
+      if(window.__flprStandaloneProfileRuntime) window.__flprStandaloneProfileRuntime.randomizerReady = true;
       window.__flprStandaloneBossKeyLiveRewardAnimation = null;
       ap.pendingByLoc = ap.pendingByLoc || new Map();
       ap.pendingByLoc.set(3013, {
@@ -3549,7 +4926,7 @@ async function run() {
     bossKeyLiveSnapshotProbe.acquired < 1 ||
     !bossKeyLiveSnapshotProbe.cinematicVisible ||
     !/BOSS KEY/i.test(bossKeyLiveSnapshotProbe.cinematicText || "") ||
-    !bossKeyLiveSnapshotProbe.receivingSlot ||
+    (!bossKeyLiveSnapshotProbe.receivingSlot && !bossKeyLiveSnapshotProbe.dockRedeemPeek) ||
     !bossKeyLiveSnapshotProbe.replay ||
     bossKeyLiveSnapshotProbe.replay.from !== 0 ||
     bossKeyLiveSnapshotProbe.replay.to < 1

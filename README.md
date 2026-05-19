@@ -9,6 +9,7 @@ Streams utilizing Flippermizer can be seen at http://twitch.tv/ashodin on Tuesda
 ## What's Included?
 
 - `flippermizer_overlay_tower_v3.html`
+- `flippermizer_yaml_options.html`
 - `flippermizer_standalone_client.html`
 - `flippermizer_standalone_client.css`
 - `flippermizer_standalone_client.js`
@@ -35,6 +36,8 @@ Streams utilizing Flippermizer can be seen at http://twitch.tv/ashodin on Tuesda
 Open `flippermizer_overlay_tower_v3.html` in a browser or OBS browser source.
 
 For the built-in bestiary link, keep `flippermizer_table_repository_library.html` in the same folder as the overlay file.
+
+For Flippermizer AP player YAML setup, open `flippermizer_yaml_options.html` in a browser.
 
 For the standalone AP client, use **Flippermizer! Pinball Randomized! | Home Edition**. It provides a pared-back Multiworld/Singleplayer interface without stream integrations, traps, or bonus pinball.
 
