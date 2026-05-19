@@ -48,6 +48,7 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 - Reworked the siege intro so the selected table morphs from its normal bubble card into the full siege card while the other table cards fade away.
 - Updated the siege intro staging so the attacking force approaches the selected table first, then the castle appears before defense controls unlock.
 - Reworked the siege-clear victory into a full-screen defense animation with the damaged castle visible, the attacking force driven off, victory lights, cheer timing, and regression coverage.
+- Fixed the Home Edition launcher defense-button path so clearing a siege from Electron reliably plays the full-screen siege victory animation without double-playing it.
 - Filler, junk, and Pinball Fragment rewards delivered through live AP received snapshots now show the same full-size received-item notification as other item rewards.
 
 ## Running Home Edition
