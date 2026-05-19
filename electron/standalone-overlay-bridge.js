@@ -2615,18 +2615,26 @@
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard{
         transition:
           opacity 980ms ease,
-          filter 980ms ease !important;
+          filter 980ms ease,
+          scale 980ms cubic-bezier(.18,.86,.18,1),
+          translate 980ms cubic-bezier(.18,.86,.18,1) !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard:not(.flprStandaloneSiegeIntroTarget){
-        opacity:.10 !important;
-        filter:grayscale(.75) brightness(.36) saturate(.58) !important;
+        opacity:.025 !important;
+        scale:.54 !important;
+        filter:grayscale(.86) brightness(.22) saturate(.42) blur(.8px) !important;
         pointer-events:none !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard.flprStandaloneSiegeIntroTarget{
         z-index:1600 !important;
-        scale:.76 !important;
-        animation:flprStandaloneSiegeTargetGrow 1450ms cubic-bezier(.18,.92,.18,1) forwards !important;
+        will-change:translate, scale, filter, opacity !important;
         pointer-events:none !important;
+        transform-origin:center center !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard.flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroFallback{
+        translate:var(--flpr-siege-intro-dx, 0px) var(--flpr-siege-intro-dy, 0px) !important;
+        scale:var(--flpr-siege-intro-sx, .56) var(--flpr-siege-intro-sy, .40) !important;
+        animation:flprStandaloneSiegeTargetMorphFallback var(--flpr-siege-intro-ms, 1450ms) cubic-bezier(.16,.92,.16,1) forwards !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive #selectedBody .pentaCard.flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroReady{
         pointer-events:auto !important;
@@ -2674,10 +2682,25 @@
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroReady .besiegedTargetBtn{
         pointer-events:auto !important;
       }
-      @keyframes flprStandaloneSiegeTargetGrow{
-        0%{ scale:.76; filter:brightness(.72) saturate(.74); }
-        68%{ scale:1.035; filter:brightness(1.14) saturate(1.18); }
-        100%{ scale:1; filter:brightness(1) saturate(1); }
+      @keyframes flprStandaloneSiegeTargetMorphFallback{
+        0%{
+          translate:var(--flpr-siege-intro-dx, 0px) var(--flpr-siege-intro-dy, 0px);
+          scale:var(--flpr-siege-intro-sx, .56) var(--flpr-siege-intro-sy, .40);
+          opacity:.88;
+          filter:brightness(.72) saturate(.74);
+        }
+        62%{
+          translate:calc(var(--flpr-siege-intro-dx, 0px) * -.018) calc(var(--flpr-siege-intro-dy, 0px) * -.018);
+          scale:1.035 1.025;
+          opacity:1;
+          filter:brightness(1.14) saturate(1.18);
+        }
+        100%{
+          translate:0 0;
+          scale:1 1;
+          opacity:1;
+          filter:brightness(1) saturate(1);
+        }
       }
       @keyframes flprStandaloneSiegeCastleIntro{
         0%{ opacity:0; transform:translateY(-24px) scale(.92); filter:brightness(.6); }
@@ -12385,6 +12408,79 @@
     return `${wk}|${Math.max(0, Math.round(n))}`;
   }
 
+  function standaloneResolveBesiegedActivationTarget(argsLike){
+    try{
+      const args = Array.prototype.slice.call(argsLike || []);
+      const opts = args[0] && typeof args[0] === "object" ? args[0] : {};
+      const raw = opts.target && typeof opts.target === "object" ? opts.target : null;
+      if(!raw) return null;
+      const tableKey = String(raw.tableKey || "").trim();
+      const keyParts = tableKey.split("|");
+      const worldKey = String(raw.worldKey || keyParts[0] || "").trim();
+      const idx = Math.max(0, Math.round(Number(keyParts[1] ?? raw.idx ?? 0) || 0));
+      if(!worldKey || !tableKey || !Number.isFinite(idx)) return null;
+      return {
+        worldKey,
+        tableKey,
+        idx,
+        tableName: String(raw.tableName || state?.worlds?.[worldKey]?.tables?.[idx] || "Besieged table")
+      };
+    }catch(_){}
+    return null;
+  }
+
+  function standaloneCaptureSiegeIntroStart(argsLike){
+    const target = standaloneResolveBesiegedActivationTarget(argsLike);
+    if(!target || !state?.worlds?.[target.worldKey]) return null;
+    const previous = {
+      selected: String(state?.selected || ""),
+      currentWorld: String(ap?.currentWorld || ""),
+      nowPlaying: state?.nowPlaying ? { ...state.nowPlaying } : null
+    };
+    try{
+      state.nowPlaying = state.nowPlaying || {};
+      state.selected = target.worldKey;
+      state.nowPlaying[target.worldKey] = target.idx;
+      try{ if(ap) ap.currentWorld = target.worldKey; }catch(_){}
+      try{ if(typeof renderSelected === "function") renderSelected(); }catch(_){}
+      const card = standaloneFindCurrentSiegeTargetCard({
+        active:true,
+        tableKey:target.tableKey,
+        worldKey:target.worldKey,
+        tableName:target.tableName
+      });
+      const rect = card ? card.getBoundingClientRect() : null;
+      if(!rect || rect.width <= 0 || rect.height <= 0) return { target, previous, rect:null };
+      return {
+        target,
+        previous,
+        rect:{
+          left:rect.left,
+          top:rect.top,
+          width:rect.width,
+          height:rect.height,
+          centerX:rect.left + rect.width / 2,
+          centerY:rect.top + rect.height / 2
+        }
+      };
+    }catch(_){
+      return { target, previous, rect:null };
+    }
+  }
+
+  function standaloneRestoreSiegeIntroStartCapture(capture){
+    try{
+      const prev = capture?.previous;
+      if(!prev) return false;
+      if(prev.nowPlaying && typeof prev.nowPlaying === "object") state.nowPlaying = { ...prev.nowPlaying };
+      state.selected = String(prev.selected || state?.selected || "");
+      try{ if(ap) ap.currentWorld = String(prev.currentWorld || ap.currentWorld || ""); }catch(_){}
+      try{ if(typeof renderSelected === "function") renderSelected(); }catch(_){}
+      return true;
+    }catch(_){}
+    return false;
+  }
+
   const standaloneSiegeNotificationQueue = {
     pending: null,
     timer: null,
@@ -12395,7 +12491,8 @@
     introPhaseTimers: [],
     introSig: "",
     introAnimating: false,
-    flushing: false
+    flushing: false,
+    lastIntroMorph: null
   };
 
   function standaloneSiegeSequenceHoldActive(){
@@ -12503,10 +12600,15 @@
     standaloneSiegeNotificationQueue.sequenceHoldUntil = 0;
     standaloneClearSiegeIncomingNotice();
     standaloneSiegeNotificationQueue.flushing = true;
+    const introStart = standaloneCaptureSiegeIntroStart(pending.args);
     try{
       const result = pending.original.apply(pending.thisArg, pending.args);
+      if(result === false){
+        standaloneRestoreSiegeIntroStartCapture(introStart);
+        return result;
+      }
       try{ standaloneEnforceBesiegedTarget("queued activation", { save:true }); }catch(_){}
-      try{ standaloneRunSiegeActivationIntroForCurrent("queued activation"); }catch(_){}
+      try{ standaloneRunSiegeActivationIntroForCurrent("queued activation", introStart); }catch(_){}
       return result;
     }finally{
       standaloneSiegeNotificationQueue.flushing = false;
@@ -12575,7 +12677,19 @@
     try{ document.body.classList.remove("flprStandaloneSiegeIntroActive"); }catch(_){}
     try{
       document.querySelectorAll(".flprStandaloneSiegeIntroTarget").forEach((node)=>{
-        node.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroReady");
+        node.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroReady", "flprStandaloneSiegeIntroFallback");
+        try{
+          node.getAnimations?.().forEach((animation)=>{
+            try{ if(animation.id === "flprStandaloneSiegeTargetMorph") animation.cancel(); }catch(_){}
+          });
+        }catch(_){}
+        try{
+          node.style.removeProperty("--flpr-siege-intro-dx");
+          node.style.removeProperty("--flpr-siege-intro-dy");
+          node.style.removeProperty("--flpr-siege-intro-sx");
+          node.style.removeProperty("--flpr-siege-intro-sy");
+          node.style.removeProperty("--flpr-siege-intro-ms");
+        }catch(_){}
       });
     }catch(_){}
   }
@@ -12615,7 +12729,7 @@
     }catch(_){}
   }
 
-  function standaloneRunSiegeActivationIntroForCurrent(reason){
+  function standaloneRunSiegeActivationIntroForCurrent(reason, introStart){
     try{
       const live = (typeof besiegedGetState === "function")
         ? (besiegedGetState() || {})
@@ -12630,6 +12744,7 @@
       standaloneClearSiegeIntroClasses();
       standaloneSiegeNotificationQueue.introSig = sig;
       const holdMs = Math.max(900, Number(window.__flprStandaloneSiegeIntroMs || 3600) || 3600);
+      const morphMs = Math.max(520, Math.min(1660, Math.round(holdMs * 0.58)));
       try{
         if(String(state?.selected || "") !== String(live.worldKey || "")) state.selected = String(live.worldKey || state?.selected || "");
       }catch(_){}
@@ -12642,37 +12757,147 @@
           return;
         }
         standaloneSiegeNotificationQueue.introAnimating = true;
+        let morph = null;
+        try{
+          const finalRect = card.getBoundingClientRect();
+          const startRect = (introStart && String(introStart?.target?.tableKey || "") === String(live.tableKey || ""))
+            ? introStart.rect
+            : null;
+          if(startRect && finalRect.width > 0 && finalRect.height > 0){
+            const finalCenterX = finalRect.left + finalRect.width / 2;
+            const finalCenterY = finalRect.top + finalRect.height / 2;
+            const startCenterX = Number(startRect.centerX ?? (Number(startRect.left || 0) + Number(startRect.width || 0) / 2));
+            const startCenterY = Number(startRect.centerY ?? (Number(startRect.top || 0) + Number(startRect.height || 0) / 2));
+            morph = {
+              dx: startCenterX - finalCenterX,
+              dy: startCenterY - finalCenterY,
+              sx: Math.max(.18, Math.min(1.15, Number(startRect.width || 0) / finalRect.width)),
+              sy: Math.max(.18, Math.min(1.15, Number(startRect.height || 0) / finalRect.height)),
+              durationMs:morphMs,
+              startRect:{ ...startRect },
+              finalRect:{
+                left:finalRect.left,
+                top:finalRect.top,
+                width:finalRect.width,
+                height:finalRect.height
+              }
+            };
+          }else if(finalRect.width > 0 && finalRect.height > 0){
+            morph = {
+              dx:0,
+              dy:-122,
+              sx:.56,
+              sy:.40,
+              durationMs:morphMs,
+              startRect:null,
+              finalRect:{
+                left:finalRect.left,
+                top:finalRect.top,
+                width:finalRect.width,
+                height:finalRect.height
+              },
+              fallback:true
+            };
+          }
+        }catch(_){}
+        if(!morph) morph = { dx:0, dy:-122, sx:.56, sy:.40, durationMs:morphMs, fallback:true };
+        standaloneSiegeNotificationQueue.lastIntroMorph = morph;
+        try{
+          card.style.setProperty("--flpr-siege-intro-dx", `${Math.round(Number(morph.dx || 0))}px`);
+          card.style.setProperty("--flpr-siege-intro-dy", `${Math.round(Number(morph.dy || 0))}px`);
+          card.style.setProperty("--flpr-siege-intro-sx", String(Number(morph.sx || .56).toFixed(4)));
+          card.style.setProperty("--flpr-siege-intro-sy", String(Number(morph.sy || .40).toFixed(4)));
+          card.style.setProperty("--flpr-siege-intro-ms", `${Math.round(Number(morph.durationMs || morphMs))}ms`);
+        }catch(_){}
         try{ document.body.classList.add("flprStandaloneSiegeIntroActive"); }catch(_){}
         try{ card.classList.add("flprStandaloneSiegeIntroTarget"); }catch(_){}
+        try{
+          if(card.animate){
+            card.classList.remove("flprStandaloneSiegeIntroFallback");
+            const animation = card.animate([
+              {
+                translate:`${Number(morph.dx || 0)}px ${Number(morph.dy || 0)}px`,
+                scale:`${Number(morph.sx || .56)} ${Number(morph.sy || .40)}`,
+                opacity:.88,
+                filter:"brightness(.72) saturate(.74)"
+              },
+              {
+                offset:.62,
+                translate:`${Number(morph.dx || 0) * -0.018}px ${Number(morph.dy || 0) * -0.018}px`,
+                scale:"1.035 1.025",
+                opacity:1,
+                filter:"brightness(1.14) saturate(1.18)"
+              },
+              {
+                translate:"0px 0px",
+                scale:"1 1",
+                opacity:1,
+                filter:"brightness(1) saturate(1)"
+              }
+            ], {
+              duration:Math.round(Number(morph.durationMs || morphMs)),
+              easing:"cubic-bezier(.16,.92,.16,1)",
+              fill:"both"
+            });
+            try{ animation.id = "flprStandaloneSiegeTargetMorph"; }catch(_){}
+            animation.onfinish = ()=>{
+              try{ animation.cancel(); }catch(_){}
+            };
+          }else{
+            card.classList.add("flprStandaloneSiegeIntroFallback");
+          }
+        }catch(_){
+          try{ card.classList.add("flprStandaloneSiegeIntroFallback"); }catch(__){}
+        }
+        let fadedSiblingCount = 0;
+        try{
+          fadedSiblingCount = Array.from(document.querySelectorAll("#selectedBody .pentaCard"))
+            .filter((node)=>node !== card).length;
+        }catch(_){}
         standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroArmy"); standalonePlaySiegeIntroSound(); }catch(_){} }, 1280));
         standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroReady"); }catch(_){} }, 2420));
+        try{
+          window.__flprStandaloneLastSiegeIntro = {
+            tableKey: String(live.tableKey || ""),
+            tableName: String(live.tableName || ""),
+            reason: String(reason || ""),
+            completed:false,
+            morph,
+            fadedSiblingCount,
+            ts:Date.now()
+          };
+        }catch(_){}
         standaloneSiegeNotificationQueue.introTimer = setTimeout(()=>{
           standaloneSiegeNotificationQueue.introTimer = null;
           standaloneSiegeNotificationQueue.introPhaseTimers = [];
           standaloneSiegeNotificationQueue.introAnimating = false;
           try{ document.body.classList.remove("flprStandaloneSiegeIntroActive"); }catch(_){}
-          try{ card.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroReady"); }catch(_){}
+          try{
+            card.getAnimations?.().forEach((animation)=>{
+              try{ if(animation.id === "flprStandaloneSiegeTargetMorph") animation.cancel(); }catch(_){}
+            });
+          }catch(_){}
+          try{
+            card.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroReady", "flprStandaloneSiegeIntroFallback");
+            card.style.removeProperty("--flpr-siege-intro-dx");
+            card.style.removeProperty("--flpr-siege-intro-dy");
+            card.style.removeProperty("--flpr-siege-intro-sx");
+            card.style.removeProperty("--flpr-siege-intro-sy");
+            card.style.removeProperty("--flpr-siege-intro-ms");
+          }catch(_){}
           try{
             window.__flprStandaloneLastSiegeIntro = {
               tableKey: String(live.tableKey || ""),
               tableName: String(live.tableName || ""),
               reason: String(reason || ""),
               completed:true,
+              morph:standaloneSiegeNotificationQueue.lastIntroMorph || morph,
               ts:Date.now()
             };
           }catch(_){}
         }, holdMs);
       };
-      requestAnimationFrame(()=>requestAnimationFrame(apply));
-      try{
-        window.__flprStandaloneLastSiegeIntro = {
-          tableKey: String(live.tableKey || ""),
-          tableName: String(live.tableName || ""),
-          reason: String(reason || ""),
-          completed:false,
-          ts:Date.now()
-        };
-      }catch(_){}
+      apply();
       return true;
     }catch(_){}
     return false;
@@ -12879,9 +13104,14 @@
       if(original && !original.__flprStandaloneBesiegedSelectionBridge){
         const bridged = function standaloneBesiegedActivateBridge(){
           if(standaloneQueueBesiegedActivation(original, this, arguments)) return true;
+          const introStart = standaloneCaptureSiegeIntroStart(arguments);
           const result = original.apply(this, arguments);
+          if(result === false){
+            standaloneRestoreSiegeIntroStartCapture(introStart);
+            return result;
+          }
           try{ standaloneEnforceBesiegedTarget("activation", { save:true }); }catch(_){}
-          if(result !== false) try{ standaloneRunSiegeActivationIntroForCurrent("activation"); }catch(_){}
+          try{ standaloneRunSiegeActivationIntroForCurrent("activation", introStart); }catch(_){}
           return result;
         };
         bridged.__flprStandaloneBesiegedSelectionBridge = true;
