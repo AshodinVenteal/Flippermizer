@@ -3444,7 +3444,7 @@ async function run() {
   const progressiveSiegePipelineProbe = await page.evaluate(async () => {
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const previousIntroMs = window.__flprStandaloneSiegeIntroMs;
-    window.__flprStandaloneSiegeIntroMs = 900;
+    window.__flprStandaloneSiegeIntroMs = 1600;
     if(typeof besiegedClear === "function") besiegedClear("test-reset");
     if(typeof closeOverviewModal === "function") closeOverviewModal();
     const targetKey = typeof getTableKeyForName === "function" ? (getTableKeyForName("Corvette") || "") : "";
@@ -3504,26 +3504,45 @@ async function run() {
     };
     const deadline = Date.now() + 8200;
     let intro = null;
+    const phaseOrder = [];
+    const phaseSamples = [];
     while(Date.now() < deadline){
-      await delay(140);
+      await delay(80);
       const live = typeof besiegedGetState === "function" ? besiegedGetState() : state?.besiegedEvent;
       const activeIntro = !!document.body.classList.contains("flprStandaloneSiegeIntroActive");
       const lastIntro = window.__flprStandaloneLastSiegeIntro || null;
       if(activeIntro || (lastIntro && lastIntro.completed === false)){
         const targetCard = document.querySelector("#selectedBody .pentaCard.besiegedTarget");
         const nonTargets = Array.from(document.querySelectorAll("#selectedBody .pentaCard:not(.besiegedTarget)"));
+        const targetClass = targetCard?.className || "";
+        const hasArmy = /\bflprStandaloneSiegeIntroArmy\b/.test(targetClass);
+        const hasCastle = /\bflprStandaloneSiegeIntroCastle\b/.test(targetClass);
+        const hasReady = /\bflprStandaloneSiegeIntroReady\b/.test(targetClass);
+        [["army", hasArmy], ["castle", hasCastle], ["ready", hasReady]].forEach(([phase, on]) => {
+          if(on && !phaseOrder.includes(phase)) phaseOrder.push(phase);
+        });
+        phaseSamples.push({
+          targetClass,
+          hasArmy,
+          hasCastle,
+          hasReady,
+          lastIntroPhase: lastIntro?.lastPhase || "",
+          lastIntroOrder: Array.isArray(lastIntro?.phaseOrder) ? lastIntro.phaseOrder.slice() : []
+        });
         intro = {
           activeIntro,
           activeView: String(activeView || ""),
           tableKey: String(live?.tableKey || ""),
           worldKey: String(live?.worldKey || ""),
           queueState: typeof window.flprStandaloneSiegeQueueState === "function" ? window.flprStandaloneSiegeQueueState() : null,
-          targetClass: targetCard?.className || "",
+          targetClass,
           morphAnimations: targetCard?.getAnimations?.().map((animation) => animation.id || animation.animationName || "") || [],
           fadedSiblingCount: nonTargets.filter((node) => Number.parseFloat(getComputedStyle(node).opacity || "1") < 0.16).length,
+          phaseOrder: phaseOrder.slice(),
+          phaseSamples: phaseSamples.slice(-12),
           lastIntro
         };
-        break;
+        if(hasCastle || phaseSamples.length >= 16) break;
       }
     }
     await delay(1120);
@@ -3562,6 +3581,10 @@ async function run() {
     !progressiveSiegePipelineProbe.intro.lastIntro?.morph ||
     Number(progressiveSiegePipelineProbe.intro.lastIntro?.morph?.sx || 1) >= 0.92 ||
     Number(progressiveSiegePipelineProbe.intro.lastIntro?.morph?.sy || 1) >= 0.92 ||
+    !progressiveSiegePipelineProbe.intro.phaseOrder?.includes("army") ||
+    !progressiveSiegePipelineProbe.intro.phaseOrder?.includes("castle") ||
+    progressiveSiegePipelineProbe.intro.phaseOrder.indexOf("army") > progressiveSiegePipelineProbe.intro.phaseOrder.indexOf("castle") ||
+    !(Number(progressiveSiegePipelineProbe.intro.lastIntro?.phaseTimings?.armyAt || 0) < Number(progressiveSiegePipelineProbe.intro.lastIntro?.phaseTimings?.castleAt || 0)) ||
     progressiveSiegePipelineProbe.after?.tableKey !== progressiveSiegePipelineProbe.siegeKey ||
     progressiveSiegePipelineProbe.after?.worldKey !== progressiveSiegePipelineProbe.siegeWorld ||
     progressiveSiegePipelineProbe.after?.activeView !== "tower" ||

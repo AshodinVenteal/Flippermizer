@@ -1921,6 +1921,10 @@
       body.flprStandaloneOriginalClient .standaloneArchipelagoButtons .cBtn{
         width:100% !important;
       }
+      body.flprStandaloneOriginalClient .flprStandaloneConnectLayout .cBtn{
+        min-height:calc(22px * var(--flprStandaloneControlFontScale)) !important;
+        padding:calc(3px * var(--flprStandaloneControlFontScale)) calc(5px * var(--flprStandaloneControlFontScale)) !important;
+      }
       body.flprStandaloneOriginalClient .standaloneSaveApCfgBtn{
         align-self:flex-end !important;
         width:min(220px, 100%) !important;
@@ -2153,7 +2157,7 @@
         margin:0 !important;
       }
       body.flprStandaloneOriginalClient .standaloneItemTab{
-        min-height:calc(24px * var(--flprStandaloneControlFontScale)) !important;
+        min-height:calc(20px * var(--flprStandaloneControlFontScale)) !important;
         border:1px solid rgba(0,166,255,.55) !important;
         border-radius:8px !important;
         background:linear-gradient(180deg, rgba(0,40,72,.86), rgba(0,16,30,.92)) !important;
@@ -2293,6 +2297,7 @@
         pointer-events:auto !important;
         flex:1 1 92px !important;
         min-width:0 !important;
+        min-height:calc(22px * var(--flprStandaloneControlFontScale)) !important;
       }
       body.flprStandaloneOriginalClient .apClientSayWrap{
         position:relative !important;
@@ -2307,7 +2312,7 @@
         grid-template-columns:minmax(0, 1fr) auto !important;
         gap:calc(4px * var(--flprStandaloneControlFontScale)) !important;
         align-items:center !important;
-        padding:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+        padding:calc(3px * var(--flprStandaloneControlFontScale)) !important;
       }
       body.flprStandaloneOriginalClient .apClientSayInput{
         position:relative !important;
@@ -2315,6 +2320,7 @@
         pointer-events:auto !important;
         width:100% !important;
         min-width:0 !important;
+        min-height:calc(22px * var(--flprStandaloneControlFontScale)) !important;
       }
       body.flprStandaloneOriginalClient .apClientSayBtn{
         position:relative !important;
@@ -2324,8 +2330,8 @@
         white-space:nowrap !important;
       }
       body.flprStandaloneOriginalClient .apClientSayHint{
-        padding:0 calc(5px * var(--flprStandaloneControlFontScale)) calc(5px * var(--flprStandaloneControlFontScale)) !important;
-        font-size:calc(4.6px * var(--flprStandaloneControlFontScale)) !important;
+        padding:0 calc(3px * var(--flprStandaloneControlFontScale)) calc(3px * var(--flprStandaloneControlFontScale)) !important;
+        font-size:calc(4.2px * var(--flprStandaloneControlFontScale)) !important;
         line-height:1.35 !important;
       }
       body.flprStandaloneOriginalClient #apConnLogBody{
@@ -2647,28 +2653,46 @@
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleFlag,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedCastleWindows{
         opacity:0 !important;
-        animation:flprStandaloneSiegeCastleIntro 980ms cubic-bezier(.16,.9,.18,1) 420ms forwards !important;
+        translate:0 -24px !important;
+        scale:.92 !important;
+        filter:brightness(.58) saturate(.82) !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedArmyBadge,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedStory,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedArmyField,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedAttackerBanner{
+        opacity:0 !important;
+        translate:0 58px !important;
+        scale:.78 !important;
+        filter:brightness(.48) saturate(.58) blur(.6px) !important;
+      }
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedSiegeFx,
-      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedAttackerBanner,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedStatusRail,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedDamageFx,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedRubbleFx{
         opacity:0 !important;
-        transform:translateY(16px) scale(.94) !important;
+        translate:0 22px !important;
+        scale:.90 !important;
+        filter:brightness(.56) saturate(.68) !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedArmyBadge,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedStory,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedArmyField,
-      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedSiegeFx,
-      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedAttackerBanner,
-      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedStatusRail,
-      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedDamageFx,
-      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedRubbleFx{
-        animation:flprStandaloneSiegeArmyIntro 820ms cubic-bezier(.18,.9,.18,1) forwards !important;
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroArmy .besiegedAttackerBanner{
+        animation:flprStandaloneSiegeArmyIntro 980ms cubic-bezier(.12,.9,.16,1) forwards !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedCastleAura,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedCastleKeep,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedCastleCrown,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedCastleGate,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedCastleTower,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedCastleFlag,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedCastleWindows,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedSiegeFx,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedStatusRail,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedDamageFx,
+      body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget.flprStandaloneSiegeIntroCastle .besiegedRubbleFx{
+        animation:flprStandaloneSiegeCastleIntro 980ms cubic-bezier(.16,.9,.18,1) forwards !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedDefenseHud,
       body.flprStandaloneOriginalClient.flprStandaloneSiegeIntroActive .flprStandaloneSiegeIntroTarget .besiegedTargetBtn{
@@ -2703,14 +2727,15 @@
         }
       }
       @keyframes flprStandaloneSiegeCastleIntro{
-        0%{ opacity:0; transform:translateY(-24px) scale(.92); filter:brightness(.6); }
-        72%{ opacity:1; transform:translateY(5px) scale(1.025); filter:brightness(1.18); }
-        100%{ opacity:1; transform:translateY(0) scale(1); filter:brightness(1); }
+        0%{ opacity:0; translate:0 -24px; scale:.92; filter:brightness(.58) saturate(.82); }
+        54%{ opacity:1; translate:0 6px; scale:1.035; filter:brightness(1.24) saturate(1.18); }
+        100%{ opacity:1; translate:0 0; scale:1; filter:brightness(1) saturate(1); }
       }
       @keyframes flprStandaloneSiegeArmyIntro{
-        0%{ opacity:0; transform:translateY(22px) scale(.90); filter:brightness(.62); }
-        65%{ opacity:1; transform:translateY(-3px) scale(1.035); filter:brightness(1.18); }
-        100%{ opacity:1; transform:translateY(0) scale(1); filter:brightness(1); }
+        0%{ opacity:0; translate:0 72px; scale:.72; filter:brightness(.42) saturate(.52) blur(.8px); }
+        28%{ opacity:.96; translate:0 34px; scale:.88; filter:brightness(.72) saturate(.88) blur(.2px); }
+        70%{ opacity:1; translate:0 -4px; scale:1.045; filter:brightness(1.22) saturate(1.18); }
+        100%{ opacity:1; translate:0 0; scale:1; filter:brightness(1) saturate(1); }
       }
       @keyframes flprStandaloneSiegeControlsIntro{
         from{ opacity:0; filter:brightness(.55); }
@@ -13113,7 +13138,7 @@
     try{ document.body.classList.remove("flprStandaloneSiegeIntroActive"); }catch(_){}
     try{
       document.querySelectorAll(".flprStandaloneSiegeIntroTarget").forEach((node)=>{
-        node.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroReady", "flprStandaloneSiegeIntroFallback");
+        node.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroCastle", "flprStandaloneSiegeIntroReady", "flprStandaloneSiegeIntroFallback");
         try{
           node.getAnimations?.().forEach((animation)=>{
             try{ if(animation.id === "flprStandaloneSiegeTargetMorph") animation.cancel(); }catch(_){}
@@ -13181,6 +13206,10 @@
       standaloneSiegeNotificationQueue.introSig = sig;
       const holdMs = Math.max(900, Number(window.__flprStandaloneSiegeIntroMs || 3600) || 3600);
       const morphMs = Math.max(520, Math.min(1660, Math.round(holdMs * 0.58)));
+      const clampPhase = (value, min, max)=>Math.max(min, Math.min(max, Math.round(Number(value || 0) || 0)));
+      const armyAt = clampPhase(holdMs * 0.18, 120, Math.max(140, Math.min(760, holdMs - 620)));
+      const castleAt = clampPhase(holdMs * 0.42, armyAt + 220, Math.max(armyAt + 240, Math.min(1580, holdMs - 360)));
+      const readyAt = clampPhase(holdMs * 0.72, castleAt + 260, Math.max(castleAt + 280, holdMs - 220));
       try{
         if(String(state?.selected || "") !== String(live.worldKey || "")) state.selected = String(live.worldKey || state?.selected || "");
       }catch(_){}
@@ -13290,8 +13319,17 @@
           fadedSiblingCount = Array.from(document.querySelectorAll("#selectedBody .pentaCard"))
             .filter((node)=>node !== card).length;
         }catch(_){}
-        standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroArmy"); standalonePlaySiegeIntroSound(); }catch(_){} }, 1280));
-        standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroReady"); }catch(_){} }, 2420));
+        const markPhase = (phase)=>{
+          try{
+            const rec = window.__flprStandaloneLastSiegeIntro;
+            if(rec && rec.completed === false){
+              rec.phaseOrder = Array.isArray(rec.phaseOrder) ? rec.phaseOrder : [];
+              if(!rec.phaseOrder.includes(phase)) rec.phaseOrder.push(phase);
+              rec.lastPhase = phase;
+              rec.lastPhaseAt = Date.now();
+            }
+          }catch(_){}
+        };
         try{
           window.__flprStandaloneLastSiegeIntro = {
             tableKey: String(live.tableKey || ""),
@@ -13300,9 +13338,14 @@
             completed:false,
             morph,
             fadedSiblingCount,
+            phaseOrder: [],
+            phaseTimings: { armyAt, castleAt, readyAt, holdMs },
             ts:Date.now()
           };
         }catch(_){}
+        standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroArmy"); markPhase("army"); standalonePlaySiegeIntroSound(); }catch(_){} }, armyAt));
+        standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroCastle"); markPhase("castle"); }catch(_){} }, castleAt));
+        standaloneSiegeNotificationQueue.introPhaseTimers.push(setTimeout(()=>{ try{ card.classList.add("flprStandaloneSiegeIntroReady"); markPhase("ready"); }catch(_){} }, readyAt));
         standaloneSiegeNotificationQueue.introTimer = setTimeout(()=>{
           standaloneSiegeNotificationQueue.introTimer = null;
           standaloneSiegeNotificationQueue.introPhaseTimers = [];
@@ -13314,7 +13357,7 @@
             });
           }catch(_){}
           try{
-            card.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroReady", "flprStandaloneSiegeIntroFallback");
+            card.classList.remove("flprStandaloneSiegeIntroTarget", "flprStandaloneSiegeIntroArmy", "flprStandaloneSiegeIntroCastle", "flprStandaloneSiegeIntroReady", "flprStandaloneSiegeIntroFallback");
             card.style.removeProperty("--flpr-siege-intro-dx");
             card.style.removeProperty("--flpr-siege-intro-dy");
             card.style.removeProperty("--flpr-siege-intro-sx");
@@ -13328,6 +13371,8 @@
               reason: String(reason || ""),
               completed:true,
               morph:standaloneSiegeNotificationQueue.lastIntroMorph || morph,
+              phaseOrder: Array.isArray(window.__flprStandaloneLastSiegeIntro?.phaseOrder) ? window.__flprStandaloneLastSiegeIntro.phaseOrder.slice() : [],
+              phaseTimings: { armyAt, castleAt, readyAt, holdMs },
               ts:Date.now()
             };
           }catch(_){}
