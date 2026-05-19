@@ -44,6 +44,7 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 - Filler Junk Items in Home Edition now play the Stream Edition easy/medium randomize roll before updating the junk drawers.
 - Simplified junk counter drawers: Easy, Medium, and Fragment counters now show piece progress plus a small READY count for spendable rewards.
 - Added readable collapsed counter chips for junk redeems and Extra Ball tokens so hidden drawer handles still show what is ready.
+- Fixed Grand Lizard's Home Edition task catalog so it renders a full six-check set with distinct easy, medium, and hard objectives.
 - Reworked the siege intro so the selected table morphs from its normal bubble card into the full siege card while the other table cards fade away.
 - Updated the siege intro staging so the attacking force approaches the selected table first, then the castle appears before defense controls unlock.
 - Reworked the siege-clear victory into a full-screen defense animation with the damaged castle visible, the attacking force driven off, victory lights, cheer timing, and regression coverage.
