@@ -3510,13 +3510,17 @@ async function run() {
       const activeIntro = !!document.body.classList.contains("flprStandaloneSiegeIntroActive");
       const lastIntro = window.__flprStandaloneLastSiegeIntro || null;
       if(activeIntro || (lastIntro && lastIntro.completed === false)){
+        const targetCard = document.querySelector("#selectedBody .pentaCard.besiegedTarget");
+        const nonTargets = Array.from(document.querySelectorAll("#selectedBody .pentaCard:not(.besiegedTarget)"));
         intro = {
           activeIntro,
           activeView: String(activeView || ""),
           tableKey: String(live?.tableKey || ""),
           worldKey: String(live?.worldKey || ""),
           queueState: typeof window.flprStandaloneSiegeQueueState === "function" ? window.flprStandaloneSiegeQueueState() : null,
-          targetClass: document.querySelector("#selectedBody .pentaCard.besiegedTarget")?.className || "",
+          targetClass: targetCard?.className || "",
+          morphAnimations: targetCard?.getAnimations?.().map((animation) => animation.id || animation.animationName || "") || [],
+          fadedSiblingCount: nonTargets.filter((node) => Number.parseFloat(getComputedStyle(node).opacity || "1") < 0.16).length,
           lastIntro
         };
         break;
@@ -3553,6 +3557,11 @@ async function run() {
     !progressiveSiegePipelineProbe.intro ||
     progressiveSiegePipelineProbe.intro.tableKey !== progressiveSiegePipelineProbe.siegeKey ||
     progressiveSiegePipelineProbe.intro.activeView !== "tower" ||
+    !progressiveSiegePipelineProbe.intro.morphAnimations?.includes("flprStandaloneSiegeTargetMorph") ||
+    Number(progressiveSiegePipelineProbe.intro.fadedSiblingCount || 0) < 4 ||
+    !progressiveSiegePipelineProbe.intro.lastIntro?.morph ||
+    Number(progressiveSiegePipelineProbe.intro.lastIntro?.morph?.sx || 1) >= 0.92 ||
+    Number(progressiveSiegePipelineProbe.intro.lastIntro?.morph?.sy || 1) >= 0.92 ||
     progressiveSiegePipelineProbe.after?.tableKey !== progressiveSiegePipelineProbe.siegeKey ||
     progressiveSiegePipelineProbe.after?.worldKey !== progressiveSiegePipelineProbe.siegeWorld ||
     progressiveSiegePipelineProbe.after?.activeView !== "tower" ||
