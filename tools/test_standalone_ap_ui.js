@@ -5346,12 +5346,17 @@ async function run() {
     }catch(_){}
     await delay(40);
     const liveBefore = typeof besiegedGetState === "function" ? besiegedGetState() : state?.besiegedEvent;
-    const cleared = typeof besiegedClear === "function" && besiegedClear("tower-target");
-    await delay(180);
+    const defenseBtn = document.querySelector(".pentaCard.besiegedTarget .besiegedTargetBtn");
+    const buttonText = defenseBtn?.innerText || "";
+    if(defenseBtn) defenseBtn.click();
+    await delay(220);
+    const cleared = !(typeof besiegedIsActive === "function" ? !!besiegedIsActive() : !!state?.besiegedEvent?.active);
     const overlay = document.getElementById("flprStandaloneSiegeVictoryOverlay");
     const immediate = {
       activated,
       activeBefore: !!liveBefore?.active,
+      buttonExists: !!defenseBtn,
+      buttonText,
       cleared: !!cleared,
       overlayVisible: !!overlay,
       text: overlay?.innerText || "",
@@ -5379,6 +5384,7 @@ async function run() {
   if(
     !siegeClearVictoryProbe.immediate.activated ||
     !siegeClearVictoryProbe.immediate.activeBefore ||
+    !siegeClearVictoryProbe.immediate.buttonExists ||
     !siegeClearVictoryProbe.immediate.cleared ||
     !siegeClearVictoryProbe.immediate.overlayVisible ||
     !siegeClearVictoryProbe.immediate.card ||

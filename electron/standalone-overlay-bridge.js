@@ -13658,7 +13658,7 @@
 
   function standaloneShowSiegeVictoryOverlay(live, reason){
     try{
-      if(!live || reason === "test-reset") return false;
+      if(!live || !standaloneShouldShowSiegeVictoryOverlay(live, reason)) return false;
       const tableName = String(live.tableName || "Besieged table").trim() || "Besieged table";
       const enemy = standaloneSiegeEnemyName(live.armyLabel || live.armyType || "siege army");
       const damageLevel = standaloneSiegeVictoryDamageLevel(live);
@@ -13725,6 +13725,91 @@
         try{ document.querySelector(".stage")?.classList?.remove("victoryGroove"); }catch(_){}
       }, holdMs);
       standaloneSiegeVictoryOverlay.removeTimer = setTimeout(()=>standaloneClearSiegeVictoryOverlay(), holdMs + 760);
+      return true;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneSiegeVictoryReasonIsSuppressed(reason){
+    const raw = String(reason || "").trim().toLowerCase();
+    if(!raw) return false;
+    if(raw === "test-reset") return true;
+    if(/^test-(?!siege-victory)/.test(raw)) return true;
+    return /\b(reset|cancel|abort|load|sync|startup|failed|penalty)\b/.test(raw);
+  }
+
+  function standaloneShouldShowSiegeVictoryOverlay(live, reason){
+    if(!live || !live.active) return false;
+    if(standaloneSiegeVictoryReasonIsSuppressed(reason)) return false;
+    return true;
+  }
+
+  function standaloneSiegeVictorySignature(live, reason){
+    return [
+      String(live?.worldKey || ""),
+      String(live?.tableKey || ""),
+      String(live?.tableName || ""),
+      String(live?.armyType || ""),
+      String(live?.armyLabel || ""),
+      String(reason || "")
+    ].join("|");
+  }
+
+  function standaloneMaybeShowSiegeVictoryOverlay(live, reason){
+    try{
+      if(!standaloneShouldShowSiegeVictoryOverlay(live, reason)) return false;
+      const sig = standaloneSiegeVictorySignature(live, reason);
+      const now = Date.now();
+      const last = standaloneSiegeVictoryOverlay.last || null;
+      if(last && last.sig === sig && (now - Number(last.at || 0)) < 1400) return false;
+      if(document.getElementById("flprStandaloneSiegeVictoryOverlay")) return false;
+      const shown = standaloneShowSiegeVictoryOverlay(live, reason);
+      if(shown) standaloneSiegeVictoryOverlay.last = { sig, at:now };
+      return shown;
+    }catch(_){}
+    return false;
+  }
+
+  try{
+    window.flprStandaloneShowSiegeVictoryOverlay = function(live, reason){
+      return standaloneMaybeShowSiegeVictoryOverlay(live, reason || "external");
+    };
+  }catch(_){}
+
+  function standaloneInstallSiegeVictoryClickBridge(){
+    try{
+      if(window.__flprStandaloneSiegeVictoryClickBridge) return true;
+      window.__flprStandaloneSiegeVictoryClickBridge = true;
+      document.addEventListener("click", (ev)=>{
+        try{
+          const btn = ev?.target?.closest?.(".besiegedTargetBtn");
+          if(!btn) return;
+          const live = (typeof besiegedGetState === "function")
+            ? { ...(besiegedGetState() || {}) }
+            : { ...(state?.besiegedEvent || {}) };
+          if(!standaloneShouldShowSiegeVictoryOverlay(live, "button-clear")) return;
+          const wasRunning = (typeof besiegedIsDefenseRunning === "function")
+            ? !!besiegedIsDefenseRunning(live)
+            : !!(Number(live?.defenseStartedAt || 0) > 0 && Number(live?.defenseDeadlineAt || 0) > Date.now());
+          if(!wasRunning) return;
+          setTimeout(()=>{
+            try{
+              const stillActive = (typeof besiegedIsActive === "function")
+                ? !!besiegedIsActive()
+                : !!state?.besiegedEvent?.active;
+              if(!stillActive) standaloneMaybeShowSiegeVictoryOverlay(live, "button-clear");
+            }catch(_){}
+          }, 0);
+          setTimeout(()=>{
+            try{
+              const stillActive = (typeof besiegedIsActive === "function")
+                ? !!besiegedIsActive()
+                : !!state?.besiegedEvent?.active;
+              if(!stillActive) standaloneMaybeShowSiegeVictoryOverlay(live, "button-clear");
+            }catch(_){}
+          }, 90);
+        }catch(_){}
+      }, true);
       return true;
     }catch(_){}
     return false;
@@ -13828,7 +13913,7 @@
           const result = original.apply(this, arguments);
           try{ standaloneClearSiegeIntroClasses(); }catch(_){}
           if(result !== false && live?.active){
-            try{ standaloneShowSiegeVictoryOverlay(live, reason); }catch(_){}
+            try{ standaloneMaybeShowSiegeVictoryOverlay(live, reason || "clear"); }catch(_){}
           }
           return result;
         };
@@ -16718,6 +16803,7 @@
     installStandaloneBossIncomingGateBridge();
     installStandaloneSiegeNotificationQueueBridge();
     installStandaloneBesiegedSelectionBridge();
+    standaloneInstallSiegeVictoryClickBridge();
     installStandaloneChecksSelectionBridge();
     installStandaloneProgressiveChecksRewardBridge();
     installStandaloneChecksBackgroundBridge();
@@ -17124,6 +17210,7 @@
         installStandaloneBossIncomingGateBridge();
         installStandaloneSiegeNotificationQueueBridge();
         installStandaloneBesiegedSelectionBridge();
+        standaloneInstallSiegeVictoryClickBridge();
         installStandaloneChecksSelectionBridge();
         installStandaloneProgressiveChecksRewardBridge();
         installStandaloneChecksBackgroundBridge();
