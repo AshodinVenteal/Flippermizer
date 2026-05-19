@@ -87,7 +87,7 @@
         },
         "boss_keys_required_for_boss_table_open": {
             "display_name": "Boss Keys Required",
-            "description": "How many Boss Keys are required to open the Boss Table.",
+            "description": "How many local-only Boss Keys are required to open the Boss Table.",
             "type": "Range",
             "range_start": 1,
             "range_end": 10,

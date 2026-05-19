@@ -125,6 +125,9 @@
     { code:'AGBW', slug:'als_garage_band_goes_on_a_world_tour', name:'Al\'s Garage Band Goes on a World Tour', aliases:['Als Garage Band Goes on a World Tour','Als Garage Band'] },
     { code:'CIRC80', slug:'circus_gottlieb_1980', name:'Circus', aliases:['Circus (Gottlieb 1980)'] },
     { code:'POTO', slug:'phantom_of_the_opera', name:'Phantom of the Opera', aliases:[] },
+    { code:'GEN', slug:'genesis', name:'Genesis', aliases:['Genesis (Gottlieb)','Genesis (Gottlieb 1986)'] },
+    { code:'HH', slug:'haunted_house', name:'Haunted House', aliases:['Haunted House (Gottlieb)','Haunted House (Gottlieb 1982)'] },
+    { code:'HULK', slug:'the_incredible_hulk', name:'The Incredible Hulk', aliases:['Incredible Hulk','The Incredible Hulk (Gottlieb)','The Incredible Hulk (Gottlieb 1979)'] },
     { code:'BFOR', slug:'batman_forever', name:'Batman Forever', aliases:[] },
     { code:'DMAN', slug:'demolition_man', name:'Demolition Man', aliases:[] },
     { code:'GEYE', slug:'goldeneye', name:'GoldenEye', aliases:['007 GoldenEye'] },
@@ -156,6 +159,11 @@
     { code:'QBERT', slug:'qberts_quest', name:'Q*bert\'s Quest', aliases:['Qbert\'s Quest','Q Bert\'s Quest','Q*Bert'] },
     { code:'MMPAC', slug:'mr_and_mrs_pac_man', name:'Mr. & Mrs. Pac-Man', aliases:['Mr and Mrs Pac-Man','Mr. and Mrs. Pac-Man','Mr & Mrs Pac Man','Mr. & Mrs. Pac Man'] },
     { code:'SINV', slug:'space_invaders', name:'Space Invaders', aliases:[] },
+    { code:'MONOP', slug:'monopoly', name:'Monopoly', aliases:['Monopoly Stern','Monopoly (Stern)','Monopoly (Stern 2001)'] },
+    { code:'DND', slug:'dungeons_and_dragons_bally_1987', name:'Dungeons & Dragons', aliases:['Dungeons and Dragons','D&D','Dungeons & Dragons (Bally)','Dungeons & Dragons (Bally 1987)'] },
+    { code:'WPT', slug:'world_poker_tour', name:'World Poker Tour', aliases:['World Poker Tour (Stern)','World Poker Tour (Stern 2006)'] },
+    { code:'HRC', slug:'high_roller_casino', name:'High Roller Casino', aliases:['High Roller Casino (Stern)','High Roller Casino (Stern 2001)'] },
+    { code:'WHOD', slug:'who_dunnit', name:'Who Dunnit', aliases:['Who Dun It','Who Dunnit?','WHO dunnit','Who Dunnit (Bally)','Who Dunnit (Bally 1995)','Clue'] },
 
     { code:'BOSS_TABLE', slug:'boss_table_placeholder', name:'(Boss Table)', aliases:['Boss Table','Boss'] }
   ];
@@ -219,6 +227,9 @@
     AGBW:{ displayName:'Al\'s Garage Band Goes on a World Tour (Alvin G 1992)', manufacturer:'Alvin G', year:1992 },
     CIRC80:{ displayName:'Circus (Gottlieb 1980)', manufacturer:'Gottlieb', year:1980 },
     POTO:{ displayName:'Phantom of the Opera (Data East 1990)', manufacturer:'Data East', year:1990 },
+    GEN:{ displayName:'Genesis (Gottlieb 1986)', manufacturer:'Gottlieb', year:1986 },
+    HH:{ displayName:'Haunted House (Gottlieb 1982)', manufacturer:'Gottlieb', year:1982 },
+    HULK:{ displayName:'The Incredible Hulk (Gottlieb 1979)', manufacturer:'Gottlieb', year:1979 },
     BFOR:{ displayName:'Batman Forever (Sega 1995)', manufacturer:'Sega', year:1995 },
     DMAN:{ displayName:'Demolition Man (Williams 1994)', manufacturer:'Williams', year:1994 },
     GEYE:{ displayName:'GoldenEye (Sega 1996)', manufacturer:'Sega', year:1996 },
@@ -250,6 +261,11 @@
     QBERT:{ displayName:'Q*bert\'s Quest (Gottlieb 1983)', manufacturer:'Gottlieb', year:1983 },
     MMPAC:{ displayName:'Mr. & Mrs. Pac-Man (Bally 1982)', manufacturer:'Bally', year:1982 },
     SINV:{ displayName:'Space Invaders (Bally 1980)', manufacturer:'Bally', year:1980 },
+    MONOP:{ displayName:'Monopoly (Stern 2001)', manufacturer:'Stern', year:2001 },
+    DND:{ displayName:'Dungeons & Dragons (Bally 1987)', manufacturer:'Bally', year:1987 },
+    WPT:{ displayName:'World Poker Tour (Stern 2006)', manufacturer:'Stern', year:2006 },
+    HRC:{ displayName:'High Roller Casino (Stern 2001)', manufacturer:'Stern', year:2001 },
+    WHOD:{ displayName:'Who Dunnit (Bally 1995)', manufacturer:'Bally', year:1995 },
     BOSS_TABLE:{ displayName:'(Boss Table)', manufacturer:'', year:null }
   };
 
@@ -302,6 +318,9 @@
     AGBW: 'WorldsBanners/BestiaryFlyers/AGBW.jpg',
     CIRC80: 'WorldsBanners/BestiaryFlyers/CIRC80.jpg',
     POTO: 'WorldsBanners/BestiaryFlyers/POTO.jpg',
+    GEN: 'WorldsBanners/BestiaryFlyers/GEN.png',
+    HH: 'WorldsBanners/BestiaryFlyers/HH.png',
+    HULK: 'WorldsBanners/BestiaryFlyers/HULK.png',
     BFOR: 'WorldsBanners/BestiaryFlyers/BFOR.jpg',
     DMAN: 'WorldsBanners/BestiaryFlyers/DMAN.jpg',
     GEYE: 'WorldsBanners/BestiaryFlyers/GEYE.jpg',
@@ -340,7 +359,12 @@
     SF2: 'WorldsBanners/BestiaryFlyers/SF2.jpg',
     QBERT: 'WorldsBanners/BestiaryFlyers/QBERT.jpg',
     MMPAC: 'WorldsBanners/BestiaryFlyers/MMPAC.jpg',
-    SINV: 'WorldsBanners/BestiaryFlyers/SINV.jpg'
+    SINV: 'WorldsBanners/BestiaryFlyers/SINV.jpg',
+    MONOP: 'WorldsBanners/BestiaryFlyers/MONOP.png',
+    DND: 'WorldsBanners/BestiaryFlyers/DND.png',
+    WPT: 'WorldsBanners/BestiaryFlyers/WPT.png',
+    HRC: 'WorldsBanners/BestiaryFlyers/HRC.png',
+    WHOD: 'WorldsBanners/BestiaryFlyers/WHOD.png'
   };
 
   var DEFAULT_WORLD_TABLE_CODES = {
@@ -408,8 +432,11 @@
     CVOL: ['The Show Must Go On'],
     AGBW: ['The Show Must Go On','Rock Legends'],
     CIRC80: ['The Show Must Go On'],
-    POTO: ['The Show Must Go On'],
-    TOM: ['The Show Must Go On'],
+    POTO: ['The Show Must Go On','Toccata Terror'],
+    TOM: ['The Show Must Go On','Toccata Terror'],
+    GEN: ['Toccata Terror'],
+    HH: ['Toccata Terror'],
+    HULK: ['Toccata Terror'],
 
     BFOR: ['Vintage Television','90s Movie Mayhem','Comic Book Collision'],
     DMAN: ['90s Movie Mayhem'],
@@ -454,7 +481,13 @@
     SF2: ['Pixel Quest'],
     QBERT: ['Pixel Quest'],
     MMPAC: ['Pixel Quest'],
-    SINV: ['Pixel Quest']
+    SINV: ['Pixel Quest'],
+
+    MONOP: ['Tabletop Rumblespot'],
+    DND: ['Tabletop Rumblespot'],
+    WPT: ['Tabletop Rumblespot'],
+    HRC: ['Tabletop Rumblespot'],
+    WHOD: ['Tabletop Rumblespot']
   };
 
   var DESIGNERS = [

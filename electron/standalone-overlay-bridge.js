@@ -5,6 +5,8 @@
   const STANDALONE_AP_LOG_KEY = "flpr_standalone_ap_text_log_v1";
   const STANDALONE_SENT_ITEMS_KEY = "flpr_standalone_ap_sent_items_v1";
   const STANDALONE_AP_REWARD_STATE_KEY = "flpr_standalone_ap_reward_state_v1";
+  const STANDALONE_BOSS_INCOMING_SEEN_KEY = "flpr_standalone_boss_incoming_seen_v1";
+  const STANDALONE_BOSS_VICTORY_AUTO_CHECKS_KEY = "flpr_standalone_boss_victory_auto_checks_v1";
   const STANDALONE_PROFILE_STATE_KEY = "flpr_standalone_home_profiles_v1";
   const STANDALONE_SEED_SAVES_KEY = "flpr_standalone_singleplayer_seed_saves_v1";
   const STANDALONE_ACHIEVEMENT_LS_KEY = "flpr_achievements_v1";
@@ -12,6 +14,7 @@
   const STANDALONE_EPISODE_LS_KEY = "flpr_episode_v1";
   const STANDALONE_DEFAULT_SWAP_SECONDS = 60;
   const STANDALONE_SWAP_DEFAULT_VERSION = 2;
+  const STANDALONE_RANDOMIZER_OPEN_SCENARIO = "randomizer_open";
   const STANDALONE_KNOWN_AP_ITEM_NAMES = Object.freeze({
     "370001": "Ethereal Crossbow",
     "heretic|370001": "Ethereal Crossbow"
@@ -29,10 +32,22 @@
   const STANDALONE_PROFILE_EMOJI_CODES = Object.freeze([
     0x1F3B1, 0x1F3AF, 0x1F579, 0x1F3AE, 0x1F4AB, 0x1F680, 0x26A1, 0x1F52E,
     0x1F48E, 0x1F3C6, 0x1F3B2, 0x1F3B5, 0x1F525, 0x1F308, 0x1F31F, 0x1F9E9,
-    0x1F6F8, 0x1F3A8, 0x1F5A5, 0x1F4BE, 0x1F9FF, 0x1FA99, 0x1F451, 0x2728
+    0x1F6F8, 0x1F3A8, 0x1F5A5, 0x1F4BE, 0x1F9FF, 0x1FA99, 0x1F451, 0x2728,
+    0x1F916, 0x1F47E, 0x1F47D, 0x1F9D9, 0x1F9DB, 0x1F9DD, 0x1F977, 0x1F60E,
+    0x1F920, 0x1F9E0, 0x1F4A0, 0x1F52B, 0x1F6E1, 0x2694, 0x1F5E1, 0x1F3F9,
+    0x1F3CE, 0x1F3CD, 0x1F6F5, 0x1F697, 0x1F681, 0x1F6A8, 0x1F3B8, 0x1F941,
+    0x1F3A4, 0x1F3A7, 0x1F39B, 0x1F3AC, 0x1F4FA, 0x1F4F7, 0x1F52D, 0x1F9EA,
+    0x1F9EC, 0x1F489, 0x1F48A, 0x1F9F2, 0x1F9FF, 0x1F570, 0x1F5DD, 0x1F511,
+    0x1F381, 0x1F3F0, 0x1F3D9, 0x1F30C, 0x1F319, 0x2600, 0x1F30A, 0x1F32A,
+    0x1F98A, 0x1F43A, 0x1F42F, 0x1F409, 0x1F984, 0x1F985, 0x1F987, 0x1F419,
+    0x1F41D, 0x1F577, 0x1F33F, 0x1F340, 0x1F344, 0x1F33A, 0x1F335, 0x1F347,
+    0x1F353, 0x1F355, 0x1F36A, 0x2615, 0x1F9CB, 0x1F37F, 0x1F36D, 0x1F36B
   ]);
   const DEFAULT_SETTINGS = {
-    controlsOffset: 0
+    controlsOffset: 0,
+    logoX: null,
+    logoY: null,
+    logoLocked: true
   };
 
   function readSettings(){
@@ -66,6 +81,7 @@
     profileGateManualOpen: false,
     activeSeedLoadConfirmId: ""
   };
+  try{ window.__flprStandaloneProfileRuntime = standaloneProfileRuntime; }catch(_){}
   const standaloneSlotTaskPayload = {
     byLocation: new Map(),
     byLocationNormalized: new Map(),
@@ -76,24 +92,199 @@
     gameById: new Map(),
     gameByName: new Map()
   };
+  const standaloneFlprBotSyncDisableRuntime = {
+    timer: 0,
+    ticks: 0
+  };
+
+  function standaloneMarkNoFlprBotFunction(fn, role){
+    try{ Object.defineProperty(fn, "__flprStandaloneNoFlprBotSync", { value:String(role || "noop"), configurable:true }); }catch(_){}
+    return fn;
+  }
+
+  const standaloneNoFlprBotFalse = standaloneMarkNoFlprBotFunction(function standaloneNoFlprBotFalse(){ return false; }, "false");
+  const standaloneNoFlprBotEmpty = standaloneMarkNoFlprBotFunction(function standaloneNoFlprBotEmpty(){ return ""; }, "empty");
+  const standaloneNoFlprBotNull = standaloneMarkNoFlprBotFunction(function standaloneNoFlprBotNull(){ return null; }, "null");
+  const standaloneNoFlprBotVoid = standaloneMarkNoFlprBotFunction(function standaloneNoFlprBotVoid(){ return undefined; }, "void");
+  const standaloneNoFlprBotPost = standaloneMarkNoFlprBotFunction(async function standaloneNoFlprBotPost(){ return false; }, "post");
+  const standaloneNoFlprBotGet = standaloneMarkNoFlprBotFunction(async function standaloneNoFlprBotGet(){ return null; }, "get");
+
+  function standaloneAssignNoFlprBotGlobal(name, fn){
+    try{ window[name] = fn; }catch(_){}
+    try{
+      switch(name){
+        case "flprBotSyncEnabled": flprBotSyncEnabled = fn; break;
+        case "flprBotSyncBaseUrl": flprBotSyncBaseUrl = fn; break;
+        case "flprBotSyncToken": flprBotSyncToken = fn; break;
+        case "flprBotSyncReportError": flprBotSyncReportError = fn; break;
+        case "postFlprBotSync": postFlprBotSync = fn; break;
+        case "getFlprBotSync": getFlprBotSync = fn; break;
+        case "syncFlprBotTableFromNowPlaying": syncFlprBotTableFromNowPlaying = fn; break;
+        case "getFlprBotNowPlayingCandidateForWorld": getFlprBotNowPlayingCandidateForWorld = fn; break;
+        case "syncFlprBotCurrentTableSnapshot": syncFlprBotCurrentTableSnapshot = fn; break;
+        case "syncFlprBotCurrentTable": syncFlprBotCurrentTable = fn; break;
+        case "syncFlprBotBossKeys": syncFlprBotBossKeys = fn; break;
+        case "getFlprBotBossStatusSnapshot": getFlprBotBossStatusSnapshot = fn; break;
+        case "syncFlprBotBossStatus": syncFlprBotBossStatus = fn; break;
+        case "getFlprBotEpisodeSnapshot": getFlprBotEpisodeSnapshot = fn; break;
+        case "syncFlprBotEpisodeState": syncFlprBotEpisodeState = fn; break;
+        case "hintPostHangmanBotState": hintPostHangmanBotState = fn; break;
+        case "hintStartFlprBotHangmanPoll": hintStartFlprBotHangmanPoll = fn; break;
+        case "hintStopFlprBotHangmanPoll": hintStopFlprBotHangmanPoll = fn; break;
+        case "hintAnnounceHangmanCorrect": hintAnnounceHangmanCorrect = fn; break;
+        case "ensureFlprBotUtilityControl": ensureFlprBotUtilityControl = fn; break;
+        default: break;
+      }
+    }catch(_){}
+  }
+
+  function standaloneRemoveFlprBotUtilityControl(){
+    try{
+      document.querySelectorAll("#flprBotRunUtilityWrap, #flprBotRunUtilityBtn, #flprBotRunUtilityStatus").forEach((node)=>{
+        const wrap = node.closest?.("#flprBotRunUtilityWrap") || node;
+        try{ wrap.remove(); }catch(_){}
+      });
+    }catch(_){}
+  }
 
   function disableStandaloneFlprBotSync(){
+    try{ window.__flprStandaloneFlprBotSyncDisabled = true; }catch(_){}
+    try{ window.__flprStandaloneFlprBotSyncDisabledAt = Date.now(); }catch(_){}
     try{ window.FLPR_BOT_SYNC_ENABLED = false; }catch(_){}
     try{ window.FLPR_BOT_SYNC_URL = ""; }catch(_){}
     try{ window.FLPR_BOT_SYNC_TOKEN = ""; }catch(_){}
     try{ localStorage.setItem("flpr_bot_sync_cfg_v1", JSON.stringify({ enabled:false, url:"http://127.0.0.1:8787", token:"change_me" })); }catch(_){}
-    try{ flprBotSyncEnabled = function(){ return false; }; }catch(_){}
-    try{ flprBotSyncBaseUrl = function(){ return ""; }; }catch(_){}
-    try{ flprBotSyncToken = function(){ return ""; }; }catch(_){}
-    try{ flprBotSyncReportError = function(){}; }catch(_){}
-    try{ postFlprBotSync = async function(){ return false; }; }catch(_){}
-    try{ getFlprBotSync = async function(){ return null; }; }catch(_){}
-    try{ syncFlprBotTableFromNowPlaying = function(){}; }catch(_){}
-    try{ syncFlprBotCurrentTableSnapshot = function(){ return null; }; }catch(_){}
-    try{ syncFlprBotCurrentTable = function(){}; }catch(_){}
-    try{ syncFlprBotBossKeys = function(){}; }catch(_){}
-    try{ syncFlprBotBossStatus = function(){}; }catch(_){}
-    try{ syncFlprBotEpisodeState = function(){}; }catch(_){}
+    standaloneAssignNoFlprBotGlobal("flprBotSyncEnabled", standaloneNoFlprBotFalse);
+    standaloneAssignNoFlprBotGlobal("flprBotSyncBaseUrl", standaloneNoFlprBotEmpty);
+    standaloneAssignNoFlprBotGlobal("flprBotSyncToken", standaloneNoFlprBotEmpty);
+    standaloneAssignNoFlprBotGlobal("flprBotSyncReportError", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("postFlprBotSync", standaloneNoFlprBotPost);
+    standaloneAssignNoFlprBotGlobal("getFlprBotSync", standaloneNoFlprBotGet);
+    standaloneAssignNoFlprBotGlobal("syncFlprBotTableFromNowPlaying", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("getFlprBotNowPlayingCandidateForWorld", standaloneNoFlprBotNull);
+    standaloneAssignNoFlprBotGlobal("syncFlprBotCurrentTableSnapshot", standaloneNoFlprBotNull);
+    standaloneAssignNoFlprBotGlobal("syncFlprBotCurrentTable", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("syncFlprBotBossKeys", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("getFlprBotBossStatusSnapshot", standaloneNoFlprBotNull);
+    standaloneAssignNoFlprBotGlobal("syncFlprBotBossStatus", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("getFlprBotEpisodeSnapshot", standaloneNoFlprBotNull);
+    standaloneAssignNoFlprBotGlobal("syncFlprBotEpisodeState", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("hintPostHangmanBotState", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("hintStartFlprBotHangmanPoll", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("hintStopFlprBotHangmanPoll", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("hintAnnounceHangmanCorrect", standaloneNoFlprBotVoid);
+    standaloneAssignNoFlprBotGlobal("ensureFlprBotUtilityControl", standaloneMarkNoFlprBotFunction(function standaloneNoFlprBotUtilityControl(){
+      standaloneRemoveFlprBotUtilityControl();
+      return null;
+    }, "utility"));
+    standaloneRemoveFlprBotUtilityControl();
+  }
+
+  function installStandaloneNoFlprBotSyncBridge(){
+    disableStandaloneFlprBotSync();
+    try{
+      if(standaloneFlprBotSyncDisableRuntime.timer) return;
+      standaloneFlprBotSyncDisableRuntime.ticks = 0;
+      standaloneFlprBotSyncDisableRuntime.timer = setInterval(()=>{
+        try{ disableStandaloneFlprBotSync(); }catch(_){}
+        standaloneFlprBotSyncDisableRuntime.ticks += 1;
+        if(standaloneFlprBotSyncDisableRuntime.ticks >= 32){
+          try{ clearInterval(standaloneFlprBotSyncDisableRuntime.timer); }catch(_){}
+          standaloneFlprBotSyncDisableRuntime.timer = 0;
+        }
+      }, 250);
+    }catch(_){}
+  }
+
+  const standaloneNoEpisodeRuntime = {
+    timer: 0,
+    ticks: 0
+  };
+
+  function standaloneDisabledEpisodeState(){
+    return { version:1, status:"disabled", startedAt:0, endedAt:0, pausedAt:0, seedName:"", reason:"home-edition", runId:"" };
+  }
+
+  function standaloneMarkNoEpisodeFunction(fn, role){
+    try{ Object.defineProperty(fn, "__flprStandaloneNoEpisode", { value:String(role || "noop"), configurable:true }); }catch(_){}
+    return fn;
+  }
+
+  const standaloneNoEpisodeFalse = standaloneMarkNoEpisodeFunction(function standaloneNoEpisodeFalse(){ return false; }, "false");
+  const standaloneNoEpisodeTrue = standaloneMarkNoEpisodeFunction(function standaloneNoEpisodeTrue(){ return true; }, "true");
+  const standaloneNoEpisodeState = standaloneMarkNoEpisodeFunction(function standaloneNoEpisodeState(){ return standaloneDisabledEpisodeState(); }, "state");
+  const standaloneNoEpisodeSave = standaloneMarkNoEpisodeFunction(function standaloneNoEpisodeSave(){ return false; }, "save");
+
+  function standaloneAssignNoEpisodeGlobal(name, fn){
+    try{ window[name] = fn; }catch(_){}
+    try{
+      switch(name){
+        case "episodeFreshState": episodeFreshState = fn; break;
+        case "episodeLoadState": episodeLoadState = fn; break;
+        case "episodeSaveState": episodeSaveState = fn; break;
+        case "episodeCanTrack": episodeCanTrack = fn; break;
+        case "episodeSetStatus": episodeSetStatus = fn; break;
+        case "episodeStartOrResume": episodeStartOrResume = fn; break;
+        case "episodeEndEarly": episodeEndEarly = fn; break;
+        case "episodeMarkBossComplete": episodeMarkBossComplete = fn; break;
+        case "episodeNeedsManualStartGate": episodeNeedsManualStartGate = fn; break;
+        case "updateEpisodeControlsUi": updateEpisodeControlsUi = fn; break;
+        default: break;
+      }
+    }catch(_){}
+  }
+
+  function standaloneScrubEpisodeUi(){
+    try{ document.body.classList.add("flprStandaloneNoEpisode"); }catch(_){}
+    try{
+      document.querySelectorAll("#episodeSectionTitle, #episodeCtlRow, #episodeStateTxt").forEach((node)=>{
+        try{ node.remove(); }catch(_){}
+      });
+    }catch(_){}
+    try{
+      document.querySelectorAll(".connectPanelSection").forEach((section)=>{
+        const title = String(section.querySelector(".connectPanelSectionTitle")?.innerText || section.innerText || "");
+        if(/episode\s+tracking/i.test(title)) section.remove();
+      });
+    }catch(_){}
+  }
+
+  function disableStandaloneEpisodeFeatures(){
+    try{ window.__flprStandaloneEpisodeDisabled = true; }catch(_){}
+    try{ window.__flprStandaloneEpisodeDisabledAt = Date.now(); }catch(_){}
+    try{ localStorage.removeItem(STANDALONE_EPISODE_LS_KEY); }catch(_){}
+    try{ episodeState = standaloneDisabledEpisodeState(); }catch(_){}
+    try{ window.episodeState = standaloneDisabledEpisodeState(); }catch(_){}
+    standaloneAssignNoEpisodeGlobal("episodeFreshState", standaloneNoEpisodeState);
+    standaloneAssignNoEpisodeGlobal("episodeLoadState", standaloneNoEpisodeState);
+    standaloneAssignNoEpisodeGlobal("episodeSaveState", standaloneNoEpisodeSave);
+    standaloneAssignNoEpisodeGlobal("episodeCanTrack", standaloneNoEpisodeTrue);
+    standaloneAssignNoEpisodeGlobal("episodeSetStatus", standaloneNoEpisodeFalse);
+    standaloneAssignNoEpisodeGlobal("episodeStartOrResume", standaloneNoEpisodeFalse);
+    standaloneAssignNoEpisodeGlobal("episodeEndEarly", standaloneNoEpisodeFalse);
+    standaloneAssignNoEpisodeGlobal("episodeMarkBossComplete", standaloneNoEpisodeFalse);
+    standaloneAssignNoEpisodeGlobal("episodeNeedsManualStartGate", standaloneNoEpisodeFalse);
+    standaloneAssignNoEpisodeGlobal("updateEpisodeControlsUi", standaloneMarkNoEpisodeFunction(function standaloneNoEpisodeUpdateUi(){
+      standaloneScrubEpisodeUi();
+      return false;
+    }, "ui"));
+    standaloneScrubEpisodeUi();
+  }
+
+  function installStandaloneNoEpisodeBridge(){
+    disableStandaloneEpisodeFeatures();
+    try{
+      if(standaloneNoEpisodeRuntime.timer) return;
+      standaloneNoEpisodeRuntime.ticks = 0;
+      standaloneNoEpisodeRuntime.timer = setInterval(()=>{
+        try{ disableStandaloneEpisodeFeatures(); }catch(_){}
+        standaloneNoEpisodeRuntime.ticks += 1;
+        if(standaloneNoEpisodeRuntime.ticks >= 32){
+          try{ clearInterval(standaloneNoEpisodeRuntime.timer); }catch(_){}
+          standaloneNoEpisodeRuntime.timer = 0;
+        }
+      }, 250);
+    }catch(_){}
   }
 
   function installStandaloneNoChatHangmanBridge(){
@@ -189,7 +380,144 @@
     }catch(_){}
   }
 
-  disableStandaloneFlprBotSync();
+  function standaloneClearMusicScenario(name, opts){
+    const key = String(name || "").trim();
+    if(!key) return false;
+    const options = opts || {};
+    let changed = false;
+    try{
+      const refs = (typeof musicGetRefs === "function") ? musicGetRefs() : (state?.musicRefs || null);
+      if(refs && typeof refs === "object" && String(refs[key] || "").trim()){
+        refs[key] = "";
+        changed = true;
+      }
+    }catch(_){}
+    try{
+      const meta = (typeof musicGetMeta === "function") ? musicGetMeta() : (state?.musicMeta || null);
+      if(meta && typeof meta === "object" && Object.prototype.hasOwnProperty.call(meta, key)){
+        delete meta[key];
+        changed = true;
+      }
+    }catch(_){}
+    try{
+      const modes = (typeof musicGetModes === "function") ? musicGetModes() : (state?.musicModes || null);
+      if(modes && typeof modes === "object" && Object.prototype.hasOwnProperty.call(modes, key)){
+        delete modes[key];
+        changed = true;
+      }
+    }catch(_){}
+    try{
+      const volumes = (typeof musicGetVolumes === "function") ? musicGetVolumes() : (state?.musicVolumes || null);
+      if(volumes && typeof volumes === "object" && Object.prototype.hasOwnProperty.call(volumes, key)){
+        delete volumes[key];
+        changed = true;
+      }
+    }catch(_){}
+    try{
+      const mgr = (typeof musicEnsureManager === "function") ? musicEnsureManager() : (window.__flprMusic || null);
+      if(mgr && (String(mgr.current || "") === key || String(mgr.preview || "") === key)){
+        if(typeof musicStop === "function") musicStop({ clearSrc:false });
+      }
+    }catch(_){}
+    if(changed && !options.skipSave){
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+    }
+    try{
+      const metaNode = document.getElementById(`musicMeta_${key}`);
+      if(metaNode) metaNode.textContent = "No track loaded.";
+    }catch(_){}
+    return changed;
+  }
+
+  function installStandaloneRandomizerOpenMusicBridge(){
+    standaloneClearMusicScenario(STANDALONE_RANDOMIZER_OPEN_SCENARIO);
+
+    try{
+      if(typeof applyBundledMusicScenarioDefaults === "function" && applyBundledMusicScenarioDefaults.__flprStandaloneNoRandomizerOpen !== true){
+        const original = applyBundledMusicScenarioDefaults;
+        const bridged = function standaloneApplyBundledMusicScenarioDefaults(targetState){
+          const changed = !!original.apply(this, arguments);
+          let removed = false;
+          try{
+            if(targetState && typeof targetState === "object"){
+              if(targetState.musicRefs && String(targetState.musicRefs[STANDALONE_RANDOMIZER_OPEN_SCENARIO] || "").trim()){
+                targetState.musicRefs[STANDALONE_RANDOMIZER_OPEN_SCENARIO] = "";
+                removed = true;
+              }
+              if(targetState.musicMeta && Object.prototype.hasOwnProperty.call(targetState.musicMeta, STANDALONE_RANDOMIZER_OPEN_SCENARIO)){
+                delete targetState.musicMeta[STANDALONE_RANDOMIZER_OPEN_SCENARIO];
+                removed = true;
+              }
+            }
+          }catch(_){}
+          standaloneClearMusicScenario(STANDALONE_RANDOMIZER_OPEN_SCENARIO, { skipSave:true });
+          return changed || removed;
+        };
+        bridged.__flprStandaloneNoRandomizerOpen = true;
+        bridged.__flprStandaloneOriginal = original;
+        applyBundledMusicScenarioDefaults = bridged;
+        window.applyBundledMusicScenarioDefaults = bridged;
+      }
+    }catch(_){}
+
+    try{
+      if(typeof musicSetScenarioRef === "function" && musicSetScenarioRef.__flprStandaloneNoRandomizerOpen !== true){
+        const original = musicSetScenarioRef;
+        const bridged = function standaloneMusicSetScenarioRef(name, ref, meta){
+          if(String(name || "").trim() === STANDALONE_RANDOMIZER_OPEN_SCENARIO){
+            standaloneClearMusicScenario(STANDALONE_RANDOMIZER_OPEN_SCENARIO);
+            try{ if(typeof renderMusicScenarioCard === "function") renderMusicScenarioCard(); }catch(_){}
+            return false;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneNoRandomizerOpen = true;
+        bridged.__flprStandaloneOriginal = original;
+        musicSetScenarioRef = bridged;
+        window.musicSetScenarioRef = bridged;
+      }
+    }catch(_){}
+
+    try{
+      if(typeof musicPlayScenario === "function" && musicPlayScenario.__flprStandaloneNoRandomizerOpen !== true){
+        const original = musicPlayScenario;
+        const bridged = function standaloneMusicPlayScenario(name, opts){
+          if(String(name || "").trim() === STANDALONE_RANDOMIZER_OPEN_SCENARIO){
+            standaloneClearMusicScenario(STANDALONE_RANDOMIZER_OPEN_SCENARIO);
+            try{ if(opts?.forceStopIfMissing && typeof musicStop === "function") musicStop({ clearSrc:false }); }catch(_){}
+            return false;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneNoRandomizerOpen = true;
+        bridged.__flprStandaloneOriginal = original;
+        musicPlayScenario = bridged;
+        window.musicPlayScenario = bridged;
+      }
+    }catch(_){}
+
+    try{
+      if(typeof musicLockScenario === "function" && musicLockScenario.__flprStandaloneNoRandomizerOpen !== true){
+        const original = musicLockScenario;
+        const bridged = function standaloneMusicLockScenario(name, lockMs){
+          if(String(name || "").trim() === STANDALONE_RANDOMIZER_OPEN_SCENARIO){
+            standaloneClearMusicScenario(STANDALONE_RANDOMIZER_OPEN_SCENARIO);
+            return false;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneNoRandomizerOpen = true;
+        bridged.__flprStandaloneOriginal = original;
+        musicLockScenario = bridged;
+        window.musicLockScenario = bridged;
+      }
+    }catch(_){}
+
+    standaloneClearMusicScenario(STANDALONE_RANDOMIZER_OPEN_SCENARIO);
+  }
+
+  installStandaloneNoFlprBotSyncBridge();
+  installStandaloneNoEpisodeBridge();
 
   function clamp(value, min, max){
     const n = Number(value);
@@ -396,6 +724,11 @@
         45%{ transform:translateY(-9px) scale(1.045); box-shadow:0 0 28px rgba(0,255,213,.50), 0 0 54px rgba(255,224,122,.26); }
         100%{ transform:translateY(0) scale(1); box-shadow:0 0 22px rgba(0,217,255,.34), 0 0 42px rgba(255,224,122,.20); }
       }
+      body.flprStandaloneOriginalClient.flprStandaloneNoEpisode #episodeSectionTitle,
+      body.flprStandaloneOriginalClient.flprStandaloneNoEpisode #episodeCtlRow,
+      body.flprStandaloneOriginalClient.flprStandaloneNoEpisode #episodeStateTxt{
+        display:none !important;
+      }
       body.flprStandaloneOriginalClient .standaloneProfileCard{
         width:min(1120px, calc(100vw - 48px)) !important;
         min-height:min(640px, calc(100vh - 48px)) !important;
@@ -509,6 +842,260 @@
         gap:8px !important;
         margin-top:14px !important;
       }
+      body.flprStandaloneOriginalClient .standaloneProfileCard{
+        position:relative !important;
+        width:min(1240px, calc(100vw - 40px)) !important;
+        min-height:min(740px, calc(100vh - 40px)) !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:18px !important;
+        padding:34px !important;
+        overflow:hidden !important;
+        background:
+          linear-gradient(90deg, rgba(0,217,255,.08) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(0,217,255,.055) 1px, transparent 1px),
+          radial-gradient(80% 120% at 8% -10%, rgba(0,255,213,.22), transparent 50%),
+          radial-gradient(88% 100% at 92% 0%, rgba(255,86,214,.14), transparent 56%),
+          linear-gradient(180deg, rgba(4,26,42,.99), rgba(0,8,18,.99)) !important;
+        background-size:auto, 32px 32px, auto, auto, auto !important;
+        box-shadow:
+          0 0 0 1px rgba(0,255,213,.20) inset,
+          0 0 0 6px rgba(0,217,255,.035) inset,
+          0 30px 68px rgba(0,0,0,.68),
+          0 0 44px rgba(0,217,255,.28) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileCard::before{
+        content:"" !important;
+        position:absolute !important;
+        inset:0 !important;
+        pointer-events:none !important;
+        background:
+          linear-gradient(90deg, transparent, rgba(0,255,213,.13), transparent),
+          radial-gradient(circle at 0 0, rgba(255,224,122,.16), transparent 28%) !important;
+        opacity:.72 !important;
+        mix-blend-mode:screen !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileHeader{
+        position:relative !important;
+        display:grid !important;
+        grid-template-columns:minmax(0, 1fr) minmax(360px, 460px) !important;
+        gap:20px !important;
+        align-items:stretch !important;
+        z-index:1 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileTitleBlock{
+        min-width:0 !important;
+        padding:2px 0 4px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileTitle{
+        font-size:36px !important;
+        line-height:1.12 !important;
+        margin:0 0 12px !important;
+        text-shadow:0 0 18px rgba(0,217,255,.26) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileSub{
+        max-width:760px !important;
+        font-size:16px !important;
+        line-height:1.5 !important;
+        color:rgba(202,235,244,.86) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePreview{
+        position:relative !important;
+        display:grid !important;
+        grid-template-columns:auto minmax(0, 1fr) !important;
+        gap:16px !important;
+        align-items:center !important;
+        min-height:142px !important;
+        padding:18px !important;
+        border:1px solid color-mix(in srgb, var(--profileColor, #00ffd5) 62%, #00d9ff 38%) !important;
+        border-radius:18px !important;
+        background:
+          radial-gradient(circle at 16% 12%, color-mix(in srgb, var(--profileColor, #00ffd5) 22%, transparent), transparent 48%),
+          linear-gradient(180deg, rgba(0,34,62,.74), rgba(0,10,22,.92)) !important;
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,.05) inset,
+          0 0 24px color-mix(in srgb, var(--profileColor, #00ffd5) 30%, transparent) !important;
+        overflow:hidden !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePreview::after{
+        content:"HOME EDITION" !important;
+        position:absolute !important;
+        right:14px !important;
+        bottom:12px !important;
+        color:rgba(232,250,255,.18) !important;
+        font-size:10px !important;
+        letter-spacing:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePreviewAvatar{
+        width:86px !important;
+        height:86px !important;
+        display:grid !important;
+        place-items:center !important;
+        border:2px solid color-mix(in srgb, var(--profileColor, #00ffd5) 72%, #ffffff 28%) !important;
+        border-radius:50% !important;
+        background:
+          radial-gradient(circle at 38% 28%, rgba(255,255,255,.16), transparent 34%),
+          linear-gradient(180deg, color-mix(in srgb, var(--profileColor, #00ffd5) 38%, #00263c 62%), rgba(0,10,18,.94)) !important;
+        font-size:44px !important;
+        line-height:1 !important;
+        box-shadow:0 0 20px color-mix(in srgb, var(--profileColor, #00ffd5) 34%, transparent) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePreviewText{
+        min-width:0 !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:9px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePreviewKicker{
+        color:rgba(255,224,122,.88) !important;
+        font-size:10px !important;
+        line-height:1 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePreviewName{
+        color:rgba(238,255,252,.98) !important;
+        font-size:19px !important;
+        line-height:1.22 !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        white-space:nowrap !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePreviewMeta{
+        color:rgba(169,214,229,.78) !important;
+        font-size:10px !important;
+        line-height:1.3 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileExistingWrap{
+        position:relative !important;
+        z-index:1 !important;
+        padding:14px !important;
+        border:1px solid rgba(0,217,255,.22) !important;
+        border-radius:14px !important;
+        background:linear-gradient(180deg, rgba(0,22,36,.76), rgba(0,8,18,.76)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileSectionTitle{
+        margin:0 0 10px !important;
+        color:rgba(0,255,213,.94) !important;
+        font-size:12px !important;
+        line-height:1.2 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileExisting{
+        display:grid !important;
+        grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)) !important;
+        gap:10px !important;
+        margin-top:0 !important;
+        max-height:156px !important;
+        padding:2px 4px 4px 2px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePick{
+        width:100% !important;
+        min-height:66px !important;
+        gap:12px !important;
+        padding:10px 12px !important;
+        text-align:left !important;
+        background:
+          radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--profileColor, #00ffd5) 20%, transparent), transparent 50%),
+          linear-gradient(180deg, rgba(0,40,72,.72), rgba(0,12,24,.92)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePickName{
+        min-width:0 !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        white-space:nowrap !important;
+        font-size:11px !important;
+        line-height:1.2 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileForm{
+        position:relative !important;
+        z-index:1 !important;
+        grid-template-columns:minmax(420px, 1.1fr) minmax(420px, 1fr) 172px !important;
+        gap:20px !important;
+        margin-top:0 !important;
+        padding:18px !important;
+        border:1px solid rgba(0,217,255,.24) !important;
+        border-radius:16px !important;
+        background:linear-gradient(180deg, rgba(0,20,34,.76), rgba(0,8,18,.82)) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileForm label{
+        gap:9px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileForm .cLabel{
+        color:rgba(232,250,255,.92) !important;
+        font-size:14px !important;
+      }
+      body.flprStandaloneOriginalClient #standaloneProfileNameInput{
+        width:100% !important;
+        min-width:0 !important;
+        min-height:64px !important;
+        padding:12px 14px !important;
+        font-size:18px !important;
+        line-height:1.25 !important;
+        border-radius:12px !important;
+        text-overflow:ellipsis !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiPickerButton{
+        min-height:64px !important;
+        justify-content:flex-start !important;
+        padding:8px 18px !important;
+        font-size:36px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiGrid{
+        grid-template-columns:repeat(12, minmax(42px, 1fr)) !important;
+        gap:9px !important;
+        max-height:286px !important;
+        padding:12px !important;
+        border-color:rgba(0,255,213,.36) !important;
+        box-shadow:0 16px 34px rgba(0,0,0,.42), 0 0 22px rgba(0,217,255,.16) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiChoice{
+        min-height:44px !important;
+        font-size:24px !important;
+        border-radius:10px !important;
+        transition:transform .12s ease, border-color .12s ease, box-shadow .12s ease, background .12s ease !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneEmojiChoice:hover,
+      body.flprStandaloneOriginalClient .standaloneEmojiChoice:focus-visible{
+        transform:translateY(-2px) !important;
+        border-color:rgba(255,224,122,.92) !important;
+        box-shadow:0 0 18px rgba(0,217,255,.30) !important;
+      }
+      body.flprStandaloneOriginalClient #standaloneProfileColorInput{
+        width:100% !important;
+        height:64px !important;
+        min-height:64px !important;
+        padding:7px !important;
+        border-radius:12px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileHint{
+        position:relative !important;
+        z-index:1 !important;
+        padding:12px 14px !important;
+        border-left:3px solid rgba(255,224,122,.72) !important;
+        border-radius:12px !important;
+        background:rgba(0,20,34,.58) !important;
+        font-size:13px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileActions{
+        position:relative !important;
+        z-index:1 !important;
+        margin-top:auto !important;
+        gap:12px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfileActions .cBtn{
+        min-width:166px !important;
+        min-height:52px !important;
+      }
+      @media (max-width: 980px){
+        body.flprStandaloneOriginalClient .standaloneProfileHeader,
+        body.flprStandaloneOriginalClient .standaloneProfileForm{
+          grid-template-columns:1fr !important;
+        }
+        body.flprStandaloneOriginalClient .standaloneProfileCard{
+          overflow:auto !important;
+        }
+        body.flprStandaloneOriginalClient .standaloneEmojiGrid{
+          grid-template-columns:repeat(8, minmax(40px, 1fr)) !important;
+        }
+      }
       body.flprStandaloneOriginalClient .standaloneProfileBar{
         grid-column:1 / -1 !important;
         grid-row:1 !important;
@@ -563,6 +1150,10 @@
         pointer-events:auto !important;
         font-family:var(--pixelFont, inherit) !important;
       }
+      body.flprStandaloneOriginalClient .standaloneProfilePointsWrap{
+        position:relative !important;
+        flex:0 0 auto !important;
+      }
       body.flprStandaloneOriginalClient .standaloneProfilePoints{
         flex:0 0 auto !important;
         border:1px solid rgba(255,224,122,.62) !important;
@@ -573,6 +1164,31 @@
         font-size:18px !important;
         line-height:1 !important;
         box-shadow:0 0 12px rgba(255,224,122,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePointsTooltip{
+        position:absolute !important;
+        top:calc(100% + 10px) !important;
+        right:0 !important;
+        width:360px !important;
+        max-width:calc(100vw - 36px) !important;
+        padding:12px 14px !important;
+        border:1px solid rgba(255,224,122,.58) !important;
+        border-radius:12px !important;
+        background:linear-gradient(180deg, rgba(26,18,0,.98), rgba(0,10,18,.98)) !important;
+        color:rgba(255,244,190,.96) !important;
+        font-size:12px !important;
+        line-height:1.35 !important;
+        box-shadow:0 18px 36px rgba(0,0,0,.46), 0 0 18px rgba(255,224,122,.18) !important;
+        opacity:0 !important;
+        transform:translateY(-4px) !important;
+        transition:opacity 140ms ease, transform 140ms ease !important;
+        pointer-events:none !important;
+        z-index:2147483647 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneProfilePointsWrap:hover .standaloneProfilePointsTooltip,
+      body.flprStandaloneOriginalClient .standaloneProfilePointsWrap:focus-within .standaloneProfilePointsTooltip{
+        opacity:1 !important;
+        transform:translateY(0) !important;
       }
       body.flprStandaloneOriginalClient .standaloneProfileHudWrap{
         position:relative !important;
@@ -605,13 +1221,20 @@
         z-index:2147483644 !important;
         display:flex !important;
         align-items:center !important;
-        gap:14px !important;
-        max-width:min(940px, calc(100vw - 36px)) !important;
+        gap:0 !important;
+        max-width:min(640px, calc(100vw - 36px)) !important;
         pointer-events:auto !important;
         font-family:var(--pixelFont, inherit) !important;
+        touch-action:none !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeHud[hidden]{
         display:none !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHud.logoUnlocked{
+        cursor:grab !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHud.logoDragging{
+        cursor:grabbing !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeHudLogo{
         width:min(600px, 46vw) !important;
@@ -623,10 +1246,29 @@
         image-rendering:auto !important;
         filter:drop-shadow(0 0 12px rgba(0,217,255,.42)) drop-shadow(0 0 6px rgba(255,86,214,.26)) !important;
       }
-      body.flprStandaloneOriginalClient .standaloneModeHudButtons{
+      body.flprStandaloneOriginalClient .standaloneModeSwitchHud{
+        position:fixed !important;
+        top:10px !important;
+        left:auto !important;
+        right:clamp(360px, 30vw, 560px) !important;
+        transform:none !important;
+        z-index:2147483644 !important;
         display:flex !important;
         align-items:center !important;
-        gap:10px !important;
+        gap:12px !important;
+        padding:6px !important;
+        border:1px solid rgba(0,255,213,.28) !important;
+        border-radius:999px !important;
+        background:linear-gradient(90deg, rgba(0,10,18,.86), rgba(0,28,46,.88)) !important;
+        box-shadow:0 0 16px rgba(0,217,255,.14) !important;
+        pointer-events:auto !important;
+        font-family:var(--pixelFont, inherit) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHudBtn.houseBtn{
+        min-width:126px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeSwitchHud[hidden]{
+        display:none !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeHudBtn{
         min-width:86px !important;
@@ -655,6 +1297,19 @@
         color:rgba(238,255,252,.98) !important;
         text-shadow:0 0 10px rgba(0,255,213,.42) !important;
         box-shadow:0 0 20px rgba(0,255,213,.26), 0 0 0 1px rgba(0,255,213,.22) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneModeHudBtn.houseBtn.active{
+        border-color:rgba(255,224,122,.98) !important;
+        background:linear-gradient(180deg, rgba(114,58,0,.9), rgba(52,14,48,.96)) !important;
+        color:rgba(255,246,196,.98) !important;
+        text-shadow:0 0 10px rgba(255,224,122,.46) !important;
+        box-shadow:0 0 22px rgba(255,224,122,.26), 0 0 18px rgba(255,86,214,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .controlsBody.standaloneHouseTakeover .controlsTabs{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .controlsBody.standaloneHouseTakeover .controlsPanels{
+        height:100% !important;
       }
       body.flprStandaloneOriginalClient .standaloneProfileMenu{
         position:absolute !important;
@@ -919,14 +1574,41 @@
         padding-top:0 !important;
         top:0 !important;
         transform:none !important;
-        height:calc(var(--captureH) - 230px) !important;
-        max-height:calc(var(--captureH) - 230px) !important;
+        height:var(--flprStandaloneControlsH, calc(var(--captureH) - 110px)) !important;
+        max-height:var(--flprStandaloneControlsH, calc(var(--captureH) - 110px)) !important;
+      }
+      body.flprStandaloneOriginalClient .capture{
+        gap:6px !important;
+        padding-bottom:8px !important;
+      }
+      body.flprStandaloneOriginalClient .viewport{
+        flex:0 0 var(--flprStandaloneViewportH, calc(var(--captureH) - 75px - 14px - 22px - 198px)) !important;
+        height:var(--flprStandaloneViewportH, calc(var(--captureH) - 75px - 14px - 22px - 198px)) !important;
+        max-height:var(--flprStandaloneViewportH, calc(var(--captureH) - 75px - 14px - 22px - 198px)) !important;
+        margin-bottom:0 !important;
+      }
+      body.flprStandaloneOriginalClient .randomizerIntro{
+        top:81px !important;
+        height:var(--flprStandaloneViewportH, calc(var(--captureH) - 75px - 14px - 22px - 198px)) !important;
+        bottom:auto !important;
+      }
+      body.flprStandaloneOriginalClient .bossDock{
+        flex:0 0 auto !important;
       }
       body.flprStandaloneOriginalClient .controlsBody{
+        height:100% !important;
+        min-height:0 !important;
+        display:flex !important;
+        flex-direction:column !important;
         overflow:hidden !important;
         pointer-events:auto !important;
         position:relative !important;
         z-index:20 !important;
+      }
+      body.flprStandaloneOriginalClient .controlsPanels{
+        flex:1 1 auto !important;
+        height:100% !important;
+        min-height:0 !important;
       }
       body.flprStandaloneOriginalClient .controlsPanels,
       body.flprStandaloneOriginalClient .controlsTabPanel{
@@ -937,6 +1619,7 @@
       }
       body.flprStandaloneOriginalClient .controlsTabPanel.active{
         display:block !important;
+        height:100% !important;
       }
       body.flprStandaloneOriginalClient .controlsTabPanel[data-ctrl-panel="testing"]{
         display:none !important;
@@ -955,6 +1638,68 @@
       }
       body.flprStandaloneOriginalClient #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks{
         animation:none !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksBody .tableBlock.bossChecksBig .nodeCell.flprStandaloneBossVictoryHidden,
+      body.flprStandaloneOriginalClient #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeCell.flprStandaloneBossVictoryHidden{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksBody .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard,
+      body.flprStandaloneOriginalClient #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard{
+        padding-left:66px !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksBody .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard .tierBadge,
+      body.flprStandaloneOriginalClient #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard .tierBadge{
+        left:12px !important;
+        top:12px !important;
+        height:20px !important;
+        min-width:42px !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksBody .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard .flprStandaloneBossAttackSubtag,
+      body.flprStandaloneOriginalClient #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard .flprStandaloneBossAttackSubtag{
+        position:absolute !important;
+        left:12px !important;
+        top:38px !important;
+        width:42px !important;
+        min-height:30px !important;
+        box-sizing:border-box !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        padding:3px 2px !important;
+        border:1px solid rgba(255,118,86,.48) !important;
+        border-radius:8px !important;
+        background:linear-gradient(180deg, rgba(255,118,86,.18), rgba(255,77,109,.09)) !important;
+        color:rgba(255,226,205,.96) !important;
+        font-family:'Press Start 2P', monospace !important;
+        font-size:5.2px !important;
+        line-height:1.35 !important;
+        text-align:center !important;
+        text-transform:uppercase !important;
+        pointer-events:none !important;
+        text-shadow:0 0 8px rgba(255,118,86,.28) !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksBody .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard .nodeTitle,
+      body.flprStandaloneOriginalClient #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard .nodeTitle{
+        margin-top:0 !important;
+        font-size:16px !important;
+        line-height:1.24 !important;
+        color:rgba(245,252,255,.98) !important;
+        text-shadow:0 0 13px rgba(0,217,255,.24) !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksBody .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard.scoreNode .nodeTitle .scoreLead,
+      body.flprStandaloneOriginalClient #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard.scoreNode .nodeTitle .scoreLead{
+        font-size:8px !important;
+        color:rgba(0,255,213,.84) !important;
+        letter-spacing:0 !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksBody .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard.scoreNode .nodeTitle .scoreValue,
+      body.flprStandaloneOriginalClient #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard.scoreNode .nodeTitle .scoreValue{
+        font-size:20px !important;
+        line-height:1.05 !important;
+      }
+      body.flprStandaloneOriginalClient #viewChecks #checksBody .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard .small,
+      body.flprStandaloneOriginalClient #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeBtn.bossNode.flprStandaloneBossCard .small{
+        color:rgba(255,226,205,.88) !important;
       }
       body.flprStandaloneOriginalClient #viewChecks .checksFancyDivider.snapFx,
       body.flprStandaloneOriginalClient #viewChecks .checksFancyDivider.tableGlowFx{
@@ -1184,6 +1929,9 @@
         grid-row:2 !important;
         gap:10px !important;
         overflow:hidden !important;
+        min-height:0 !important;
+        display:flex !important;
+        flex-direction:column !important;
       }
       body.flprStandaloneOriginalClient .standaloneSingleplayerSaveStack,
       body.flprStandaloneOriginalClient .standaloneSingleplayerInfoStack{
@@ -1219,6 +1967,9 @@
         min-height:0 !important;
       }
       body.flprStandaloneOriginalClient .standaloneLogStack .standaloneControlSection.grow{
+        height:100% !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSecondaryStack .standaloneControlSection.grow{
         height:100% !important;
       }
       body.flprStandaloneOriginalClient .connectPanelSection,
@@ -1324,6 +2075,8 @@
       body.flprStandaloneOriginalClient .recvWrap{
         display:flex !important;
         flex-direction:column !important;
+        height:100% !important;
+        min-height:0 !important;
       }
       body.flprStandaloneOriginalClient .apConnLog{
         display:flex !important;
@@ -1435,6 +2188,52 @@
         box-shadow:
           0 0 calc(10px * var(--flprStandaloneControlFontScale)) rgba(255,224,122,.26),
           0 0 0 1px rgba(255,247,184,.18) inset !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-progression{
+        border-color:rgba(199,125,255,.46) !important;
+        box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(199,125,255,.78) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-useful{
+        border-color:rgba(83,183,255,.42) !important;
+        box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(83,183,255,.72) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-trap{
+        border-color:rgba(255,77,109,.50) !important;
+        box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(255,77,109,.78) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-filler{
+        border-color:rgba(199,208,216,.26) !important;
+        box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(199,208,216,.42) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvTime{
+        color:rgba(135,220,255,.76) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvLabel{
+        color:rgba(188,212,224,.72) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvItem{
+        color:rgba(255,177,66,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvItem.apItem-progression{
+        color:rgba(255,154,24,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvItem.apItem-useful{
+        color:rgba(0,148,255,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvItem.apItem-trap{
+        color:rgba(255,75,118,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvItem.apItem-filler{
+        color:rgba(228,240,246,.90) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvLocation{
+        color:rgba(0,255,153,.96) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvPlayer{
+        color:rgba(0,217,255,.96) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvMeta{
+        color:rgba(188,212,224,.68) !important;
       }
       body.flprStandaloneOriginalClient .standaloneItemCopyMenu{
         position:fixed !important;
@@ -1554,6 +2353,95 @@
       body.flprStandaloneOriginalClient #apConnLogBody .apLogLine + .apLogLine{
         border-top:1px solid rgba(0,217,255,.08) !important;
       }
+      body.flprStandaloneOriginalClient #apConnLogBody .apHintCard{
+        display:grid !important;
+        grid-template-columns:auto minmax(0, 1fr) !important;
+        gap:calc(6px * var(--flprStandaloneControlFontScale)) !important;
+        align-items:start !important;
+        margin:calc(4px * var(--flprStandaloneControlFontScale)) 0 !important;
+        padding:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(255,142,255,.36) !important;
+        border-left-width:calc(2px * var(--flprStandaloneControlFontScale)) !important;
+        border-radius:8px !important;
+        background:linear-gradient(90deg, rgba(126,58,255,.14), rgba(0,18,31,.54)) !important;
+        box-shadow:0 0 16px rgba(255,142,255,.10) inset !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apHintCard .apHintTime{
+        color:rgba(135,220,255,.72) !important;
+        white-space:nowrap !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apHintCard .apHintText{
+        min-width:0 !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintSection{
+        display:grid !important;
+        gap:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+        margin:0 0 calc(8px * var(--flprStandaloneControlFontScale)) !important;
+        padding:0 0 calc(8px * var(--flprStandaloneControlFontScale)) !important;
+        border-bottom:1px solid rgba(0,217,255,.16) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintHeader{
+        display:flex !important;
+        justify-content:space-between !important;
+        align-items:center !important;
+        gap:calc(6px * var(--flprStandaloneControlFontScale)) !important;
+        color:rgba(0,255,238,.98) !important;
+        text-transform:uppercase !important;
+        letter-spacing:0 !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintHeader small{
+        color:rgba(188,212,224,.72) !important;
+        font-size:.76em !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintCard{
+        display:grid !important;
+        gap:calc(3px * var(--flprStandaloneControlFontScale)) !important;
+        margin:calc(4px * var(--flprStandaloneControlFontScale)) 0 !important;
+        padding:calc(6px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(0,217,255,.26) !important;
+        border-left-width:calc(2px * var(--flprStandaloneControlFontScale)) !important;
+        border-radius:8px !important;
+        background:linear-gradient(90deg, rgba(0,217,255,.10), rgba(0,18,31,.54)) !important;
+        box-shadow:0 0 14px rgba(0,217,255,.08) inset !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintCard.priority-progression{
+        border-left-color:rgba(255,154,24,.95) !important;
+        background:linear-gradient(90deg, rgba(255,154,24,.16), rgba(0,18,31,.56)) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintCard.priority-useful{
+        border-left-color:rgba(0,148,255,.95) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintCard.priority-trap{
+        border-left-color:rgba(255,75,118,.95) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintMeta{
+        display:flex !important;
+        flex-wrap:wrap !important;
+        gap:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        align-items:center !important;
+        color:rgba(188,212,224,.74) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintBadge{
+        display:inline-flex !important;
+        align-items:center !important;
+        min-height:calc(9px * var(--flprStandaloneControlFontScale)) !important;
+        padding:0 calc(3px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(0,217,255,.45) !important;
+        border-radius:5px !important;
+        color:rgba(232,250,255,.90) !important;
+        background:rgba(0,18,31,.70) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintStatus.found{
+        border-color:rgba(0,255,153,.72) !important;
+        color:rgba(0,255,153,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintStatus.uncollected{
+        border-color:rgba(255,231,126,.70) !important;
+        color:rgba(255,231,126,.98) !important;
+      }
+      body.flprStandaloneOriginalClient #apConnLogBody .apServerHintLine{
+        color:rgba(232,250,255,.94) !important;
+      }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogEmpty{
         color:rgba(232,250,255,.64) !important;
       }
@@ -1568,18 +2456,24 @@
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogItem{
         color:rgba(255,177,66,.98) !important;
+        cursor:help !important;
+        border-bottom:1px dotted rgba(255,177,66,.58) !important;
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogItem.apItem-progression{
         color:rgba(255,154,24,.98) !important;
+        border-bottom-color:rgba(255,154,24,.70) !important;
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogItem.apItem-useful{
         color:rgba(0,148,255,.98) !important;
+        border-bottom-color:rgba(0,148,255,.70) !important;
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogItem.apItem-trap{
         color:rgba(255,75,118,.98) !important;
+        border-bottom-color:rgba(255,75,118,.74) !important;
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogItem.apItem-filler{
         color:rgba(228,240,246,.9) !important;
+        border-bottom-color:rgba(228,240,246,.42) !important;
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogLocation{
         color:rgba(0,255,153,.98) !important;
@@ -1592,6 +2486,51 @@
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogMuted{
         color:rgba(188,212,224,.68) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneApItemHoverTip{
+        position:fixed !important;
+        z-index:2147483647 !important;
+        pointer-events:none !important;
+        opacity:0 !important;
+        transform:translate(-50%, calc(-100% - 12px)) scale(.98) !important;
+        transition:opacity 90ms ease, transform 90ms ease !important;
+        max-width:calc(220px * var(--flprStandaloneControlFontScale)) !important;
+        padding:calc(5px * var(--flprStandaloneControlFontScale)) calc(8px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(0,217,255,.78) !important;
+        border-radius:7px !important;
+        background:
+          linear-gradient(180deg, rgba(0,36,56,.98), rgba(0,8,18,.98)) !important;
+        box-shadow:
+          0 0 calc(14px * var(--flprStandaloneControlFontScale)) rgba(0,217,255,.30),
+          0 calc(10px * var(--flprStandaloneControlFontScale)) calc(22px * var(--flprStandaloneControlFontScale)) rgba(0,0,0,.52) !important;
+        color:rgba(232,250,255,.94) !important;
+        font-family:inherit !important;
+        font-size:calc(10px * var(--flprStandaloneControlFontScale)) !important;
+        line-height:1.1 !important;
+        text-transform:uppercase !important;
+        white-space:nowrap !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneApItemHoverTip.visible{
+        opacity:1 !important;
+        transform:translate(-50%, calc(-100% - 14px)) scale(1) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneApItemHoverTip.apItem-progression{
+        border-color:rgba(199,125,255,.92) !important;
+        color:rgba(255,194,82,.98) !important;
+        box-shadow:0 0 calc(16px * var(--flprStandaloneControlFontScale)) rgba(199,125,255,.34), 0 calc(10px * var(--flprStandaloneControlFontScale)) calc(22px * var(--flprStandaloneControlFontScale)) rgba(0,0,0,.52) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneApItemHoverTip.apItem-useful{
+        border-color:rgba(83,183,255,.92) !important;
+        color:rgba(126,216,255,.98) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneApItemHoverTip.apItem-trap{
+        border-color:rgba(255,75,118,.92) !important;
+        color:rgba(255,154,180,.98) !important;
+        box-shadow:0 0 calc(16px * var(--flprStandaloneControlFontScale)) rgba(255,75,118,.34), 0 calc(10px * var(--flprStandaloneControlFontScale)) calc(22px * var(--flprStandaloneControlFontScale)) rgba(0,0,0,.52) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneApItemHoverTip.apItem-filler{
+        border-color:rgba(228,240,246,.56) !important;
+        color:rgba(228,240,246,.94) !important;
       }
       body.flprStandaloneOriginalClient .ovModalCard.flprStandaloneSentItemModal{
         border-color:rgba(0,217,255,.74) !important;
@@ -1987,6 +2926,44 @@
           radial-gradient(circle at 100% 0%, rgba(0,217,255,.12), transparent 48%) !important;
         box-shadow:0 -12px 22px rgba(0,0,0,.24), 0 0 0 1px rgba(0,217,255,.12) inset !important;
       }
+      body.flprStandaloneOriginalClient .standaloneLogoDock{
+        flex:0 0 auto !important;
+        gap:10px !important;
+        margin:10px 2px 0 !important;
+        padding:10px !important;
+        border-radius:14px !important;
+        background:
+          linear-gradient(180deg, rgba(5,18,32,.98), rgba(3,10,18,.98)),
+          radial-gradient(circle at 0% 0%, rgba(255,224,122,.12), transparent 46%) !important;
+        box-shadow:0 0 0 1px rgba(255,224,122,.14) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneLogoActions{
+        display:grid !important;
+        grid-template-columns:minmax(0, 1fr) auto !important;
+        gap:8px !important;
+        align-items:center !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneLogoLockRow{
+        display:flex !important;
+        align-items:center !important;
+        gap:10px !important;
+        min-height:40px !important;
+        padding:8px 10px !important;
+        border:1px solid rgba(0,217,255,.22) !important;
+        border-radius:12px !important;
+        background:rgba(0,18,31,.42) !important;
+        color:rgba(232,250,255,.92) !important;
+        font-size:9px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneLogoDevPanel[hidden]{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneLogoDevPanel{
+        display:flex !important;
+        flex-direction:column !important;
+        gap:10px !important;
+        margin-top:10px !important;
+      }
       body.flprStandaloneOriginalClient .standaloneTextSizeDock .standaloneSectionTitle{
         gap:8px !important;
         padding-bottom:6px !important;
@@ -2057,12 +3034,27 @@
     root.classList.add("flprStandaloneWindowClient");
     root.style.setProperty("--bonusLeaderboardW", "0px");
     const captureW = readRootPx("--captureW", 910);
+    const captureH = readRootPx("--captureH", 1450);
     const gutter = readRootPx("--gutter", 16);
     const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
     const minControlsW = 880;
     const targetW = Math.max(captureW + minControlsW + gutter + 32, viewportW);
     const controlsW = Math.max(minControlsW, Math.round(targetW - captureW - gutter - 32));
     root.style.setProperty("--controlsW", `${controlsW}px`);
+    root.style.setProperty("--flprStandaloneControlsH", `${Math.max(900, Math.round(captureH - 110))}px`);
+    try{
+      const header = document.querySelector(".capture > .header");
+      const bossDock = document.getElementById("bossDock");
+      const headerH = Math.max(60, Math.round(Number(header?.getBoundingClientRect?.().height || 75)));
+      const bossH = Math.max(130, Math.round(Number(bossDock?.getBoundingClientRect?.().height || 170)));
+      const gapTotal = 12;
+      const bottomPad = 8;
+      const headerReserve = 28;
+      const nextViewportH = Math.max(830, Math.round(captureH - headerH - bossH - gapTotal - bottomPad - headerReserve));
+      root.style.setProperty("--flprStandaloneViewportH", `${nextViewportH}px`);
+    }catch(_){
+      root.style.setProperty("--flprStandaloneViewportH", `${Math.max(830, Math.round(captureH - 293))}px`);
+    }
     root.style.removeProperty("--flprStandaloneBaseW");
     root.style.removeProperty("--flprStandaloneWindowScale");
     try{ standaloneRenderModeHud(); }catch(_){}
@@ -2070,7 +3062,7 @@
 
   function activeControlTab(){
     const activePanel = document.querySelector(".controlsTabPanel.active")?.dataset?.ctrlPanel || "";
-    if(activePanel === "singleplayer" || activePanel === "multiplayer" || activePanel === "visuals" || activePanel === "achievements") return activePanel;
+    if(activePanel === "singleplayer" || activePanel === "multiplayer" || activePanel === "house" || activePanel === "visuals" || activePanel === "achievements") return activePanel;
     return document.querySelector(".controlsTabBtn.active")?.dataset?.ctrlTab || "multiplayer";
   }
 
@@ -2078,7 +3070,7 @@
     const raw = String(key || "").trim().toLowerCase();
     const wanted = raw === "singleplayer"
       ? "singleplayer"
-      : (raw === "visuals" || raw === "achievements" ? raw : "multiplayer");
+      : (raw === "house" || raw === "visuals" || raw === "achievements" ? raw : "multiplayer");
     document.querySelectorAll(".controlsTabBtn").forEach((btn)=>{
       btn.classList.toggle("active", btn.dataset.ctrlTab === wanted);
     });
@@ -2091,10 +3083,14 @@
         panel.style.display = isWanted ? "" : "none";
       }
     });
-    if(wanted === "singleplayer" || wanted === "multiplayer"){
-      try{ localStorage.setItem("flpr_controls_tab_v1", wanted); }catch(_){}
-    }
+    try{
+      const body = document.querySelector(".controlsBody");
+      if(body) body.classList.toggle("standaloneHouseTakeover", wanted === "house");
+      document.body.classList.toggle("flprStandaloneHouseActive", wanted === "house");
+    }catch(_){}
+    try{ localStorage.setItem("flpr_controls_tab_v1", wanted); }catch(_){}
     try{ standaloneRenderMenuTabs(wanted); }catch(_){}
+    try{ standaloneRenderModeSwitchHud(standaloneCurrentMenuMode()); }catch(_){}
   }
   try{ window.flprStandaloneSetControlTab = setControlTab; }catch(_){}
 
@@ -2338,7 +3334,15 @@
     const text = standaloneStripGuidePrefix(value);
     if(!text) return true;
     if(/^generic ap summary\b/i.test(text)) return true;
+    if(/^build score to at least [\d,]+\+?\s+before drain\.?\s+focus lit modes, jackpots, and bonus multipliers\.?$/i.test(text)) return true;
+    if(/^reach at least [\d,]+\+?\s+points in a valid game on that table\.\s+(use safer repeatable shots|blend safe feeds|stack multipliers)/i.test(text)) return true;
     if(/these are table-specific .* objectives/i.test(text)) return true;
+    if(/^complete the table'?s lock or numbered qualifier,?\s+then shoot the lit multiball start shot once it is ready\.?$/i.test(text)) return true;
+    if(standaloneStrategyKey(tableName) === "party zone"){
+      const key = standaloneStrategyKey(text);
+      if(key === "light the dance contest mode and shoot the start shot to begin it") return true;
+      if(key === "start way out of control and finish its required lit shots before the timer expires") return true;
+    }
     if(/^use .* progress\.$/i.test(text) && text.length < 120) return true;
     if(tableName && new RegExp(`^use .+ ${String(tableName).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} objectives\\.?$`, "i").test(text)) return true;
     return false;
@@ -2381,6 +3385,152 @@
     return "";
   }
 
+  function standaloneScoreTaskMatch(taskName){
+    const raw = String(taskName || "").trim();
+    if(!raw) return null;
+    let match = raw.match(/^(easy|medium|hard)\s+score\s*\(([^)]+)\)\s*$/i);
+    if(match){
+      return {
+        tier: String(match[1] || "").toLowerCase(),
+        target: String(match[2] || "").trim().replace(/\+$/, "") + "+"
+      };
+    }
+    match = raw.match(/(?:score(?: target)?(?: of)?|score)\s*\(?([\d,]+\+?)\)?/i);
+    if(match){
+      return {
+        tier: "",
+        target: String(match[1] || "").trim().replace(/\+$/, "") + "+"
+      };
+    }
+    return null;
+  }
+
+  function standaloneHumanizeStrategyKey(key){
+    const lowerWords = new Set(["a", "an", "and", "at", "for", "in", "of", "on", "or", "the", "to", "toward", "with"]);
+    return String(key || "").trim().split(/\s+/).map((word, index)=>{
+      const clean = String(word || "");
+      if(!clean) return "";
+      const lower = clean.toLowerCase();
+      if(index > 0 && lowerWords.has(lower)) return lower;
+      if(/^\d+[xkmb]?$/i.test(clean)) return clean.toUpperCase();
+      if(["tv", "tnt", "ufo", "vuk", "karr", "kitt"].includes(lower)) return clean.toUpperCase();
+      return lower.charAt(0).toUpperCase() + lower.slice(1);
+    }).join(" ");
+  }
+
+  function standaloneCompactStrategyText(value, maxChars){
+    const clean = String(value || "").replace(/\s+/g, " ").trim();
+    const max = Math.max(80, Number(maxChars || 180) || 180);
+    if(clean.length <= max) return clean;
+    const cut = clean.slice(0, max + 1);
+    const boundaries = [cut.lastIndexOf(". "), cut.lastIndexOf("; "), cut.lastIndexOf(", "), cut.lastIndexOf(" ")]
+      .filter((index)=>index >= Math.floor(max * 0.55));
+    const end = boundaries.length ? Math.max.apply(Math, boundaries) : max;
+    const out = cut.slice(0, end).replace(/[;,:,.]\s*$/, "").trim();
+    return out ? (/[.!?]$/.test(out) ? out : `${out}.`) : clean.slice(0, max).trim();
+  }
+
+  function standaloneScoreImportantSummary(label, guideText){
+    const clean = String(guideText || "").replace(/\s+/g, " ").trim();
+    if(!clean) return "";
+    const body = clean.replace(/^([^.!?]{3,72})\s+-\s+/i, "");
+    const sentences = body
+      .split(/(?<=[.!?])\s+(?=[A-Z0-9("])/)
+      .map((part)=>part.trim())
+      .filter(Boolean);
+    const parts = sentences.length ? sentences : [body];
+    const ranked = parts.map((part, index)=>{
+      const raw = `${label || ""} ${part || ""}`;
+      let score = Math.max(0, 8 - index);
+      if(/\b(2x|3x|double scoring|double|triple|playfield multiplier|multiplier|bonus x)\b/i.test(raw)) score += 34;
+      if(/\b(multiball|lock|jackpot|super jackpot|mega jackpot|wizard|final|video)\b/i.test(raw)) score += 28;
+      if(/\b(hurry[- ]?up|quick score|collect bonus|bonus collect|mode|mission|award)\b/i.test(raw)) score += 18;
+      if(/\b(shoot|hit|complete|spell|light|lock|start|collect|qualif|cash|score)\b/i.test(raw)) score += 12;
+      if(String(part || "").length > 170) score -= 8;
+      return { part, index, score };
+    }).sort((a, b)=>b.score - a.score || a.index - b.index);
+    return standaloneCompactStrategyText(ranked[0]?.part || body, 86);
+  }
+
+  function standaloneScoreGuideBucket(label, guideText){
+    const text = standaloneStrategyKey(`${label || ""} ${guideText || ""}`);
+    if(/\b(2x|3x|double|triple|multiplier|playfield multiplier|bonus x)\b/.test(text)) return "multiplier";
+    if(/\b(super jackpot|mega jackpot|wizard|final)\b/.test(text)) return "super";
+    if(/\b(multiball|lock)\b/.test(text)) return "multiball";
+    if(/\b(jackpot)\b/.test(text)) return "jackpot";
+    if(/\b(hurry up|hurryup)\b/.test(text)) return "hurry";
+    if(/\b(bonus|collect bonus|bonus collect|end of ball)\b/.test(text)) return "bonus";
+    if(/\b(mode|mission|battle|race|song|tale|video)\b/.test(text)) return "mode";
+    if(/\b(spinner|loop|ramp|orbit|scoop|saucer|castle)\b/.test(text)) return "shot";
+    if(/\b(target|bank|drop)\b/.test(text)) return "target";
+    return "other";
+  }
+
+  function standaloneScoreGuideValue(label, guideText, tier){
+    const raw = `${label || ""} ${guideText || ""}`;
+    if(!String(raw || "").trim()) return -999;
+    let score = 0;
+    if(/\b(no multiball|no jackpot|not a strong strategy|forgettable)\b/i.test(raw)) score -= 90;
+    if(/\b(points?|score|worth|value|bonus)\b/i.test(raw)) score += 12;
+    if(/\b(2x|3x|double scoring|double|triple|playfield multiplier|multiplier)\b/i.test(raw)) score += 52;
+    if(/\b(super jackpot|mega jackpot|wizard|rule the universe|final match|final draw)\b/i.test(raw)) score += 48;
+    if(/\b(multiball|lock)\b/i.test(raw)) score += 40;
+    if(/\b(jackpot)\b/i.test(raw)) score += 38;
+    if(/\b(hurry[- ]?up|quick score)\b/i.test(raw)) score += 30;
+    if(/\b(collect bonus|bonus collect|bonus multiplier|end of ball bonus|bonus x)\b/i.test(raw)) score += 28;
+    if(/\b(mode|mission|battle|race|song|tale|video|award)\b/i.test(raw)) score += 18;
+    if(/\b(spinner|loop|ramp|orbit|scoop|saucer|target bank|drop target|castle)\b/i.test(raw)) score += 14;
+    if(/\b(shoot|hit|complete|spell|light|lock|start|collect|qualif|cash|score)\b/i.test(raw)) score += 10;
+    const key = String(tier || "").toLowerCase();
+    if(key === "easy" && /\b(spinner|bonus|target|ramp|orbit|safe|repeatable)\b/i.test(raw)) score += 12;
+    if(key === "medium" && /\b(mode|hurry|bonus|multiball|jackpot)\b/i.test(raw)) score += 12;
+    if(key === "hard" && /\b(multiball|super jackpot|jackpot|2x|3x|wizard|final|video)\b/i.test(raw)) score += 14;
+    return score;
+  }
+
+  function standalonePixelScoreStrategyGuide(tableName, taskName){
+    const score = standaloneScoreTaskMatch(taskName);
+    if(!score) return "";
+    let tableGuides = null;
+    for(const tableKey of standaloneStrategyTableKeys(tableName)){
+      if(STANDALONE_PIXEL_TASK_GUIDES[tableKey]){
+        tableGuides = STANDALONE_PIXEL_TASK_GUIDES[tableKey];
+        break;
+      }
+    }
+    if(!tableGuides) return "";
+    const tableLabel = String(tableName || "this table").trim() || "this table";
+    const base = `Score ${score.target} on ${tableLabel}.`;
+    const candidates = Object.entries(tableGuides).map(([guideKey, guideText], index)=>{
+      const label = standaloneHumanizeStrategyKey(guideKey);
+      return {
+        label,
+        guideText: String(guideText || "").trim(),
+        index,
+        bucket: standaloneScoreGuideBucket(label, guideText),
+        score: standaloneScoreGuideValue(label, guideText, score.tier)
+      };
+    }).filter((candidate)=>candidate.guideText && candidate.score >= 22)
+      .sort((a, b)=>b.score - a.score || a.index - b.index);
+    const maxRoutes = 2;
+    const chosen = [];
+    const usedBuckets = new Set();
+    const usedSummaries = new Set();
+    candidates.forEach((candidate)=>{
+      if(chosen.length >= maxRoutes) return;
+      const summary = standaloneScoreImportantSummary(candidate.label, candidate.guideText);
+      const key = standaloneStrategyKey(summary);
+      if(!summary || usedSummaries.has(key)) return;
+      if(usedBuckets.has(candidate.bucket) && candidates.some((other)=>other.bucket !== candidate.bucket && other.score >= candidate.score - 16 && !usedBuckets.has(other.bucket))) return;
+      chosen.push({ label: candidate.label, summary });
+      usedBuckets.add(candidate.bucket);
+      usedSummaries.add(key);
+    });
+    if(!chosen.length) return "";
+    const routes = chosen.map((route)=>`${route.label}: ${route.summary}`).join(" ");
+    return standaloneCompactStrategyText(`${base} Best scoring from the guide: ${routes}`, 340);
+  }
+
   function standalonePatternStrategyGuide(tableName, taskName){
     const task = String(taskName || "").trim();
     const key = standaloneStrategyKey(task);
@@ -2409,6 +3559,8 @@
     const targetTable = standaloneSourceTableForTask(tableName, entry, node);
     const exact = standaloneExactStrategyGuide(targetTable, taskName) || standaloneExactStrategyGuide(tableName, taskName);
     if(exact) return exact;
+    const pixelScore = standalonePixelScoreStrategyGuide(targetTable || tableName, taskName);
+    if(pixelScore) return pixelScore;
     const sourceExplanation = String(entry?.strategy_guide || entry?.strategyGuide || entry?.standalone_source_explanation || entry?.explanation || "").trim();
     if(sourceExplanation && !standaloneIsGenericStrategyText(sourceExplanation, targetTable)){
       return sourceExplanation;
@@ -2689,10 +3841,101 @@
     card.appendChild(content);
   }
 
+  const standaloneStrategyHoverRuntime = {
+    pointerX: NaN,
+    pointerY: NaN,
+    pointerAt: 0,
+    activeBtn: null,
+    activeTip: "",
+    hideTimer: 0,
+    bound: false
+  };
+
+  function standaloneStrategyHoverTipForButton(btn, fallback){
+    return String(btn?.__flprStandaloneStrategyTip || fallback || "").trim();
+  }
+
+  function standaloneStrategyHoverButtonAtPointer(){
+    try{
+      const x = Number(standaloneStrategyHoverRuntime.pointerX);
+      const y = Number(standaloneStrategyHoverRuntime.pointerY);
+      if(!Number.isFinite(x) || !Number.isFinite(y)) return null;
+      if(Date.now() - Number(standaloneStrategyHoverRuntime.pointerAt || 0) > 5000) return null;
+      return document.elementFromPoint(x, y)?.closest?.(".nodeBtn") || null;
+    }catch(_){
+      return null;
+    }
+  }
+
+  function standaloneReanchorStrategyHover(reason){
+    const tip = String(
+      standaloneStrategyHoverRuntime.activeTip ||
+      (typeof checkTaskHoverActiveText !== "undefined" ? checkTaskHoverActiveText : "") ||
+      ""
+    ).trim();
+    if(!tip) return false;
+    const btn = standaloneStrategyHoverButtonAtPointer();
+    if(!btn || !document.body.contains(btn)) return false;
+    const nextTip = standaloneStrategyHoverTipForButton(btn, tip);
+    if(!nextTip) return false;
+    standaloneShowCheckTaskHoverCard(btn, nextTip);
+    try{ btn.__flprStandaloneStrategyHoverReanchored = String(reason || "reanchor"); }catch(_){}
+    return true;
+  }
+
+  function standaloneScheduleStrategyHoverReanchor(reason){
+    const run = ()=>{ try{ standaloneReanchorStrategyHover(reason); }catch(_){} };
+    try{
+      if(typeof requestAnimationFrame === "function") requestAnimationFrame(run);
+    }catch(_){}
+    try{ setTimeout(run, 0); }catch(_){}
+    try{ setTimeout(run, 80); }catch(_){}
+  }
+
+  function standaloneScheduleStrategyHoverHide(btn, tip){
+    try{
+      if(standaloneStrategyHoverRuntime.hideTimer) clearTimeout(standaloneStrategyHoverRuntime.hideTimer);
+    }catch(_){}
+    standaloneStrategyHoverRuntime.hideTimer = setTimeout(()=>{
+      standaloneStrategyHoverRuntime.hideTimer = 0;
+      if(standaloneReanchorStrategyHover("delayed-hide")) return;
+      try{
+        if((typeof checkTaskHoverActiveBtn === "undefined" || checkTaskHoverActiveBtn === btn) && typeof hideCheckTaskHoverCard === "function"){
+          hideCheckTaskHoverCard();
+        }
+      }catch(_){}
+      if(standaloneStrategyHoverRuntime.activeBtn === btn){
+        standaloneStrategyHoverRuntime.activeBtn = null;
+        standaloneStrategyHoverRuntime.activeTip = "";
+      }
+    }, 180);
+  }
+
+  function standaloneEnsureStrategyHoverPointerBridge(){
+    if(standaloneStrategyHoverRuntime.bound) return;
+    standaloneStrategyHoverRuntime.bound = true;
+    try{
+      document.addEventListener("pointermove", (event)=>{
+        standaloneStrategyHoverRuntime.pointerX = Number(event.clientX);
+        standaloneStrategyHoverRuntime.pointerY = Number(event.clientY);
+        standaloneStrategyHoverRuntime.pointerAt = Date.now();
+        if(standaloneStrategyHoverRuntime.activeTip && !document.body.contains(standaloneStrategyHoverRuntime.activeBtn)){
+          standaloneScheduleStrategyHoverReanchor("pointermove");
+        }
+      }, true);
+    }catch(_){}
+  }
+
   function standaloneShowCheckTaskHoverCard(btn, text){
     const tip = String(text || "").trim();
     if(!btn || !tip) return;
     try{ if(typeof clearCheckTaskHoverTimer === "function") clearCheckTaskHoverTimer(); }catch(_){}
+    try{
+      if(standaloneStrategyHoverRuntime.hideTimer) clearTimeout(standaloneStrategyHoverRuntime.hideTimer);
+      standaloneStrategyHoverRuntime.hideTimer = 0;
+      standaloneStrategyHoverRuntime.activeBtn = btn;
+      standaloneStrategyHoverRuntime.activeTip = tip;
+    }catch(_){}
     let card = null;
     try{ card = (typeof ensureCheckTaskHoverCard === "function") ? ensureCheckTaskHoverCard() : null; }catch(_){}
     if(!card) return;
@@ -2724,10 +3967,12 @@
   }
 
   function installStandaloneStrategyTooltipBridge(){
+    standaloneEnsureStrategyHoverPointerBridge();
     try{
       window.flprStandaloneTaskTooltip = standaloneResolveTaskTooltip;
       window.flprStandaloneTaskTooltipForTest = standaloneResolveTaskTooltip;
       window.flprStandaloneTaskTooltipForNodeForTest = standaloneResolveTaskTooltipForNode;
+      window.flprStandaloneReanchorStrategyHoverForTest = standaloneReanchorStrategyHover;
     }catch(_){}
     try{
       const originalGet = window.getTaskExplanationForNode || (typeof getTaskExplanationForNode === "function" ? getTaskExplanationForNode : null);
@@ -2751,15 +3996,19 @@
           if(!btn || !tip) return;
           if(btn.__flprStandaloneStrategyHoverBound === tip) return;
           btn.__flprStandaloneStrategyHoverBound = tip;
+          btn.__flprStandaloneStrategyTip = tip;
           const hoverShow = ()=>standaloneScheduleCheckTaskHoverCard(btn, tip);
           const focusShow = ()=>standaloneShowCheckTaskHoverCard(btn, tip);
           const hide = ()=>{
             try{ if(typeof clearCheckTaskHoverTimer === "function") clearCheckTaskHoverTimer(); }catch(_){}
-            try{
-              if(checkTaskHoverActiveBtn === btn && typeof hideCheckTaskHoverCard === "function") hideCheckTaskHoverCard();
-            }catch(_){}
+            standaloneScheduleStrategyHoverHide(btn, tip);
           };
           btn.addEventListener("mouseenter", hoverShow);
+          btn.addEventListener("pointermove", (event)=>{
+            standaloneStrategyHoverRuntime.pointerX = Number(event.clientX);
+            standaloneStrategyHoverRuntime.pointerY = Number(event.clientY);
+            standaloneStrategyHoverRuntime.pointerAt = Date.now();
+          }, true);
           btn.addEventListener("focus", focusShow);
           btn.addEventListener("mouseleave", hide);
           btn.addEventListener("blur", hide);
@@ -2799,16 +4048,6 @@
       { name:"Complete Top Lanes", difficulty:"hard", kind:"task" },
       { name:"Complete a Target Bank", difficulty:"hard", kind:"task" },
       { name:"Start Any Multiball", difficulty:"hard", kind:"task" },
-      { name:"Obtain a score of 100,000+", difficulty:"easy", kind:"score" },
-      { name:"Obtain a score of 250,000+", difficulty:"easy", kind:"score" },
-      { name:"Obtain a score of 500,000+", difficulty:"medium", kind:"score" },
-      { name:"Obtain a score of 1,000,000+", difficulty:"medium", kind:"score" },
-      { name:"Obtain a score of 2,500,000+", difficulty:"medium", kind:"score" },
-      { name:"Obtain a score of 5,000,000+", difficulty:"medium", kind:"score" },
-      { name:"Obtain a score of 10,000,000+", difficulty:"hard", kind:"score" },
-      { name:"Obtain a score of 25,000,000+", difficulty:"hard", kind:"score" },
-      { name:"Obtain a score of 50,000,000+", difficulty:"hard", kind:"score" },
-      { name:"Obtain a score of 100,000,000+", difficulty:"hard", kind:"score" },
       { name:"Boss Victory", difficulty:"hard", kind:"task" }
     ];
   }
@@ -2908,7 +4147,8 @@
     });
 
     standaloneBossTaskSpecs().forEach((task, taskIndex)=>{
-      const itemName = task.name === "Boss Victory" ? "Victory" : "Boss Damage 16%";
+      const damagePct = standaloneBossDamagePctForSpec("Boss Table", task, taskIndex, task.name);
+      const itemName = task.name === "Boss Victory" ? "Victory" : `Boss Damage ${damagePct}%`;
       addLocation("Boss Table", task, itemName, tables.length, taskIndex);
     });
 
@@ -3119,6 +4359,7 @@
                 <div class="apConnLogTitle">AP CONNECTION LOG</div>
                 <div class="apConnLogTabs" id="apLogTabs">
                   <button class="apLogTab active" type="button" data-aplog-tab="status" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('status', event) : false;">STATUS</button>
+                  <button class="apLogTab" type="button" data-aplog-tab="hints" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('hints', event) : false;">HINTS</button>
                   <button class="apLogTab" type="button" data-aplog-tab="errors" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('errors', event) : false;">ERRORS</button>
                 </div>
               </div>
@@ -3201,7 +4442,7 @@
   }
 
   function standaloneSanitizeProfileName(value){
-    return String(value || "").replace(/\s+/g, " ").trim().slice(0, 28) || "Player";
+    return String(value || "").replace(/\s+/g, " ").trim().slice(0, 40) || "Player";
   }
 
   function standaloneProfileState(){
@@ -3220,10 +4461,10 @@
         updatedAt: Math.max(0, Number(profile?.updatedAt || profile?.createdAt || Date.now())),
         achievementStore: (profile?.achievementStore && typeof profile.achievementStore === "object") ? profile.achievementStore : null,
         achievementUi: (profile?.achievementUi && typeof profile.achievementUi === "object") ? profile.achievementUi : null,
-        episodeState: (profile?.episodeState && typeof profile.episodeState === "object") ? profile.episodeState : null,
         relics: (profile?.relics && typeof profile.relics === "object") ? profile.relics : null,
         seedSaves: Array.isArray(profile?.seedSaves) ? profile.seedSaves : [],
-        multiplayerSnapshot: (profile?.multiplayerSnapshot && typeof profile.multiplayerSnapshot === "object") ? profile.multiplayerSnapshot : null
+        multiplayerSnapshot: (profile?.multiplayerSnapshot && typeof profile.multiplayerSnapshot === "object") ? profile.multiplayerSnapshot : null,
+        extensions: (profile?.extensions && typeof profile.extensions === "object") ? profile.extensions : {}
       };
     }).filter(Boolean);
     let activeProfileId = String(state.activeProfileId || "").trim();
@@ -3245,6 +4486,41 @@
     const id = String(state.activeProfileId || "").trim();
     return (state.profiles || []).find((profile)=>String(profile?.id || "") === id) || null;
   }
+
+  function installStandaloneProfileExtensionBridge(){
+    try{
+      window.flprStandaloneProfileExtensions = {
+        hasActiveProfile(){
+          return !!standaloneActiveProfile();
+        },
+        activeProfileId(){
+          const data = standaloneProfileState();
+          return String(data.activeProfileId || "");
+        },
+        get(namespace, fallback){
+          const key = String(namespace || "").trim();
+          if(!key) return fallback;
+          const data = standaloneProfileState();
+          const active = standaloneActiveProfile(data);
+          if(!active || !active.extensions || typeof active.extensions !== "object") return fallback;
+          return Object.prototype.hasOwnProperty.call(active.extensions, key) ? standaloneCloneJson(active.extensions[key], fallback) : fallback;
+        },
+        set(namespace, value){
+          const key = String(namespace || "").trim();
+          if(!key) return false;
+          const data = standaloneProfileState();
+          const active = standaloneActiveProfile(data);
+          if(!active) return false;
+          active.extensions = (active.extensions && typeof active.extensions === "object") ? active.extensions : {};
+          active.extensions[key] = standaloneCloneJson(value, value);
+          active.updatedAt = Date.now();
+          standaloneSaveProfileState(data);
+          return true;
+        }
+      };
+    }catch(_){}
+  }
+  installStandaloneProfileExtensionBridge();
 
   function standaloneProfilePoints(profile){
     const store = profile?.achievementStore && typeof profile.achievementStore === "object"
@@ -3277,11 +4553,6 @@
     };
   }
 
-  function standaloneFreshEpisodeState(){
-    try{ if(typeof episodeFreshState === "function") return episodeFreshState(); }catch(_){}
-    return { version:1, status:"idle", startedAt:0, endedAt:0, pausedAt:0, seedName:"", reason:"", runId:"" };
-  }
-
   function standaloneCurrentAchievementStoreSnapshot(){
     try{ if(typeof achStore !== "undefined" && achStore && typeof achStore === "object") return standaloneCloneJson(achStore, null); }catch(_){}
     try{ if(window.flprAchievementStore && typeof window.flprAchievementStore === "object") return standaloneCloneJson(window.flprAchievementStore, null); }catch(_){}
@@ -3290,11 +4561,6 @@
 
   function standaloneCurrentAchievementUiSnapshot(){
     return standaloneLocalStorageJson(STANDALONE_ACHIEVEMENT_UI_LS_KEY, null);
-  }
-
-  function standaloneCurrentEpisodeSnapshot(){
-    try{ if(typeof episodeState !== "undefined" && episodeState && typeof episodeState === "object") return standaloneCloneJson(episodeState, null); }catch(_){}
-    return standaloneLocalStorageJson(STANDALONE_EPISODE_LS_KEY, standaloneFreshEpisodeState());
   }
 
   function standaloneCurrentRelicsSnapshot(){
@@ -3310,7 +4576,6 @@
     if(!active) return;
     active.achievementStore = standaloneCurrentAchievementStoreSnapshot() || standaloneFreshAchievementStore();
     active.achievementUi = standaloneCurrentAchievementUiSnapshot();
-    active.episodeState = standaloneCurrentEpisodeSnapshot() || standaloneFreshEpisodeState();
     active.relics = standaloneCurrentRelicsSnapshot();
     active.updatedAt = Date.now();
     standaloneSaveProfileState(stateData);
@@ -3330,9 +4595,7 @@
       if(profile.achievementUi){
         standaloneWriteLocalStorageJson(STANDALONE_ACHIEVEMENT_UI_LS_KEY, standaloneCloneJson(profile.achievementUi, profile.achievementUi));
       }
-      const episode = standaloneCloneJson(profile.episodeState, null) || standaloneFreshEpisodeState();
-      standaloneWriteLocalStorageJson(STANDALONE_EPISODE_LS_KEY, episode);
-      try{ episodeState = episode; }catch(_){}
+      try{ installStandaloneNoEpisodeBridge(); }catch(_){}
       try{
         if(profile.relics && state && typeof state === "object"){
           state.relics = typeof relicNormalizeState === "function"
@@ -3344,7 +4607,6 @@
       try{ if(typeof achBuildTableCatalogFromAp === "function") achBuildTableCatalogFromAp(); }catch(_){}
       try{ if(typeof achRecomputeProgress === "function") achRecomputeProgress(); }catch(_){}
       try{ if(typeof achSaveStore === "function") achSaveStore(); }catch(_){}
-      try{ if(typeof updateEpisodeControlsUi === "function") updateEpisodeControlsUi(); }catch(_){}
       try{ if(typeof renderAchievementsControlsPanel === "function") renderAchievementsControlsPanel(); }catch(_){}
       try{ if(typeof renderHeaderTitleBadge === "function") renderHeaderTitleBadge(); }catch(_){}
       try{ if(typeof saveState === "function") saveState(); }catch(_){}
@@ -3366,10 +4628,10 @@
       updatedAt: now,
       achievementStore: importExisting ? (standaloneCurrentAchievementStoreSnapshot() || standaloneFreshAchievementStore()) : standaloneFreshAchievementStore(),
       achievementUi: importExisting ? standaloneCurrentAchievementUiSnapshot() : null,
-      episodeState: standaloneFreshEpisodeState(),
       relics: importExisting ? standaloneCurrentRelicsSnapshot() : null,
       seedSaves: [],
-      multiplayerSnapshot: null
+      multiplayerSnapshot: null,
+      extensions: {}
     };
     stateData.profiles.push(profile);
     stateData.activeProfileId = profile.id;
@@ -3896,6 +5158,56 @@
     }
     if(hud.__flprStandaloneModeHudBound !== true){
       hud.__flprStandaloneModeHudBound = true;
+      hud.addEventListener("pointerdown", (event)=>{
+        if(standaloneSettings.logoLocked !== false) return;
+        const logo = event.target.closest?.(".standaloneModeHudLogo");
+        if(!logo || !hud.contains(logo)) return;
+        if(Number(event.button || 0) !== 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        try{ event.stopImmediatePropagation(); }catch(_){}
+        const startX = Number(event.clientX || 0);
+        const startY = Number(event.clientY || 0);
+        const rect = hud.getBoundingClientRect();
+        const startLeft = Number(rect?.left || 0);
+        const startTop = Number(rect?.top || 0);
+        hud.classList.add("logoDragging");
+        try{ hud.setPointerCapture(event.pointerId); }catch(_){}
+        const move = (moveEvent)=>{
+          const nextX = startLeft + (Number(moveEvent.clientX || 0) - startX);
+          const nextY = startTop + (Number(moveEvent.clientY || 0) - startY);
+          standaloneSetLogoPosition(nextX, nextY, { save:false });
+        };
+        const up = (upEvent)=>{
+          document.removeEventListener("pointermove", move, true);
+          document.removeEventListener("pointerup", up, true);
+          document.removeEventListener("pointercancel", up, true);
+          hud.classList.remove("logoDragging");
+          try{ hud.releasePointerCapture(upEvent.pointerId); }catch(_){}
+          const finalRect = hud.getBoundingClientRect();
+          standaloneSettings.logoX = Math.round(Number(finalRect?.left || 0));
+          standaloneSettings.logoY = Math.round(Number(finalRect?.top || 0));
+          saveSettings(standaloneSettings);
+          standaloneSyncLogoControls();
+        };
+        document.addEventListener("pointermove", move, true);
+        document.addEventListener("pointerup", up, true);
+        document.addEventListener("pointercancel", up, true);
+      }, true);
+    }
+    return hud;
+  }
+
+  function standaloneEnsureModeSwitchHud(){
+    let hud = document.getElementById("standaloneModeSwitchHud");
+    if(!hud){
+      hud = document.createElement("div");
+      hud.id = "standaloneModeSwitchHud";
+      hud.className = "standaloneModeSwitchHud";
+      document.body.appendChild(hud);
+    }
+    if(hud.__flprStandaloneModeSwitchBound !== true){
+      hud.__flprStandaloneModeSwitchBound = true;
       hud.addEventListener("click", (event)=>{
         const btn = event.target.closest?.("[data-standalone-mode-toggle]");
         if(!btn || !hud.contains(btn)) return;
@@ -3903,21 +5215,84 @@
         event.stopPropagation();
         try{ event.stopImmediatePropagation(); }catch(_){}
         try{ playClick(); }catch(_){}
-        standaloneSwitchHomeMode(btn.dataset.standaloneModeToggle || "archipelago");
+        const target = String(btn.dataset.standaloneModeToggle || "archipelago");
+        if(target === "house"){
+          try{ setControlTab("house"); }catch(_){}
+          standaloneRenderModeSwitchHud(standaloneCurrentMenuMode());
+          return;
+        }
+        standaloneSwitchHomeMode(target);
       }, true);
     }
     return hud;
+  }
+
+  function standaloneDefaultLogoPosition(){
+    try{
+      const controls = document.querySelector(".controls") || document.querySelector(".controlsHead, .controlsHeadTitle") || document.querySelector(".controlsBody");
+      const rect = controls?.getBoundingClientRect?.();
+      if(rect && Number.isFinite(rect.left) && rect.left > 0){
+        return { x:Math.max(8, Math.round(rect.left)), y:42 };
+      }
+    }catch(_){}
+    return { x:Math.max(8, Math.round(readRootPx("--captureW", 910) + readRootPx("--gutter", 16) + 16)), y:42 };
+  }
+
+  function standaloneSetLogoPosition(x, y, opts){
+    opts = opts || {};
+    const hud = document.getElementById("standaloneModeHud");
+    if(!hud) return;
+    const rect = hud.getBoundingClientRect?.();
+    const width = Math.max(120, Number(rect?.width || 600));
+    const height = Math.max(60, Number(rect?.height || 128));
+    const maxX = Math.max(8, (window.innerWidth || document.documentElement.clientWidth || 1280) - Math.min(width, 220));
+    const maxY = Math.max(8, (window.innerHeight || document.documentElement.clientHeight || 720) - Math.min(height, 60));
+    const left = clamp(Number(x), 0, maxX);
+    const top = clamp(Number(y), 0, maxY);
+    hud.style.setProperty("left", `${Math.round(left)}px`, "important");
+    hud.style.setProperty("top", `${Math.round(top)}px`, "important");
+    if(opts.save !== false){
+      standaloneSettings.logoX = Math.round(left);
+      standaloneSettings.logoY = Math.round(top);
+      saveSettings(standaloneSettings);
+    }
   }
 
   function standalonePositionModeHud(){
     try{
       const hud = document.getElementById("standaloneModeHud");
       if(!hud) return;
-      const controls = document.querySelector(".controlsBody") || document.querySelector(".controlsHead, .controlsHeadTitle") || document.querySelector(".controls");
-      const rect = controls?.getBoundingClientRect?.();
-      if(rect && Number.isFinite(rect.left) && rect.left > 0){
-        hud.style.setProperty("left", `${Math.max(8, Math.round(rect.left))}px`, "important");
+      const hasSavedPosition = standaloneSettings.logoX != null && standaloneSettings.logoY != null && String(standaloneSettings.logoX) !== "" && String(standaloneSettings.logoY) !== "";
+      const savedX = Number(standaloneSettings.logoX);
+      const savedY = Number(standaloneSettings.logoY);
+      if(hasSavedPosition && Number.isFinite(savedX) && Number.isFinite(savedY)){
+        standaloneSetLogoPosition(savedX, savedY, { save:false });
+      }else{
+        const pos = standaloneDefaultLogoPosition();
+        standaloneSetLogoPosition(pos.x, pos.y, { save:false });
       }
+      hud.classList.toggle("logoUnlocked", standaloneSettings.logoLocked === false);
+    }catch(_){}
+  }
+
+  function standalonePositionModeSwitchHud(){
+    try{
+      const hud = document.getElementById("standaloneModeSwitchHud");
+      if(!hud) return;
+      const profile = document.getElementById("standaloneProfileHud");
+      const viewportW = window.innerWidth || document.documentElement.clientWidth || 1280;
+      const hudRect = hud.getBoundingClientRect?.();
+      const profileRect = profile?.getBoundingClientRect?.();
+      const width = Math.max(260, Number(hudRect?.width || 360));
+      const profileLeft = Number(profileRect?.left || viewportW);
+      const profileOffset = Number.isFinite(profileLeft) && profileLeft > 0
+        ? Math.max(18, Math.round(viewportW - profileLeft + 18))
+        : Math.max(360, Math.round(viewportW * 0.3));
+      const maxRight = Math.max(18, Math.round(viewportW - width - 8));
+      const right = clamp(profileOffset, 18, maxRight);
+      hud.style.setProperty("left", "auto", "important");
+      hud.style.setProperty("right", `${right}px`, "important");
+      hud.style.setProperty("transform", "none", "important");
     }catch(_){}
   }
 
@@ -3930,12 +5305,25 @@
     const mode = standaloneCurrentMenuMode();
     hud.innerHTML = `
       <img class="standaloneModeHudLogo" src="Flippermizer Images/FlippermizerLogo.png" alt="Flippermizer">
-      <div class="standaloneModeHudButtons" aria-label="Home Edition mode">
-        <button class="standaloneModeHudBtn${mode === "singleplayer" ? " active" : ""}" data-standalone-mode-toggle="singleplayer" type="button" aria-pressed="${mode === "singleplayer" ? "true" : "false"}">SP</button>
-        <button class="standaloneModeHudBtn${mode === "archipelago" ? " active" : ""}" data-standalone-mode-toggle="archipelago" type="button" aria-pressed="${mode === "archipelago" ? "true" : "false"}">MP</button>
-      </div>
     `;
+    standaloneRenderModeSwitchHud(mode);
     [0, 80, 240, 520].forEach((delay)=>setTimeout(standalonePositionModeHud, delay));
+  }
+
+  function standaloneRenderModeSwitchHud(modeOverride){
+    const hud = standaloneEnsureModeSwitchHud();
+    if(!hud) return;
+    const hasProfile = !!standaloneActiveProfile();
+    hud.hidden = !hasProfile;
+    const mode = modeOverride || standaloneCurrentMenuMode();
+    const houseActive = activeControlTab() === "house";
+    hud.innerHTML = `
+      <button class="standaloneModeHudBtn${!houseActive && mode === "singleplayer" ? " active" : ""}" data-standalone-mode-toggle="singleplayer" type="button" aria-pressed="${!houseActive && mode === "singleplayer" ? "true" : "false"}">SP</button>
+      <button class="standaloneModeHudBtn${!houseActive && mode === "archipelago" ? " active" : ""}" data-standalone-mode-toggle="archipelago" type="button" aria-pressed="${!houseActive && mode === "archipelago" ? "true" : "false"}">MP</button>
+      <button class="standaloneModeHudBtn houseBtn${houseActive ? " active" : ""}" data-standalone-mode-toggle="house" type="button" aria-pressed="${houseActive ? "true" : "false"}">HOUSE</button>
+    `;
+    standalonePositionModeSwitchHud();
+    [0, 80, 240, 520].forEach((delay)=>setTimeout(standalonePositionModeSwitchHud, delay));
   }
 
   function standaloneRenderProfileHud(){
@@ -3945,7 +5333,10 @@
     const keepMenuOpen = !!bar.querySelector("#standaloneProfileMenu:not([hidden])");
     if(!active){
       bar.innerHTML = `
-        <div class="standaloneProfilePoints">FLPRP 0</div>
+        <div class="standaloneProfilePointsWrap" tabindex="0">
+          <div class="standaloneProfilePoints" aria-describedby="standaloneProfilePointsTip">FLPRP 0</div>
+          <div class="standaloneProfilePointsTooltip" id="standaloneProfilePointsTip">FLPRP are profile points earned from Home Edition achievements. They track long-term profile progress across saved seeds.</div>
+        </div>
         <div class="standaloneProfileHudWrap">
           <button class="standaloneProfileHudBtn" id="standaloneProfileHudBtn" type="button">
             <span class="standaloneProfileAvatar">${standaloneEscapeHtml(standaloneDefaultProfileAvatar())}</span>
@@ -3960,11 +5351,15 @@
         const menu = document.getElementById("standaloneProfileMenu");
         if(menu) menu.hidden = false;
       }
+      standalonePositionModeSwitchHud();
       return;
     }
     bar.style.setProperty("--profileColor", standaloneNormalizeProfileColor(active.color));
     bar.innerHTML = `
-      <div class="standaloneProfilePoints">FLPRP ${standaloneProfilePoints(active)}</div>
+      <div class="standaloneProfilePointsWrap" tabindex="0">
+        <div class="standaloneProfilePoints" aria-describedby="standaloneProfilePointsTip">FLPRP ${standaloneProfilePoints(active)}</div>
+        <div class="standaloneProfilePointsTooltip" id="standaloneProfilePointsTip">FLPRP are profile points earned from Home Edition achievements. They track long-term profile progress across saved seeds.</div>
+      </div>
       <div class="standaloneProfileHudWrap">
         <button class="standaloneProfileHudBtn" id="standaloneProfileHudBtn" type="button" style="--profileColor:${escapeAttr(standaloneNormalizeProfileColor(active.color))}">
           <span class="standaloneProfileAvatar">${standaloneEscapeHtml(active.avatar || standaloneDefaultProfileAvatar())}</span>
@@ -3981,6 +5376,7 @@
       const menu = document.getElementById("standaloneProfileMenu");
       if(menu) menu.hidden = false;
     }
+    standalonePositionModeSwitchHud();
   }
 
   function standaloneProfileGateHtml(){
@@ -3991,27 +5387,44 @@
     const avatar = mode === "edit" ? (active?.avatar || standaloneDefaultProfileAvatar()) : standaloneDefaultProfileAvatar();
     const color = mode === "edit" ? standaloneNormalizeProfileColor(active?.color) : "#00ffd5";
     const name = mode === "edit" ? standaloneSanitizeProfileName(active?.name || "Player") : "";
+    const previewName = name || "New Home Player";
+    const previewPoints = active ? standaloneProfilePoints(active) : 0;
     const emojis = standaloneProfileEmojiList();
     const emojiGrid = emojis.map((emoji)=>`
       <button class="standaloneEmojiChoice${emoji === avatar ? " active" : ""}" type="button" data-profile-emoji="${escapeAttr(emoji)}" aria-label="Use ${escapeAttr(emoji)} avatar">${standaloneEscapeHtml(emoji)}</button>
     `).join("");
     const existing = mode !== "edit" && profiles.length
-      ? `<div class="standaloneProfileExisting">${profiles.map((profile)=>`
+      ? `<div class="standaloneProfileExistingWrap">
+          <div class="standaloneProfileSectionTitle">SAVED PROFILES</div>
+          <div class="standaloneProfileExisting">${profiles.map((profile)=>`
           <button class="standaloneProfilePick" type="button" data-profile-id="${escapeAttr(profile.id)}" style="--profileColor:${escapeAttr(standaloneNormalizeProfileColor(profile.color))}">
             <span class="standaloneProfileAvatar">${standaloneEscapeHtml(profile.avatar || standaloneDefaultProfileAvatar())}</span>
-            <span>${standaloneEscapeHtml(profile.name || "Player")}</span>
+            <span class="standaloneProfilePickName">${standaloneEscapeHtml(profile.name || "Player")}</span>
           </button>
-        `).join("")}</div>`
+        `).join("")}</div>
+        </div>`
       : "";
     return `
-      <div class="standaloneProfileCard" role="dialog" aria-modal="true" aria-labelledby="standaloneProfileTitle">
-        <div class="standaloneProfileTitle" id="standaloneProfileTitle">${mode === "edit" ? "Edit Home Profile" : "Home Profile"}</div>
-        <div class="standaloneProfileSub">${mode === "edit" ? "Update the profile name, emoji, or color shown in the Home Edition HUD." : "Create or choose a profile before opening the randomizer. Achievements, FLPRP, relic progress, and local seed saves are kept on this profile."}</div>
+      <div class="standaloneProfileCard" role="dialog" aria-modal="true" aria-labelledby="standaloneProfileTitle" style="--profileColor:${escapeAttr(color)}">
+        <div class="standaloneProfileHeader">
+          <div class="standaloneProfileTitleBlock">
+            <div class="standaloneProfileTitle" id="standaloneProfileTitle">${mode === "edit" ? "Edit Home Profile" : "Home Profile"}</div>
+            <div class="standaloneProfileSub">${mode === "edit" ? "Update the profile name, emoji, or color shown in the Home Edition HUD." : "Create or choose a profile before opening the randomizer. Achievements, FLPRP, relic progress, and local seed saves are kept on this profile."}</div>
+          </div>
+          <div class="standaloneProfilePreview" id="standaloneProfilePreview" style="--profileColor:${escapeAttr(color)}">
+            <div class="standaloneProfilePreviewAvatar" id="standaloneProfilePreviewAvatar">${standaloneEscapeHtml(avatar)}</div>
+            <div class="standaloneProfilePreviewText">
+              <div class="standaloneProfilePreviewKicker">ACTIVE PROFILE CARD</div>
+              <div class="standaloneProfilePreviewName" id="standaloneProfilePreviewName">${standaloneEscapeHtml(previewName)}</div>
+              <div class="standaloneProfilePreviewMeta">FLPRP ${previewPoints} | Saves and achievements bind here</div>
+            </div>
+          </div>
+        </div>
         ${existing}
         <form class="standaloneProfileForm" id="standaloneProfileForm">
           <label>
             <span class="cLabel">NAME</span>
-            <input class="cInput" id="standaloneProfileNameInput" type="text" maxlength="28" autocomplete="off" placeholder="Profile name" value="${escapeAttr(name)}">
+            <input class="cInput" id="standaloneProfileNameInput" type="text" maxlength="40" autocomplete="off" placeholder="Profile name" value="${escapeAttr(name)}">
           </label>
           <label class="standaloneEmojiPicker">
             <span class="cLabel">AVATAR</span>
@@ -4031,6 +5444,25 @@
         </div>
       </div>
     `;
+  }
+
+  function standaloneUpdateProfilePreviewFromInputs(){
+    try{
+      const card = document.querySelector(".standaloneProfileCard");
+      const preview = document.getElementById("standaloneProfilePreview");
+      const nameInput = document.getElementById("standaloneProfileNameInput");
+      const avatarInput = document.getElementById("standaloneProfileAvatarInput");
+      const colorInput = document.getElementById("standaloneProfileColorInput");
+      const nameNode = document.getElementById("standaloneProfilePreviewName");
+      const avatarNode = document.getElementById("standaloneProfilePreviewAvatar");
+      const name = standaloneSanitizeProfileName(nameInput?.value || "New Home Player");
+      const avatar = standaloneSanitizeProfileAvatar(avatarInput?.value || "");
+      const color = standaloneNormalizeProfileColor(colorInput?.value || "");
+      if(nameNode) nameNode.textContent = name;
+      if(avatarNode) avatarNode.textContent = avatar;
+      if(preview) preview.style.setProperty("--profileColor", color);
+      if(card) card.style.setProperty("--profileColor", color);
+    }catch(_){}
   }
 
   function standaloneEnsureProfileGate(){
@@ -4076,6 +5508,7 @@
             choice.classList.toggle("active", choice === emojiChoice);
           });
           if(grid) grid.hidden = true;
+          standaloneUpdateProfilePreviewFromInputs();
           return;
         }
         const pick = event.target.closest?.("[data-profile-id]");
@@ -4106,6 +5539,16 @@
           standaloneCloseProfileGate({ force:true });
           standaloneRefreshProfileUi();
         }
+      }, true);
+      gate.addEventListener("input", (event)=>{
+        try{
+          if(event.target?.closest?.("#standaloneProfileForm")) standaloneUpdateProfilePreviewFromInputs();
+        }catch(_){}
+      }, true);
+      gate.addEventListener("change", (event)=>{
+        try{
+          if(event.target?.closest?.("#standaloneProfileForm")) standaloneUpdateProfilePreviewFromInputs();
+        }catch(_){}
       }, true);
     }
     return gate;
@@ -4450,11 +5893,202 @@
     standaloneRefreshProfileUi();
   }
 
+  function standaloneRandomizerDoorIsOpen(){
+    try{
+      if(!standaloneProfileRuntime.randomizerReady || !standaloneProfileRuntime.randomizerStarted) return false;
+      const fx = window.__openingRandomizerFx || {};
+      if(fx.active || fx.opening || fx.closing) return false;
+      const wrap = document.getElementById("randomizerIntro");
+      if(wrap && (wrap.classList.contains("show") || wrap.classList.contains("opening") || wrap.classList.contains("closing"))) return false;
+      return true;
+    }catch(_){
+      return !!standaloneProfileRuntime.randomizerStarted;
+    }
+  }
+
+  function standaloneSetBossIncomingGateState(patch){
+    try{
+      window.__flprStandaloneBossIncomingGateState = {
+        pending:!!standaloneBossIncomingGate.pending,
+        ms:Number(standaloneBossIncomingGate.ms || 0),
+        reason:String(standaloneBossIncomingGate.reason || ""),
+        ts:Number(standaloneBossIncomingGate.ts || 0),
+        doorOpen:standaloneRandomizerDoorIsOpen(),
+        seedKey:standaloneBossIncomingSeedKey(),
+        seen:standaloneBossIncomingHasPlayed(),
+        ...patch
+      };
+    }catch(_){}
+  }
+
+  function standaloneSuppressBossIncomingIfSeen(reason){
+    try{
+      const seen = standaloneBossIncomingSeenRecord();
+      if(!seen) return false;
+      standaloneBossIncomingGate.pending = false;
+      standaloneBossIncomingGate.ms = 0;
+      standaloneBossIncomingGate.reason = "already-played";
+      standaloneBossIncomingGate.lastSuppressedAt = Date.now();
+      standaloneBossIncomingGate.lastSuppressedReason = String(reason || "already-played");
+      standaloneSetBossIncomingGateState({
+        pending:false,
+        suppressedSeen:true,
+        seen:true,
+        record:seen.record,
+        reason:String(reason || "already-played"),
+        ts:Date.now()
+      });
+      try{ updateBossThreatIndicators(); }catch(_){}
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneEnsureBossIncomingThreatDelay(ms){
+    try{
+      try{
+        state.bossOpen = true;
+        const bossWorldKey = typeof getBossWorldKey === "function" ? String(getBossWorldKey() || "boss") : "boss";
+        state.worlds = state.worlds || {};
+        state.worlds[bossWorldKey] = state.worlds[bossWorldKey] || { tables:["Boss Table"] };
+        state.worlds[bossWorldKey].locked = false;
+      }catch(_){}
+      const duration = Math.max(1800, Number(ms) || 4800);
+      const current = Number(window.__bossThreatDelayUntil || 0);
+      const wanted = Date.now() + duration + 980;
+      if(!Number.isFinite(current) || current < wanted - 240){
+        window.__bossThreatDelayUntil = wanted;
+      }
+    }catch(_){}
+  }
+
+  function standaloneQueueBossIncomingAlert(ms, reason){
+    if(standaloneSuppressBossIncomingIfSeen(reason || "queue-already-played")) return false;
+    standaloneBossIncomingGate.pending = true;
+    standaloneBossIncomingGate.ms = Math.max(Number(standaloneBossIncomingGate.ms || 0) || 0, Number(ms || 0) || 0);
+    standaloneBossIncomingGate.ts = Date.now();
+    standaloneBossIncomingGate.reason = String(reason || "randomizer-door-closed");
+    standaloneSetBossIncomingGateState({ pending:true, doorOpen:false });
+    return false;
+  }
+
+  function standaloneFlushBossIncomingAlertIfReady(reason){
+    try{
+      if(!standaloneBossIncomingGate.pending) return false;
+      if(!standaloneRandomizerDoorIsOpen()) return false;
+      if(standaloneSuppressBossIncomingIfSeen(reason || "flush-already-played")) return false;
+      const original = standaloneBossIncomingGate.original || window.startBossIncomingAlert;
+      if(typeof original !== "function" || original.__flprStandaloneBossIncomingGateBridge) return false;
+      const ms = standaloneBossIncomingGate.ms || 5200;
+      standaloneBossIncomingGate.pending = false;
+      standaloneBossIncomingGate.ms = 0;
+      standaloneBossIncomingGate.reason = "";
+      original.call(window, ms);
+      standaloneEnsureBossIncomingThreatDelay(ms);
+      standaloneMarkBossIncomingPlayed(reason || "door-open");
+      standaloneSetBossIncomingGateState({
+        pending:false,
+        flushed:true,
+        ms,
+        reason:String(reason || "door-open"),
+        ts:Date.now(),
+        doorOpen:true,
+        seen:true
+      });
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneScheduleBossIncomingGateFlush(reason){
+    try{
+      (standaloneBossIncomingGate.flushTimers || []).forEach((timer)=>clearTimeout(timer));
+      standaloneBossIncomingGate.flushTimers = [];
+    }catch(_){}
+    [0, 120, 720, 1560, 2380, 3060].forEach((delay)=>{
+      const timer = setTimeout(()=>{
+        try{
+          standaloneBossIncomingGate.flushTimers = standaloneBossIncomingGate.flushTimers.filter((item)=>item !== timer);
+        }catch(_){}
+        standaloneFlushBossIncomingAlertIfReady(reason || "scheduled");
+      }, delay);
+      standaloneBossIncomingGate.flushTimers.push(timer);
+    });
+  }
+
+  function installStandaloneBossIncomingGateBridge(){
+    try{
+      const original = window.startBossIncomingAlert || (typeof startBossIncomingAlert === "function" ? startBossIncomingAlert : null);
+      if(!original){
+        setTimeout(installStandaloneBossIncomingGateBridge, 120);
+        return;
+      }
+      if(original.__flprStandaloneBossIncomingGateBridge) return;
+      standaloneBossIncomingGate.original = original;
+      const bridged = function standaloneStartBossIncomingAlertGateBridge(ms){
+        if(standaloneSuppressBossIncomingIfSeen("direct-already-played")) return false;
+        if(!standaloneRandomizerDoorIsOpen()){
+          standaloneQueueBossIncomingAlert(ms, "boss-incoming-before-door-open");
+          standaloneScheduleBossIncomingGateFlush("boss-incoming-queued");
+          return false;
+        }
+        const result = original.apply(this, arguments);
+        standaloneEnsureBossIncomingThreatDelay(ms);
+        standaloneMarkBossIncomingPlayed("direct");
+        standaloneSetBossIncomingGateState({
+          pending:false,
+          played:true,
+          ms:Number(ms || 0),
+          reason:"direct",
+          ts:Date.now(),
+          doorOpen:true,
+          seen:true
+        });
+        return result;
+      };
+      bridged.__flprStandaloneBossIncomingGateBridge = true;
+      bridged.__flprStandaloneOriginalStartBossIncomingAlert = original;
+      window.startBossIncomingAlert = bridged;
+      try{ startBossIncomingAlert = bridged; }catch(_){}
+      try{
+        window.flprStandaloneBossIncomingGateState = function(){
+          return {
+            pending:!!standaloneBossIncomingGate.pending,
+            ms:Number(standaloneBossIncomingGate.ms || 0),
+            reason:String(standaloneBossIncomingGate.reason || ""),
+            doorOpen:standaloneRandomizerDoorIsOpen(),
+            randomizerReady:!!standaloneProfileRuntime.randomizerReady,
+            randomizerStarted:!!standaloneProfileRuntime.randomizerStarted,
+            introActive:!!window.__openingRandomizerFx?.active,
+            introOpening:!!window.__openingRandomizerFx?.opening,
+            seedKey:standaloneBossIncomingSeedKey(),
+            seen:standaloneBossIncomingHasPlayed(),
+            suppressedSeen:!!standaloneBossIncomingGate.lastSuppressedAt,
+            lastSuppressedAt:Number(standaloneBossIncomingGate.lastSuppressedAt || 0),
+            lastSuppressedReason:String(standaloneBossIncomingGate.lastSuppressedReason || "")
+          };
+        };
+        window.flprStandaloneFlushBossIncomingGateForTest = standaloneFlushBossIncomingAlertIfReady;
+        window.flprStandaloneClearBossIncomingSeenForTest = standaloneClearBossIncomingSeenForTest;
+        window.flprStandaloneMarkBossIncomingSeenForTest = standaloneMarkBossIncomingPlayed;
+      }catch(_){}
+    }catch(_){}
+  }
+
   function standaloneMarkRandomizerClosed(){
     standaloneProfileRuntime.randomizerReady = false;
     standaloneProfileRuntime.randomizerStarted = false;
     standaloneProfileRuntime.randomizerReason = "";
     standaloneProfileRuntime.readyDoorKey = "";
+    standaloneBossIncomingGate.pending = false;
+    standaloneBossIncomingGate.ms = 0;
+    standaloneBossIncomingGate.reason = "";
+    try{
+      (standaloneBossIncomingGate.flushTimers || []).forEach((timer)=>clearTimeout(timer));
+      standaloneBossIncomingGate.flushTimers = [];
+    }catch(_){}
     standaloneRefreshProfileUi();
   }
 
@@ -4541,7 +6175,7 @@
       }
     }catch(_){}
     try{
-      if(typeof episodeSaveState === "function" && episodeSaveState.__flprStandaloneProfileBridge !== true){
+      if(!window.__flprStandaloneEpisodeDisabled && typeof episodeSaveState === "function" && episodeSaveState.__flprStandaloneProfileBridge !== true){
         const originalEpisodeSave = episodeSaveState;
         const bridgedEpisodeSave = function standaloneEpisodeSaveStateBridge(){
           const result = originalEpisodeSave.apply(this, arguments);
@@ -4570,6 +6204,170 @@
         try{ window.handleCheckedLocations = bridgedChecked; }catch(_){}
       }
     }catch(_){}
+  }
+
+  function installStandaloneBossVictoryAwardFilterBridge(){
+    let installedAny = false;
+    let installedHandle = false;
+
+    try{
+      const original = window.flprStatsRecordCheckClearedByLocId || (typeof flprStatsRecordCheckClearedByLocId === "function" ? flprStatsRecordCheckClearedByLocId : null);
+      if(original && !original.__flprStandaloneBossVictoryAwardFilter){
+        const bridged = function standaloneFlprStatsRecordCheckClearedBossVictoryFilter(locId){
+          if(standaloneIsBossVictoryAutoCheckId(locId)){
+            try{
+              window.__flprStandaloneLastBossVictoryAwardSkip = {
+                kind:"stats",
+                locId:Number(locId),
+                ts:Date.now()
+              };
+            }catch(_){}
+            return false;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBossVictoryAwardFilter = true;
+        bridged.__flprStandaloneOriginalFlprStatsRecordCheckClearedByLocId = original;
+        flprStatsRecordCheckClearedByLocId = bridged;
+        try{ window.flprStatsRecordCheckClearedByLocId = bridged; }catch(_){}
+      }
+      if(window.flprStatsRecordCheckClearedByLocId || typeof flprStatsRecordCheckClearedByLocId === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.achGetContextForLocId || (typeof achGetContextForLocId === "function" ? achGetContextForLocId : null);
+      if(original && !original.__flprStandaloneBossVictoryAwardFilter){
+        const bridged = function standaloneAchGetContextBossVictoryFilter(locId){
+          if(standaloneIsBossVictoryAutoCheckId(locId)){
+            try{
+              window.__flprStandaloneLastBossVictoryAwardSkip = {
+                kind:"achievement-context",
+                locId:Number(locId),
+                ts:Date.now()
+              };
+            }catch(_){}
+            return null;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBossVictoryAwardFilter = true;
+        bridged.__flprStandaloneOriginalAchGetContextForLocId = original;
+        achGetContextForLocId = bridged;
+        try{ window.achGetContextForLocId = bridged; }catch(_){}
+      }
+      if(window.achGetContextForLocId || typeof achGetContextForLocId === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.achHandleCheckCleared || (typeof achHandleCheckCleared === "function" ? achHandleCheckCleared : null);
+      if(original && !original.__flprStandaloneBossVictoryAwardFilter){
+        const bridged = function standaloneAchHandleCheckClearedBossVictoryFilter(locId){
+          if(standaloneIsBossVictoryAutoCheckId(locId)){
+            try{
+              window.__flprStandaloneLastBossVictoryAwardSkip = {
+                kind:"achievement-handle",
+                locId:Number(locId),
+                ts:Date.now()
+              };
+            }catch(_){}
+            return false;
+          }
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBossVictoryAwardFilter = true;
+        bridged.__flprStandaloneOriginalAchHandleCheckCleared = original;
+        achHandleCheckCleared = bridged;
+        try{ window.achHandleCheckCleared = bridged; }catch(_){}
+      }
+      if(window.achHandleCheckCleared || typeof achHandleCheckCleared === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.handleCheckedLocations || (typeof handleCheckedLocations === "function" ? handleCheckedLocations : null);
+      if(original && !original.__flprStandaloneBossVictoryAwardFilter){
+        const bridged = function standaloneHandleCheckedLocationsBossVictoryFilter(list, opts){
+          const autoIds = standaloneBossVictoryAutoIdsFromCheckedList(list, opts || {});
+          if(!autoIds.length) return original.apply(this, arguments);
+          standaloneMarkBossVictoryAutoCheckIds(autoIds, String(opts?.source || "checked-locations"));
+          const autoSet = new Set(autoIds.map((id)=>Number(id)));
+          const qualified = [];
+          const autoOnly = [];
+          (Array.isArray(list) ? list : []).forEach((rawId)=>{
+            const id = Number(rawId);
+            if(autoSet.has(id)) autoOnly.push(rawId);
+            else qualified.push(rawId);
+          });
+          let changed = false;
+          if(qualified.length){
+            changed = !!original.call(this, qualified, opts || {});
+          }
+          if(autoOnly.length){
+            changed = !!original.call(this, autoOnly, {
+              ...(opts || {}),
+              awardAchievements:false,
+              source:`${String(opts?.source || "checked-locations")}:boss-victory-auto`,
+              __flprStandaloneBossVictoryAuto:true
+            }) || changed;
+          }
+          try{
+            window.__flprStandaloneLastBossVictoryAutoSplit = {
+              autoIds,
+              qualified:qualified.map((id)=>Number(id)).filter((id)=>Number.isFinite(id)),
+              source:String(opts?.source || ""),
+              ts:Date.now()
+            };
+          }catch(_){}
+          return changed;
+        };
+        bridged.__flprStandaloneBossVictoryAwardFilter = true;
+        bridged.__flprStandaloneOriginalHandleCheckedLocations = original;
+        handleCheckedLocations = bridged;
+        try{ window.handleCheckedLocations = bridged; }catch(_){}
+      }
+      const activeHandle = window.handleCheckedLocations || (typeof handleCheckedLocations === "function" ? handleCheckedLocations : null);
+      if(activeHandle) installedAny = true;
+      if(activeHandle && activeHandle.__flprStandaloneBossVictoryAwardFilter === true) installedHandle = true;
+    }catch(_){}
+
+    try{
+      window.flprStandaloneBossVictoryAutoCheckState = function(){
+        const set = standaloneBossVictoryAutoCheckIds();
+        return {
+          seedKey:standaloneRewardSeedKey(),
+          ids:Array.from(set).sort((a, b)=>a - b),
+          lastSplit:window.__flprStandaloneLastBossVictoryAutoSplit || null,
+          lastSkip:window.__flprStandaloneLastBossVictoryAwardSkip || null
+        };
+      };
+      window.flprStandaloneClearBossVictoryAutoChecksForTest = function(){
+        const saved = standaloneSaveBossVictoryAutoCheckState({ ids:[] });
+        return saved;
+      };
+      window.flprStandaloneDetectBossVictoryAutoIdsForTest = function(list, opts){
+        return standaloneBossVictoryAutoIdsFromCheckedList(list, opts || {});
+      };
+      window.flprStandaloneBossVictoryAutoDebugForTest = function(list, opts){
+        const ids = (Array.isArray(list) ? list : []).map((id)=>Number(id)).filter((id)=>Number.isFinite(id) && id > 0);
+        return {
+          ids: ids.map((id)=>{
+            const node = standaloneBossNodeForLocationId(id);
+            return {
+              id,
+              node: node ? { full:String(node.full || ""), short:String(node.short || ""), tableName:String(node.tableName || ""), standaloneBossCheck:!!node.standaloneBossCheck } : null,
+              victory:standaloneIsBossVictoryLocationId(id),
+              bossNonVictory:standaloneIsBossNonVictoryLocationId(id),
+              pending:standaloneIsDirectPendingLocationId(id),
+              checked:!!ap?.checked?.has?.(id),
+              auto:standaloneIsBossVictoryAutoCheckId(id)
+            };
+          }),
+          victoryAlreadyComplete:standaloneBossVictoryAlreadyComplete(),
+          detected:standaloneBossVictoryAutoIdsFromCheckedList(list, opts || {})
+        };
+      };
+    }catch(_){}
+
+    if(!installedAny || !installedHandle) setTimeout(installStandaloneBossVictoryAwardFilterBridge, 120);
   }
 
   function installStandaloneAchievementDismissBridge(){
@@ -4676,6 +6474,7 @@
         }
         standaloneProfileRuntime.randomizerStarted = true;
         standaloneRefreshProfileUi();
+        standaloneScheduleBossIncomingGateFlush("randomizer-door-started");
       }, true);
     }
   }
@@ -4703,6 +6502,28 @@
         <input id="standaloneControlsFontSlider" type="range" min="-50" max="50" step="5" value="0">
         <span class="countVal" id="standaloneControlsFontValue">0</span>
       </label>
+    `;
+    return dock;
+  }
+
+  function buildStandaloneLogoDock(){
+    const dock = document.createElement("section");
+    dock.id = "standaloneLogoDock";
+    dock.className = "standaloneLogoDock standaloneControlSection";
+    dock.dataset.accent = "gold";
+    dock.innerHTML = `
+      <div class="standaloneSectionTitle">DEV TOOLS <span class="mini">advanced layout</span></div>
+      <button class="cBtn" id="standaloneLogoDevToggle" type="button">LOGO POSITION</button>
+      <div class="standaloneLogoDevPanel" id="standaloneLogoDevPanel" hidden>
+        <div class="standaloneLogoActions">
+          <label class="standaloneLogoLockRow">
+            <input id="standaloneLogoLockToggle" type="checkbox">
+            <span class="cLabel">LOCK LOGO IN PLACE</span>
+          </label>
+          <button class="cBtn" id="standaloneLogoResetBtn" type="button">RESET</button>
+        </div>
+        <div class="apHint" id="standaloneLogoStatus">Unlock, drag the Flippermizer logo, then lock it where you want it.</div>
+      </div>
     `;
     return dock;
   }
@@ -4775,6 +6596,81 @@
       if(dock.parentElement !== stack) stack.appendChild(dock);
       else stack.insertBefore(dock, stack.firstChild || null);
     }catch(_){}
+  }
+
+  function ensureStandaloneLogoControls(panel){
+    if(!panel) return;
+    try{
+      document.querySelectorAll("#standaloneLogoDock").forEach((dock)=>{
+        if(panel.contains(dock)) return;
+        dock.remove();
+      });
+      let dock = panel.querySelector("#standaloneLogoDock");
+      panel.querySelectorAll("#standaloneLogoDock").forEach((node, index)=>{
+        if(index === 0) dock = node;
+        else node.remove();
+      });
+      if(!dock) dock = buildStandaloneLogoDock();
+      const stack = panel.querySelector(":scope > .tabSectionStack") || panel;
+      if(dock.parentElement !== stack) stack.appendChild(dock);
+      else stack.insertBefore(dock, stack.firstChild || null);
+      standaloneSyncLogoControls();
+    }catch(_){}
+  }
+
+  function standaloneSyncLogoControls(){
+    try{
+      const toggle = document.getElementById("standaloneLogoLockToggle");
+      if(toggle) toggle.checked = standaloneSettings.logoLocked !== false;
+      const status = document.getElementById("standaloneLogoStatus");
+      if(status){
+        status.textContent = standaloneSettings.logoLocked === false
+          ? "Logo unlocked. Drag it into place, then turn the lock back on."
+          : "Logo locked. Unlock to drag the Flippermizer logo.";
+      }
+      standalonePositionModeHud();
+    }catch(_){}
+  }
+
+  function bindStandaloneLogoControls(){
+    const devToggle = document.getElementById("standaloneLogoDevToggle");
+    const devPanel = document.getElementById("standaloneLogoDevPanel");
+    const toggle = document.getElementById("standaloneLogoLockToggle");
+    const reset = document.getElementById("standaloneLogoResetBtn");
+    if(devToggle && devPanel && !devToggle.__flprStandaloneLogoBound){
+      devToggle.__flprStandaloneLogoBound = true;
+      devToggle.addEventListener("click", (event)=>{
+        event.preventDefault();
+        devPanel.hidden = !devPanel.hidden;
+        devToggle.classList.toggle("active", !devPanel.hidden);
+        devToggle.setAttribute("aria-expanded", devPanel.hidden ? "false" : "true");
+        if(!devPanel.hidden) standaloneSyncLogoControls();
+        try{ playClick(); }catch(_){}
+      });
+      devToggle.setAttribute("aria-expanded", devPanel.hidden ? "false" : "true");
+    }
+    if(toggle && !toggle.__flprStandaloneLogoBound){
+      toggle.__flprStandaloneLogoBound = true;
+      toggle.addEventListener("change", ()=>{
+        standaloneSettings.logoLocked = !!toggle.checked;
+        saveSettings(standaloneSettings);
+        standaloneSyncLogoControls();
+        try{ playClick(); }catch(_){}
+      });
+    }
+    if(reset && !reset.__flprStandaloneLogoBound){
+      reset.__flprStandaloneLogoBound = true;
+      reset.addEventListener("click", (event)=>{
+        event.preventDefault();
+        standaloneSettings.logoX = null;
+        standaloneSettings.logoY = null;
+        saveSettings(standaloneSettings);
+        standalonePositionModeHud();
+        standaloneSyncLogoControls();
+        try{ playClick(); }catch(_){}
+      });
+    }
+    standaloneSyncLogoControls();
   }
 
   function standaloneRendererApi(){
@@ -5075,12 +6971,25 @@
       });
     }catch(_){}
     try{
-      panel.querySelectorAll('[data-music-scenario="bonus_pinball"], [data-music-preview="bonus_pinball"], [data-music-clear="bonus_pinball"], [data-music-mode="bonus_pinball"], [data-music-volume="bonus_pinball"]').forEach((node)=>{
+      standaloneClearMusicScenario(STANDALONE_RANDOMIZER_OPEN_SCENARIO);
+      panel.querySelectorAll([
+        '[data-music-scenario="bonus_pinball"]',
+        '[data-music-preview="bonus_pinball"]',
+        '[data-music-clear="bonus_pinball"]',
+        '[data-music-mode="bonus_pinball"]',
+        '[data-music-volume="bonus_pinball"]',
+        '[data-music-scenario="randomizer_open"]',
+        '[data-music-preview="randomizer_open"]',
+        '[data-music-clear="randomizer_open"]',
+        '[data-music-mode="randomizer_open"]',
+        '[data-music-volume="randomizer_open"]'
+      ].join(", ")).forEach((node)=>{
         const row = node.closest?.(".musicScenarioRow") || node.closest?.(".musicScenarioModeRow") || node.closest?.(".musicScenarioVolumeRow") || node;
         row.remove();
       });
     }catch(_){}
     ensureStandaloneRendererControls(panel);
+    ensureStandaloneLogoControls(panel);
     ensureStandaloneTextSizeSlider(panel);
     installStandaloneChecksBackgroundBridge();
   }
@@ -5208,6 +7117,7 @@
       slider.addEventListener("change", playClick);
     }
     bindStandaloneRendererControls();
+    bindStandaloneLogoControls();
     bindStandaloneApControls();
     renderStandaloneCounters();
     try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
@@ -5225,8 +7135,12 @@
 
   const standaloneTextClient = {
     activeTab: "status",
-    logs: { status: [], errors: [] },
+    logs: { status: [], hints: [], errors: [] },
     itemLogMeta: new Map(),
+    serverHints: new Map(),
+    serverHintFetchTimer: null,
+    serverHintFetchSig: "",
+    serverHintFetchAt: 0,
     maxLines: 900,
     loaded: false,
     wrapped: false,
@@ -5256,7 +7170,21 @@
   const standaloneReceivedRefreshState = {
     lastSig: "",
     lastAt: 0,
-    timers: []
+    timers: [],
+    lastPacketSig: "",
+    lastPacketAt: 0,
+    blockedPackets: 0
+  };
+
+  const standaloneBossIncomingGate = {
+    original: null,
+    pending: false,
+    ms: 0,
+    ts: 0,
+    reason: "",
+    lastSuppressedAt: 0,
+    lastSuppressedReason: "",
+    flushTimers: []
   };
 
   function standaloneReadJson(key, fallback){
@@ -5272,6 +7200,102 @@
     try{ localStorage.setItem(key, JSON.stringify(value)); }catch(_){}
   }
 
+  function standaloneBossIncomingSeedKey(){
+    try{
+      const mode = standaloneConnectionModeName(
+        standaloneProfileRuntime?.randomizerReason ||
+        standaloneProfileRuntime?.selectedMode ||
+        (ap?.inherentSeedActive ? "singleplayer" : (ap?.connected ? "archipelago" : "home"))
+      );
+      const server = mode === "archipelago"
+        ? String(ap?.cfg?.server || ap?.server || "").trim()
+        : "local";
+      const team = mode === "archipelago"
+        ? String(ap?.team ?? "").trim()
+        : "";
+      const game = mode === "archipelago"
+        ? String(ap?.cfg?.game || ap?.game || "").trim()
+        : "";
+      const seedKey = standaloneRewardSeedKey();
+      return [
+        "boss-incoming",
+        mode || "home",
+        server || "local",
+        game || "game",
+        team || "team",
+        seedKey || "unseeded|slot"
+      ].join("|");
+    }catch(_){
+      return `boss-incoming|home|local|game|team|${standaloneRewardSeedKey()}`;
+    }
+  }
+
+  function standaloneLoadBossIncomingSeen(){
+    const raw = standaloneReadJson(STANDALONE_BOSS_INCOMING_SEEN_KEY, {});
+    return (raw && typeof raw === "object" && !Array.isArray(raw)) ? raw : {};
+  }
+
+  function standaloneBossIncomingSeenRecord(){
+    try{
+      const key = standaloneBossIncomingSeedKey();
+      const seen = standaloneLoadBossIncomingSeen();
+      return seen[key] ? { key, record:seen[key] } : null;
+    }catch(_){
+      return null;
+    }
+  }
+
+  function standaloneBossIncomingHasPlayed(){
+    return !!standaloneBossIncomingSeenRecord();
+  }
+
+  function standaloneMarkBossIncomingPlayed(reason){
+    try{
+      const key = standaloneBossIncomingSeedKey();
+      const seen = standaloneLoadBossIncomingSeen();
+      seen[key] = {
+        playedAt: Date.now(),
+        reason:String(reason || "played"),
+        seedKey:standaloneRewardSeedKey(),
+        bossName:(()=>{
+          try{ return String(getUnifiedBossTableName({ includePlaceholder:false }) || state?.bossTable || "").trim(); }catch(_){}
+          return "";
+        })()
+      };
+      const entries = Object.entries(seen);
+      if(entries.length > 240){
+        entries
+          .sort((a, b)=> Number(a[1]?.playedAt || 0) - Number(b[1]?.playedAt || 0))
+          .slice(0, entries.length - 220)
+          .forEach(([oldKey])=>{ delete seen[oldKey]; });
+      }
+      standaloneWriteJson(STANDALONE_BOSS_INCOMING_SEEN_KEY, seen);
+      try{
+        standaloneBossIncomingGate.lastSuppressedAt = 0;
+        standaloneBossIncomingGate.lastSuppressedReason = "";
+      }catch(_){}
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneClearBossIncomingSeenForTest(key){
+    try{
+      const targetKey = String(key || standaloneBossIncomingSeedKey() || "");
+      const seen = standaloneLoadBossIncomingSeen();
+      if(targetKey) delete seen[targetKey];
+      standaloneWriteJson(STANDALONE_BOSS_INCOMING_SEEN_KEY, seen);
+      try{
+        standaloneBossIncomingGate.lastSuppressedAt = 0;
+        standaloneBossIncomingGate.lastSuppressedReason = "";
+      }catch(_){}
+      return targetKey;
+    }catch(_){
+      return "";
+    }
+  }
+
   function standaloneRewardSeedKey(){
     try{
       const seed = String(ap?.seedName || state?.relics?.run?.seedSig || state?.bossTableSeed || "").trim();
@@ -5280,6 +7304,159 @@
     }catch(_){
       return "unseeded|slot";
     }
+  }
+
+  function standaloneLoadBossVictoryAutoCheckState(){
+    const seedKey = standaloneRewardSeedKey();
+    const raw = standaloneReadJson(STANDALONE_BOSS_VICTORY_AUTO_CHECKS_KEY, {});
+    const saved = (raw && typeof raw === "object" && String(raw.seedKey || "") === seedKey) ? raw : {};
+    const ids = Array.isArray(saved.ids)
+      ? saved.ids.map((id)=>Number(id)).filter((id)=>Number.isFinite(id) && id > 0)
+      : [];
+    return {
+      seedKey,
+      ids:Array.from(new Set(ids)),
+      updatedAt:Math.max(0, Number(saved.updatedAt || 0))
+    };
+  }
+
+  function standaloneSaveBossVictoryAutoCheckState(record){
+    const seedKey = standaloneRewardSeedKey();
+    const ids = Array.isArray(record?.ids)
+      ? record.ids.map((id)=>Number(id)).filter((id)=>Number.isFinite(id) && id > 0)
+      : [];
+    const next = {
+      seedKey,
+      ids:Array.from(new Set(ids)).sort((a, b)=>a - b),
+      updatedAt:Date.now()
+    };
+    standaloneWriteJson(STANDALONE_BOSS_VICTORY_AUTO_CHECKS_KEY, next);
+    try{ window.__flprStandaloneBossVictoryAutoChecks = new Set(next.ids); }catch(_){}
+    return next;
+  }
+
+  function standaloneBossVictoryAutoCheckIds(){
+    try{
+      const current = window.__flprStandaloneBossVictoryAutoChecks;
+      if(current instanceof Set) return current;
+    }catch(_){}
+    const rec = standaloneLoadBossVictoryAutoCheckState();
+    const set = new Set(rec.ids);
+    try{ window.__flprStandaloneBossVictoryAutoChecks = set; }catch(_){}
+    return set;
+  }
+
+  function standaloneMarkBossVictoryAutoCheckIds(ids, reason){
+    const incoming = (Array.isArray(ids) ? ids : [])
+      .map((id)=>Number(id))
+      .filter((id)=>Number.isFinite(id) && id > 0);
+    if(!incoming.length) return [];
+    const set = standaloneBossVictoryAutoCheckIds();
+    let changed = false;
+    incoming.forEach((id)=>{
+      if(set.has(id)) return;
+      set.add(id);
+      changed = true;
+    });
+    if(changed){
+      const saved = standaloneSaveBossVictoryAutoCheckState({ ids:Array.from(set) });
+      try{
+        window.__flprStandaloneLastBossVictoryAutoChecks = {
+          reason:String(reason || ""),
+          ids:incoming,
+          allIds:saved.ids,
+          seedKey:saved.seedKey,
+          ts:Date.now()
+        };
+      }catch(_){}
+    }
+    return incoming;
+  }
+
+  function standaloneIsBossVictoryAutoCheckId(locId){
+    const id = Number(locId);
+    if(!Number.isFinite(id) || id <= 0) return false;
+    try{ return standaloneBossVictoryAutoCheckIds().has(id); }catch(_){}
+    return false;
+  }
+
+  function standaloneBossNodeForLocationId(locId){
+    const id = Number(locId);
+    if(!Number.isFinite(id) || id <= 0) return null;
+    try{
+      const direct = ap?.locById?.get?.(id) || null;
+      if(direct && standaloneIsExplicitBossCheckNode(direct)) return direct;
+    }catch(_){}
+    try{
+      const nodes = typeof resolveBossChecksNodes === "function" ? resolveBossChecksNodes() : [];
+      const found = (Array.isArray(nodes) ? nodes : []).find((node)=>Number(node?.id) === id);
+      if(found) return found;
+    }catch(_){}
+    try{
+      for(const list of (ap?.locsByTableKey?.values?.() || [])){
+        const found = (Array.isArray(list) ? list : []).find((node)=>Number(node?.id) === id && standaloneIsExplicitBossCheckNode(node));
+        if(found) return found;
+      }
+    }catch(_){}
+    return null;
+  }
+
+  function standaloneIsBossVictoryLocationId(locId){
+    const node = standaloneBossNodeForLocationId(locId);
+    if(!node) return false;
+    try{ return !!bossIsVictoryLocationNode(node); }catch(_){}
+    return /victory|final\s*blow|boss\s*defeat|boss\s*clear|boss\s*victor/i.test(`${String(node.full || "")} ${String(node.short || "")}`);
+  }
+
+  function standaloneIsBossNonVictoryLocationId(locId){
+    const node = standaloneBossNodeForLocationId(locId);
+    if(!node) return false;
+    return !standaloneIsBossVictoryLocationId(locId);
+  }
+
+  function standaloneIsDirectPendingLocationId(locId){
+    const id = Number(locId);
+    if(!Number.isFinite(id) || id <= 0) return false;
+    try{ if(ap?.pendingByLoc?.has?.(id)) return true; }catch(_){}
+    try{
+      if(Array.isArray(ap?.pendingQueue) && ap.pendingQueue.some((entry)=>Number(entry?.id) === id)) return true;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneBossVictoryAlreadyComplete(){
+    try{ if(state?.bossVictoryFinalizing || state?.bossVictorySent) return true; }catch(_){}
+    try{ if(typeof bossIsSeedComplete === "function" && bossIsSeedComplete()) return true; }catch(_){}
+    try{
+      const nodes = typeof resolveBossChecksNodes === "function" ? resolveBossChecksNodes() : [];
+      return (Array.isArray(nodes) ? nodes : []).some((node)=>standaloneIsBossVictoryLocationId(node?.id) && ap?.checked?.has?.(Number(node?.id)));
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneBossVictoryAutoIdsFromCheckedList(list, opts){
+    opts = opts || {};
+    if(!Array.isArray(list) || !list.length) return [];
+    const ids = list.map((id)=>Number(id)).filter((id)=>Number.isFinite(id) && id > 0);
+    if(!ids.length) return [];
+    const knownAuto = ids.filter((id)=>standaloneIsBossVictoryAutoCheckId(id));
+    const canMark = opts.awardAchievements !== false;
+    if(!canMark) return knownAuto;
+    const victoryInList = ids.some((id)=>standaloneIsBossVictoryLocationId(id));
+    const victoryAlreadyComplete = standaloneBossVictoryAlreadyComplete();
+    if(!victoryInList && !victoryAlreadyComplete) return knownAuto;
+    const autoIds = [];
+    ids.forEach((id)=>{
+      if(standaloneIsBossVictoryAutoCheckId(id)){
+        autoIds.push(id);
+        return;
+      }
+      if(ap?.checked?.has?.(id)) return;
+      if(!standaloneIsBossNonVictoryLocationId(id)) return;
+      if(standaloneIsDirectPendingLocationId(id)) return;
+      autoIds.push(id);
+    });
+    return Array.from(new Set(autoIds));
   }
 
   function standaloneLoadRewardState(){
@@ -5695,6 +7872,541 @@
     });
     return out;
   }
+
+  function standaloneBossChosenTableName(){
+    try{
+      return String(
+        getUnifiedBossTableName({ includePlaceholder:false }) ||
+        state?.bossTable ||
+        state?.bossHpLive?.name ||
+        state?.bossHpTest?.name ||
+        ""
+      ).trim();
+    }catch(_){
+      return "";
+    }
+  }
+
+  function standaloneTableIndexForBossSpecs(tableName){
+    try{
+      const tableKey = String(getTableKeyForName(tableName) || "").trim();
+      const idx = Number(String(tableKey).split("|")[1]);
+      if(Number.isFinite(idx) && idx >= 0) return idx;
+    }catch(_){}
+    try{
+      const catalog = standaloneBundledTaskCatalog();
+      const key = standaloneNormalizeTableKey(tableName);
+      const idx = (catalog?.tables || []).findIndex((entry)=> standaloneNormalizeTableKey(entry?.tableName || entry?.tableKey || "") === key);
+      if(idx >= 0) return idx;
+    }catch(_){}
+    return 0;
+  }
+
+  function standaloneBossSpecKey(name){
+    try{ return standaloneNormalizeLoose(name); }catch(_){}
+    return String(name || "").toLowerCase().replace(/[^a-z0-9%+]+/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  function standaloneBossSpecFromTask(tableName, name, difficulty, kind, explanation){
+    const taskName = String(name || "").trim();
+    if(!taskName) return null;
+    return {
+      name: taskName,
+      difficulty: String(difficulty || "").trim().toLowerCase() || "medium",
+      kind: String(kind || (/\bscore\b/i.test(taskName) ? "score" : "task")).trim().toLowerCase() || "task",
+      explanation: String(explanation || standaloneTaskExplanationFor(tableName, taskName) || "").trim()
+    };
+  }
+
+  function standaloneBossSpecFromNode(tableName, node, fallbackDifficulty){
+    if(!node) return null;
+    const entry = node.taskShuffleEntry || node.genericEntry || {};
+    const taskName = String(
+      (()=>{ try{ return getTaskNameFromLocationNode(node); }catch(_){ return ""; } })() ||
+      node.short ||
+      node.full ||
+      ""
+    ).trim();
+    if(!taskName) return null;
+    const difficulty = String(
+      node.genericDifficulty ||
+      entry.difficulty ||
+      (()=>{ try{ return inferLocationDifficulty(node); }catch(_){ return ""; } })() ||
+      fallbackDifficulty ||
+      ""
+    ).trim().toLowerCase();
+    const kind = String(entry.kind || entry.task_type || entry.type || (/\bscore\b/i.test(taskName) ? "score" : "task")).trim().toLowerCase();
+    const explanation = String(entry.explanation || standaloneTaskExplanationFor(tableName, taskName) || "").trim();
+    return standaloneBossSpecFromTask(tableName, taskName, difficulty, kind, explanation);
+  }
+
+  function standaloneScoreNumber(value){
+    const text = String(value || "");
+    const match = text.match(/(\d[\d,]*)\s*\+?/);
+    if(!match) return 0;
+    const n = Number(String(match[1] || "").replace(/,/g, ""));
+    return Number.isFinite(n) && n > 0 ? Math.round(n) : 0;
+  }
+
+  function standaloneScoreThresholdsForDifficulty(scores, fallbackScores, difficulty){
+    const source = []
+      .concat(Array.isArray(scores?.[difficulty]) ? scores[difficulty] : [])
+      .concat(Array.isArray(fallbackScores?.[difficulty]) ? fallbackScores[difficulty] : []);
+    const nums = [];
+    const seen = new Set();
+    source.forEach((value)=>{
+      const n = standaloneScoreNumber(value);
+      if(n <= 0 || seen.has(n)) return;
+      seen.add(n);
+      nums.push(n);
+    });
+    nums.sort((a, b)=>a - b);
+    if(nums.length < 2){
+      const base = nums[0] || standaloneScoreNumber(Array.isArray(fallbackScores?.[difficulty]) ? fallbackScores[difficulty][0] : "");
+      const scale = difficulty === "hard" ? 1.48 : (difficulty === "medium" ? 1.42 : 1.36);
+      const next = Math.max(base + 1, Math.round(base * scale));
+      if(base > 0 && !seen.has(next)) nums.push(next);
+    }
+    return nums.slice(0, 2).map(standaloneFormatScore);
+  }
+
+  function standaloneBossScoreSpec(tableName, difficulty, threshold){
+    const label = String(threshold || "").trim();
+    if(!label) return null;
+    const diff = String(difficulty || "medium").toLowerCase();
+    return standaloneBossSpecFromTask(tableName, `Obtain a score of ${label}`, diff, "score");
+  }
+
+  function standaloneBossSpecIsScore(spec){
+    const kind = String(spec?.kind || "").toLowerCase();
+    const name = String(spec?.name || "");
+    return kind === "score" || /\bscore\b/i.test(name);
+  }
+
+  function standaloneBossDifficulty(spec, fallback){
+    const raw = String(spec?.difficulty || fallback || "").trim().toLowerCase();
+    if(raw === "easy" || raw === "medium" || raw === "hard") return raw;
+    const name = String(spec?.name || "");
+    if(/\beasy\b/i.test(name)) return "easy";
+    if(/\bmedium\b|\bmed\b/i.test(name)) return "medium";
+    if(/\bhard\b/i.test(name)) return "hard";
+    return String(fallback || "medium").toLowerCase();
+  }
+
+  function standaloneStableHash(value){
+    const text = String(value || "");
+    let h = 2166136261 >>> 0;
+    for(let i = 0; i < text.length; i += 1){
+      h ^= text.charCodeAt(i);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h >>> 0;
+  }
+
+  function standaloneBossDamagePool(difficulty){
+    const diff = standaloneBossDifficulty({ difficulty }, "medium");
+    if(diff === "easy") return [7, 8, 8, 9, 9, 10, 11, 12];
+    if(diff === "hard") return [14, 15, 16, 17, 18, 19, 20, 22];
+    return [10, 11, 12, 12, 13, 14, 15, 16];
+  }
+
+  function standaloneBossDamagePctForSpec(tableName, spec, index, sourceFull){
+    const pool = standaloneBossDamagePool(spec?.difficulty);
+    const key = [
+      (()=>{ try{ return standaloneRewardSeedKey(); }catch(_){ return ""; } })(),
+      String(tableName || ""),
+      String(spec?.name || ""),
+      String(spec?.difficulty || ""),
+      String(sourceFull || ""),
+      Number(index || 0)
+    ].join("|");
+    return pool[standaloneStableHash(key) % pool.length] || 12;
+  }
+
+  function standaloneRegularNodesForBossTable(tableName){
+    const out = [];
+    const seen = new Set();
+    try{
+      const map = ap?.locsByTableKey;
+      if(!(map instanceof Map)) return out;
+      const targetKey = standaloneCanonicalTableKey(tableName);
+      const pushNode = (node)=>{
+        const id = Number(node?.id);
+        const key = Number.isFinite(id) && id > 0 ? `id:${id}` : `txt:${String(node?.full || node?.short || "")}`;
+        if(seen.has(key)) return;
+        seen.add(key);
+        out.push(node);
+      };
+      const direct = targetKey ? (map.get(targetKey) || []) : [];
+      direct.forEach((node)=>{ if(!standaloneIsExplicitBossCheckNode(node)) pushNode(node); });
+      for(const list of map.values()){
+        for(const node of (Array.isArray(list) ? list : [])){
+          if(standaloneIsExplicitBossCheckNode(node)) continue;
+          const nodeKey = standaloneCanonicalTableKey(node?.tableName || (()=>{ try{ return splitLocName(node?.full || "").table; }catch(_){ return ""; } })());
+          if(targetKey && nodeKey === targetKey) pushNode(node);
+        }
+      }
+    }catch(_){}
+    return standaloneDedupeSortLocationNodes(out);
+  }
+
+  function standaloneCatalogBossSpecsForTable(tableName){
+    const tableIndex = standaloneTableIndexForBossSpecs(tableName);
+    const entry = standaloneCatalogEntryForTable(tableName);
+    const tasks = entry?.tasksByDifficulty || {};
+    const scores = entry?.scoreTargets || standaloneFallbackScores(tableIndex);
+    const fallback = standaloneFallbackScores(tableIndex);
+    const out = [];
+    const pushTask = (difficulty, name, kind)=>{
+      const spec = standaloneBossSpecFromTask(tableName, name, difficulty, kind);
+      if(spec) out.push(spec);
+    };
+    const pushTasks = (difficulty, count)=>{
+      const pool = Array.isArray(tasks[difficulty]) ? tasks[difficulty] : [];
+      pool.map((value)=>String(value || "").trim()).filter(Boolean).slice(0, count).forEach((name)=>pushTask(difficulty, name, "task"));
+    };
+    pushTasks("easy", 2);
+    standaloneScoreThresholdsForDifficulty(scores, fallback, "easy").forEach((threshold)=>pushTask("easy", `Obtain a score of ${threshold}`, "score"));
+    pushTasks("medium", 3);
+    standaloneScoreThresholdsForDifficulty(scores, fallback, "medium").forEach((threshold)=>pushTask("medium", `Obtain a score of ${threshold}`, "score"));
+    pushTasks("hard", 2);
+    standaloneScoreThresholdsForDifficulty(scores, fallback, "hard").forEach((threshold)=>pushTask("hard", `Obtain a score of ${threshold}`, "score"));
+    if(out.length < 10){
+      standaloneTaskSpecs(tableName, tableIndex).forEach((spec)=>pushTask(spec.difficulty, spec.name, spec.kind));
+    }
+    return out;
+  }
+
+  function standaloneBossRepresentativeSpecs(tableName){
+    const seen = new Set();
+    const tasks = [];
+    const scores = { easy:[], medium:[], hard:[] };
+    const pushCandidate = (spec)=>{
+      if(!spec || !String(spec.name || "").trim()) return;
+      const key = standaloneBossSpecKey(spec.name);
+      if(!key || seen.has(key)) return;
+      seen.add(key);
+      const diff = standaloneBossDifficulty(spec, "medium");
+      const normalized = { ...spec, difficulty: diff };
+      if(standaloneBossSpecIsScore(normalized)){
+        scores[diff].push(normalized);
+      }else{
+        tasks.push(normalized);
+      }
+    };
+    const regularNodes = standaloneRegularNodesForBossTable(tableName);
+    regularNodes.forEach((node, index)=>{
+      const fallbackDifficulty = index < 2 ? "easy" : (index < 4 ? "medium" : "hard");
+      pushCandidate(standaloneBossSpecFromNode(tableName, node, fallbackDifficulty));
+    });
+    standaloneCatalogBossSpecsForTable(tableName).forEach(pushCandidate);
+    standaloneBossTaskSpecs().forEach((spec)=>{
+      if(spec.name === "Boss Victory") return;
+      pushCandidate(spec);
+    });
+    Object.keys(scores).forEach((diff)=>{
+      scores[diff].sort((a, b)=>standaloneScoreNumber(a.name) - standaloneScoreNumber(b.name));
+    });
+    const takeTask = (difficulty)=>{
+      const diff = String(difficulty || "").toLowerCase();
+      const idx = tasks.findIndex((spec)=>standaloneBossDifficulty(spec, "medium") === diff);
+      if(idx >= 0) return tasks.splice(idx, 1)[0];
+      return tasks.shift() || null;
+    };
+    const takeScore = (difficulty)=>{
+      const diff = String(difficulty || "medium").toLowerCase();
+      return scores[diff]?.shift?.() || null;
+    };
+    const ordered = [];
+    const pushOrdered = (spec)=>{ if(spec) ordered.push(spec); };
+    pushOrdered(takeTask("easy"));
+    pushOrdered(takeScore("easy"));
+    pushOrdered(takeScore("easy"));
+    pushOrdered(takeTask("medium"));
+    pushOrdered(takeScore("medium"));
+    pushOrdered(takeScore("medium"));
+    pushOrdered(takeTask("hard"));
+    pushOrdered(takeScore("hard"));
+    pushOrdered(takeScore("hard"));
+    pushOrdered(takeTask("hard") || takeTask("medium") || takeTask("easy"));
+    ["easy", "medium", "hard"].forEach((diff)=>{
+      while(ordered.length < 10 && scores[diff]?.length) pushOrdered(takeScore(diff));
+    });
+    while(ordered.length < 10 && tasks.length) pushOrdered(tasks.shift());
+    return ordered.slice(0, 10);
+  }
+
+  function standaloneDeriveBossCheckNode(baseNode, spec, tableName, index){
+    const sourceFull = String(baseNode?.full || baseNode?.short || "").trim();
+    const taskName = String(spec?.name || `Boss Attack ${Number(index || 0) + 1}`).trim();
+    const difficulty = String(spec?.difficulty || (index < 3 ? "easy" : (index < 7 ? "medium" : "hard"))).trim().toLowerCase();
+    const kind = String(spec?.kind || (/\bscore\b/i.test(taskName) ? "score" : "task")).trim().toLowerCase();
+    const full = `${tableName || "Boss Table"} - ${taskName}`;
+    const damagePct = standaloneBossDamagePctForSpec(tableName, spec, index, sourceFull);
+    const entry = {
+      location: sourceFull || full,
+      source_location: full,
+      table: tableName || "Boss Table",
+      target_table: tableName || "Boss Table",
+      source_table: tableName || "Boss Table",
+      difficulty,
+      kind,
+      task_type: kind,
+      display_name: taskName,
+      objective: taskName,
+      title: taskName,
+      explanation: String(spec?.explanation || standaloneTaskExplanationFor(tableName, taskName) || "").trim(),
+      randomized: true,
+      boss_table_specific: true
+    };
+    return {
+      ...(baseNode || {}),
+      full,
+      short: taskName,
+      tableName: tableName || "Boss Table",
+      tableKey: standaloneBossBucketKey(),
+      baseShort: taskName,
+      taskShuffleEntry: entry,
+      genericEntry: entry,
+      genericDifficulty: difficulty,
+      genericTaskType: kind,
+      standaloneBossCheck: true,
+      standaloneBossDerived: true,
+      standaloneBossIndex: Number(index || 0),
+      standaloneBossSourceLocation: sourceFull,
+      standaloneBossDamagePct: damagePct,
+      bossDamagePct: damagePct,
+      bossDamageItemName: `Boss Damage ${damagePct}%`,
+      standaloneBossAttackTitle: (()=>{ try{ return bossAttackTitleForCategory(achClassifyTaskName(taskName), taskName); }catch(_){ return "Attack the Boss!"; } })()
+    };
+  }
+
+  function standaloneDeriveBossVictoryNode(baseNode, tableName){
+    const full = `${tableName || "Boss Table"} - Boss Victory`;
+    const entry = {
+      location: String(baseNode?.full || baseNode?.short || full),
+      source_location: full,
+      table: tableName || "Boss Table",
+      target_table: tableName || "Boss Table",
+      source_table: tableName || "Boss Table",
+      difficulty: "hard",
+      kind: "victory",
+      task_type: "victory",
+      display_name: "Boss Victory",
+      objective: "Boss Victory",
+      title: "Boss Victory",
+      explanation: "Reduce Boss HP to 0%, then redeem this final Boss Victory check.",
+      randomized: true,
+      boss_table_specific: true
+    };
+    return {
+      ...(baseNode || {}),
+      full,
+      short: "Boss Victory",
+      tableName: tableName || "Boss Table",
+      tableKey: standaloneBossBucketKey(),
+      baseShort: "Boss Victory",
+      taskShuffleEntry: entry,
+      genericEntry: entry,
+      genericDifficulty: "hard",
+      genericTaskType: "victory",
+      standaloneBossCheck: true,
+      standaloneBossDerived: true,
+      standaloneBossVictory: true
+    };
+  }
+
+  function standaloneBossSpecificChecksAreAllowed(){
+    try{
+      if(!standaloneBossChosenTableName()) return false;
+      if(typeof isBossTableRevealReady === "function" && isBossTableRevealReady()) return true;
+      const bossUnlocked = typeof isBossUnlocked === "function"
+        ? !!isBossUnlocked()
+        : !!(state?.bossOpen || state?.worlds?.boss?.locked === false);
+      if(!bossUnlocked) return false;
+      if(standaloneProfileRuntime?.randomizerReady || standaloneProfileRuntime?.randomizerStarted) return true;
+      if(ap?.connected || ap?.inherentSeedActive) return true;
+      return !!state?.bossOpen;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneBossCheckSourceNodesFallback(){
+    const out = [];
+    const seen = new Set();
+    try{
+      if(!standaloneBossSpecificChecksAreAllowed()) return out;
+      const map = ap?.locsByTableKey;
+      if(!(map instanceof Map) || !map.size) return out;
+      const keys = [
+        standaloneBossBucketKey(),
+        (()=>{ try{ return String(normKey("(Boss Table)") || ""); }catch(_){ return ""; } })(),
+        (()=>{ try{ return String(normKey("Boss") || ""); }catch(_){ return ""; } })(),
+        "boss",
+        "bosstable"
+      ].filter(Boolean);
+      const push = (node)=>{
+        if(!standaloneIsExplicitBossCheckNode(node)) return;
+        const id = Number(node?.id);
+        const key = Number.isFinite(id) && id > 0 ? `id:${id}` : `txt:${String(node?.full || node?.short || "")}`;
+        if(seen.has(key)) return;
+        seen.add(key);
+        out.push(node);
+      };
+      keys.forEach((key)=>{
+        const list = map.get(key);
+        if(Array.isArray(list)) list.forEach(push);
+      });
+      if(!out.length){
+        for(const list of map.values()){
+          if(Array.isArray(list)) list.forEach(push);
+        }
+      }
+    }catch(_){}
+    return standaloneDedupeSortLocationNodes(out);
+  }
+
+  function standaloneBuildBossSpecificCheckNodes(nodes){
+    try{
+      let source = standaloneDedupeSortLocationNodes((Array.isArray(nodes) ? nodes : []).filter(standaloneIsExplicitBossCheckNode));
+      if(!source.length) source = standaloneBossCheckSourceNodesFallback();
+      const tableName = standaloneBossChosenTableName();
+      if(!source.length || !tableName) return source;
+      const victory = source.find((node)=> {
+        try{ return !!bossIsVictoryLocationNode(node); }catch(_){ return false; }
+      }) || null;
+      const damageNodes = source.filter((node)=>{
+        if(node === victory) return false;
+        try{ if(bossIsVictoryLocationNode(node)) return false; }catch(_){}
+        return true;
+      }).slice(0, 10);
+      const specs = standaloneBossRepresentativeSpecs(tableName);
+      const derived = damageNodes.map((node, index)=>standaloneDeriveBossCheckNode(node, specs[index], tableName, index));
+      if(victory) derived.push(standaloneDeriveBossVictoryNode(victory, tableName));
+      try{
+        window.__flprStandaloneBossSpecificChecks = {
+          tableName,
+          count: derived.length,
+          attackCount: damageNodes.length,
+          labels: derived.map((node)=>String(node.short || "")),
+          sourceCount: source.length
+        };
+      }catch(_){}
+      return derived;
+    }catch(_){}
+    return Array.isArray(nodes) ? nodes : [];
+  }
+
+  function standaloneBossCheckNodeByLocId(locId){
+    const id = Number(locId);
+    if(!Number.isFinite(id) || id <= 0) return null;
+    try{
+      const nodes = typeof resolveBossChecksNodes === "function" ? resolveBossChecksNodes() : [];
+      return (Array.isArray(nodes) ? nodes : []).find((node)=>Number(node?.id) === id) || null;
+    }catch(_){}
+    return null;
+  }
+
+  function standaloneBossVisibleTaskName(node){
+    try{
+      const value = String(getTaskNameFromLocationNode(node) || node?.short || node?.full || "").trim();
+      if(value) return value;
+    }catch(_){}
+    return String(node?.short || node?.full || "Boss Attack").trim() || "Boss Attack";
+  }
+
+  function standaloneBossAttackTitleForNode(node, taskName){
+    const stored = String(node?.standaloneBossAttackTitle || "").trim();
+    if(stored) return stored;
+    try{ return bossAttackTitleForCategory(achClassifyTaskName(taskName), taskName); }catch(_){}
+    return "Attack the Boss!";
+  }
+
+  function standaloneBossDamagePctForNode(node){
+    const stored = Number(node?.standaloneBossDamagePct || node?.bossDamagePct);
+    if(Number.isFinite(stored) && stored > 0) return Math.max(1, Math.round(stored));
+    try{
+      return standaloneBossDamagePctForSpec(
+        node?.tableName || standaloneBossChosenTableName(),
+        node?.taskShuffleEntry || node?.genericEntry || { name:standaloneBossVisibleTaskName(node), difficulty:node?.genericDifficulty },
+        Number(node?.standaloneBossIndex || 0),
+        node?.standaloneBossSourceLocation || node?.full || node?.short || ""
+      );
+    }catch(_){}
+    return 12;
+  }
+
+  function standaloneSetBossNodeTitle(title, btn, taskName){
+    if(!title) return;
+    while(title.firstChild) title.removeChild(title.firstChild);
+    const match = String(taskName || "").match(/^(?:obtain a )?score(?: target)?(?: of)?\s+(.+)$/i);
+    if(match){
+      btn.classList.add("scoreNode");
+      btn.classList.remove("taskNode");
+      const lead = document.createElement("span");
+      lead.className = "scoreLead";
+      lead.textContent = "SCORE TARGET";
+      const value = document.createElement("span");
+      value.className = "scoreValue";
+      value.textContent = String(match[1] || "").trim();
+      title.appendChild(lead);
+      title.appendChild(value);
+      return;
+    }
+    btn.classList.add("taskNode");
+    btn.classList.remove("scoreNode");
+    title.textContent = String(taskName || "Boss Attack").trim() || "Boss Attack";
+  }
+
+  function standaloneApplyBossCardPresentation(){
+    try{
+      const cards = document.querySelectorAll("#viewChecks #checksBody .tableBlock.bossChecksBig .nodeBtn.bossNode[data-locid], #viewChecks .checksBody.bossMode .nodeBtn.bossNode[data-locid]");
+      cards.forEach((btn)=>{
+        const locId = Number(btn.dataset.locid || 0);
+        const node = standaloneBossCheckNodeByLocId(locId);
+        const isVictory = (()=>{ try{ return !!bossIsVictoryLocationNode(node); }catch(_){ return false; } })();
+        const cell = btn.closest?.(".nodeCell");
+        if(isVictory){
+          if(cell) cell.classList.add("flprStandaloneBossVictoryHidden");
+          btn.setAttribute("aria-hidden", "true");
+          btn.tabIndex = -1;
+          return;
+        }
+        if(cell) cell.classList.remove("flprStandaloneBossVictoryHidden");
+        btn.classList.add("flprStandaloneBossCard");
+        const taskName = standaloneBossVisibleTaskName(node);
+        const attackTitle = standaloneBossAttackTitleForNode(node, taskName);
+        const tierBadge = btn.querySelector(".tierBadge");
+        if(tierBadge){
+          tierBadge.textContent = "B";
+          tierBadge.dataset.full = "Boss";
+        }
+        let subtag = btn.querySelector(".flprStandaloneBossAttackSubtag");
+        if(!subtag){
+          subtag = document.createElement("div");
+          subtag.className = "flprStandaloneBossAttackSubtag";
+          if(tierBadge && tierBadge.parentNode === btn){
+            tierBadge.insertAdjacentElement("afterend", subtag);
+          }else{
+            btn.insertBefore(subtag, btn.firstChild);
+          }
+        }
+        subtag.textContent = attackTitle;
+        subtag.title = attackTitle;
+        standaloneSetBossNodeTitle(btn.querySelector(".nodeTitle"), btn, taskName);
+        const small = btn.querySelector(".small");
+        const damagePct = standaloneBossDamagePctForNode(node);
+        if(small){
+          const checked = btn.classList.contains("checked");
+          const pending = btn.classList.contains("pending");
+          small.textContent = `DAMAGE; ${damagePct}%${checked ? " ; CHECKED" : (pending ? " ; PENDING" : "")}`;
+        }
+        btn.dataset.bossDamage = String(damagePct);
+      });
+    }catch(_){}
+  }
+  try{ window.__flprStandaloneApplyBossCardPresentationForTest = standaloneApplyBossCardPresentation; }catch(_){}
 
   function standaloneRepairBossCheckNodeBuckets(){
     try{
@@ -6417,7 +9129,10 @@
   function standaloneRememberMissingLocationsForHints(pkt){
     try{
       const cmd = String(pkt?.cmd || "");
-      if(cmd === "Connected") standaloneResetBossHintsForConnection();
+      if(cmd === "Connected"){
+        standaloneResetBossHintsForConnection();
+        standaloneResetServerHintsForConnection();
+      }
       const missing = Array.isArray(pkt?.missing_locations) ? pkt.missing_locations : (Array.isArray(pkt?.missingLocations) ? pkt.missingLocations : null);
       if(missing){
         if(cmd === "Connected") standaloneBossHintScout.missingIds = new Set();
@@ -6437,6 +9152,8 @@
         });
       }
       if(missing || checked) standaloneScheduleBossKeyScout("location-set");
+      if(missing || checked) standaloneRefreshServerHintFoundStates();
+      if(cmd === "Connected" || cmd === "RoomUpdate") standaloneScheduleServerHintRequest(cmd, { force:cmd === "Connected" });
     }catch(_){}
   }
 
@@ -6553,6 +9270,266 @@
         changed = true;
       });
       if(changed) standaloneApplyBossHintLocationInfo("LocationInfo", { force:true });
+    }catch(_){}
+  }
+
+  function standaloneKnownPlayerSlotsForHints(){
+    const slots = new Set();
+    try{ if(standaloneSelfSlotId()) slots.add(standaloneSelfSlotId()); }catch(_){}
+    try{
+      if(ap?.slotInfoById?.keys){
+        for(const id of ap.slotInfoById.keys()){
+          const n = Number(id);
+          if(Number.isFinite(n) && n > 0) slots.add(n);
+        }
+      }
+    }catch(_){}
+    try{
+      if(ap?.playerNameById?.keys){
+        for(const id of ap.playerNameById.keys()){
+          const n = Number(id);
+          if(Number.isFinite(n) && n > 0) slots.add(n);
+        }
+      }
+    }catch(_){}
+    try{
+      standaloneApPlayerMeta.gameById.forEach((_, id)=>{
+        const n = Number(id);
+        if(Number.isFinite(n) && n > 0) slots.add(n);
+      });
+    }catch(_){}
+    return Array.from(slots).sort((a, b)=>a - b);
+  }
+
+  function standaloneServerHintFetchKeys(){
+    const team = Math.max(0, Number(ap?.team ?? 0) || 0);
+    return standaloneKnownPlayerSlotsForHints().map((slot)=>`_read_hints_${team}_${slot}`);
+  }
+
+  function standaloneResetServerHintsForConnection(){
+    try{ standaloneTextClient.serverHints.clear(); }catch(_){}
+    try{
+      if(standaloneTextClient.serverHintFetchTimer) clearTimeout(standaloneTextClient.serverHintFetchTimer);
+      standaloneTextClient.serverHintFetchTimer = null;
+      standaloneTextClient.serverHintFetchSig = "";
+      standaloneTextClient.serverHintFetchAt = 0;
+    }catch(_){}
+  }
+
+  function standaloneServerHintPriority(flags, itemName){
+    const f = standaloneFlagsForItem(flags, itemName);
+    let cls = null;
+    try{ cls = standaloneItemClass(f, itemName); }catch(_){}
+    let key = String(cls?.key || "").trim().toLowerCase();
+    if(!key || key === "normal") key = "filler";
+    const rank = key === "progression" ? 0
+      : key === "useful" ? 1
+      : key === "filler" ? 2
+      : key === "trap" ? 3
+      : 4;
+    const label = key === "progression" ? "PROGRESSION"
+      : key === "useful" ? "USEFUL"
+      : key === "trap" ? "TRAP"
+      : "FILLER";
+    return {
+      key,
+      rank,
+      label,
+      title: String(cls?.title || `${label} ITEM`).trim()
+    };
+  }
+
+  function standaloneServerHintLocationFound(locId, locationName, explicitFound){
+    if(explicitFound === true) return true;
+    const id = Number(locId);
+    try{
+      if(Number.isFinite(id) && id > 0 && ap?.checked instanceof Set && ap.checked.has(id)) return true;
+    }catch(_){}
+    try{ if(standaloneLocationMatchesOutgoingSent(locId, locationName)) return true; }catch(_){}
+    return false;
+  }
+
+  function standaloneServerHintKey(hint){
+    return [
+      Number(hint?.finderId || 0) || 0,
+      Number(hint?.receiverId || 0) || 0,
+      Number(hint?.locId || 0) || 0,
+      Number(hint?.itemId || 0) || 0
+    ].join("|");
+  }
+
+  function standaloneHydrateServerHintRecord(record){
+    try{
+      const rec = record && typeof record === "object" ? record : {};
+      const receiverId = Number(rec.receiverId || 0) || 0;
+      const finderId = Number(rec.finderId || 0) || standaloneSelfSlotId();
+      const receiverPlayer = String(rec.receiverPlayer || (()=>{ try{ return apPlayerName(receiverId, ""); }catch(_){ return ""; } })() || `Player ${receiverId || "?"}`).trim();
+      const finderPlayer = String(rec.finderPlayer || (()=>{ try{ return apPlayerName(finderId, ""); }catch(_){ return ""; } })() || standaloneSelfPlayerName()).trim();
+      const receiverGame = standaloneGameForPlayer(receiverId, receiverPlayer, rec.receiverGame || "");
+      const finderGame = standaloneGameForPlayer(finderId, finderPlayer, rec.finderGame || standaloneSelfGameName());
+      const itemName = standaloneResolveApItemName(rec.itemId, receiverId, rec.itemName || rec.serverItemName || "", receiverGame, { preferServerForCrossGame:true });
+      const rawLoc = standaloneResolveApLocationName(rec.locId, finderId, rec.locationName || rec.serverLocationName || "");
+      const locationName = standaloneLocationDisplayName(rawLoc, rec.locId) || rawLoc || (rec.locId ? `Location #${rec.locId}` : "Unknown Location");
+      const flags = standaloneFlagsForItem(rec.flags ?? rec.itemFlags ?? 0, itemName);
+      const priority = standaloneServerHintPriority(flags, itemName);
+      const found = standaloneServerHintLocationFound(rec.locId, locationName, rec.found);
+      return {
+        ...rec,
+        finderId,
+        receiverId,
+        finderPlayer,
+        finderGame,
+        receiverPlayer,
+        receiverGame,
+        itemName,
+        locationName,
+        flags,
+        found,
+        priority
+      };
+    }catch(_){
+      return record || null;
+    }
+  }
+
+  function standaloneRememberServerHint(hint, source){
+    try{
+      const self = standaloneSelfSlotId();
+      if(!self || !hint || typeof hint !== "object") return false;
+      const finderId = Number(hint.finding_player ?? hint.findingPlayer ?? hint.finderId ?? hint.finder ?? hint.player ?? hint.sourcePlayerId ?? 0) || 0;
+      const receiverId = Number(hint.receiving_player ?? hint.receivingPlayer ?? hint.receiverId ?? hint.receiving ?? hint.receiver ?? 0) || 0;
+      if(finderId !== self || !receiverId || receiverId === self) return false;
+      const locId = Number(hint.location ?? hint.locId ?? hint.location_id ?? hint.loc ?? 0);
+      const itemId = Number(hint.item ?? hint.itemId ?? hint.item_id ?? 0);
+      if(!Number.isFinite(locId) || locId <= 0 || !Number.isFinite(itemId)) return false;
+      const flags = Number(hint.item_flags ?? hint.itemFlags ?? hint.flags ?? 0) || 0;
+      const found = hint.found === true || Number(hint.status || 0) >= 40;
+      const base = {
+        finderId,
+        receiverId,
+        locId,
+        itemId,
+        flags,
+        found,
+        entrance: String(hint.entrance || ""),
+        source: String(source || hint.source || "AP hints"),
+        serverItemName: String(hint.item_name || hint.itemName || hint.serverItemName || ""),
+        serverLocationName: String(hint.location_name || hint.locationName || hint.serverLocationName || ""),
+        firstAt: Date.now(),
+        updatedAt: Date.now()
+      };
+      const key = standaloneServerHintKey(base);
+      const prev = standaloneTextClient.serverHints.get(key);
+      const hydrated = standaloneHydrateServerHintRecord({
+        ...(prev || {}),
+        ...base,
+        found: found || !!prev?.found,
+        firstAt: prev?.firstAt || base.firstAt
+      });
+      standaloneTextClient.serverHints.set(key, hydrated);
+      if(standaloneTextClient.serverHints.size > 300){
+        const entries = Array.from(standaloneTextClient.serverHints.entries());
+        entries.slice(0, Math.max(0, entries.length - 220)).forEach(([oldKey])=>standaloneTextClient.serverHints.delete(oldKey));
+      }
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneHandleRetrievedServerHints(pkt){
+    try{
+      const keys = pkt?.keys && typeof pkt.keys === "object" ? pkt.keys : {};
+      let changed = false;
+      Object.entries(keys).forEach(([key, value])=>{
+        if(!/^_read_hints_\d+_\d+$/i.test(String(key || ""))) return;
+        const list = Array.isArray(value) ? value : (value && typeof value === "object" ? Object.values(value) : []);
+        list.forEach((hint)=>{
+          changed = standaloneRememberServerHint(hint, "AP server hints") || changed;
+        });
+      });
+      if(changed) standaloneScheduleTextRender("server-hints");
+      return changed;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneHandlePrintJsonServerHint(pkt){
+    try{
+      if(String(pkt?.type || "").toLowerCase() !== "hint") return false;
+      const item = pkt?.item && typeof pkt.item === "object" ? pkt.item : {};
+      const locPart = standaloneFirstJsonPart(pkt, "location_id");
+      const itemPart = standaloneFirstJsonPart(pkt, "item_id");
+      const hint = {
+        finding_player: Number(item.player ?? item.finding_player ?? item.findingPlayer ?? locPart?.player ?? locPart?.owner ?? 0) || 0,
+        receiving_player: Number(pkt?.receiving ?? pkt?.receiver ?? item.receiving_player ?? item.receivingPlayer ?? itemPart?.player ?? itemPart?.receiving_player ?? 0) || 0,
+        location: Number(item.location ?? locPart?.location ?? locPart?.location_id ?? 0),
+        item: Number(item.item ?? itemPart?.item ?? itemPart?.item_id ?? 0),
+        item_flags: Number(item.flags ?? item.item_flags ?? itemPart?.flags ?? itemPart?.item_flags ?? 0) || 0,
+        found: pkt?.found === true,
+        itemName: standalonePartFallbackText(itemPart),
+        locationName: standalonePartFallbackText(locPart)
+      };
+      const changed = standaloneRememberServerHint(hint, "AP hint broadcast");
+      if(changed) standaloneScheduleTextRender("server-hint-broadcast");
+      return changed;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneRefreshServerHintFoundStates(){
+    try{
+      let changed = false;
+      standaloneTextClient.serverHints.forEach((hint, key)=>{
+        const next = standaloneHydrateServerHintRecord(hint);
+        if(!next) return;
+        const prevFound = !!hint.found;
+        const nextFound = !!next.found;
+        if(prevFound !== nextFound || next.itemName !== hint.itemName || next.locationName !== hint.locationName){
+          standaloneTextClient.serverHints.set(key, next);
+          changed = true;
+        }
+      });
+      if(changed) standaloneScheduleTextRender("server-hint-found-state");
+      return changed;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneRequestServerHints(source, opts){
+    opts = opts || {};
+    try{
+      if(ap?.inherentSeedActive) return false;
+      const wsOpen = !!(ap?.ws && Number(ap.ws.readyState) === 1);
+      if(!wsOpen || typeof apSend !== "function") return false;
+      const keys = standaloneServerHintFetchKeys();
+      if(!keys.length) return false;
+      const sig = keys.join("|");
+      const now = Date.now();
+      if(!opts.force && sig === standaloneTextClient.serverHintFetchSig && now - Number(standaloneTextClient.serverHintFetchAt || 0) < 12000) return false;
+      const sent = !!apSend({ cmd:"Get", keys, flpr:"server_hints", source:String(source || "") });
+      if(sent){
+        standaloneTextClient.serverHintFetchSig = sig;
+        standaloneTextClient.serverHintFetchAt = now;
+        try{ window.__flprStandaloneServerHintRequest = { source:String(source || ""), keys:keys.slice(), at:now }; }catch(_){}
+      }
+      return sent;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneScheduleServerHintRequest(source, opts){
+    opts = opts || {};
+    try{
+      if(standaloneTextClient.serverHintFetchTimer) clearTimeout(standaloneTextClient.serverHintFetchTimer);
+      standaloneTextClient.serverHintFetchTimer = setTimeout(()=>{
+        standaloneTextClient.serverHintFetchTimer = null;
+        standaloneRequestServerHints(source, opts);
+      }, Math.max(0, Number(opts.delayMs ?? 220)));
     }catch(_){}
   }
 
@@ -7047,6 +10024,14 @@
 
   function standaloneFlushBossKeysIfNoLoadedSeed(){
     if(standaloneHasLoadedSeedOrApConnection()) return false;
+    try{
+      const replay = window.__flprStandaloneBossKeyLiveRewardAnimation;
+      if(replay && (Date.now() - Number(replay.ts || 0)) < 8500) return false;
+    }catch(_){}
+    try{
+      const fx = window.__bossKeyCinematicFx;
+      if(fx && fx.active) return false;
+    }catch(_){}
     const hadBossKeys = (() => {
       try{ if(standaloneCurrentBossKeyCount() > 0) return true; }catch(_){}
       try{ if(Array.isArray(bossKeysState) && bossKeysState.some((key)=>!!key?.acquired)) return true; }catch(_){}
@@ -7153,6 +10138,21 @@
             to:Math.max(to, current),
             ts:Date.now()
           };
+          const keepTo = Math.max(to, current);
+          if(keepTo > from){
+            [320, 780, 1380, 2400].forEach((delay)=>{
+              setTimeout(()=>{
+                try{
+                  const replay = window.__flprStandaloneBossKeyLiveRewardAnimation;
+                  if(!replay || replay.key !== key) return;
+                  if((Date.now() - Number(replay.ts || 0)) > 8500) return;
+                  if(standaloneCurrentBossKeyCount() < keepTo){
+                    standaloneForceBossKeyCount(keepTo);
+                  }
+                }catch(_){}
+              }, delay);
+            });
+          }
         }catch(_){}
       }, 220);
     }catch(_){}
@@ -7380,6 +10380,7 @@
     if(/\bIgnoring\s+.*\bProgressive Ball\b/i.test(msg)) return false;
     if(/^(?:AP Text Client ready|CONNECT clicked|Runtime;|Warning: overlay is running|AP endpoints:|Connecting to |WebSocket open;)/i.test(msg)) return false;
     if(/^(?:RoomInfo confirmed|UI relic run reset|ROOM INFO;|ROOM SLOTS;|RoomUpdate;|connected$|Server state:|Generic task payload;)/i.test(msg)) return false;
+    if(/^SERVER\s+Retrieved\b/i.test(msg)) return false;
     if(/^(?:SERVER\s+)?(?:LocationInfo|LocationScouts);/i.test(msg)) return false;
     if(/^(?:OUT\b|SAY SENT TO AP SERVER|SYNC RECEIVED|ReceivedItems snapshot|RECEIVED ITEMS(?: SNAPSHOT)?;|DATAPACKAGE;)/i.test(msg)) return false;
     if(/^(?:Standalone ReceivedItems flushed|Deferred ReceivedItems flushed|World state|Progressive unlock correction|Progressive Ball applied to|Table unlocked by Progressive Ball|Table unlock intro triggered|False self-progression suppressed|settings saved|settings loaded)/i.test(msg)) return false;
@@ -7387,6 +10388,14 @@
     if(/\b(?:sent|has\s+found\s+their\s+own|found\s+their\s+own|found their)\s+(?:Item\s*#?\s*)?\d{4,}\b/i.test(msg)) return false;
     if(/^>\s+/.test(msg)) return false;
     return true;
+  }
+
+  function standaloneIsHintLogLine(line){
+    const msg = standaloneLogDisplayText(line);
+    if(!msg.trim()) return false;
+    return /^\[hint\]:/i.test(msg)
+      || /^HINT REQUEST;/i.test(msg)
+      || /\b(?:hinted|is hinted|contains .+ for .+)\b/i.test(msg);
   }
 
   function standaloneLogDedupeKey(line){
@@ -7421,8 +10430,10 @@
     standaloneTextClient.sessionReset = true;
     standaloneTextClient.loaded = true;
     standaloneTextClient.logs.status = [];
+    standaloneTextClient.logs.hints = [];
     standaloneTextClient.logs.errors = [];
     try{ standaloneTextClient.itemLogMeta.clear(); }catch(_){}
+    try{ standaloneTextClient.serverHints.clear(); }catch(_){}
     try{ localStorage.removeItem(STANDALONE_AP_LOG_KEY); }catch(_){}
   }
 
@@ -7436,12 +10447,14 @@
       .concat(saved.status || [])
       .concat(saved.chat || [])
       .concat(saved.generic || []));
+    standaloneTextClient.logs.hints = standaloneTrimLogBuffer(saved.hints || []);
     standaloneTextClient.logs.errors = standaloneTrimLogBuffer(saved.errors || []);
   }
 
   function standaloneSavePersistedTextLogs(){
     standaloneWriteJson(STANDALONE_AP_LOG_KEY, {
       status: standaloneTrimLogBuffer(standaloneTextClient.logs.status || []),
+      hints: standaloneTrimLogBuffer(standaloneTextClient.logs.hints || []),
       errors: standaloneTrimLogBuffer(standaloneTextClient.logs.errors || [])
     });
   }
@@ -7464,7 +10477,10 @@
       Object.entries(map).forEach(([bucket, tab])=>{
         const native = apLogBuffers[bucket];
         if(!Array.isArray(native)) return;
-        native.forEach((line)=>standaloneAppendPersistedLogLine(tab, line));
+        native.forEach((line)=>{
+          standaloneAppendPersistedLogLine(tab, line);
+          if(standaloneIsHintLogLine(line)) standaloneAppendPersistedLogLine("hints", line);
+        });
       });
       standaloneSavePersistedTextLogs();
     }catch(_){}
@@ -7762,6 +10778,7 @@
   function standaloneTextNormalizeTab(tab){
     const t = String(tab || "").toLowerCase();
     if(t === "error" || t === "errors") return "errors";
+    if(t === "hint" || t === "hints") return "hints";
     return "status";
   }
 
@@ -7998,7 +11015,9 @@
     try{
       if(typeof apLogBuffers === "undefined" || !apLogBuffers) return [];
       const nativeTab = standaloneTextNormalizeTab(tab);
-      const buckets = nativeTab === "errors"
+      const buckets = nativeTab === "hints"
+        ? ["chat", "generic", "status"]
+        : nativeTab === "errors"
         ? ["errors"]
         : ["chat", "generic", "status"];
       const lines = [];
@@ -8009,6 +11028,7 @@
         buf.forEach((line)=>{
           const key = String(line);
           if(!standaloneShouldShowLogLine(key)) return;
+          if(nativeTab === "hints" && !standaloneIsHintLogLine(key)) return;
           const dedupeKey = standaloneLogDedupeKey(key);
           if(seen.has(dedupeKey)) return;
           seen.add(dedupeKey);
@@ -8038,10 +11058,92 @@
     return standaloneTrimLogBuffer(lines);
   }
 
+  function standaloneApItemTooltipMeta(cls){
+    const text = String(cls || "");
+    if(/\bapItem-progression\b/.test(text)) return { key:"progression", label:"Progression Item" };
+    if(/\bapItem-useful\b/.test(text)) return { key:"useful", label:"Useful Item" };
+    if(/\bapItem-trap\b/.test(text)) return { key:"trap", label:"Trap Item" };
+    if(/\bapItem-filler\b/.test(text)) return { key:"filler", label:"Filler Item" };
+    return null;
+  }
+
+  function standaloneDecorateApItemTooltip(span, cls){
+    try{
+      if(!span || !/\bapLogItem\b/.test(String(cls || ""))) return;
+      const meta = standaloneApItemTooltipMeta(cls);
+      if(!meta) return;
+      span.removeAttribute("title");
+      span.setAttribute("aria-label", meta.label);
+      span.dataset.apItemTooltip = meta.label;
+      span.dataset.apItemType = meta.key;
+    }catch(_){}
+  }
+
+  function standaloneEnsureApLogItemTooltip(){
+    if(window.__flprStandaloneApItemTooltipBound) return;
+    window.__flprStandaloneApItemTooltipBound = true;
+    let tip = null;
+    let activeClass = "";
+    const ensureTip = ()=>{
+      if(tip && tip.isConnected) return tip;
+      tip = document.createElement("div");
+      tip.id = "standaloneApItemHoverTip";
+      tip.className = "standaloneApItemHoverTip";
+      tip.setAttribute("role", "tooltip");
+      document.body.appendChild(tip);
+      return tip;
+    };
+    const positionTip = (event)=>{
+      const node = ensureTip();
+      const pad = 12;
+      const vw = Math.max(320, Number(window.innerWidth || 0) || 0);
+      const vh = Math.max(240, Number(window.innerHeight || 0) || 0);
+      const x = Math.min(vw - pad, Math.max(pad, Number(event?.clientX || 0)));
+      const y = Math.min(vh - pad, Math.max(pad, Number(event?.clientY || 0)));
+      node.style.left = `${x}px`;
+      node.style.top = `${y}px`;
+    };
+    const showTip = (target, event)=>{
+      const text = String(target?.dataset?.apItemTooltip || target?.title || "").trim();
+      if(!text) return;
+      const node = ensureTip();
+      if(activeClass) node.classList.remove(activeClass);
+      activeClass = target?.dataset?.apItemType ? `apItem-${target.dataset.apItemType}` : "";
+      if(activeClass) node.classList.add(activeClass);
+      node.textContent = text;
+      positionTip(event || {});
+      node.classList.add("visible");
+    };
+    const hideTip = ()=>{
+      if(!tip) return;
+      tip.classList.remove("visible");
+    };
+    document.addEventListener("pointerover", (event)=>{
+      const target = event.target?.closest?.(".flprStandaloneConnectLayout #apConnLogBody .apLogItem[data-ap-item-tooltip]");
+      if(!target) return;
+      showTip(target, event);
+    }, true);
+    document.addEventListener("pointermove", (event)=>{
+      const target = event.target?.closest?.(".flprStandaloneConnectLayout #apConnLogBody .apLogItem[data-ap-item-tooltip]");
+      if(!target) return;
+      positionTip(event);
+    }, true);
+    document.addEventListener("pointerout", (event)=>{
+      const target = event.target?.closest?.(".flprStandaloneConnectLayout #apConnLogBody .apLogItem[data-ap-item-tooltip]");
+      if(!target) return;
+      const next = event.relatedTarget?.closest?.(".flprStandaloneConnectLayout #apConnLogBody .apLogItem[data-ap-item-tooltip]");
+      if(next === target) return;
+      hideTip();
+    }, true);
+    document.addEventListener("scroll", hideTip, true);
+    window.addEventListener("blur", hideTip);
+  }
+
   function standaloneAppendLogSpan(parent, text, cls){
     if(text == null || text === "") return;
     const span = document.createElement("span");
     if(cls) span.className = cls;
+    standaloneDecorateApItemTooltip(span, cls);
     span.textContent = String(text);
     parent.appendChild(span);
   }
@@ -8230,6 +11332,110 @@
     return row;
   }
 
+  function standaloneBuildHintLogRow(line){
+    const row = document.createElement("div");
+    row.className = "apHintCard";
+    const text = String(line || "");
+    const m = text.match(/^(\[[^\]]+\]:?\s*|\d{1,2}:\d{2}:\d{2}\s*)?(.*)$/);
+    const timeText = String(m?.[1] || "").trim();
+    const msg = String(m?.[2] || text).trim();
+    const time = document.createElement("div");
+    time.className = "apHintTime";
+    time.textContent = timeText || "HINT";
+    const body = document.createElement("div");
+    body.className = "apHintText";
+    standaloneRenderLogMessage(body, msg);
+    row.appendChild(time);
+    row.appendChild(body);
+    return row;
+  }
+
+  function standaloneVisibleServerHints(){
+    try{
+      const rows = [];
+      standaloneTextClient.serverHints.forEach((hint, key)=>{
+        const next = standaloneHydrateServerHintRecord(hint);
+        if(!next) return;
+        standaloneTextClient.serverHints.set(key, next);
+        rows.push(next);
+      });
+      rows.sort((a, b)=>{
+        const ap = Number(a?.priority?.rank ?? 9);
+        const bp = Number(b?.priority?.rank ?? 9);
+        if(ap !== bp) return ap - bp;
+        if(!!a?.found !== !!b?.found) return a?.found ? 1 : -1;
+        return String(a?.locationName || "").localeCompare(String(b?.locationName || ""));
+      });
+      return rows;
+    }catch(_){
+      return [];
+    }
+  }
+
+  function standaloneBuildServerHintCard(hint){
+    const row = document.createElement("div");
+    const priority = hint?.priority || standaloneServerHintPriority(hint?.flags, hint?.itemName);
+    row.className = `apServerHintCard priority-${String(priority.key || "filler")}`;
+
+    const meta = document.createElement("div");
+    meta.className = "apServerHintMeta";
+    const priorityBadge = document.createElement("span");
+    priorityBadge.className = "apServerHintBadge";
+    priorityBadge.textContent = `PRIORITY; ${String(priority.label || "FILLER")}`;
+    meta.appendChild(priorityBadge);
+    const statusBadge = document.createElement("span");
+    statusBadge.className = `apServerHintBadge apServerHintStatus ${hint?.found ? "found" : "uncollected"}`;
+    statusBadge.textContent = hint?.found ? "FOUND" : "UNCOLLECTED";
+    meta.appendChild(statusBadge);
+    row.appendChild(meta);
+
+    const itemLine = document.createElement("div");
+    itemLine.className = "apServerHintLine";
+    standaloneAppendLogSpan(itemLine, "ITEM; ", "apLogMuted");
+    standaloneAppendLogSpan(itemLine, String(hint?.itemName || "Unknown Item"), `apLogItem apItem-${String(priority.key || "filler")}`);
+    row.appendChild(itemLine);
+
+    const locLine = document.createElement("div");
+    locLine.className = "apServerHintLine";
+    standaloneAppendLogSpan(locLine, "LOCATION; ", "apLogMuted");
+    standaloneAppendLogSpan(locLine, String(hint?.locationName || "Unknown Location"), "apLogLocation");
+    row.appendChild(locLine);
+
+    const forLine = document.createElement("div");
+    forLine.className = "apServerHintLine";
+    standaloneAppendLogSpan(forLine, "FOR; ", "apLogMuted");
+    standaloneAppendLogSpan(forLine, String(hint?.receiverPlayer || "Unknown Player"), "apLogPlayer");
+    const game = String(hint?.receiverGame || "").trim();
+    if(game) standaloneAppendLogSpan(forLine, ` (${game})`, "apLogMuted");
+    row.appendChild(forLine);
+
+    return row;
+  }
+
+  function standaloneBuildServerHintSection(serverHints){
+    const wrap = document.createElement("div");
+    wrap.className = "apServerHintSection";
+    const head = document.createElement("div");
+    head.className = "apServerHintHeader";
+    const title = document.createElement("span");
+    title.textContent = "SERVER HINTS FOR OUR CHECKS";
+    head.appendChild(title);
+    const meta = document.createElement("small");
+    const count = Array.isArray(serverHints) ? serverHints.length : 0;
+    meta.textContent = count ? `${count} hinted item${count === 1 ? "" : "s"}` : "none yet";
+    head.appendChild(meta);
+    wrap.appendChild(head);
+    if(count){
+      serverHints.forEach((hint)=>wrap.appendChild(standaloneBuildServerHintCard(hint)));
+    }else{
+      const d = document.createElement("div");
+      d.className = "apLogEmpty";
+      d.textContent = "No server hints where your world is holding another player's item yet.";
+      wrap.appendChild(d);
+    }
+    return wrap;
+  }
+
   function standaloneScheduleTextRender(reason){
     try{ standaloneTextClient.lastRenderReason = String(reason || ""); }catch(_){}
     if(standaloneTextClient.renderTimer || standaloneTextClient.renderRaf) return;
@@ -8281,6 +11487,45 @@
     }catch(_){}
   }
 
+  function standaloneItemPanelBodies(){
+    return standaloneControlAll("#receivedBody").filter((body)=>body && body.closest && body.closest(".flprStandaloneConnectLayout"));
+  }
+
+  function standaloneCaptureItemPanelScrollSnapshots(){
+    const snaps = new Map();
+    standaloneItemPanelBodies().forEach((body)=>{
+      const snap = standaloneCaptureScrollState(body);
+      snaps.set(body, snap);
+      try{ body.__flprStandaloneLastItemScrollSnap = snap; }catch(_){}
+    });
+    return snaps;
+  }
+
+  function standaloneRestoreItemPanelScrollSnapshots(snaps, opts){
+    if(!snaps || typeof snaps.forEach !== "function") return;
+    snaps.forEach((snap, body)=>{
+      standaloneRestoreScrollState(body, snap, opts || { preservePrepended:true });
+      try{ body.__flprStandaloneLastItemScrollSnap = standaloneCaptureScrollState(body) || snap; }catch(_){}
+    });
+  }
+
+  function standaloneScheduleItemPanelScrollRestore(snaps, opts){
+    if(!snaps || typeof snaps.forEach !== "function") return;
+    let shouldRestore = false;
+    try{
+      snaps.forEach((snap)=>{
+        if(snap && !snap.atStart && Number(snap.top || 0) > 24) shouldRestore = true;
+      });
+    }catch(_){}
+    if(!shouldRestore) return;
+    const restore = ()=>standaloneRestoreItemPanelScrollSnapshots(snaps, opts || { preservePrepended:true });
+    try{
+      if(typeof requestAnimationFrame === "function") requestAnimationFrame(restore);
+    }catch(_){}
+    try{ setTimeout(restore, 0); }catch(_){}
+    try{ setTimeout(restore, 40); }catch(_){}
+  }
+
   function standaloneTextRender(){
     const bodies = standaloneControlAll("#apConnLogBody");
     if(!bodies.length) return;
@@ -8289,21 +11534,36 @@
       btn.classList.toggle("active", standaloneTextNormalizeTab(btn.dataset.aplogTab || "") === tab);
     });
     const lines = standaloneVisibleLogLines(tab);
-    const empty = tab === "errors" ? "No AP errors yet." : "AP Text Client ready. Connect to a server, then type chat or !hint commands here.";
-    const renderKey = JSON.stringify({ tab, lines, empty });
+    const serverHints = tab === "hints" ? standaloneVisibleServerHints() : [];
+    const empty = tab === "errors"
+      ? "No AP errors yet."
+      : (tab === "hints" ? "No AP hints yet. Send a !hint request to collect hint responses here." : "AP Text Client ready. Connect to a server, then type chat or !hint commands here.");
+    const serverHintSig = serverHints.map((hint)=>[
+      hint.locId,
+      hint.itemId,
+      hint.receiverId,
+      hint.found ? 1 : 0,
+      hint.itemName,
+      hint.locationName,
+      hint.priority?.key || ""
+    ].join(":")).join("|");
+    const renderKey = JSON.stringify({ tab, lines, empty, serverHintSig });
     bodies.forEach((body)=>{
       if(body.__flprStandaloneLogRenderKey === renderKey && body.childNodes.length){
         return;
       }
       const scrollSnap = standaloneCaptureScrollState(body);
       const frag = document.createDocumentFragment();
+      if(tab === "hints") frag.appendChild(standaloneBuildServerHintSection(serverHints));
       if(lines.length){
-        lines.forEach((line)=>frag.appendChild(standaloneBuildLogLine(line)));
+        lines.forEach((line)=>frag.appendChild(tab === "hints" ? standaloneBuildHintLogRow(line) : standaloneBuildLogLine(line)));
       }else{
-        const d = document.createElement("div");
-        d.className = "apLogEmpty";
-        d.textContent = empty;
-        frag.appendChild(d);
+        if(tab !== "hints" || !serverHints.length){
+          const d = document.createElement("div");
+          d.className = "apLogEmpty";
+          d.textContent = empty;
+          frag.appendChild(d);
+        }
       }
       body.replaceChildren(frag);
       body.__flprStandaloneLogRenderKey = renderKey;
@@ -8311,8 +11571,8 @@
     });
   }
 
-  function standaloneMirrorReceivedList(){
-    standaloneRenderItemPanel();
+  function standaloneMirrorReceivedList(opts){
+    standaloneRenderItemPanel(opts);
   }
 
   function standaloneItemTabName(tab){
@@ -8373,12 +11633,29 @@
       const resolved = standaloneResolveSentMeta(r) || r;
       const itemName = String(resolved?.itemName || standaloneResolveApItemName(r?.itemId, r?.receiverId, r?.itemName || "Unknown Item", r?.receiverGame || ""));
       const locName = String(resolved?.locationName || standaloneResolveApLocationName(r?.locId, r?.senderId, r?.locationName || ""));
+      const resolvedFlags = standaloneFlagsForItem(resolved?.flags ?? r?.flags ?? 0, itemName);
       if(itemName && itemName !== r?.itemName && !standaloneLooksUnresolvedItemName(itemName, r?.itemId)){
         r.itemName = itemName;
         changed = true;
       }
       if(locName && locName !== r?.locationName && !/^location\s*#?\s*\d+$/i.test(locName)){
         r.locationName = locName;
+        changed = true;
+      }
+      [
+        ["receiverPlayer", resolved?.receiverPlayer],
+        ["receiverGame", resolved?.receiverGame],
+        ["senderPlayer", resolved?.senderPlayer],
+        ["senderGame", resolved?.senderGame]
+      ].forEach(([key, value])=>{
+        const text = String(value ?? "").trim();
+        if(text && String(r?.[key] ?? "").trim() !== text){
+          r[key] = text;
+          changed = true;
+        }
+      });
+      if(Number(r?.flags ?? 0) !== resolvedFlags){
+        r.flags = resolvedFlags;
         changed = true;
       }
       const target = String(resolved?.receiverPlayer || r?.receiverPlayer || "").trim();
@@ -8390,7 +11667,7 @@
       return {
         key: String(r?.key || `sent|${index}|${itemName}|${target}|${locName}`),
         time: String(r?.time || ""),
-        flags: standaloneFlagsForItem(r?.flags ?? 0, itemName),
+        flags: resolvedFlags,
         itemName,
         lineA: `ITEM; ${itemName}`,
         lineB: to,
@@ -8410,10 +11687,51 @@
     });
   }
 
+  function standaloneAppendItemSpan(parent, text, cls){
+    if(text == null || text === "") return;
+    const span = document.createElement("span");
+    if(cls) span.className = cls;
+    span.textContent = String(text);
+    parent.appendChild(span);
+  }
+
+  function standaloneAppendItemDetailLine(parent, line, itemCls){
+    const raw = String(line || "").trim();
+    if(!raw) return;
+    parent.appendChild(document.createElement("br"));
+    let m = raw.match(/^(CHECK;\s*)(.+)$/i);
+    if(m){
+      standaloneAppendItemSpan(parent, m[1], "recvLabel");
+      standaloneAppendItemSpan(parent, m[2], "recvLocation");
+      return;
+    }
+    m = raw.match(/^(ITEM;\s*)(.+)$/i);
+    if(m){
+      standaloneAppendItemSpan(parent, m[1], "recvLabel");
+      standaloneAppendItemSpan(parent, m[2], `recvItem apLogItem ${itemCls}`);
+      return;
+    }
+    m = raw.match(/^((?:FROM|TO);\s*)(.+?)(\s+\(.+\))?$/i);
+    if(m){
+      standaloneAppendItemSpan(parent, m[1], "recvLabel");
+      standaloneAppendItemSpan(parent, m[2], "recvPlayer");
+      if(m[3]) standaloneAppendItemSpan(parent, m[3], "recvMeta");
+      return;
+    }
+    m = raw.match(/^([^;]+;\s*)(.+)$/);
+    if(m){
+      standaloneAppendItemSpan(parent, m[1], "recvLabel");
+      standaloneAppendItemSpan(parent, m[2], "recvMeta");
+      return;
+    }
+    standaloneAppendItemSpan(parent, raw, "recvMeta");
+  }
+
   function standaloneAppendItemRow(body, rowData){
     const cls = standaloneItemClass(rowData.flags, rowData.itemName);
+    const itemCls = `apItem-${cls.key}`;
     const row = document.createElement("div");
-    row.className = `recvRow apItem-${cls.key}`;
+    row.className = `recvRow ${itemCls}`;
     row.tabIndex = 0;
     row.dataset.standaloneItemKey = rowData.key;
     row.dataset.copyText = rowData.text;
@@ -8425,12 +11743,11 @@
     const txt = document.createElement("div");
     txt.className = "recvText";
     const badge = document.createElement("span");
-    badge.className = `recvBadge apItem-${cls.key}`;
+    badge.className = `recvBadge ${itemCls}`;
     badge.textContent = cls.label || "ITEM";
     txt.appendChild(badge);
     [rowData.lineA, rowData.lineB, rowData.lineC].filter(Boolean).forEach((line)=>{
-      txt.appendChild(document.createElement("br"));
-      txt.appendChild(document.createTextNode(line));
+      standaloneAppendItemDetailLine(txt, line, itemCls);
     });
     row.appendChild(time);
     row.appendChild(txt);
@@ -8444,9 +11761,10 @@
     body.appendChild(row);
   }
 
-  function standaloneRenderItemPanel(){
+  function standaloneRenderItemPanel(opts){
+    opts = opts || {};
     standaloneLoadSentItems();
-    const bodies = standaloneControlAll("#receivedBody");
+    const bodies = standaloneItemPanelBodies();
     if(!bodies.length) return;
     const tab = standaloneItemTabName(standaloneItemPanel.activeTab);
     const receivedCount = standaloneItemCount("received");
@@ -8474,8 +11792,21 @@
     });
     bodies.forEach((body)=>{
       if(!body.closest(".flprStandaloneConnectLayout")) return;
-      if(body.__flprStandaloneItemRenderKey === renderKey && body.childNodes.length) return;
-      const scrollSnap = standaloneCaptureScrollState(body);
+      if(!opts.force && body.__flprStandaloneItemRenderKey === renderKey && body.childNodes.length) return;
+      let scrollSnap = opts.scrollSnaps && typeof opts.scrollSnaps.get === "function"
+        ? (opts.scrollSnaps.get(body) || standaloneCaptureScrollState(body))
+        : standaloneCaptureScrollState(body);
+      try{
+        const remembered = body.__flprStandaloneLastItemScrollSnap;
+        if(
+          (!opts.scrollSnaps || typeof opts.scrollSnaps.get !== "function") &&
+          scrollSnap && scrollSnap.atStart &&
+          remembered && !remembered.atStart &&
+          Number(remembered.top || 0) > 24
+        ){
+          scrollSnap = remembered;
+        }
+      }catch(_){}
       body.innerHTML = "";
       if(!rows.length){
         const d = document.createElement("div");
@@ -8490,6 +11821,7 @@
       rows.forEach((row)=>standaloneAppendItemRow(body, row));
       body.__flprStandaloneItemRenderKey = renderKey;
       standaloneRestoreScrollState(body, scrollSnap, { preservePrepended:true });
+      try{ body.__flprStandaloneLastItemScrollSnap = standaloneCaptureScrollState(body) || scrollSnap; }catch(_){}
     });
   }
 
@@ -8630,9 +11962,19 @@
     return `${Number(meta?.senderId || 0)}|${Number(meta?.receiverId || 0)}|${meta?.itemId ?? ""}|${meta?.locId ?? ""}|${meta?.flags ?? 0}`;
   }
 
+  function standaloneSentEntryKeyFlags(entry){
+    if(!entry || typeof entry !== "object" || typeof entry.key !== "string") return NaN;
+    const parts = String(entry.key || "").split("|");
+    if(parts[0] !== "sent") return NaN;
+    const flags = Number(parts[5]);
+    return Number.isFinite(flags) ? flags : NaN;
+  }
+
   function standaloneResolveSentMeta(meta){
     if(!meta || typeof meta !== "object") return null;
     const next = { ...meta };
+    const keyFlags = standaloneSentEntryKeyFlags(next);
+    if(Number.isFinite(keyFlags)) next.flags = keyFlags;
     const cached = standaloneCachedServerSentMeta(next);
     if(cached){
       if(cached.serverItemName) next.serverItemName = cached.serverItemName;
@@ -8668,6 +12010,15 @@
     if(entry.receiverId == null && Number.isFinite(Number(parts[2]))){ entry.receiverId = Number(parts[2]); changed = true; }
     if(entry.itemId == null && Number.isFinite(Number(parts[3]))){ entry.itemId = Number(parts[3]); changed = true; }
     if(entry.locId == null && Number.isFinite(Number(parts[4]))){ entry.locId = Number(parts[4]); changed = true; }
+    const keyFlags = Number(parts[5]);
+    if(Number.isFinite(keyFlags)){
+      const cached = standaloneCachedServerSentMeta({ ...entry, flags:keyFlags }) || standaloneCachedServerSentMeta(entry);
+      const wantedFlags = Number(cached?.flags ?? keyFlags);
+      if(Number.isFinite(wantedFlags) && Number(entry.flags ?? 0) !== wantedFlags){
+        entry.flags = wantedFlags;
+        changed = true;
+      }
+    }
     return changed;
   }
 
@@ -9799,19 +13150,29 @@
     ts: 0,
     source: "",
     applying: false,
-    timer: null
+    timer: null,
+    applyTimers: [],
+    applyToken: 0,
+    holdTimers: [],
+    holdToken: 0,
+    holdUntil: 0
   };
   const standaloneChecksWorldSelection = {
     key: "",
     ts: 0,
     source: "",
-    applying: false
+    applying: false,
+    manualUntil: 0
   };
   const standaloneChecksRenderState = {
     lastSig: "",
     lastAt: 0,
     rendered: 0,
     skipped: 0
+  };
+  const standaloneNowPlayingGuard = {
+    proxy: null,
+    target: null
   };
 
   function standaloneParseTableKey(tableKey){
@@ -9830,20 +13191,126 @@
     return false;
   }
 
+  function standaloneChecksTableDisplayLevel(tableKey){
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed) return 0;
+    try{
+      if(typeof getDisplayBallStateForTableKey === "function"){
+        const displayLevel = Number(getDisplayBallStateForTableKey(parsed.key)?.level || 0);
+        if(displayLevel > 0) return displayLevel;
+      }
+    }catch(_){}
+    try{
+      if(typeof getBallLevelByTableKey === "function"){
+        const baseLevel = Number(getBallLevelByTableKey(parsed.key) || 0);
+        if(baseLevel > 0) return baseLevel;
+      }
+    }catch(_){}
+    try{
+      return (
+        state?.balls?.[`${parsed.key}|3`] ? 3 :
+        state?.balls?.[`${parsed.key}|2`] ? 2 :
+        state?.balls?.[`${parsed.key}|1`] ? 1 : 0
+      );
+    }catch(_){}
+    return 0;
+  }
+
+  function standaloneChecksTableRenderedOpen(tableKey){
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed) return false;
+    try{
+      const keyEsc = (typeof CSS !== "undefined" && CSS && CSS.escape) ? CSS.escape(parsed.key) : parsed.key;
+      const block = document.querySelector(`#checksBody .tableBlock[data-tablekey="${keyEsc}"]`);
+      return !!(block && !block.classList.contains("lockedTable"));
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneRecordChecksSelectionTrace(event, data){
+    try{
+      const trace = Array.isArray(window.__flprStandaloneChecksSelectionTrace)
+        ? window.__flprStandaloneChecksSelectionTrace
+        : [];
+      trace.push({
+        event:String(event || ""),
+        ts:Date.now(),
+        ...(data && typeof data === "object" ? data : {})
+      });
+      window.__flprStandaloneChecksSelectionTrace = trace.slice(-80);
+    }catch(_){}
+  }
+
+  function standaloneShouldBlockNowPlayingWrite(worldKey, nextIdx, source){
+    try{
+      if(!standaloneChecksViewActive()) return false;
+      if(standaloneChecksSelection.applying || standaloneChecksWorldSelection.applying) return false;
+      const wk = String(worldKey || "").trim();
+      if(!wk || wk === "boss") return false;
+      const parsed = standaloneParseTableKey(standaloneChecksSelection.key);
+      if(!parsed || parsed.worldKey !== wk) return false;
+      const pinned = standalonePinnedChecksTableKey();
+      if(!pinned || pinned !== parsed.key) return false;
+      const next = Math.max(0, Math.round(Number(nextIdx)));
+      if(!Number.isFinite(next) || next === parsed.idx) return false;
+      const renderedKey = (()=> {
+        try{ return document.querySelector("#checksBody .tableBlock.nowPlayingChecks[data-tablekey]")?.getAttribute("data-tablekey") || ""; }catch(_){}
+        return "";
+      })();
+      standaloneRecordChecksSelectionTrace("blocked-nowplaying-write", {
+        worldKey:wk,
+        requestedIdx:next,
+        pinned:parsed.key,
+        source:String(source || "direct"),
+        renderedKey,
+        currentWorld:String(ap?.currentWorld || ""),
+        selected:String(state?.selected || "")
+      });
+      return true;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneEnsureNowPlayingGuard(reason){
+    try{
+      if(!state || typeof state !== "object") return false;
+      const current = (state.nowPlaying && typeof state.nowPlaying === "object") ? state.nowPlaying : {};
+      if(current === standaloneNowPlayingGuard.proxy) return true;
+      if(current.__flprStandaloneNowPlayingGuardProxy === true) return true;
+      const target = current.__flprStandaloneNowPlayingGuardTarget || current;
+      const proxy = new Proxy(target, {
+        set(obj, prop, value, receiver){
+          if(typeof prop === "string" && standaloneShouldBlockNowPlayingWrite(prop, value, "proxy-set")){
+            return true;
+          }
+          return Reflect.set(obj, prop, value, receiver);
+        },
+        defineProperty(obj, prop, descriptor){
+          if(typeof prop === "string" && descriptor && Object.prototype.hasOwnProperty.call(descriptor, "value") && standaloneShouldBlockNowPlayingWrite(prop, descriptor.value, "proxy-define")){
+            return true;
+          }
+          return Reflect.defineProperty(obj, prop, descriptor);
+        }
+      });
+      try{ Object.defineProperty(proxy, "__flprStandaloneNowPlayingGuardProxy", { value:true, configurable:true }); }catch(_){}
+      try{ Object.defineProperty(proxy, "__flprStandaloneNowPlayingGuardTarget", { value:target, configurable:true }); }catch(_){}
+      standaloneNowPlayingGuard.proxy = proxy;
+      standaloneNowPlayingGuard.target = target;
+      state.nowPlaying = proxy;
+      standaloneRecordChecksSelectionTrace("install-nowplaying-guard", { reason:String(reason || "") });
+      return true;
+    }catch(_){}
+    return false;
+  }
+
   function standaloneChecksTableSelectable(tableKey){
     const parsed = standaloneParseTableKey(tableKey);
     if(!parsed) return false;
     try{
       const world = state?.worlds?.[parsed.worldKey];
       if(!world || !Array.isArray(world.tables) || !world.tables[parsed.idx]) return false;
-      if(typeof getBallLevelByTableKey === "function"){
-        return Number(getBallLevelByTableKey(parsed.key) || 0) > 0;
-      }
-      return !!(
-        state?.balls?.[`${parsed.key}|1`] ||
-        state?.balls?.[`${parsed.key}|2`] ||
-        state?.balls?.[`${parsed.key}|3`]
-      );
+      if(standaloneChecksTableDisplayLevel(parsed.key) > 0) return true;
+      return standaloneChecksTableRenderedOpen(parsed.key);
     }catch(_){}
     return false;
   }
@@ -9879,36 +13346,83 @@
       if(standaloneChecksSelection.timer) clearTimeout(standaloneChecksSelection.timer);
       standaloneChecksSelection.timer = null;
     }catch(_){}
+    try{
+      (standaloneChecksSelection.applyTimers || []).forEach((timer)=>clearTimeout(timer));
+      standaloneChecksSelection.applyTimers = [];
+      standaloneChecksSelection.applyToken += 1;
+    }catch(_){}
+    try{
+      (standaloneChecksSelection.holdTimers || []).forEach((timer)=>clearTimeout(timer));
+      standaloneChecksSelection.holdTimers = [];
+      standaloneChecksSelection.holdToken += 1;
+      standaloneChecksSelection.holdUntil = 0;
+    }catch(_){}
   }
 
   function standaloneClearChecksWorldPin(reason){
     standaloneChecksWorldSelection.key = "";
     standaloneChecksWorldSelection.ts = 0;
     standaloneChecksWorldSelection.source = String(reason || "");
+    standaloneChecksWorldSelection.manualUntil = 0;
   }
 
   function standaloneRememberChecksWorldSelection(worldKey, source){
     const wk = String(worldKey || "").trim();
     if(!wk || !standaloneChecksWorldExists(wk)) return false;
+    const reason = String(source || "checks-world");
     standaloneChecksWorldSelection.key = wk;
     standaloneChecksWorldSelection.ts = Date.now();
-    standaloneChecksWorldSelection.source = String(source || "checks-world");
+    standaloneChecksWorldSelection.source = reason;
+    if(/^checks-world-tab/i.test(reason)){
+      standaloneChecksWorldSelection.manualUntil = Date.now() + 5200;
+    }
     return true;
+  }
+
+  function standaloneRecentManualChecksWorldKey(){
+    try{
+      const wk = String(standaloneChecksWorldSelection.key || "").trim();
+      if(!wk) return "";
+      if(Number(standaloneChecksWorldSelection.manualUntil || 0) <= Date.now()) return "";
+      if(standaloneBesiegedTarget()) return "";
+      if(!standaloneChecksWorldExists(wk)) return "";
+      return wk;
+    }catch(_){
+      return "";
+    }
   }
 
   function standalonePinnedChecksWorldKey(){
     const wk = String(standaloneChecksWorldSelection.key || "").trim();
     if(!wk) return "";
+    try{
+      if(
+        wk !== "boss" &&
+        standaloneChecksViewActive() &&
+        String(ap?.currentWorld || "") === "boss" &&
+        standaloneChecksWorldExists("boss")
+      ){
+        standaloneClearChecksSelectionPin("boss-world-current");
+        standaloneClearChecksWorldPin("boss-world-current");
+        return "";
+      }
+    }catch(_){}
+    const manual = standaloneRecentManualChecksWorldKey();
+    if(manual) return manual;
     if(standaloneBesiegedTarget()) return "";
     if(!standaloneChecksViewActive()){
       if(Date.now() - Number(standaloneChecksWorldSelection.ts || 0) > 1200){
         standaloneClearChecksWorldPin("left-checks");
+        return "";
       }
-      return "";
+      return wk;
     }
     if(!standaloneChecksWorldExists(wk)){
       standaloneClearChecksWorldPin("missing-world");
       return "";
+    }
+    if(Number(standaloneChecksWorldSelection.manualUntil || 0) > Date.now()){
+      return wk;
     }
     return wk;
   }
@@ -9969,8 +13483,9 @@
     if(!standaloneChecksViewActive()){
       if(Date.now() - Number(standaloneChecksSelection.ts || 0) > 1200){
         standaloneClearChecksSelectionPin("left-checks");
+        return "";
       }
-      return "";
+      return key;
     }
     if(!standaloneChecksTableSelectable(key)){
       if(standaloneChecksTableExists(key) && (Date.now() - Number(standaloneChecksSelection.ts || 0)) < 9000){
@@ -9991,6 +13506,97 @@
     standaloneRememberChecksWorldSelection(parsed.worldKey, source || "checks-click");
     standaloneScheduleChecksSelectionApply("pin");
     return true;
+  }
+
+  function standalonePrimeChecksSelectionFromRenderedTable(tableKey, source){
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed || !standaloneChecksTableExists(parsed.key)) return false;
+    if(!standaloneChecksTableSelectable(parsed.key) && !standaloneChecksTableRenderedOpen(parsed.key)) return false;
+    standaloneChecksSelection.key = parsed.key;
+    standaloneChecksSelection.ts = Date.now();
+    standaloneChecksSelection.source = String(source || "checks-table");
+    standaloneRememberChecksWorldSelection(parsed.worldKey, source || "checks-table");
+    try{ standaloneEnforceChecksSelectionPin(source || "checks-table", { save:false }); }catch(_){}
+    try{ standaloneDirectChecksHighlightPinned(); }catch(_){}
+    standaloneScheduleChecksSelectionHold(source || "checks-table", 14000);
+    try{
+      window.__flprStandaloneLastChecksTablePrime = {
+        key: parsed.key,
+        source: String(source || "checks-table"),
+        displayLevel: standaloneChecksTableDisplayLevel(parsed.key),
+        renderedOpen: standaloneChecksTableRenderedOpen(parsed.key),
+        ts: Date.now()
+      };
+    }catch(_){}
+    return true;
+  }
+
+  function standaloneCandidateFromTowerSelection(){
+    try{
+      const wk = String(state?.selected || "").trim();
+      if(!wk || wk === "boss" || !state?.worlds?.[wk]) return "";
+      const tables = Array.isArray(state?.worlds?.[wk]?.tables) ? state.worlds[wk].tables : [];
+      if(!tables.length) return "";
+      const idxRaw = (typeof getNowPlayingIndex === "function") ? Number(getNowPlayingIndex(wk)) : Number(state?.nowPlaying?.[wk]);
+      const idx = Math.max(0, Math.min(tables.length - 1, Number.isFinite(idxRaw) ? Math.round(idxRaw) : 0));
+      return standaloneParseTableKey(`${wk}|${idx}`)?.key || "";
+    }catch(_){}
+    return "";
+  }
+
+  function standaloneAdoptRenderedChecksSelection(reason, opts){
+    opts = opts || {};
+    if(!standaloneChecksViewActive()) return "";
+    if(!opts.force){
+      const existing = standalonePinnedChecksTableKey();
+      if(existing) return existing;
+    }
+    try{
+      const active = document.querySelector("#checksBody .tableBlock.nowPlayingChecks[data-tablekey]");
+      const key = String(active?.getAttribute?.("data-tablekey") || "").trim();
+      const parsed = standaloneParseTableKey(key);
+      if(!parsed || active?.classList?.contains("lockedTable")) return "";
+      const pinnedWorld = standalonePinnedChecksWorldKey();
+      if(pinnedWorld && parsed.worldKey !== pinnedWorld && opts.allowCrossWorld !== true){
+        standaloneRecordChecksSelectionTrace("skip-adopt-rendered-world-mismatch", {
+          key: parsed.key,
+          pinnedWorld,
+          reason:String(reason || "")
+        });
+        return "";
+      }
+      if(!standaloneChecksTableSelectable(parsed.key) && !standaloneChecksTableRenderedOpen(parsed.key)) return "";
+      standaloneChecksSelection.key = parsed.key;
+      standaloneChecksSelection.ts = Date.now();
+      standaloneChecksSelection.source = String(reason || "rendered-active");
+      standaloneRememberChecksWorldSelection(parsed.worldKey, reason || "rendered-active");
+      standaloneRecordChecksSelectionTrace("adopt-rendered", {
+        key: parsed.key,
+        reason:String(reason || ""),
+        displayLevel:standaloneChecksTableDisplayLevel(parsed.key),
+        renderedOpen:standaloneChecksTableRenderedOpen(parsed.key),
+        nowPlaying:Number(state?.nowPlaying?.[parsed.worldKey])
+      });
+      return parsed.key;
+    }catch(_){}
+    return "";
+  }
+
+  function standalonePrimeChecksSelectionFromTower(reason){
+    const key = standaloneCandidateFromTowerSelection();
+    const parsed = standaloneParseTableKey(key);
+    if(!parsed || !standaloneChecksTableExists(parsed.key)) return "";
+    standaloneChecksSelection.key = parsed.key;
+    standaloneChecksSelection.ts = Date.now();
+    standaloneChecksSelection.source = String(reason || "tower-selection");
+    standaloneRememberChecksWorldSelection(parsed.worldKey, reason || "tower-selection");
+    standaloneRecordChecksSelectionTrace("prime-tower", {
+      key: parsed.key,
+      reason:String(reason || ""),
+      displayLevel:standaloneChecksTableDisplayLevel(parsed.key),
+      nowPlaying:Number(state?.nowPlaying?.[parsed.worldKey])
+    });
+    return parsed.key;
   }
 
   function standaloneCurrentChecksSelectionCandidate(){
@@ -10029,7 +13635,24 @@
           const mapKey = typeof canonicalTableMapKey === "function" ? canonicalTableMapKey(name) : String(name || "");
           locCount = Number(ap?.locsByTableKey?.get?.(mapKey)?.length || 0);
         }catch(_){}
-        return `${idx}:${String(name || "")}:${ballSig}:${locCount}`;
+        const displaySig = (()=> {
+          try{
+            const display = typeof getDisplayBallStateForTableKey === "function" ? getDisplayBallStateForTableKey(tableKey) : null;
+            if(display && typeof display === "object"){
+              return [
+                display.b1 ? 1 : 0,
+                display.b2 ? 1 : 0,
+                display.b3 ? 1 : 0,
+                display.b1Eb ? 1 : 0,
+                display.b2Eb ? 1 : 0,
+                display.b3Eb ? 1 : 0,
+                Number(display.level || 0)
+              ].join("");
+            }
+          }catch(_){}
+          return "";
+        })();
+        return `${idx}:${String(name || "")}:${ballSig}:${displaySig}:${locCount}`;
       }).join(";");
       const checkedSig = (()=> {
         try{ return Array.from(ap?.checked || []).map(Number).filter(Number.isFinite).sort((a,b)=>a-b).join(","); }catch(_){}
@@ -10153,6 +13776,52 @@
     return changed;
   }
 
+  function standaloneRestoreCapturedChecksSelection(tableKey, reason, opts){
+    opts = opts || {};
+    const parsed = standaloneParseTableKey(tableKey);
+    if(!parsed || !standaloneChecksTableExists(parsed.key)) return false;
+    if(standaloneBesiegedTarget()) return false;
+    let changed = false;
+    const prevSelectionApplying = !!standaloneChecksSelection.applying;
+    const prevWorldApplying = !!standaloneChecksWorldSelection.applying;
+    standaloneChecksSelection.applying = true;
+    standaloneChecksWorldSelection.applying = true;
+    try{
+      standaloneChecksSelection.key = parsed.key;
+      standaloneChecksSelection.ts = Date.now();
+      standaloneChecksSelection.source = String(reason || "restore-captured");
+      standaloneChecksWorldSelection.key = parsed.worldKey;
+      standaloneChecksWorldSelection.ts = Date.now();
+      standaloneChecksWorldSelection.source = String(reason || "restore-captured");
+      state.nowPlaying = state.nowPlaying || {};
+      if(Number(state.nowPlaying[parsed.worldKey]) !== parsed.idx){
+        state.nowPlaying[parsed.worldKey] = parsed.idx;
+        changed = true;
+      }
+      try{
+        if(String(ap?.currentWorld || "") !== parsed.worldKey){
+          ap.currentWorld = parsed.worldKey;
+          changed = true;
+        }
+      }catch(_){}
+      try{
+        if(opts.syncTowerSelection !== false && parsed.worldKey !== "boss" && state?.worlds?.[parsed.worldKey] && String(state?.selected || "") !== parsed.worldKey){
+          state.lastSelected = state.selected;
+          state.selected = parsed.worldKey;
+          changed = true;
+        }
+      }catch(_){}
+      if(changed && opts.save !== false){
+        try{ saveState(); }catch(_){}
+      }
+    }catch(_){
+    }finally{
+      standaloneChecksSelection.applying = prevSelectionApplying;
+      standaloneChecksWorldSelection.applying = prevWorldApplying;
+    }
+    return changed;
+  }
+
   function standaloneDirectChecksHighlightPinned(){
     const key = standalonePinnedChecksTableKey();
     if(!key) return false;
@@ -10197,25 +13866,62 @@
       if(standaloneChecksSelection.timer) clearTimeout(standaloneChecksSelection.timer);
       standaloneChecksSelection.timer = null;
     }catch(_){}
+    try{
+      (standaloneChecksSelection.applyTimers || []).forEach((timer)=>clearTimeout(timer));
+      standaloneChecksSelection.applyTimers = [];
+    }catch(_){}
+    const token = Number(standaloneChecksSelection.applyToken || 0) + 1;
+    standaloneChecksSelection.applyToken = token;
     const applySoon = (delay)=>{
-      setTimeout(()=>{
+      const timer = setTimeout(()=>{
+        if(Number(standaloneChecksSelection.applyToken || 0) !== token) return;
         try{
           standaloneEnforceChecksSelectionPin(reason, { save:false });
           standaloneDirectChecksHighlightPinned();
         }catch(_){}
       }, delay);
+      standaloneChecksSelection.applyTimers.push(timer);
     };
     [0, 60, 220, 520, 940, 1260].forEach(applySoon);
+    try{
+      window.__flprStandaloneChecksSelectionSchedulerStats = {
+        ...(window.__flprStandaloneChecksSelectionSchedulerStats || {}),
+        applyToken: token,
+        applyTimers: standaloneChecksSelection.applyTimers.length,
+        lastApplyReason: String(reason || ""),
+        lastApplyAt: Date.now()
+      };
+    }catch(_){}
   }
 
   function standaloneScheduleChecksSelectionHold(reason, durationMs){
     const ms = Math.max(0, Number(durationMs || 0) || 0);
+    const now = Date.now();
+    const until = now + ms;
+    if(Number(standaloneChecksSelection.holdUntil || 0) >= until - 80){
+      try{
+        window.__flprStandaloneChecksSelectionSchedulerStats = {
+          ...(window.__flprStandaloneChecksSelectionSchedulerStats || {}),
+          skippedHoldReason: String(reason || ""),
+          skippedHoldAt: now
+        };
+      }catch(_){}
+      return;
+    }
+    try{
+      (standaloneChecksSelection.holdTimers || []).forEach((timer)=>clearTimeout(timer));
+      standaloneChecksSelection.holdTimers = [];
+    }catch(_){}
+    const token = Number(standaloneChecksSelection.holdToken || 0) + 1;
+    standaloneChecksSelection.holdToken = token;
+    standaloneChecksSelection.holdUntil = until;
     const delays = [0, 60, 220, 520, 940, 1260];
     if(ms > 1400){
       delays.push(Math.max(0, ms - 700), Math.max(0, ms - 120), ms + 180, ms + 760, ms + 1420);
     }
     Array.from(new Set(delays.map((delay)=>Math.max(0, Math.round(delay))))).sort((a, b)=>a-b).forEach((delay)=>{
-      setTimeout(()=>{
+      const timer = setTimeout(()=>{
+        if(Number(standaloneChecksSelection.holdToken || 0) !== token) return;
         try{
           standaloneEnforceChecksWorldSelection(reason || "hold", { save:false });
           standaloneEnforceChecksSelectionPin(reason || "hold", { save:false });
@@ -10223,12 +13929,23 @@
           standaloneGuardChecksNodeInteractions();
         }catch(_){}
       }, delay);
+      standaloneChecksSelection.holdTimers.push(timer);
     });
+    try{
+      window.__flprStandaloneChecksSelectionSchedulerStats = {
+        ...(window.__flprStandaloneChecksSelectionSchedulerStats || {}),
+        holdToken: token,
+        holdTimers: standaloneChecksSelection.holdTimers.length,
+        holdUntil: standaloneChecksSelection.holdUntil,
+        lastHoldReason: String(reason || ""),
+        lastHoldAt: now
+      };
+    }catch(_){}
   }
 
   function standaloneReassertChecksWorldPin(reason, opts){
     opts = opts || {};
-    const wk = standalonePinnedChecksWorldKey();
+    const wk = standalonePinnedChecksWorldKey() || standaloneRecentManualChecksWorldKey();
     if(!wk) return "";
     standaloneRememberChecksWorldSelection(wk, reason || "world-pin");
     standaloneEnforceChecksWorldSelection(reason || "world-pin", {
@@ -10266,6 +13983,7 @@
 
   function installStandaloneChecksSelectionBridge(){
     let installedAny = false;
+    try{ standaloneEnsureNowPlayingGuard("checks-selection-install"); }catch(_){}
 
     try{
       if(!window.__flprStandaloneChecksWorldTabPinClearBound){
@@ -10294,10 +14012,32 @@
     }catch(_){}
 
     try{
+      if(!window.__flprStandaloneChecksTablePrimeBound){
+        window.__flprStandaloneChecksTablePrimeBound = true;
+        const primeFromEvent = (event, source)=>{
+          try{
+            const target = event?.target;
+            const block = target?.closest?.("#checksBody .tableBlock[data-tablekey]");
+            if(!block || block.classList.contains("lockedTable")) return;
+            if(target?.closest?.(".extraBallTableBtn")) return;
+            const key = String(block.getAttribute("data-tablekey") || "").trim();
+            if(!key) return;
+            standalonePrimeChecksSelectionFromRenderedTable(key, source);
+          }catch(_){}
+        };
+        document.addEventListener("pointerdown", (event)=>primeFromEvent(event, "checks-table-pointer"), true);
+        document.addEventListener("mousedown", (event)=>primeFromEvent(event, "checks-table-mouse"), true);
+        document.addEventListener("click", (event)=>primeFromEvent(event, "checks-table-click"), true);
+      }
+    }catch(_){}
+
+    try{
       const original = window.syncChecksWorldFromTowerContext || (typeof syncChecksWorldFromTowerContext === "function" ? syncChecksWorldFromTowerContext : null);
       if(original && !original.__flprStandaloneChecksSelectionBridge){
         const bridged = function standaloneSyncChecksWorldFromTowerContextChecksBridge(){
-          const pinned = standalonePinnedChecksWorldKey();
+          standaloneEnsureNowPlayingGuard("pre-checks-world-context");
+          standaloneAdoptRenderedChecksSelection("pre-checks-world-context-adopt");
+          const pinned = standalonePinnedChecksWorldKey() || standaloneRecentManualChecksWorldKey();
           if(pinned && !standaloneChecksWorldSelection.applying){
             standaloneReassertChecksWorldPin("blocked-checks-world-context", { save:false, syncTowerSelection:true });
             return pinned;
@@ -10319,7 +14059,7 @@
       if(original && !original.__flprStandaloneChecksSelectionBridge){
         const bridged = function standaloneSyncTowerSelectionToWorldChecksBridge(worldKey){
           const requested = String(worldKey || "").trim();
-          const pinned = standalonePinnedChecksWorldKey();
+          const pinned = standalonePinnedChecksWorldKey() || standaloneRecentManualChecksWorldKey();
           if(pinned && requested && requested !== pinned && standaloneChecksViewActive() && !standaloneChecksWorldSelection.applying){
             standaloneReassertChecksWorldPin(`blocked-tower-world-sync:${requested}`, { save:true, syncTowerSelection:true });
             return pinned;
@@ -10340,8 +14080,8 @@
       const original = window.syncTowerSelectionToBossWorld || (typeof syncTowerSelectionToBossWorld === "function" ? syncTowerSelectionToBossWorld : null);
       if(original && !original.__flprStandaloneChecksSelectionBridge){
         const bridged = function standaloneSyncTowerSelectionToBossWorldChecksBridge(){
-          const pinned = standalonePinnedChecksWorldKey();
-          if(pinned && pinned !== "boss" && standaloneChecksViewActive() && !standaloneChecksWorldSelection.applying){
+          const pinned = standalonePinnedChecksWorldKey() || standaloneRecentManualChecksWorldKey();
+          if(pinned && pinned !== "boss" && String(ap?.currentWorld || "") !== "boss" && standaloneChecksViewActive() && !standaloneChecksWorldSelection.applying){
             standaloneReassertChecksWorldPin("blocked-boss-world-sync", { save:true, syncTowerSelection:true });
             return pinned;
           }
@@ -10355,6 +14095,31 @@
         try{ syncTowerSelectionToBossWorld = bridged; }catch(_){}
       }
       if(window.syncTowerSelectionToBossWorld || typeof syncTowerSelectionToBossWorld === "function") installedAny = true;
+    }catch(_){}
+
+    try{
+      const original = window.showView || (typeof showView === "function" ? showView : null);
+      if(original && !original.__flprStandaloneChecksSelectionBridge){
+        const bridged = function standaloneShowViewChecksSelectionBridge(next, opts){
+          const targetView = String(next || "");
+          if(targetView === "checks"){
+            standalonePrimeChecksSelectionFromTower("show-checks-before");
+          }
+          const result = original.apply(this, arguments);
+          if(targetView === "checks"){
+            standaloneAdoptRenderedChecksSelection("show-checks-after", { force:false });
+            try{ standaloneEnforceChecksWorldSelection("show-checks-after-world", { save:false }); }catch(_){}
+            try{ standaloneEnforceChecksSelectionPin("show-checks-after", { save:false }); }catch(_){}
+            try{ standaloneScheduleChecksSelectionApply("show-checks-after"); }catch(_){}
+          }
+          return result;
+        };
+        bridged.__flprStandaloneChecksSelectionBridge = true;
+        bridged.__flprStandaloneOriginalShowView = original;
+        window.showView = bridged;
+        try{ showView = bridged; }catch(_){}
+      }
+      if(window.showView || typeof showView === "function") installedAny = true;
     }catch(_){}
 
     try{
@@ -10376,19 +14141,28 @@
       const original = window.setNowPlayingFromTableKey || (typeof setNowPlayingFromTableKey === "function" ? setNowPlayingFromTableKey : null);
       if(original && !original.__flprStandaloneChecksSelectionBridge){
         const bridged = function standaloneSetNowPlayingFromTableKeyChecksBridge(tableKey, opts){
+          standaloneEnsureNowPlayingGuard("set-table-key");
           opts = opts || {};
           const key = String(tableKey || "").trim();
           const source = String(opts.source || "");
-          const fromChecks = source === "checks-click";
+          const fromChecks = source === "checks-click" || source === "checks-table-pointer" || source === "checks-table-click";
           if(!fromChecks && standaloneChecksSelection.key && key && key !== standaloneChecksSelection.key && !standaloneChecksSelection.applying){
             if(standaloneChecksViewActive() && standalonePinnedChecksTableKey()){
+              standaloneRecordChecksSelectionTrace("blocked-table-key", {
+                requested:key,
+                pinned:standaloneChecksSelection.key,
+                source:source || "external"
+              });
               standaloneEnforceChecksSelectionPin(`blocked-table-key:${source || "external"}`, { save:true });
               standaloneScheduleChecksSelectionApply("blocked-table-key");
               return false;
             }
             standaloneClearChecksSelectionPin(`external:${source || "table-key"}`);
           }
-          const result = original.apply(this, arguments);
+          const callOpts = (fromChecks && key && standaloneChecksTableSelectable(key) && opts.allowLocked !== true)
+            ? { ...opts, allowLocked:true }
+            : opts;
+          const result = original.call(this, tableKey, callOpts);
           if(result !== false && fromChecks && !standaloneBesiegedTarget()){
             standaloneRememberChecksSelection(key, source || "checks-click");
             standaloneEnforceChecksSelectionPin("table-key", { save:true, syncTowerSelection:true });
@@ -10408,13 +14182,19 @@
       const original = window.setNowPlayingIndex || (typeof setNowPlayingIndex === "function" ? setNowPlayingIndex : null);
       if(original && !original.__flprStandaloneChecksSelectionBridge){
         const bridged = function standaloneSetNowPlayingIndexChecksBridge(worldKey, idx, opts){
+          standaloneEnsureNowPlayingGuard("set-index");
           opts = opts || {};
           const key = standaloneBesiegedKeyFromArgs(worldKey, idx);
           const source = String(opts.source || "");
-          const fromChecks = source === "checks-click" || source === "standalone-checks-pin";
+          const fromChecks = source === "checks-click" || source === "checks-table-pointer" || source === "checks-table-click" || source === "standalone-checks-pin";
           const fromOverview = source === "overview-click";
           if(!fromChecks && standaloneChecksSelection.key && key && key !== standaloneChecksSelection.key && !standaloneChecksSelection.applying){
             if(standaloneChecksViewActive() && standalonePinnedChecksTableKey()){
+              standaloneRecordChecksSelectionTrace("blocked-index", {
+                requested:key,
+                pinned:standaloneChecksSelection.key,
+                source:source || "external"
+              });
               standaloneEnforceChecksSelectionPin(`blocked-index:${source || "external"}`, { save:true });
               standaloneScheduleChecksSelectionApply("blocked-index");
               return false;
@@ -10454,13 +14234,20 @@
       const original = window.syncNowPlayingIndexesToUnlockedTables || (typeof syncNowPlayingIndexesToUnlockedTables === "function" ? syncNowPlayingIndexesToUnlockedTables : null);
       if(original && !original.__flprStandaloneChecksSelectionBridge){
         const bridged = function standaloneSyncNowPlayingIndexesChecksBridge(opts){
+          standaloneEnsureNowPlayingGuard("pre-unlocked-sync");
+          standaloneAdoptRenderedChecksSelection("pre-unlocked-sync-adopt");
           const pinnedWorld = standalonePinnedChecksWorldKey();
+          const pinnedTable = standalonePinnedChecksTableKey();
+          const suppressPinnedChecksSignal = !!(pinnedWorld && pinnedTable && standaloneChecksViewActive());
           const nextOpts = pinnedWorld ? { ...(opts || {}), render:false } : opts;
           const preWorldChanged = standaloneEnforceChecksWorldSelection("pre-unlocked-sync-world", { save:false });
           const preChanged = standaloneEnforceChecksSelectionPin("pre-unlocked-sync", { save:false });
           const result = pinnedWorld ? original.call(this, nextOpts) : original.apply(this, arguments);
           const postWorldChanged = standaloneEnforceChecksWorldSelection("post-unlocked-sync-world", { save: opts?.save !== false });
           const postChanged = standaloneEnforceChecksSelectionPin("post-unlocked-sync", { save: opts?.save !== false });
+          const capturedChanged = suppressPinnedChecksSignal
+            ? standaloneRestoreCapturedChecksSelection(pinnedTable, "post-unlocked-sync-captured", { save: opts?.save !== false })
+            : false;
           if(pinnedWorld && opts?.render){
             try{
               if(standaloneChecksViewActive()){
@@ -10473,8 +14260,22 @@
           }else if((postChanged || postWorldChanged) && opts?.render){
             try{ if(standaloneChecksViewActive()) renderChecks(); else applyChecksNowPlayingHighlight(); }catch(_){}
           }
+          if(suppressPinnedChecksSignal){
+            try{ standaloneDirectChecksHighlightPinned(); }catch(_){}
+            standaloneRecordChecksSelectionTrace("suppressed-unlocked-sync-signal", {
+              pinned:pinnedTable,
+              pinnedWorld,
+              result:!!result,
+              preChanged:!!preChanged,
+              postChanged:!!postChanged,
+              preWorldChanged:!!preWorldChanged,
+              postWorldChanged:!!postWorldChanged,
+              capturedChanged:!!capturedChanged
+            });
+          }
           standaloneScheduleChecksSelectionApply("unlocked-sync");
-          return !!result || preChanged || postChanged || preWorldChanged || postWorldChanged;
+          if(suppressPinnedChecksSignal) return false;
+          return !!result || preChanged || postChanged || preWorldChanged || postWorldChanged || capturedChanged;
         };
         bridged.__flprStandaloneChecksSelectionBridge = true;
         bridged.__flprStandaloneOriginalSyncNowPlayingIndexesToUnlockedTables = original;
@@ -10488,7 +14289,9 @@
       const original = window.renderChecks || (typeof renderChecks === "function" ? renderChecks : null);
       if(original && !original.__flprStandaloneChecksSelectionBridge){
         const bridged = function standaloneRenderChecksSelectionBridge(){
+          standaloneEnsureNowPlayingGuard("render-checks");
           standaloneCancelChecksSwapAnimation();
+          standaloneAdoptRenderedChecksSelection("pre-render-adopt");
           standaloneEnforceChecksWorldSelection("pre-render-world", { save:false });
           standaloneEnforceChecksSelectionPin("pre-render", { save:false });
           const sigBefore = standaloneChecksRenderSignature();
@@ -10503,15 +14306,18 @@
             try{ applyChecksNowPlayingHighlight(); }catch(_){}
             try{ standaloneDirectChecksHighlightPinned(); }catch(_){}
             try{ standaloneGuardChecksNodeInteractions(); }catch(_){}
+            standaloneScheduleStrategyHoverReanchor("render-skip");
             return undefined;
           }
           const result = original.apply(this, arguments);
+          standaloneAdoptRenderedChecksSelection("post-render-adopt");
           standaloneEnforceChecksWorldSelection("post-render-world", { save:false });
           standaloneEnforceChecksSelectionPin("post-render", { save:false });
           standaloneChecksRenderState.lastSig = standaloneChecksRenderSignature() || sigBefore;
           standaloneChecksRenderState.lastAt = Date.now();
           standaloneChecksRenderState.rendered = Number(standaloneChecksRenderState.rendered || 0) + 1;
           standaloneGuardChecksNodeInteractions();
+          standaloneScheduleStrategyHoverReanchor("render");
           standaloneScheduleChecksSelectionApply("render");
           return result;
         };
@@ -10527,7 +14333,9 @@
       const original = window.applyChecksNowPlayingHighlight || (typeof applyChecksNowPlayingHighlight === "function" ? applyChecksNowPlayingHighlight : null);
       if(original && !original.__flprStandaloneChecksSelectionBridge){
         const bridged = function standaloneApplyChecksNowPlayingHighlightBridge(){
+          standaloneEnsureNowPlayingGuard("highlight");
           standaloneCancelChecksSwapAnimation();
+          standaloneAdoptRenderedChecksSelection("pre-highlight-adopt");
           standaloneEnforceChecksSelectionPin("highlight", { save:false });
           const result = original.apply(this, arguments);
           standaloneCancelChecksSwapAnimation();
@@ -11111,8 +14919,11 @@
       return;
     }
     const bridged = function standaloneRenderReceivedListBridge(){
+      const scrollSnaps = standaloneCaptureItemPanelScrollSnapshots();
       const result = original.apply(this, arguments);
-      try{ standaloneMirrorReceivedList(); }catch(_){}
+      try{ standaloneMirrorReceivedList({ scrollSnaps, force:true }); }catch(_){}
+      try{ standaloneRestoreItemPanelScrollSnapshots(scrollSnaps, { preservePrepended:true }); }catch(_){}
+      try{ standaloneScheduleItemPanelScrollRestore(scrollSnaps, { preservePrepended:true }); }catch(_){}
       return result;
     };
     bridged.__flprStandaloneReceivedBridge = true;
@@ -11141,6 +14952,7 @@
         if(!targets.includes(nt)) targets.push(nt);
       });
     }
+    if(standaloneIsHintLogLine(msg) && !targets.includes("hints")) targets.push("hints");
     if(tab !== "errors" && (lower.includes("error") || lower.includes("failed") || lower.includes("refused") || lower.includes("blocked") || lower.includes("timeout"))){
       if(!targets.includes("errors")) targets.push("errors");
     }
@@ -11192,6 +15004,7 @@
   function standaloneSendApSayPacket(text){
     const msg = String(text || "").trim();
     if(!msg) return false;
+    const isHintRequest = /^!hint(?:\s|$)/i.test(msg);
     const ws = (typeof ap !== "undefined" && ap) ? ap.ws : null;
     const wsOpen = !!(ws && Number(ws.readyState) === 1);
     if(!wsOpen){
@@ -11204,6 +15017,12 @@
       const pkt = { cmd:"Say", text:msg };
       ws.send(JSON.stringify([pkt]));
       try{ ap.lastSaySentAt = Date.now(); }catch(_){}
+      if(isHintRequest){
+        try{
+          standaloneAppendPersistedLogLine("hints", `${standaloneTextTimestamp()} HINT REQUEST; ${msg}`);
+          standaloneSavePersistedTextLogs();
+        }catch(_){}
+      }
       try{
         if(typeof apLog === "function"){
           apLog("OUT Say " + JSON.stringify(pkt), { tab:"status", mirrorTabs:["chat"] });
@@ -11241,8 +15060,9 @@
     if(sent){
       try{ playClick(); }catch(_){}
       if(sayInput) sayInput.value = "";
-      try{ if(typeof setApLogTab === "function") setApLogTab("status"); }catch(_){}
-      standaloneTextClient.activeTab = "status";
+      const nextTab = /^!hint(?:\s|$)/i.test(text) ? "hints" : "status";
+      try{ if(nextTab === "status" && typeof setApLogTab === "function") setApLogTab("status"); }catch(_){}
+      standaloneTextClient.activeTab = nextTab;
       standaloneTextRender();
     }
     return false;
@@ -11261,7 +15081,8 @@
     playClick();
     const tab = standaloneTextNormalizeTab(btn.dataset.aplogTab || "status");
     standaloneTextClient.activeTab = tab;
-    try{ if(typeof setApLogTab === "function") setApLogTab(tab); }catch(_){}
+    try{ if(tab !== "hints" && typeof setApLogTab === "function") setApLogTab(tab); }catch(_){}
+    if(tab === "hints") standaloneScheduleServerHintRequest("hints-tab", { delayMs:40 });
     standaloneTextRender();
     return false;
   }
@@ -11291,17 +15112,7 @@
     }catch(err){
       try{ window.apLog ? window.apLog("SYNC RECEIVED failed; " + (err?.message || err), { tab:"errors" }) : standaloneTextMirrorLog("SYNC RECEIVED failed; " + (err?.message || err), { tab:"errors" }); }catch(_){}
     }
-    try{
-      if(typeof reconcileWorldStateFromReceivedInventory === "function"){
-        setTimeout(()=>reconcileWorldStateFromReceivedInventory("Sync button"), 250);
-      }
-    }catch(_){}
-    [200, 900, 2200].forEach((delay)=>{
-      setTimeout(()=>{
-        try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
-        try{ if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
-      }, delay);
-    });
+    try{ standaloneScheduleReceivedRefresh("Sync button"); }catch(_){}
     if(sent){
       try{ window.apLog ? window.apLog("SYNC RECEIVED requested from AP server.", { tab:"status", mirrorTabs:["chat"] }) : standaloneTextMirrorLog("SYNC RECEIVED requested from AP server.", { tab:"status", mirrorTabs:["chat"] }); }catch(_){}
     }else{
@@ -11358,6 +15169,153 @@
     try{ apSendLocationCheckWithMetadata = bridged; }catch(_){}
   }
 
+  function standaloneBossHpPct(){
+    try{
+      const max = Math.max(1, Number(state?.bossHpLive?.max || state?.bossHpTest?.max || 100));
+      const cur = Math.max(0, Math.min(max, Number(state?.bossHpLive?.cur ?? state?.bossHpTest?.cur ?? max)));
+      return Math.max(0, Math.min(100, Math.round((cur / max) * 100)));
+    }catch(_){
+      return 100;
+    }
+  }
+
+  function standaloneBossTableIsUp(){
+    try{
+      if(typeof isBossUnlocked === "function" && !isBossUnlocked()) return false;
+      if(typeof isBossDefeated === "function" && isBossDefeated()) return false;
+      return !!(state?.bossHpLive?.inited || state?.bossHpTest?.show || standaloneBossChosenTableName());
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneEnsureBossPhase2Music(reason){
+    const pct = standaloneBossHpPct();
+    const stateRec = {
+      reason:String(reason || ""),
+      pct,
+      attemptedAt:Date.now(),
+      bossUp:standaloneBossTableIsUp(),
+      crossed:false,
+      refreshed:false,
+      skipped:""
+    };
+    try{
+      if(!stateRec.bossUp){
+        stateRec.skipped = "boss-not-up";
+        window.__flprStandaloneBossPhase2MusicState = stateRec;
+        return false;
+      }
+      if(!(pct > 0 && pct <= 50)){
+        stateRec.skipped = "hp-above-phase2";
+        window.__flprStandaloneBossPhase2MusicState = stateRec;
+        return false;
+      }
+      const hasPhase2 = typeof musicHasExactScenarioTrack === "function" ? !!musicHasExactScenarioTrack("boss_battle_phase2") : false;
+      if(!hasPhase2){
+        stateRec.skipped = "missing-phase2-track";
+        window.__flprStandaloneBossPhase2MusicState = stateRec;
+        return false;
+      }
+      const mgr = typeof musicEnsureManager === "function" ? musicEnsureManager() : (window.__flprMusic || {});
+      stateRec.current = String(mgr?.current || "");
+      stateRec.crossfadeTarget = String(mgr?.crossfadeTarget || "");
+      if(stateRec.current === "boss_battle_phase2" || stateRec.crossfadeTarget === "boss_battle_phase2"){
+        stateRec.crossed = true;
+        stateRec.skipped = "already-phase2";
+        window.__flprStandaloneBossPhase2MusicState = stateRec;
+        return true;
+      }
+      if(
+        stateRec.current === "boss_battle_beginning" &&
+        mgr?.audio &&
+        !mgr.audio.paused &&
+        typeof musicCrossfadeToScenario === "function"
+      ){
+        const crossed = !!musicCrossfadeToScenario("boss_battle_phase2", {
+          force:true,
+          forceStopIfMissing:true,
+          durationMs:3200
+        });
+        stateRec.crossed = crossed;
+        stateRec.skipped = crossed ? "" : "crossfade-failed";
+        window.__flprStandaloneBossPhase2MusicState = stateRec;
+        return crossed;
+      }
+      if(typeof musicRefreshScenario === "function"){
+        musicRefreshScenario();
+        stateRec.refreshed = true;
+        const liveMgr = typeof musicEnsureManager === "function" ? musicEnsureManager() : (window.__flprMusic || {});
+        stateRec.currentAfter = String(liveMgr?.current || "");
+        stateRec.crossfadeTargetAfter = String(liveMgr?.crossfadeTarget || "");
+        stateRec.crossed = stateRec.currentAfter === "boss_battle_phase2" || stateRec.crossfadeTargetAfter === "boss_battle_phase2";
+        window.__flprStandaloneBossPhase2MusicState = stateRec;
+        return stateRec.crossed;
+      }
+      stateRec.skipped = "music-refresh-unavailable";
+      window.__flprStandaloneBossPhase2MusicState = stateRec;
+      return false;
+    }catch(err){
+      stateRec.skipped = "error";
+      stateRec.error = String(err?.message || err || "");
+      try{ window.__flprStandaloneBossPhase2MusicState = stateRec; }catch(_){}
+      return false;
+    }
+  }
+
+  function installStandaloneBossPhaseMusicBridge(){
+    let installedAny = false;
+    try{
+      const original = window.bossApplyDamagePct || (typeof bossApplyDamagePct === "function" ? bossApplyDamagePct : null);
+      if(original && !original.__flprStandaloneBossPhaseMusicBridge){
+        const bridged = function standaloneBossApplyDamagePhaseMusicBridge(pct, sourceKey, opts){
+          const beforePct = standaloneBossHpPct();
+          const result = original.apply(this, arguments);
+          const afterPct = standaloneBossHpPct();
+          if(beforePct > 50 && afterPct <= 50 && afterPct > 0){
+            setTimeout(()=>standaloneEnsureBossPhase2Music("boss-damage-threshold"), 0);
+          }else if(afterPct <= 50 && afterPct > 0 && opts?.fromCheck){
+            setTimeout(()=>standaloneEnsureBossPhase2Music("boss-check-redeemed"), 0);
+          }
+          return result;
+        };
+        bridged.__flprStandaloneBossPhaseMusicBridge = true;
+        bridged.__flprStandaloneOriginalBossApplyDamagePct = original;
+        window.bossApplyDamagePct = bridged;
+        try{ bossApplyDamagePct = bridged; }catch(_){}
+      }
+      if(window.bossApplyDamagePct || typeof bossApplyDamagePct === "function") installedAny = true;
+    }catch(_){}
+    try{ window.flprStandaloneEnsureBossPhase2MusicForTest = standaloneEnsureBossPhase2Music; }catch(_){}
+    if(!installedAny) setTimeout(installStandaloneBossPhaseMusicBridge, 120);
+  }
+
+  function installStandaloneBossDamageBridge(){
+    let installedAny = false;
+    try{
+      const original = window.bossResolveSegmentDamagePct || (typeof bossResolveSegmentDamagePct === "function" ? bossResolveSegmentDamagePct : null);
+      if(original && !original.__flprStandaloneBossDamageBridge){
+        const bridged = function standaloneBossResolveSegmentDamagePctBridge(opts){
+          try{
+            const locId = Number(opts?.locId);
+            const node = standaloneBossCheckNodeByLocId(locId);
+            const pct = standaloneBossDamagePctForNode(node);
+            if(node && Number.isFinite(pct) && pct > 0){
+              return pct;
+            }
+          }catch(_){}
+          return original.apply(this, arguments);
+        };
+        bridged.__flprStandaloneBossDamageBridge = true;
+        bridged.__flprStandaloneOriginalBossResolveSegmentDamagePct = original;
+        window.bossResolveSegmentDamagePct = bridged;
+        try{ bossResolveSegmentDamagePct = bridged; }catch(_){}
+      }
+      if(window.bossResolveSegmentDamagePct || typeof bossResolveSegmentDamagePct === "function") installedAny = true;
+    }catch(_){}
+    if(!installedAny) setTimeout(installStandaloneBossDamageBridge, 120);
+  }
+
   function installStandaloneBossCheckRoutingBridge(){
     let installedAny = false;
 
@@ -11366,7 +15324,14 @@
       if(original && !original.__flprStandaloneBossCheckRoutingBridge){
         const bridged = function standaloneRenderTableBlockBossRouting(parent, tableName, nodes, opts){
           try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
-          return original.call(this, parent, tableName, standaloneFilterNonBossCheckNodes(nodes, opts), opts);
+          const block = original.call(this, parent, tableName, standaloneFilterNonBossCheckNodes(nodes, opts), opts);
+          try{
+            if(String(opts?.tableKey || "").startsWith("boss|")){
+              standaloneApplyBossCardPresentation();
+              setTimeout(standaloneApplyBossCardPresentation, 0);
+            }
+          }catch(_){}
+          return block;
         };
         bridged.__flprStandaloneBossCheckRoutingBridge = true;
         bridged.__flprStandaloneOriginalRenderTableBlock = original;
@@ -11382,7 +15347,7 @@
         const bridged = function standaloneResolveBossChecksNodesBridge(){
           try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
           const nodes = original.apply(this, arguments);
-          return standaloneDedupeSortLocationNodes((Array.isArray(nodes) ? nodes : []).filter(standaloneIsExplicitBossCheckNode));
+          return standaloneBuildBossSpecificCheckNodes(nodes);
         };
         bridged.__flprStandaloneBossCheckRoutingBridge = true;
         bridged.__flprStandaloneOriginalResolveBossChecksNodes = original;
@@ -11413,7 +15378,10 @@
       if(original && !original.__flprStandaloneBossCheckRoutingBridge){
         const bridged = function standaloneRenderChecksBossRoutingBridge(){
           try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
-          return original.apply(this, arguments);
+          const result = original.apply(this, arguments);
+          standaloneApplyBossCardPresentation();
+          setTimeout(standaloneApplyBossCardPresentation, 0);
+          return result;
         };
         bridged.__flprStandaloneBossCheckRoutingBridge = true;
         bridged.__flprStandaloneOriginalRenderChecks = original;
@@ -11533,6 +15501,102 @@
     }
   }
 
+  function standaloneReceivedPacketLocation(it){
+    const raw = it?.location ?? it?.location_id ?? it?.loc ?? null;
+    const num = Number(raw);
+    return Number.isFinite(num) ? num : null;
+  }
+
+  function standaloneReceivedItemsPacketSignature(pkt){
+    try{
+      const items = Array.isArray(pkt?.items) ? pkt.items : [];
+      const baseIndex = Number.isFinite(Number(pkt?.index)) ? Math.max(0, Math.round(Number(pkt.index))) : Math.max(0, Math.round(Number(ap?.lastReceivedIndex || 0)) || 0);
+      return `${baseIndex}:${items.length}:` + items.map((it, i)=>{
+        const itemIndex = baseIndex + i;
+        const itemId = Number.isFinite(Number(it?.item)) ? Math.round(Number(it.item)) : "";
+        const locId = standaloneReceivedPacketLocation(it);
+        const player = Number.isFinite(Number(it?.player)) ? Math.round(Number(it.player)) : "";
+        const flags = Number.isFinite(Number(it?.flags)) ? Math.round(Number(it.flags)) : 0;
+        return `${itemIndex}:${itemId}:${locId ?? ""}:${player}:${flags}`;
+      }).join("|");
+    }catch(_){
+      return "";
+    }
+  }
+
+  function standaloneReceivedInventoryCoversPacket(pkt){
+    try{
+      const items = Array.isArray(pkt?.items) ? pkt.items : [];
+      const baseIndex = Number.isFinite(Number(pkt?.index)) ? Math.max(0, Math.round(Number(pkt.index))) : Math.max(0, Math.round(Number(ap?.lastReceivedIndex || 0)) || 0);
+      const byIndex = ap?.receivedByIndex instanceof Map ? ap.receivedByIndex : new Map();
+      if(items.length === 0) return byIndex.size === 0 || Number(ap?.lastReceivedIndex || 0) >= baseIndex;
+      for(let i = 0; i < items.length; i++){
+        const itemIndex = baseIndex + i;
+        const incoming = items[i] || {};
+        const existing = byIndex.get(itemIndex);
+        if(!existing) return false;
+        const incomingItem = Number(incoming.item);
+        if(Number.isFinite(incomingItem) && Number(existing.item) !== incomingItem) return false;
+        const incomingLoc = standaloneReceivedPacketLocation(incoming);
+        const existingLoc = standaloneReceivedPacketLocation(existing);
+        if(incomingLoc !== existingLoc) return false;
+        const incomingPlayer = Number(incoming.player);
+        if(Number.isFinite(incomingPlayer) && Number(existing.player) !== incomingPlayer) return false;
+        const incomingFlags = Number(incoming.flags);
+        if(Number.isFinite(incomingFlags) && Number(existing.flags || 0) !== incomingFlags) return false;
+      }
+      return true;
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneShouldSuppressReceivedItemsPacket(pkt){
+    try{
+      if(String(pkt?.cmd || "") !== "ReceivedItems") return false;
+      if(Array.isArray(ap?.receivedDeferred) && ap.receivedDeferred.length) return false;
+      const sig = standaloneReceivedItemsPacketSignature(pkt);
+      if(!sig) return false;
+      const duplicatePacket = sig === standaloneReceivedRefreshState.lastPacketSig;
+      const inventoryAlreadyMatches = standaloneReceivedInventoryCoversPacket(pkt);
+      if(duplicatePacket && inventoryAlreadyMatches){
+        standaloneReceivedRefreshState.blockedPackets = Number(standaloneReceivedRefreshState.blockedPackets || 0) + 1;
+        try{
+          const stats = window.__flprStandaloneReceivedRefreshStats || {
+            total:0,
+            rendered:0,
+            reconciled:0,
+            noops:0,
+            lastSource:"",
+            lastSig:""
+          };
+          stats.total = Number(stats.total || 0) + 1;
+          stats.noops = Number(stats.noops || 0) + 1;
+          stats.lastSource = "ReceivedItems-duplicate-packet";
+          stats.lastSig = standaloneReceivedInventorySignature();
+          stats.blockedPackets = Number(standaloneReceivedRefreshState.blockedPackets || 0);
+          window.__flprStandaloneReceivedRefreshStats = stats;
+        }catch(_){}
+        return true;
+      }
+      standaloneReceivedRefreshState.lastPacketSig = sig;
+      standaloneReceivedRefreshState.lastPacketAt = Date.now();
+    }catch(_){}
+    return false;
+  }
+
+  try{
+    window.flprStandaloneShouldSuppressReceivedItemsPacketForTest = standaloneShouldSuppressReceivedItemsPacket;
+    window.flprStandaloneReceivedPacketGateState = function(){
+      return {
+        lastPacketSig: String(standaloneReceivedRefreshState.lastPacketSig || ""),
+        lastPacketAt: Number(standaloneReceivedRefreshState.lastPacketAt || 0),
+        blockedPackets: Number(standaloneReceivedRefreshState.blockedPackets || 0),
+        lastInventorySig: String(standaloneReceivedRefreshState.lastSig || "")
+      };
+    };
+  }catch(_){}
+
   function standaloneRefreshReceivedFromServer(source){
     standaloneWithCounterDrawerFxSuppressed(()=>{
       const beforeSig = standaloneReceivedInventorySignature();
@@ -11620,6 +15684,22 @@
         let arr;
         try{ arr = JSON.parse(event.data); }catch(_){ return; }
         if(!Array.isArray(arr)) arr = [arr];
+        try{
+          if(arr.length && arr.every((pkt)=>String(pkt?.cmd || "") === "ReceivedItems")){
+            let suppressAll = true;
+            for(const pkt of arr){
+              if(!standaloneShouldSuppressReceivedItemsPacket(pkt)){
+                suppressAll = false;
+                break;
+              }
+            }
+            if(suppressAll){
+              try{ event.stopImmediatePropagation(); }catch(_){}
+              try{ event.preventDefault(); }catch(_){}
+              return;
+            }
+          }
+        }catch(_){}
         const cmds = new Set(arr.map((pkt)=>String(pkt?.cmd || "")));
         let playerMetaChanged = false;
         arr.forEach((pkt)=>{
@@ -11627,6 +15707,7 @@
           const cmd = String(pkt?.cmd || "");
           if(cmd === "Connected" || cmd === "RoomUpdate") standaloneRememberMissingLocationsForHints(pkt);
           if(cmd === "LocationInfo") standaloneHandleLocationInfoForHints(pkt);
+          if(cmd === "Retrieved") standaloneHandleRetrievedServerHints(pkt);
         });
         if(playerMetaChanged){
           try{ standaloneRequestMissingGamePackages("AP player metadata"); }catch(_){}
@@ -11640,6 +15721,7 @@
         arr.forEach((pkt)=>{
           if(String(pkt?.cmd || "") === "PrintJSON"){
             standaloneRememberJsonItemLogMeta(pkt);
+            try{ standaloneHandlePrintJsonServerHint(pkt); }catch(_){}
             try{
               const meta = standaloneExtractItemSendMeta(pkt);
               if(meta) standaloneRememberItemSendLogMeta(meta);
@@ -11654,6 +15736,8 @@
             try{ standaloneRepairPersistedApState(); }catch(_){}
             try{ standaloneApplyBossHintLocationInfo("DataPackage", { force:true }); }catch(_){}
             try{ standaloneScheduleBossKeyScout("DataPackage"); }catch(_){}
+            try{ standaloneRefreshServerHintFoundStates(); }catch(_){}
+            try{ standaloneScheduleServerHintRequest("DataPackage"); }catch(_){}
             try{ standaloneFlushPendingSentItemModals(); }catch(_){}
             try{ standaloneRenderItemPanel(); }catch(_){}
           }, 0);
@@ -11663,6 +15747,7 @@
           setTimeout(()=>{
             try{ standaloneRepairBossCheckNodeBuckets(); }catch(_){}
             try{ standaloneRepairPersistedApState(); }catch(_){}
+            try{ standaloneRefreshServerHintFoundStates(); }catch(_){}
             try{ standalonePersistNativeLogBuffers(); }catch(_){}
             try{ standaloneScheduleTextRender("packet-burst"); }catch(_){}
             try{ standaloneRenderItemPanel(); }catch(_){}
@@ -11700,19 +15785,23 @@
   }
 
   function installStandaloneTextClientDelegates(){
-    disableStandaloneFlprBotSync();
+    installStandaloneNoFlprBotSyncBridge();
     installStandaloneApTextFormatter();
     installStandaloneApPacketBridge();
     installStandaloneTableLookupBridge();
     installStandaloneUnlockFxBridge();
     installStandaloneSfxDedupeBridge();
+    installStandaloneBossIncomingGateBridge();
     installStandaloneSiegeNotificationQueueBridge();
     installStandaloneBesiegedSelectionBridge();
     installStandaloneChecksSelectionBridge();
     installStandaloneProgressiveChecksRewardBridge();
     installStandaloneChecksBackgroundBridge();
     installStandaloneLocationCheckBridge();
+    installStandaloneBossPhaseMusicBridge();
+    installStandaloneBossDamageBridge();
     installStandaloneBossCheckRoutingBridge();
+    installStandaloneBossVictoryAwardFilterBridge();
     installStandaloneBossHintBridge();
     standaloneResetTextLogsForNewSession();
     installStandaloneTextLogBridge();
@@ -11828,6 +15917,16 @@
       }catch(_){}
       return next;
     };
+    const saveApFieldsFromStandalone = ()=>{
+      const next = syncApFieldsFromStandalone();
+      try{
+        if(typeof saveApCfg === "function") saveApCfg(next);
+      }catch(_){}
+      try{
+        if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg);
+      }catch(_){}
+      return next;
+    };
 
     if(s && !s.__flprStandaloneValueLoaded){ s.value = cfg.server || ""; s.__flprStandaloneValueLoaded = true; }
     if(p && !p.__flprStandaloneValueLoaded){ p.value = cfg.player || "Ashodin"; p.__flprStandaloneValueLoaded = true; }
@@ -11843,7 +15942,7 @@
     if(btnC) btnC.onclick = ()=>{
       playClick();
       standaloneSetSelectedMode("archipelago");
-      syncApFieldsFromStandalone();
+      saveApFieldsFromStandalone();
       try{ if(typeof safeApConnect === "function") safeApConnect(); }catch(err){ try{ console.error(err); }catch(_){} }
     };
     if(btnD) btnD.onclick = ()=>{
@@ -11855,12 +15954,9 @@
     if(btnSaveAp) btnSaveAp.onclick = ()=>{
       playClick();
       try{
-        if(typeof ap !== "undefined" && ap?.cfg){
-          syncApFieldsFromStandalone();
-          if(typeof saveApCfg === "function") saveApCfg(ap.cfg);
-          if(typeof apLog === "function") apLog("AP settings saved");
-          if(typeof toast === "function") toast("good", "AP SETTINGS SAVED", ap.cfg.server || "server not set", 1800);
-        }
+        const next = saveApFieldsFromStandalone();
+        if(typeof apLog === "function") apLog("AP settings saved");
+        if(typeof toast === "function") toast("good", "AP SETTINGS SAVED", next.server || "server not set", 1800);
       }catch(err){ try{ console.error(err); }catch(_){} }
     };
 
@@ -11965,16 +16061,16 @@
     try{ if(typeof renderApLogTab === "function") renderApLogTab(); }catch(_){}
 
     if(s) s.onchange = ()=>{
-      try{ syncApFieldsFromStandalone(); if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
+      try{ saveApFieldsFromStandalone(); }catch(_){}
     };
     if(p) p.onchange = ()=>{
-      try{ syncApFieldsFromStandalone(); if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
+      try{ saveApFieldsFromStandalone(); }catch(_){}
     };
     if(g) g.onchange = ()=>{
-      try{ syncApFieldsFromStandalone(); if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
+      try{ saveApFieldsFromStandalone(); }catch(_){}
     };
     if(pw) pw.onchange = ()=>{
-      try{ syncApFieldsFromStandalone(); if(typeof ap !== "undefined" && ap?.cfg && typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
+      try{ saveApFieldsFromStandalone(); }catch(_){}
     };
   }
 
@@ -11988,15 +16084,18 @@
     const firstStandalonePass = !document.body.classList.contains("flprStandaloneOriginalClient");
     let current = firstStandalonePass ? (localStorage.getItem("flpr_controls_tab_v1") || "multiplayer") : activeControlTab();
     if(current === "connect" || current === "archipelago") current = "multiplayer";
-    if(current !== "singleplayer" && current !== "multiplayer" && current !== "visuals" && current !== "achievements") current = "multiplayer";
+    if(current !== "singleplayer" && current !== "multiplayer" && current !== "house" && current !== "visuals" && current !== "achievements") current = "multiplayer";
     document.body.classList.add("flprStandaloneOriginalClient");
     injectStandaloneStyles();
+    installStandaloneNoEpisodeBridge();
+    installStandaloneBossVictoryAwardFilterBridge();
     installStandaloneAchievementProfileBridge();
     installStandaloneAchievementDismissBridge();
     installStandaloneRandomizerConnectionBridge();
     standaloneEnsureActiveProfileApplied();
     applyStandaloneWindowScale();
     standaloneEnsureAutoSwapDefault();
+    standaloneEnsureApLogItemTooltip();
 
     const controlsHead = document.querySelector(".controlsHead, .controlsHeadTitle");
     if(controlsHead) controlsHead.textContent = "MENU";
@@ -12006,6 +16105,7 @@
       !tabs.querySelector('[data-ctrl-tab="visuals"]') ||
       !tabs.querySelector('[data-ctrl-tab="achievements"]') ||
       !tabs.querySelector('[data-ctrl-tab="singleplayer"], [data-ctrl-tab="multiplayer"]') ||
+      tabs.querySelector('[data-ctrl-tab="house"]') ||
       tabs.querySelector('[data-ctrl-tab="connect"]') ||
       tabs.querySelector('[data-ctrl-tab="testing"]');
 
@@ -12016,6 +16116,7 @@
 
     const singleplayer = ensurePanel(panels, "singleplayer");
     const multiplayer = ensurePanel(panels, "multiplayer");
+    const house = ensurePanel(panels, "house");
     const visuals = ensurePanel(panels, "visuals");
     const achievements = ensurePanel(panels, "achievements");
     if(!achievements.id) achievements.id = "achievementsControlsPanel";
@@ -12025,7 +16126,8 @@
       if(typeof ensureMusicScenarioControls === "function") ensureMusicScenarioControls();
       if(typeof wireTableBannerGalleryControls === "function") wireTableBannerGalleryControls();
       prepareStandaloneVisualsPanel(visuals);
-      installStandaloneChecksBackgroundBridge();
+        installStandaloneChecksBackgroundBridge();
+        installStandaloneNoEpisodeBridge();
     }catch(_){}
 
     if(
@@ -12047,13 +16149,33 @@
       multiplayer.innerHTML = connectPanelHtml(apCfg());
     }
 
+    if(
+      house.dataset.flprStandaloneGiftHouseTest !== "1" ||
+      !house.querySelector("#giftHouseTest")
+    ){
+      house.dataset.flprStandaloneGiftHouseTest = "1";
+      if(window.flprStandaloneGiftHouseTest && typeof window.flprStandaloneGiftHouseTest.mountPanel === "function"){
+        window.flprStandaloneGiftHouseTest.mountPanel(house);
+      }else{
+        house.innerHTML = `
+          <div class="standaloneControlSection" data-accent="gold">
+            <div class="standaloneSectionTitle">GIFT HOUSE <span class="mini">test module loading</span></div>
+            <div class="apHint">Gift House Test will mount here when its standalone module loads.</div>
+          </div>
+        `;
+      }
+    }else if(window.flprStandaloneGiftHouseTest && typeof window.flprStandaloneGiftHouseTest.mountPanel === "function"){
+      window.flprStandaloneGiftHouseTest.mountPanel(house);
+    }
+
     Array.from(panels.children).forEach((panel)=>{
-      if(panel === singleplayer || panel === multiplayer || panel === visuals || panel === achievements) return;
+      if(panel === singleplayer || panel === multiplayer || panel === house || panel === visuals || panel === achievements) return;
       panel.style.display = "none";
       panel.classList.remove("active");
     });
     panels.appendChild(singleplayer);
     panels.appendChild(multiplayer);
+    panels.appendChild(house);
     panels.appendChild(visuals);
     panels.appendChild(achievements);
 
@@ -12064,6 +16186,7 @@
     setControlTab(current);
     return true;
   }
+  try{ window.flprStandaloneRebuildControls = rebuildStandaloneControls; }catch(_){}
 
   function bootStandaloneBridge(){
     const attempt = ()=>{
@@ -12074,22 +16197,31 @@
         installStandaloneTableLookupBridge();
         installStandaloneUnlockFxBridge();
         installStandaloneSfxDedupeBridge();
+        installStandaloneBossIncomingGateBridge();
         installStandaloneSiegeNotificationQueueBridge();
         installStandaloneBesiegedSelectionBridge();
         installStandaloneChecksSelectionBridge();
         installStandaloneProgressiveChecksRewardBridge();
         installStandaloneChecksBackgroundBridge();
+        installStandaloneNoEpisodeBridge();
+        installStandaloneBossVictoryAwardFilterBridge();
         installStandaloneAchievementProfileBridge();
         installStandaloneAchievementDismissBridge();
         installStandaloneRandomizerConnectionBridge();
+        installStandaloneRandomizerOpenMusicBridge();
+        installStandaloneNoEpisodeBridge();
         installStandaloneNoChatHangmanBridge();
         installStandaloneLocationCheckBridge();
+        standaloneEnsureApLogItemTooltip();
+        installStandaloneBossPhaseMusicBridge();
+        installStandaloneBossDamageBridge();
         installStandaloneBossCheckRoutingBridge();
         installStandaloneBossHintBridge();
         installStandaloneReceivedAddBridge();
         rebuildStandaloneControls();
         standaloneRefreshProfileUi();
         installStandaloneNoChatHangmanBridge();
+        installStandaloneNoEpisodeBridge();
         applyStandaloneWindowScale();
       }catch(err){ try{ console.error(err); }catch(_){} }
     };

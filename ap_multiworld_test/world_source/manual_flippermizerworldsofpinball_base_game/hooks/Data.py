@@ -17,25 +17,6 @@ def after_load_progressive_item_file(progressive_item_table: list) -> list:
 # called after the locations.json file has been loaded, before any location loading or processing has occurred
 # if you need access to the locations after processing to add ids, etc., you should use the hooks in World.py
 def after_load_location_file(location_table: list) -> list:
-    # Boss Keys should only come from Medium/Hard checks.
-    # Forbid Boss Key placement on all Easy checks (Ball 1 Sphere).
-    for location in location_table:
-        if str(location.get("region", "")).strip() != "Ball 1 Sphere":
-            continue
-
-        existing = location.get("dont_place_item")
-        if existing is None:
-            location["dont_place_item"] = ["Boss Key"]
-            continue
-
-        if isinstance(existing, list):
-            if "Boss Key" not in existing:
-                existing.append("Boss Key")
-            continue
-
-        # Normalize unexpected non-list values to list format.
-        location["dont_place_item"] = [str(existing), "Boss Key"]
-
     return location_table
 
 # called after the locations.json file has been loaded, before any location loading or processing has occurred

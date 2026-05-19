@@ -791,6 +791,7 @@ html,body{
   const WORDS_AT_MS = 1740;
   const FLY_AT_MS = 3660;
   const IMPACT_AT_MS = 4360;
+  const BOSS_KEY_ICON_SRC = "Flippermizer Images/flippermizerkey2.png";
   const sfx = { enabled:true, vol:0.58, ctx:null };
   let timers = [];
   let maskId = 0;
@@ -884,9 +885,19 @@ html,body{
 
   function makeKeySvg(masked){
     const id = `bossKeyRevealMask${++maskId}`;
+    const iconHref = BOSS_KEY_ICON_SRC
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;");
+    const keyMarkup = iconHref
+      ? `<image href="${iconHref}" x="0" y="0" width="240" height="240" preserveAspectRatio="xMidYMid meet"/>`
+      : `<g transform="translate(0 50)">
+        <path d="M70 31a39 39 0 1 0 26 68l21-21h91l8-10-8-10h-18l-9-12-12 12h-19l-9-12-12 12h-13L96 38A38.9 38.9 0 0 0 70 31Zm0 24a15 15 0 1 1 0 30 15 15 0 0 1 0-30Z" fill="url(#${id}Gold)" stroke="#06101b" stroke-width="7" stroke-linejoin="round"/>
+        <circle cx="70" cy="70" r="14" fill="#073047" stroke="#9efcff" stroke-width="5"/>
+        <path d="M112 70h94" stroke="#fff6a8" stroke-width="7" stroke-linecap="round" opacity=".65"/>
+      </g>`;
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("class", "bossKeySvg");
-    svg.setAttribute("viewBox", "0 0 240 140");
+    svg.setAttribute("viewBox", "0 0 240 240");
     svg.setAttribute("aria-hidden", "true");
     svg.innerHTML = `
       <defs>
@@ -901,14 +912,12 @@ html,body{
           <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
         <mask id="${id}" maskUnits="userSpaceOnUse">
-          <rect x="-20" y="-20" width="280" height="180" fill="${masked ? "black" : "white"}"/>
-          ${masked ? `<path class="keyRevealPath" d="M219 21 C155 -11 50 11 35 70 C21 128 108 145 158 103 C198 70 164 36 113 48 C73 58 77 96 111 99 C138 101 154 82 142 64" pathLength="1" fill="none" stroke="white" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
+          <rect x="-20" y="-20" width="280" height="280" fill="${masked ? "black" : "white"}"/>
+          ${masked ? `<path class="keyRevealPath" d="M224 42 C160 8 52 32 36 120 C24 202 122 214 174 154 C216 106 174 58 114 76 C70 90 77 148 120 151 C155 153 174 125 154 98" pathLength="1" fill="none" stroke="white" stroke-width="140" stroke-linecap="round" stroke-linejoin="round"/>` : ""}
         </mask>
       </defs>
       <g mask="url(#${id})" filter="url(#${id}Glow)">
-        <path d="M70 31a39 39 0 1 0 26 68l21-21h91l8-10-8-10h-18l-9-12-12 12h-19l-9-12-12 12h-13L96 38A38.9 38.9 0 0 0 70 31Zm0 24a15 15 0 1 1 0 30 15 15 0 0 1 0-30Z" fill="url(#${id}Gold)" stroke="#06101b" stroke-width="7" stroke-linejoin="round"/>
-        <circle cx="70" cy="70" r="14" fill="#073047" stroke="#9efcff" stroke-width="5"/>
-        <path d="M112 70h94" stroke="#fff6a8" stroke-width="7" stroke-linecap="round" opacity=".65"/>
+        ${keyMarkup}
       </g>`;
     return svg;
   }

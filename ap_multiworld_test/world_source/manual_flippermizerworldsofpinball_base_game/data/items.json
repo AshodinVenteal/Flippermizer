@@ -20,7 +20,7 @@
         "local": true
     },
     {
-        "count": "10",
+        "count": "0",
         "name": "Boss Key",
         "category": [
             "Progression",
@@ -48,7 +48,7 @@
         "trap": true
     },
     {
-        "count": "19",
+        "count": "29",
         "name": "Easy Junk Piece (1 of 3)",
         "category": [
             "Filler",
@@ -76,7 +76,7 @@
         "useful": true
     },
     {
-        "count": "7",
+        "count": "0",
         "name": "Hint: Boss Key",
         "category": [
             "Filler",
@@ -94,7 +94,7 @@
         "trap": true
     },
     {
-        "count": "18",
+        "count": "25",
         "name": "Medium Junk Piece (1 of 3)",
         "category": [
             "Filler",
@@ -421,6 +421,16 @@
     },
     {
         "count": "3",
+        "name": "Progressive Ball - Genesis",
+        "category": [
+            "Progression",
+            "Ball",
+            "Genesis"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
         "name": "Progressive Ball - Ghostbusters",
         "category": [
             "Progression",
@@ -471,6 +481,16 @@
     },
     {
         "count": "3",
+        "name": "Progressive Ball - Haunted House",
+        "category": [
+            "Progression",
+            "Ball",
+            "HauntedHouse"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
         "name": "Progressive Ball - High Speed",
         "category": [
             "Progression",
@@ -506,6 +526,16 @@
             "Progression",
             "Ball",
             "Hurricane"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - The Incredible Hulk",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheIncredibleHulk"
         ],
         "progression": true
     },
@@ -956,6 +986,56 @@
             "Progression",
             "Ball",
             "WorldCupSoccer"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Monopoly",
+        "category": [
+            "Progression",
+            "Ball",
+            "Monopoly"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Dungeons & Dragons",
+        "category": [
+            "Progression",
+            "Ball",
+            "DungeonsDragons"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - World Poker Tour",
+        "category": [
+            "Progression",
+            "Ball",
+            "WorldPokerTour"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - High Roller Casino",
+        "category": [
+            "Progression",
+            "Ball",
+            "HighRollerCasino"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Who Dunnit",
+        "category": [
+            "Progression",
+            "Ball",
+            "WhoDunnit"
         ],
         "progression": true
     },
