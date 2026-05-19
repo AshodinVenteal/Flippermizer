@@ -4093,6 +4093,63 @@ async function run() {
     throw new Error(`Repeated Sync triggered counter drawer animation: ${JSON.stringify(activeDrawerFx)}`);
   }
 
+  const junkCounterDrawerProbe = await page.evaluate(() => {
+    const previous = {
+      activeView: String(activeView || ""),
+      apJunk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : { easy:0, medium:0 }
+    };
+    const readDrawers = () => Array.from(document.querySelectorAll('#checksCountersDock .counterDrawer')).map((drawer) => ({
+      key: drawer.dataset.counter || "",
+      text: drawer.innerText || drawer.textContent || "",
+      badge: drawer.querySelector('.counterDrawerReadyBadge')?.textContent || "",
+      progress: drawer.querySelector('.drawerVal')?.textContent || "",
+      readyLine: drawer.querySelector('.counterReadyLine')?.textContent || ""
+    }));
+    try{
+      if(typeof showView === "function") showView("checks");
+      state.junkRedeems = { easy:2, medium:1 };
+      state.extraBallTokens = 3;
+      ap.junk = { ...(ap.junk || {}), easy:1, med:2, frag:4, easyTotal:9, medTotal:8, fragTotal:19 };
+      if(typeof initCounterDrawers === "function") initCounterDrawers();
+      if(typeof updateCounterBars === "function") updateCounterBars();
+      const before = readDrawers();
+      const beforeText = before.map((entry) => entry.text).join("\\n");
+      const oldWords = /\\b(Banked|Redeems|Redeemed|Collected|Total gained)\\b/i.test(beforeText);
+      const consumed = typeof consumeJunkRedeemBalance === "function" ? consumeJunkRedeemBalance("easy", 1) : false;
+      if(typeof updateCounterBars === "function") updateCounterBars();
+      const after = readDrawers();
+      return { before, after, oldWords, consumed };
+    }finally{
+      try{ if(previous.apJunk) ap.junk = { ...previous.apJunk }; }catch(_){}
+      try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
+      try{ state.junkRedeems = { ...previous.junkRedeems }; }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  const drawerByKeyBefore = Object.fromEntries((junkCounterDrawerProbe.before || []).map((entry) => [entry.key, entry]));
+  const drawerByKeyAfter = Object.fromEntries((junkCounterDrawerProbe.after || []).map((entry) => [entry.key, entry]));
+  if(
+    junkCounterDrawerProbe.oldWords ||
+    drawerByKeyBefore.easy?.progress !== "1/3" ||
+    drawerByKeyBefore.easy?.badge !== "2" ||
+    drawerByKeyBefore.easy?.readyLine !== "READY: 2" ||
+    drawerByKeyBefore.med?.progress !== "2/3" ||
+    drawerByKeyBefore.med?.badge !== "1" ||
+    drawerByKeyBefore.med?.readyLine !== "READY: 1" ||
+    drawerByKeyBefore.frag?.progress !== "4/5" ||
+    drawerByKeyBefore.frag?.badge !== "3" ||
+    drawerByKeyBefore.frag?.readyLine !== "READY: 3" ||
+    !junkCounterDrawerProbe.consumed ||
+    drawerByKeyAfter.easy?.badge !== "1" ||
+    drawerByKeyAfter.easy?.readyLine !== "READY: 1"
+  ){
+    throw new Error(`Junk counter drawer UI did not simplify ready/progress display: ${JSON.stringify(junkCounterDrawerProbe)}`);
+  }
+
   const explicitFillerJunkRollProbe = await page.evaluate(async () => {
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const previous = {

@@ -42,6 +42,7 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 - Added visuals/music options for background choices, logo positioning, hardware acceleration, and launcher display preferences.
 - Cleaned the repository so tracked Markdown is limited to this README and generated AP logs, old upload bundles, backups, and episode helper scripts are no longer tracked.
 - Filler Junk Items in Home Edition now play the Stream Edition easy/medium randomize roll before updating the junk drawers.
+- Simplified junk counter drawers: Easy, Medium, and Fragment counters now show piece progress plus a small READY count for spendable rewards.
 
 ## Running Home Edition
 
