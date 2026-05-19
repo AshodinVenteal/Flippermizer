@@ -2759,14 +2759,285 @@
         transform-origin:50% 4% !important;
         animation-delay:260ms !important;
       }
-      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCard{
-        position:relative !important;
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryBattle{
+        position:absolute !important;
+        inset:0 !important;
+        z-index:1 !important;
+        pointer-events:none !important;
+        overflow:hidden !important;
+        perspective:1100px !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictorySky{
+        position:absolute !important;
+        inset:0 !important;
+        background:
+          radial-gradient(circle at 50% 29%, rgba(255,224,122,.18), transparent 17%),
+          radial-gradient(circle at 50% 44%, rgba(0,217,255,.26), transparent 34%),
+          linear-gradient(180deg, rgba(7,18,33,.82), rgba(3,7,15,.90) 62%, rgba(0,0,0,.96)) !important;
+        opacity:.94 !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryGround{
+        position:absolute !important;
+        left:-8% !important;
+        right:-8% !important;
+        bottom:-8% !important;
+        height:38% !important;
+        background:
+          radial-gradient(ellipse at 50% 0%, rgba(34,255,136,.22), transparent 48%),
+          repeating-linear-gradient(90deg, rgba(0,217,255,.13) 0 2px, transparent 2px 56px),
+          linear-gradient(180deg, rgba(0,217,255,.10), rgba(0,0,0,.84)) !important;
+        transform:rotateX(63deg) translateY(32px) !important;
+        transform-origin:50% 100% !important;
+        box-shadow:0 -26px 120px rgba(0,217,255,.16) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCastle{
+        --castle-damage:0;
+        position:absolute !important;
+        left:50% !important;
+        bottom:20% !important;
+        width:min(560px, 42vw) !important;
+        height:330px !important;
+        transform:translateX(-50%) translateY(22px) scale(.78) !important;
+        transform-origin:50% 100% !important;
+        filter:drop-shadow(0 22px 34px rgba(0,0,0,.72)) drop-shadow(0 0 26px rgba(0,217,255,.20)) !important;
+        animation:flprStandaloneSiegeVictoryCastleRecover 1350ms cubic-bezier(.16,.95,.15,1) forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCastle.damage1{ --castle-damage:.25; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCastle.damage2{ --castle-damage:.52; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCastle.damage3{ --castle-damage:.78; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCastle.damage4{ --castle-damage:1; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryTower,
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryKeep{
+        position:absolute !important;
+        bottom:0 !important;
+        border:3px solid rgba(0,217,255,.88) !important;
+        background:
+          linear-gradient(135deg, rgba(255,255,255,.13), transparent 30%),
+          linear-gradient(180deg, rgba(22,75,99,.96), rgba(8,28,48,.98)) !important;
+        box-shadow:
+          0 0 0 2px rgba(255,224,122,.14) inset,
+          0 0 28px rgba(0,217,255,.20) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryTower{
+        width:24% !important;
+        height:72% !important;
+        border-radius:14px 14px 5px 5px !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryTower.left{
+        left:4% !important;
+        transform:rotate(calc(var(--castle-damage) * -3deg)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryTower.right{
+        right:4% !important;
+        transform:rotate(calc(var(--castle-damage) * 3deg)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryKeep{
+        left:22% !important;
+        width:56% !important;
+        height:88% !important;
+        border-radius:18px 18px 6px 6px !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCrown{
+        position:absolute !important;
+        left:50% !important;
+        top:-42px !important;
+        width:44% !important;
+        height:58px !important;
+        transform:translateX(-50%) !important;
+        background:
+          linear-gradient(135deg, transparent 0 19%, rgba(255,224,122,.95) 20% 39%, transparent 40% 59%, rgba(255,224,122,.95) 60% 79%, transparent 80%),
+          linear-gradient(180deg, rgba(255,224,122,.96), rgba(255,157,64,.62)) !important;
+        clip-path:polygon(0 100%, 12% 42%, 25% 100%, 50% 6%, 75% 100%, 88% 42%, 100% 100%) !important;
+        filter:drop-shadow(0 0 14px rgba(255,224,122,.55)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryGate{
+        position:absolute !important;
+        left:50% !important;
+        bottom:0 !important;
+        width:22% !important;
+        height:36% !important;
+        transform:translateX(-50%) skewX(calc(var(--castle-damage) * -2deg)) !important;
+        border:3px solid rgba(255,224,122,.64) !important;
+        border-bottom:0 !important;
+        border-radius:28px 28px 0 0 !important;
+        background:
+          repeating-linear-gradient(90deg, rgba(255,224,122,.14) 0 3px, transparent 3px 17px),
+          linear-gradient(180deg, rgba(5,18,28,.96), rgba(0,0,0,.98)) !important;
+        box-shadow:0 0 26px rgba(255,224,122,.20) inset !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryWindow{
+        position:absolute !important;
+        width:26px !important;
+        height:38px !important;
+        border:2px solid rgba(0,217,255,.72) !important;
+        border-radius:14px 14px 4px 4px !important;
+        background:rgba(255,224,122,.82) !important;
+        box-shadow:0 0 18px rgba(255,224,122,.70) !important;
+        opacity:calc(.88 - (var(--castle-damage) * .42)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryWindow.w1{ left:31%; top:30%; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryWindow.w2{ right:31%; top:30%; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryWindow.w3{ left:15%; top:38%; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryWindow.w4{ right:15%; top:38%; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCrack{
+        position:absolute !important;
+        width:4px !important;
+        height:112px !important;
+        top:26% !important;
+        left:58% !important;
+        background:linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.88), rgba(255,77,109,.42), rgba(0,0,0,.70)) !important;
+        box-shadow:0 0 12px rgba(255,77,109,.32) !important;
+        opacity:calc(.18 + var(--castle-damage) * .82) !important;
+        transform:rotate(15deg) scaleY(calc(.45 + var(--castle-damage) * .55)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCrack.c2{
+        left:40% !important;
+        top:42% !important;
+        height:86px !important;
+        transform:rotate(-21deg) scaleY(calc(.35 + var(--castle-damage) * .55)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictorySmoke,
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryFlame{
+        position:absolute !important;
+        pointer-events:none !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictorySmoke{
+        width:78px !important;
+        height:78px !important;
+        border-radius:999px !important;
+        background:radial-gradient(circle, rgba(174,206,214,.42), transparent 68%) !important;
+        filter:blur(8px) !important;
+        opacity:calc(.08 + var(--castle-damage) * .60) !important;
+        animation:flprStandaloneSiegeVictorySmoke 2100ms ease-in-out infinite !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictorySmoke.s1{ left:18%; top:2%; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictorySmoke.s2{ right:15%; top:13%; animation-delay:-620ms !important; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictorySmoke.s3{ left:48%; top:-4%; animation-delay:-1180ms !important; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryFlame{
+        width:28px !important;
+        height:48px !important;
+        border-radius:50% 50% 46% 46% !important;
+        background:radial-gradient(circle at 50% 72%, rgba(255,242,157,.95), rgba(255,119,40,.84) 46%, transparent 72%) !important;
+        opacity:calc(var(--castle-damage) * .78) !important;
+        filter:drop-shadow(0 0 14px rgba(255,88,43,.76)) !important;
+        animation:flprStandaloneSiegeVictoryFlame .48s ease-in-out infinite alternate !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryFlame.f1{ left:25%; bottom:30%; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryFlame.f2{ right:24%; bottom:42%; animation-delay:-180ms !important; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryRubble{
+        position:absolute !important;
+        left:50% !important;
+        bottom:-16px !important;
+        width:64% !important;
+        height:30px !important;
+        transform:translateX(-50%) !important;
+        background:
+          radial-gradient(circle at 8% 60%, rgba(124,165,178,.85) 0 7px, transparent 8px),
+          radial-gradient(circle at 25% 50%, rgba(75,114,136,.85) 0 10px, transparent 11px),
+          radial-gradient(circle at 46% 66%, rgba(151,177,180,.78) 0 8px, transparent 9px),
+          radial-gradient(circle at 70% 54%, rgba(93,132,150,.84) 0 11px, transparent 12px),
+          radial-gradient(circle at 91% 62%, rgba(138,168,176,.80) 0 7px, transparent 8px) !important;
+        opacity:calc(.26 + var(--castle-damage) * .62) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryDefenders{
+        position:absolute !important;
+        left:50% !important;
+        bottom:30% !important;
+        width:min(720px, 62vw) !important;
+        height:210px !important;
+        transform:translateX(-50%) !important;
+        z-index:2 !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryShield{
+        position:absolute !important;
+        left:50% !important;
+        bottom:2% !important;
+        width:92px !important;
+        height:92px !important;
+        border:3px solid rgba(34,255,136,.88) !important;
+        border-radius:999px !important;
+        transform:translateX(-50%) scale(.2) !important;
+        opacity:0 !important;
+        box-shadow:0 0 28px rgba(34,255,136,.48), 0 0 74px rgba(0,217,255,.24) inset !important;
+        animation:flprStandaloneSiegeVictoryShield 1500ms ease-out 160ms forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryBeam{
+        position:absolute !important;
+        bottom:34% !important;
+        left:50% !important;
+        width:46% !important;
+        height:5px !important;
+        border-radius:999px !important;
+        background:linear-gradient(90deg, transparent, rgba(34,255,136,.95), rgba(255,224,122,.90), transparent) !important;
+        box-shadow:0 0 18px rgba(34,255,136,.66) !important;
+        transform-origin:0 50% !important;
+        opacity:0 !important;
+        animation:flprStandaloneSiegeVictoryBeam 960ms ease-out 300ms forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryBeam.left{ transform:rotate(157deg) scaleX(.2); }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryBeam.right{ transform:rotate(23deg) scaleX(.2); }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryArmy{
+        position:absolute !important;
+        left:50% !important;
+        bottom:12% !important;
+        z-index:2 !important;
+        width:min(980px, 84vw) !important;
+        height:146px !important;
+        transform:translateX(-50%) !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryTroop{
+        position:absolute !important;
+        left:var(--left, 50%) !important;
+        bottom:var(--base, 0px) !important;
+        font-size:var(--size, 28px) !important;
+        line-height:1 !important;
+        filter:drop-shadow(0 0 10px rgba(255,77,109,.48)) !important;
+        opacity:0 !important;
+        transform:translate3d(0,0,0) scale(1) !important;
+        animation:flprStandaloneSiegeVictoryTroopRetreat 2050ms cubic-bezier(.2,.8,.18,1) var(--delay, 0ms) forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryArmyLabel{
+        position:absolute !important;
+        left:50% !important;
+        bottom:10% !important;
         z-index:3 !important;
-        width:min(1120px, calc(100vw - 120px)) !important;
-        min-height:280px !important;
-        padding:38px 44px 34px !important;
+        transform:translateX(-50%) !important;
+        padding:9px 18px !important;
+        border:1px solid rgba(255,77,109,.52) !important;
+        border-radius:999px !important;
+        color:rgba(255,224,122,.96) !important;
+        background:rgba(24,7,18,.72) !important;
+        box-shadow:0 0 20px rgba(255,77,109,.22) !important;
+        font-size:15px !important;
+        letter-spacing:0 !important;
+        opacity:0 !important;
+        animation:flprStandaloneSiegeVictoryArmyLabel 1800ms ease-out 260ms forwards !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryStatus{
+        position:absolute !important;
+        top:92px !important;
+        left:50% !important;
+        z-index:5 !important;
+        transform:translateX(-50%) !important;
+        padding:10px 18px !important;
+        border:2px solid rgba(255,224,122,.62) !important;
+        border-radius:999px !important;
+        color:rgba(232,250,255,.94) !important;
+        background:rgba(0,10,18,.76) !important;
+        box-shadow:0 0 24px rgba(255,224,122,.16), 0 0 18px rgba(0,217,255,.16) inset !important;
+        font-size:16px !important;
+        text-align:center !important;
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryCard{
+        position:absolute !important;
+        left:50% !important;
+        bottom:34px !important;
+        z-index:6 !important;
+        width:min(1040px, calc(100vw - 120px)) !important;
+        min-height:154px !important;
+        padding:26px 36px 24px !important;
         border:3px solid rgba(255,224,122,.92) !important;
-        border-radius:22px !important;
+        border-radius:18px !important;
         background:
           radial-gradient(circle at 50% 0%, rgba(255,224,122,.20), transparent 40%),
           radial-gradient(circle at 16% 100%, rgba(0,255,213,.16), transparent 46%),
@@ -2777,7 +3048,7 @@
           0 0 90px rgba(0,217,255,.18),
           0 0 0 2px rgba(255,255,255,.08) inset !important;
         text-align:center !important;
-        transform:translateY(12px) scale(.96) !important;
+        transform:translateX(-50%) translateY(18px) scale(.96) !important;
         animation:flprStandaloneSiegeVictoryCardIn 420ms cubic-bezier(.18,.9,.18,1) forwards !important;
       }
       body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryKicker{
@@ -2789,8 +3060,8 @@
           0 0 22px rgba(255,77,109,.38) !important;
       }
       body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryTable{
-        margin-top:24px !important;
-        font-size:42px !important;
+        margin-top:16px !important;
+        font-size:36px !important;
         line-height:1.18 !important;
         color:rgba(232,250,255,.98) !important;
         text-shadow:
@@ -2798,8 +3069,8 @@
           0 0 26px rgba(0,217,255,.30) !important;
       }
       body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryEnemy{
-        margin-top:24px !important;
-        font-size:28px !important;
+        margin-top:14px !important;
+        font-size:24px !important;
         line-height:1.26 !important;
         color:rgba(34,255,136,.98) !important;
         text-shadow:
@@ -2853,7 +3124,7 @@
         to{ opacity:0; }
       }
       @keyframes flprStandaloneSiegeVictoryCardIn{
-        to{ transform:translateY(0) scale(1); }
+        to{ transform:translateX(-50%) translateY(0) scale(1); }
       }
       @keyframes flprStandaloneSiegeVictorySpotlight{
         0%,100%{ transform:rotate(-18deg) scaleX(1); opacity:.26; }
@@ -2866,6 +3137,42 @@
       @keyframes flprStandaloneSiegeSpark{
         0%{ opacity:1; transform:translate(0,0) scale(1); }
         100%{ opacity:0; transform:translate(var(--dx), var(--dy)) scale(.18); }
+      }
+      @keyframes flprStandaloneSiegeVictoryCastleRecover{
+        0%{ opacity:0; transform:translateX(-50%) translateY(72px) scale(.66) rotateX(12deg); filter:brightness(.52) saturate(.86) drop-shadow(0 30px 42px rgba(0,0,0,.78)); }
+        28%{ opacity:1; transform:translateX(-50%) translateY(22px) scale(.88) rotateX(0deg); filter:brightness(.86) saturate(.96) drop-shadow(0 22px 34px rgba(0,0,0,.72)); }
+        58%{ transform:translateX(-50%) translateY(2px) scale(1.035); filter:brightness(1.2) saturate(1.18) drop-shadow(0 0 38px rgba(34,255,136,.30)); }
+        100%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); filter:brightness(1) saturate(1) drop-shadow(0 22px 34px rgba(0,0,0,.70)) drop-shadow(0 0 26px rgba(0,217,255,.20)); }
+      }
+      @keyframes flprStandaloneSiegeVictorySmoke{
+        0%,100%{ transform:translateY(0) scale(.86); opacity:calc(.08 + var(--castle-damage) * .54); }
+        50%{ transform:translateY(-28px) scale(1.18); opacity:calc(.10 + var(--castle-damage) * .68); }
+      }
+      @keyframes flprStandaloneSiegeVictoryFlame{
+        from{ transform:scaleY(.80) rotate(-3deg); }
+        to{ transform:scaleY(1.12) rotate(4deg); }
+      }
+      @keyframes flprStandaloneSiegeVictoryShield{
+        0%{ opacity:0; transform:translateX(-50%) scale(.2); }
+        22%{ opacity:.98; transform:translateX(-50%) scale(1.18); }
+        100%{ opacity:.12; transform:translateX(-50%) scale(4.8); }
+      }
+      @keyframes flprStandaloneSiegeVictoryBeam{
+        0%{ opacity:0; transform:rotate(var(--beam-rot, 23deg)) scaleX(.08); }
+        22%{ opacity:1; }
+        100%{ opacity:0; transform:rotate(var(--beam-rot, 23deg)) scaleX(1.2); }
+      }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryBeam.left{ --beam-rot:157deg; }
+      body.flprStandaloneOriginalClient .flprStandaloneSiegeVictoryBeam.right{ --beam-rot:23deg; }
+      @keyframes flprStandaloneSiegeVictoryTroopRetreat{
+        0%{ opacity:.95; transform:translate3d(0,0,0) scale(1); }
+        18%{ opacity:1; transform:translate3d(calc(var(--retreat-x, 160px) * -.08), -18px, 0) scale(1.08); filter:drop-shadow(0 0 18px rgba(255,224,122,.48)); }
+        100%{ opacity:0; transform:translate3d(var(--retreat-x, 160px), var(--retreat-y, 72px), 0) scale(.58) rotate(var(--retreat-rot, 10deg)); }
+      }
+      @keyframes flprStandaloneSiegeVictoryArmyLabel{
+        0%,12%{ opacity:0; transform:translateX(-50%) translateY(8px); }
+        28%,72%{ opacity:1; transform:translateX(-50%) translateY(0); }
+        100%{ opacity:0; transform:translateX(-50%) translateY(18px); }
       }
       body.flprStandaloneOriginalClient .standaloneRendererDock{
         margin:10px 2px 0 !important;
@@ -12932,6 +13239,78 @@
     return name;
   }
 
+  function standaloneSiegeVictoryDamageLevel(live){
+    try{
+      let level = NaN;
+      try{
+        if(typeof besiegedGetDefenseDamageLevel === "function") level = Number(besiegedGetDefenseDamageLevel(live));
+      }catch(_){}
+      if(!Number.isFinite(level) || level <= 0){
+        const failedAt = Number(live?.defenseFailedAt || 0) || 0;
+        if(failedAt > 0) level = 4;
+      }
+      if(!Number.isFinite(level) || level <= 0){
+        const startedAt = Number(live?.defenseStartedAt || 0) || 0;
+        const deadlineAt = Number(live?.defenseDeadlineAt || 0) || 0;
+        const totalMs = Math.max(1, Number((typeof BESIEGED_DEFENSE_MS !== "undefined" && BESIEGED_DEFENSE_MS) || 300000) || 300000);
+        if(startedAt > 0 && deadlineAt > startedAt){
+          const leftMs = Math.max(0, deadlineAt - Date.now());
+          const elapsedPct = Math.max(0, Math.min(1, 1 - (leftMs / totalMs)));
+          if(elapsedPct >= .86) level = 4;
+          else if(elapsedPct >= .68) level = 3;
+          else if(elapsedPct >= .46) level = 2;
+          else if(elapsedPct >= .24) level = 1;
+        }
+      }
+      if(!Number.isFinite(level) || level <= 0) level = live?.active ? 3 : 2;
+      return Math.max(1, Math.min(4, Math.round(level)));
+    }catch(_){}
+    return 3;
+  }
+
+  function standaloneSiegeVictoryDamageText(level){
+    const l = Math.max(1, Math.min(4, Math.round(Number(level || 0) || 0)));
+    if(l >= 4) return "CRITICAL";
+    if(l >= 3) return "BREACHED";
+    if(l >= 2) return "BATTERED";
+    return "SCARRED";
+  }
+
+  function standaloneSiegeVictoryArmyConfig(live){
+    try{
+      if(typeof besiegedGetArmyConfig === "function"){
+        const cfg = besiegedGetArmyConfig(live?.armyType || "");
+        if(cfg) return cfg;
+      }
+    }catch(_){}
+    return {
+      label: String(live?.armyLabel || "Siege army"),
+      troops:["\u{2694}\u{FE0F}", "\u{1F6E1}\u{FE0F}", "\u{1F3F9}", "\u{1F4A3}", "\u{2694}\u{FE0F}", "\u{1F6E1}\u{FE0F}", "\u{27B6}", "\u{1F525}", "\u{2694}\u{FE0F}", "\u{1F3F9}"]
+    };
+  }
+
+  function standaloneBuildSiegeVictoryTroops(troops){
+    try{
+      const source = Array.isArray(troops) && troops.length ? troops : ["\u{2694}\u{FE0F}", "\u{1F6E1}\u{FE0F}", "\u{1F3F9}", "\u{27B6}"];
+      const count = Math.max(10, Math.min(16, source.length + 4));
+      const html = [];
+      for(let i = 0; i < count; i++){
+        const troop = String(source[i % source.length] || "\u{2694}\u{FE0F}");
+        const left = 6 + ((88 / Math.max(1, count - 1)) * i);
+        const side = left < 50 ? -1 : 1;
+        const distance = Math.round((180 + (i % 5) * 36 + Math.abs(left - 50) * 4) * side);
+        const drop = Math.round(32 + (i % 4) * 18);
+        const size = Math.round(22 + (i % 4) * 4);
+        const base = Math.round((i % 3) * 18);
+        const delay = Math.round(80 + i * 46);
+        const rot = Math.round(side * (10 + (i % 4) * 8));
+        html.push(`<span class="flprStandaloneSiegeVictoryTroop" style="--left:${left.toFixed(2)}%;--base:${base}px;--size:${size}px;--delay:${delay}ms;--retreat-x:${distance}px;--retreat-y:${drop}px;--retreat-rot:${rot}deg;">${standaloneEscapeHtml(troop)}</span>`);
+      }
+      return html.join("");
+    }catch(_){}
+    return "";
+  }
+
   function standaloneScheduleSiegeVictorySound(delay, fn){
     const timer = setTimeout(()=>{
       try{ fn(); }catch(_){}
@@ -13006,17 +13385,55 @@
       if(!live || reason === "test-reset") return false;
       const tableName = String(live.tableName || "Besieged table").trim() || "Besieged table";
       const enemy = standaloneSiegeEnemyName(live.armyLabel || live.armyType || "siege army");
+      const damageLevel = standaloneSiegeVictoryDamageLevel(live);
+      const damageText = standaloneSiegeVictoryDamageText(damageLevel);
+      const armyConfig = standaloneSiegeVictoryArmyConfig(live);
+      const armyLabel = String(armyConfig?.label || enemy || "Siege army").trim();
+      const troopHtml = standaloneBuildSiegeVictoryTroops(armyConfig?.troops);
       const holdMs = Math.max(800, Number(window.__flprStandaloneSiegeVictoryHoldMs || 4200) || 4200);
       standaloneClearSiegeVictoryOverlay();
       const overlay = document.createElement("div");
       overlay.id = "flprStandaloneSiegeVictoryOverlay";
       overlay.className = "flprStandaloneSiegeVictoryOverlay";
+      overlay.dataset.damageLevel = String(damageLevel);
       overlay.setAttribute("aria-hidden", "true");
       overlay.addEventListener("click", (ev)=>{
         try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){}
       }, true);
       overlay.innerHTML = `
         <div class="flprStandaloneSiegeVictoryFireworks" aria-hidden="true"></div>
+        <div class="flprStandaloneSiegeVictoryBattle" data-damage-level="${damageLevel}" aria-hidden="true">
+          <div class="flprStandaloneSiegeVictorySky"></div>
+          <div class="flprStandaloneSiegeVictoryGround"></div>
+          <div class="flprStandaloneSiegeVictoryStatus">CASTLE STATUS; ${standaloneEscapeHtml(damageText)}</div>
+          <div class="flprStandaloneSiegeVictoryCastle damage${damageLevel}">
+            <div class="flprStandaloneSiegeVictoryTower left"></div>
+            <div class="flprStandaloneSiegeVictoryTower right"></div>
+            <div class="flprStandaloneSiegeVictoryKeep">
+              <div class="flprStandaloneSiegeVictoryCrown"></div>
+              <span class="flprStandaloneSiegeVictoryWindow w1"></span>
+              <span class="flprStandaloneSiegeVictoryWindow w2"></span>
+              <span class="flprStandaloneSiegeVictoryWindow w3"></span>
+              <span class="flprStandaloneSiegeVictoryWindow w4"></span>
+              <span class="flprStandaloneSiegeVictoryGate"></span>
+              <span class="flprStandaloneSiegeVictoryCrack c1"></span>
+              <span class="flprStandaloneSiegeVictoryCrack c2"></span>
+              <span class="flprStandaloneSiegeVictorySmoke s1"></span>
+              <span class="flprStandaloneSiegeVictorySmoke s2"></span>
+              <span class="flprStandaloneSiegeVictorySmoke s3"></span>
+              <span class="flprStandaloneSiegeVictoryFlame f1"></span>
+              <span class="flprStandaloneSiegeVictoryFlame f2"></span>
+              <span class="flprStandaloneSiegeVictoryRubble"></span>
+            </div>
+          </div>
+          <div class="flprStandaloneSiegeVictoryDefenders">
+            <span class="flprStandaloneSiegeVictoryShield"></span>
+            <span class="flprStandaloneSiegeVictoryBeam left"></span>
+            <span class="flprStandaloneSiegeVictoryBeam right"></span>
+          </div>
+          <div class="flprStandaloneSiegeVictoryArmy">${troopHtml}</div>
+          <div class="flprStandaloneSiegeVictoryArmyLabel">${standaloneEscapeHtml(armyLabel)} driven off</div>
+        </div>
         <div class="flprStandaloneSiegeVictoryCard">
           <div class="flprStandaloneSiegeVictoryKicker">SIEGE BROKEN</div>
           <div class="flprStandaloneSiegeVictoryTable">${standaloneEscapeHtml(tableName)} is free!</div>

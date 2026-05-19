@@ -5160,6 +5160,15 @@ async function run() {
       });
     }catch(_){}
     await delay(90);
+    try{
+      if(typeof besiegedStartDefense === "function") besiegedStartDefense();
+      if(state?.besiegedEvent?.active){
+        const now = Date.now();
+        state.besiegedEvent.defenseStartedAt = now - 260000;
+        state.besiegedEvent.defenseDeadlineAt = now + 40000;
+      }
+    }catch(_){}
+    await delay(40);
     const liveBefore = typeof besiegedGetState === "function" ? besiegedGetState() : state?.besiegedEvent;
     const cleared = typeof besiegedClear === "function" && besiegedClear("tower-target");
     await delay(180);
@@ -5171,6 +5180,11 @@ async function run() {
       overlayVisible: !!overlay,
       text: overlay?.innerText || "",
       card: !!overlay?.querySelector(".flprStandaloneSiegeVictoryCard"),
+      battle: !!overlay?.querySelector(".flprStandaloneSiegeVictoryBattle"),
+      castle: !!overlay?.querySelector(".flprStandaloneSiegeVictoryCastle"),
+      damagedCastle: !!overlay?.querySelector(".flprStandaloneSiegeVictoryCastle.damage3, .flprStandaloneSiegeVictoryCastle.damage4"),
+      retreatingTroops: overlay?.querySelectorAll(".flprStandaloneSiegeVictoryTroop").length || 0,
+      damageLevel: Number(overlay?.dataset?.damageLevel || 0) || 0,
       fireworks: overlay?.querySelectorAll(".flprStandaloneSiegeFirework").length || 0,
       groove: !!document.querySelector(".stage")?.classList?.contains("victoryGroove")
     };
@@ -5192,6 +5206,11 @@ async function run() {
     !siegeClearVictoryProbe.immediate.cleared ||
     !siegeClearVictoryProbe.immediate.overlayVisible ||
     !siegeClearVictoryProbe.immediate.card ||
+    !siegeClearVictoryProbe.immediate.battle ||
+    !siegeClearVictoryProbe.immediate.castle ||
+    !siegeClearVictoryProbe.immediate.damagedCastle ||
+    siegeClearVictoryProbe.immediate.damageLevel < 3 ||
+    siegeClearVictoryProbe.immediate.retreatingTroops < 8 ||
     !siegeClearVictoryProbe.immediate.text.includes(`${siegeClearVictoryProbe.targetName} is free!`) ||
     !/The .+ is defeated!/.test(siegeClearVictoryProbe.immediate.text || "") ||
     siegeClearVictoryProbe.immediate.fireworks < 1 ||

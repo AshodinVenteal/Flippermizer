@@ -44,6 +44,7 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 - Filler Junk Items in Home Edition now play the Stream Edition easy/medium randomize roll before updating the junk drawers.
 - Simplified junk counter drawers: Easy, Medium, and Fragment counters now show piece progress plus a small READY count for spendable rewards.
 - Reworked the siege intro so the selected table morphs from its normal bubble card into the full siege card while the other table cards fade away.
+- Reworked the siege-clear victory into a full-screen defense animation with the damaged castle visible, the attacking force driven off, victory lights, cheer timing, and regression coverage.
 
 ## Running Home Edition
 
