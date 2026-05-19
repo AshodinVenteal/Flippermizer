@@ -45,6 +45,7 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 - Simplified junk counter drawers: Easy, Medium, and Fragment counters now show piece progress plus a small READY count for spendable rewards.
 - Reworked the siege intro so the selected table morphs from its normal bubble card into the full siege card while the other table cards fade away.
 - Reworked the siege-clear victory into a full-screen defense animation with the damaged castle visible, the attacking force driven off, victory lights, cheer timing, and regression coverage.
+- Filler, junk, and Pinball Fragment rewards delivered through live AP received snapshots now show the same full-size received-item notification as other item rewards.
 
 ## Running Home Edition
 

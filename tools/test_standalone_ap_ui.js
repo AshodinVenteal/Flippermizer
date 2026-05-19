@@ -4217,6 +4217,85 @@ async function run() {
     throw new Error(`Home Edition explicit filler junk did not play the easy/medium roll animation: ${JSON.stringify(explicitFillerJunkRollProbe)}`);
   }
 
+  const counterRewardModalProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const previous = {
+      activeView: String(activeView || ""),
+      junk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : { easy:0, medium:0 },
+      receivedAll: Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row) => ({ ...row })) : null,
+      receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : null,
+      rewardState: localStorage.getItem("flpr_standalone_ap_reward_state_v1")
+    };
+    const runtimeErrors = [];
+    const onError = (event) => runtimeErrors.push(String(event?.message || event?.error?.message || event || ""));
+    const onReject = (event) => runtimeErrors.push(String(event?.reason?.message || event?.reason || event || ""));
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onReject);
+    try{
+      try{ document.getElementById("ovModal")?.classList.add("hidden"); }catch(_){}
+      try{ standaloneItemPanel?.counterRewardModalSeen?.clear?.(); }catch(_){}
+      try{ if(typeof showView === "function") showView("overview"); }catch(_){}
+      await delay(40);
+      if(typeof processReceivedItem !== "function") return { missingProcess:true };
+      processReceivedItem({ item:1005, location:3009, player:1, flags:0 }, 881005, 3009, {
+        noPopup:false,
+        noFeed:true,
+        isSnapshot:true
+      });
+      await delay(320);
+      const modal = document.getElementById("ovModal");
+      const card = document.getElementById("ovModalCard");
+      const big = document.getElementById("ovModalBig");
+      return {
+        missingProcess:false,
+        visible: !!modal && !modal.classList.contains("hidden"),
+        title: document.getElementById("ovModalTitle")?.textContent || "",
+        tag: document.getElementById("ovModalTag")?.textContent || "",
+        big: big?.textContent || "",
+        sub: document.getElementById("ovModalSub")?.textContent || "",
+        meta: document.getElementById("ovModalMeta")?.textContent || "",
+        cardCls: card?.className || "",
+        bigCls: big?.className || "",
+        activeView: String(activeView || ""),
+        errors: runtimeErrors.slice()
+      };
+    }finally{
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onReject);
+      try{ document.getElementById("ovModal")?.classList.add("hidden"); }catch(_){}
+      try{ if(previous.junk) ap.junk = { ...previous.junk }; }catch(_){}
+      try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
+      try{ state.junkRedeems = { ...previous.junkRedeems }; }catch(_){}
+      try{ if(previous.receivedAll) ap.receivedAll = previous.receivedAll.map((row) => ({ ...row })); }catch(_){}
+      try{ ap.receivedKeySet = new Set(previous.receivedKeySet || []); }catch(_){}
+      try{
+        if(previous.rewardState == null) localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+        else localStorage.setItem("flpr_standalone_ap_reward_state_v1", previous.rewardState);
+      }catch(_){}
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll || []); }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  if(
+    counterRewardModalProbe.missingProcess ||
+    !counterRewardModalProbe.visible ||
+    !/FILLER ITEM RECEIVED/i.test(counterRewardModalProbe.title || "") ||
+    !/FILLER/i.test(counterRewardModalProbe.tag || "") ||
+    !/Pinball Fragment/i.test(counterRewardModalProbe.big || "") ||
+    !/FROM; AshodinNoTrap/i.test(counterRewardModalProbe.sub || "") ||
+    !/Dirty Harry - Junk Lane 3/i.test(counterRewardModalProbe.meta || "") ||
+    !/\bapItem-filler\b/.test(counterRewardModalProbe.cardCls || "") ||
+    !/\bapItem-filler\b/.test(counterRewardModalProbe.bigCls || "") ||
+    counterRewardModalProbe.errors.length
+  ){
+    throw new Error(`Counter reward snapshot item did not show the full received modal: ${JSON.stringify(counterRewardModalProbe)}`);
+  }
+
   const junkTaskRedeemProbe = await page.evaluate(async () => {
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const runtimeErrors = [];

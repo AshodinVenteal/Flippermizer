@@ -7495,7 +7495,8 @@
     pendingSentModals: new Map(),
     selfProgressiveSeen: new Set(),
     progressiveReceiveSeen: new Set(),
-    bossKeyReceiveSeen: new Set()
+    bossKeyReceiveSeen: new Set(),
+    counterRewardModalSeen: new Set()
   };
 
   const standaloneReceivedRefreshState = {
@@ -9341,6 +9342,31 @@
     ));
   }
 
+  function standaloneCounterRewardModalKey(it, itemIndex, locId, itemName){
+    try{
+      const idx = Number(itemIndex);
+      if(Number.isFinite(idx) && idx >= 0) return `idx:${idx}`;
+      const itemId = Number(it?.item);
+      const loc = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc);
+      const player = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? 0) || 0;
+      return `fallback:${Number.isFinite(itemId) ? itemId : standaloneNormalizeLoose(itemName)}|${Number.isFinite(loc) ? loc : ""}|${player}`;
+    }catch(_){
+      return `fallback:${standaloneNormalizeLoose(itemName)}|${Date.now()}`;
+    }
+  }
+
+  function standaloneShouldShowCounterRewardModal(receivedName, it, opts, isolateReplay, quietSingleplayerNotice){
+    try{
+      if(!isolateReplay) return false;
+      if(quietSingleplayerNotice) return false;
+      if(opts?.noPopup === true || opts?.isFlush === true) return false;
+      if(!String(receivedName || "").trim()) return false;
+      return standaloneReceivedItemTouchesRewardCounters(it);
+    }catch(_){
+      return false;
+    }
+  }
+
   const standaloneBossHintScout = {
     missingIds: new Set(),
     infoByLocation: new Map(),
@@ -10652,6 +10678,7 @@
       }
       const isolateReplay = standaloneShouldIsolateReceivedReplay(it, opts);
       const touchesReward = isolateReplay || standaloneReceivedItemTouchesRewardCounters(it);
+      const showCounterRewardModal = standaloneShouldShowCounterRewardModal(receivedName, it, opts, isolateReplay, quietSingleplayerNotice);
       const snapshot = isolateReplay ? standaloneSnapshotRewardCounters() : null;
       const callOpts = isolateReplay
         ? { ...opts, noPopup:true, noFeed:true }
@@ -10676,6 +10703,9 @@
           standaloneApplyRewardInventoryState({ applyNewRewards:true });
         }else if(touchesReward){
           standaloneApplyRewardInventoryState({ applyNewRewards:false });
+        }
+        if(showCounterRewardModal){
+          standaloneShowReceivedCounterRewardModal(it, itemIndex, locId, receivedName, opts);
         }
         if(restoreChecksAfterReward){
           standaloneScheduleChecksRestoreAfterReward();
@@ -12276,6 +12306,105 @@
         if(big) big.className = "ovModalBig";
       }catch(_){}
     }, Math.max(1200, Number(holdMs || 4200) + 900));
+  }
+
+  function standaloneColorizeReceivedItemModal(meta, cls, holdMs){
+    const item = String(meta?.itemName || "Unknown Item");
+    const sourcePlayer = String(meta?.sourcePlayer || "Unknown Player");
+    const sourceGame = String(meta?.sourceGame || "");
+    const locName = String(meta?.locationName || "").trim();
+    const key = String(cls?.key || "filler").trim() || "filler";
+    const apply = ()=>{
+      try{
+        const card = document.getElementById("ovModalCard");
+        const title = document.getElementById("ovModalTitle");
+        const tag = document.getElementById("ovModalTag");
+        const big = document.getElementById("ovModalBig");
+        const sub = document.getElementById("ovModalSub");
+        const modalMeta = document.getElementById("ovModalMeta");
+        if(!card || !big || String(big.textContent || "").trim() !== item) return;
+        if(title && !/\bRECEIVED\b/i.test(String(title.textContent || ""))) return;
+        card.classList.remove("apItem-progression", "apItem-useful", "apItem-filler", "apItem-trap");
+        card.classList.add("flprStandaloneSentItemModal", `apItem-${key}`);
+        if(tag) tag.className = `ovModalTag apLogBadge apItem-${key}`;
+        big.className = `ovModalBig apLogItem apItem-${key}`;
+        if(sub){
+          sub.innerHTML = `FROM; <span class="apLogPlayer">${standaloneEscapeHtml(sourcePlayer)}</span>${sourceGame ? ` <span class="apLogSource">(${standaloneEscapeHtml(sourceGame)})</span>` : ""}`;
+        }
+        if(modalMeta){
+          modalMeta.innerHTML = locName ? `CHECK; <span class="apLogLocation">${standaloneEscapeHtml(standaloneLocationDisplayName(locName, meta?.locId))}</span>` : "";
+        }
+      }catch(_){}
+    };
+    [0, 120, 620, 780].forEach((delay)=>setTimeout(apply, delay));
+    setTimeout(()=>{
+      try{
+        const card = document.getElementById("ovModalCard");
+        const tag = document.getElementById("ovModalTag");
+        const big = document.getElementById("ovModalBig");
+        if(card) card.classList.remove("flprStandaloneSentItemModal", "apItem-progression", "apItem-useful", "apItem-filler", "apItem-trap");
+        if(tag) tag.className = "ovModalTag";
+        if(big) big.className = "ovModalBig";
+      }catch(_){}
+    }, Math.max(1200, Number(holdMs || 3400) + 900));
+  }
+
+  function standaloneShowReceivedCounterRewardModal(it, itemIndex, locId, itemName, opts){
+    try{
+      const item = String(itemName || standaloneReceivedItemName(it) || "Unknown Item").trim();
+      if(!item) return false;
+      const key = standaloneCounterRewardModalKey(it, itemIndex, locId, item);
+      if(standaloneItemPanel.counterRewardModalSeen.has(key)) return false;
+      standaloneItemPanel.counterRewardModalSeen.add(key);
+      if(standaloneItemPanel.counterRewardModalSeen.size > 500) standaloneItemPanel.counterRewardModalSeen.clear();
+      const flags = standaloneFlagsForItem(it?.flags ?? 0, item);
+      const cls = standaloneItemClass(flags, item) || { key:"filler", label:"FILLER", title:"FILLER ITEM" };
+      let source = null;
+      try{ if(typeof apReceivedSourceMeta === "function") source = apReceivedSourceMeta(it || {}); }catch(_){}
+      const sourcePlayerId = Number(source?.sourcePlayerId ?? it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? ap?.slot ?? 0) || 0;
+      const sourcePlayer = String(source?.player || (()=>{ try{ return apPlayerName(sourcePlayerId, ap?.cfg?.player || "Player"); }catch(_){ return ""; } })() || "Unknown Player").trim();
+      const sourceGame = String(source?.game || standaloneGameForPlayer(sourcePlayerId, sourcePlayer, ap?.cfg?.game || "") || "").trim();
+      const rawLoc = Number(locId) > 0 ? standaloneResolveApLocationName(locId, sourcePlayerId, "") : "";
+      const locName = standaloneLocationDisplayName(rawLoc, locId) || rawLoc;
+      const holdMs = Math.max(2800, Number(opts?.holdMs || 3400) || 3400);
+      const checksKeyBeforeModal = standaloneChecksViewActive()
+        ? (standaloneCurrentChecksSelectionCandidate() || standalonePinnedChecksTableKey())
+        : "";
+      if(checksKeyBeforeModal){
+        try{ standaloneRememberChecksSelection(checksKeyBeforeModal, "counter-reward-modal"); }catch(_){}
+      }
+      try{ standaloneEnsureOverviewModalVisibleHost(); }catch(_){}
+      try{ if(typeof pauseAutoSwap === "function") pauseAutoSwap(holdMs + 1800); }catch(_){}
+      const modalArgs = {
+        tag: cls.label || "FILLER",
+        title: `${cls.title || "FILLER ITEM"} RECEIVED`,
+        big: item,
+        sub: `FROM; ${sourcePlayer}${sourceGame ? ` (${sourceGame})` : ""}`,
+        meta: locName ? `CHECK; ${locName}` : "",
+        isTrap: false,
+        holdMs
+      };
+      if(typeof showOverviewModalNow === "function"){
+        showOverviewModalNow(modalArgs);
+      }else if(typeof showOverviewModal === "function"){
+        showOverviewModal(modalArgs);
+      }else if(typeof toast === "function"){
+        toast("good", modalArgs.title, item, holdMs);
+      }
+      standaloneColorizeReceivedItemModal({
+        itemName:item,
+        sourcePlayer,
+        sourceGame,
+        locationName:locName,
+        locId
+      }, cls, holdMs);
+      if(checksKeyBeforeModal){
+        standaloneScheduleChecksRestoreAfterReward();
+        standaloneScheduleChecksSelectionHold("counter-reward-modal", holdMs + 1400);
+      }
+      return true;
+    }catch(_){}
+    return false;
   }
 
   function standaloneEnsureOverviewModalVisibleHost(){
