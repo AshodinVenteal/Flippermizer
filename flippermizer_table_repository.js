@@ -281,7 +281,7 @@
     CONGO: 'WorldsBanners/BestiaryFlyers/CONGO.jpg',
     MCAST: 'WorldsBanners/BestiaryFlyers/MCAST.jpg',
     ATEAM: 'WorldsBanners/BestiaryFlyers/ATEAM.png',
-    BAT66: 'WorldsBanners/BestiaryFlyers/BAT66.png',
+    BAT66: 'WorldsBanners/BestiaryFlyers/BAT66.jpg',
     HHEAT: 'WorldsBanners/BestiaryFlyers/HHEAT.jpg',
     BAYW: 'WorldsBanners/BestiaryFlyers/BAYW.jpg',
     STTNG: 'WorldsBanners/BestiaryFlyers/STTNG.jpg',
@@ -318,9 +318,9 @@
     AGBW: 'WorldsBanners/BestiaryFlyers/AGBW.jpg',
     CIRC80: 'WorldsBanners/BestiaryFlyers/CIRC80.jpg',
     POTO: 'WorldsBanners/BestiaryFlyers/POTO.jpg',
-    GEN: 'WorldsBanners/BestiaryFlyers/GEN.png',
-    HH: 'WorldsBanners/BestiaryFlyers/HH.png',
-    HULK: 'WorldsBanners/BestiaryFlyers/HULK.png',
+    GEN: 'WorldsBanners/BestiaryFlyers/GEN.jpg',
+    HH: 'WorldsBanners/BestiaryFlyers/HH.jpg',
+    HULK: 'WorldsBanners/BestiaryFlyers/HULK.jpg',
     BFOR: 'WorldsBanners/BestiaryFlyers/BFOR.jpg',
     DMAN: 'WorldsBanners/BestiaryFlyers/DMAN.jpg',
     GEYE: 'WorldsBanners/BestiaryFlyers/GEYE.jpg',
@@ -360,11 +360,11 @@
     QBERT: 'WorldsBanners/BestiaryFlyers/QBERT.jpg',
     MMPAC: 'WorldsBanners/BestiaryFlyers/MMPAC.jpg',
     SINV: 'WorldsBanners/BestiaryFlyers/SINV.jpg',
-    MONOP: 'WorldsBanners/BestiaryFlyers/MONOP.png',
-    DND: 'WorldsBanners/BestiaryFlyers/DND.png',
-    WPT: 'WorldsBanners/BestiaryFlyers/WPT.png',
-    HRC: 'WorldsBanners/BestiaryFlyers/HRC.png',
-    WHOD: 'WorldsBanners/BestiaryFlyers/WHOD.png'
+    MONOP: 'WorldsBanners/BestiaryFlyers/MONOP.jpg',
+    DND: 'WorldsBanners/BestiaryFlyers/DND.jpg',
+    WPT: 'WorldsBanners/BestiaryFlyers/WPT.jpg',
+    HRC: 'WorldsBanners/BestiaryFlyers/HRC.jpg',
+    WHOD: 'WorldsBanners/BestiaryFlyers/WHOD.jpg'
   };
 
   var DEFAULT_WORLD_TABLE_CODES = {
@@ -659,6 +659,37 @@
     return Array.isArray(TABLE_WORLD_GROUPS_BY_CODE[t.code]) ? TABLE_WORLD_GROUPS_BY_CODE[t.code].slice() : [];
   }
 
+  function getTablesForWorldGroup(query){
+    var want = normLookup(query);
+    if(!want) return [];
+    var out = [];
+    TABLES.forEach(function(rawTable){
+      var code = String(rawTable.code || '').trim();
+      if(!code) return;
+      var groups = Array.isArray(TABLE_WORLD_GROUPS_BY_CODE[code]) ? TABLE_WORLD_GROUPS_BY_CODE[code] : [];
+      var match = groups.some(function(groupName){ return normLookup(groupName) === want; });
+      if(!match) return;
+      var t = getTableByCode(code);
+      if(!t) return;
+      out.push({
+        code: t.code,
+        slug: t.slug,
+        name: t.name,
+        displayName: t.displayName || t.name,
+        manufacturer: t.manufacturer || '',
+        year: t.year,
+        worldGroups: groups.slice(),
+        aliases: (t.aliases || []).slice(),
+        banner: t.banner || ''
+      });
+    });
+    return out;
+  }
+
+  function getTableCodesForWorldGroup(query){
+    return getTablesForWorldGroup(query).map(function(t){ return t.code; }).filter(Boolean);
+  }
+
   function toWorldSpec(worldKey, worldInput, options){
     options = options || {};
     var base = WORLD_SPECS[worldKey] || { key:worldKey, label:String(worldKey||''), lockedDefault:true };
@@ -679,17 +710,31 @@
 
     var unresolved = [];
     var tables = [];
+    var seenTables = Object.create(null);
+    function pushTableName(name){
+      var clean = String(name || '').trim();
+      if(!clean) return;
+      var key = normLookup(clean);
+      if(key && seenTables[key]) return;
+      if(key) seenTables[key] = true;
+      tables.push(clean);
+    }
 
     tableInputs.forEach(function(entry){
       var t = resolveTable(entry);
       if(t){
-        tables.push(t.name);
-      }else{
-        var fallback = String(entry || '').trim();
-        if(fallback){
-          tables.push(fallback);
-          unresolved.push(fallback);
-        }
+        pushTableName(t.name);
+        return;
+      }
+      var groupTables = getTablesForWorldGroup(entry);
+      if(groupTables.length){
+        groupTables.forEach(function(groupTable){ pushTableName(groupTable.name); });
+        return;
+      }
+      var fallback = String(entry || '').trim();
+      if(fallback){
+        pushTableName(fallback);
+        unresolved.push(fallback);
       }
     });
 
@@ -849,6 +894,8 @@
     getDisplayTableName: getDisplayTableName,
     getTableMeta: getTableMeta,
     getTableWorldGroups: getTableWorldGroups,
+    getTablesForWorldGroup: getTablesForWorldGroup,
+    getTableCodesForWorldGroup: getTableCodesForWorldGroup,
     getAllTables: getAllTables,
     resolveDesigner: resolveDesigner,
     getAllDesigners: getAllDesigners,
