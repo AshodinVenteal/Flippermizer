@@ -11,14 +11,6 @@ Home Edition 1.1 is the current stable release intended for real Archipelago run
 Release assets:
 
 - `Flippermizer-Home-Edition-1.1.0-portable.exe` - Windows portable Electron launcher.
-- `Flippermizer-Home-Edition-1.1.0-upload-bundle.zip` - launcher plus helper files for setup and distribution.
-
-The upload bundle includes:
-
-- Home Edition portable launcher.
-- `flippermizer_yaml_options.html` for generating Flippermizer AP player YAML.
-- `manual_flippermizerworldsofpinball_base_game.apworld`.
-- This README.
 
 The included AP World no longer emits Boss Key items into Archipelago generation. Home Edition handles boss key discovery, boss table presentation, and boss progression locally while normal checks still report through Archipelago.
 
@@ -32,8 +24,8 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 - Promoted Home Edition 1.1 from the `home-edition` branch as the latest stable release.
 - Added the Task Repository Editor, repeated-task grouping, template table markers, and exportable template guidance for task/title/tooltip cleanup.
 - Normalized Home and Stream task titles and strategy tooltips with `GUIDE:` / `NOTE:` labels preserved in task hover cards.
-- Packaged the Windows portable launcher and an upload bundle for players.
-- Added the YAML Options helper and latest AP World to the release bundle.
+- Packaged the Windows portable launcher for players.
+- Kept the YAML Options helper and latest AP World in source while keeping release uploads focused on the launcher.
 - Updated the AP World package so Boss Key and Boss Key Hint item counts are zero.
 - Added profile/save support for Home Edition, including profile identity, FLPRP, local seed saves, and progression tracking.
 - Split controls into singleplayer and multiplayer flows, with AP connection, item log, connection log, and hints focused under multiplayer.
@@ -62,10 +54,9 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 
 Use the packaged release for normal play:
 
-1. Download `Flippermizer-Home-Edition-1.1.0-upload-bundle.zip` from the latest Home Edition release.
-2. Extract it.
-3. Run `Flippermizer-Home-Edition-1.1.0-portable.exe`.
-4. For Archipelago generation, use the included `.apworld` and the YAML helper.
+1. Download `Flippermizer-Home-Edition-1.1.0-portable.exe` from the latest Home Edition release.
+2. Run `Flippermizer-Home-Edition-1.1.0-portable.exe`.
+3. For Archipelago generation, use the AP World and YAML helper from source.
 
 ## Building From Source
 
