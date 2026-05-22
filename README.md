@@ -24,6 +24,10 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 
 ## Latest Update Patch Notes
 
+- Home Edition now throttles background seed-save, profile HUD, counter, and auto-swap refresh work to reduce lag when clicking and hovering in the launcher.
+- Visuals / Music now includes a bundled font selector with Press Start 2P, Hubot Sans, and Jersey 15, and the Home header uses the Stream-style layout with HOME EDITION branding.
+- Score checks now keep their pending redemption metadata long enough to pair with later AP ReceivedItems snapshots, including the case where RoomUpdate confirms the check first.
+- Cross-game ReceivedItems now wait for known DataPackage item names instead of processing as generic `Item #...` placeholders, restoring Progressive Ball reward handling.
 - Published Home Edition 1.0 RC2 from the `home-edition` branch.
 - Added the Task Repository Editor, repeated-task grouping, template table markers, and exportable template guidance for task/title/tooltip cleanup.
 - Normalized Home and Stream task titles and strategy tooltips with `GUIDE:` / `NOTE:` labels preserved in task hover cards.
