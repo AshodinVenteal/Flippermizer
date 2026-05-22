@@ -1,6 +1,6 @@
 {
   "name": "flippermizer-home-edition",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Home Edition AP/SP client for Flippermizer! Pinball Randomized!",
   "main": "electron/main.js",
   "private": true,
@@ -8,9 +8,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "start": "electron .",
-    "check": "node --check electron/main.js && node --check electron/preload.js && node --check electron/standalone-overlay-bridge.js && node --check electron/standalone-gift-house-test.js && node --check flippermizer_table_repository.js && node --check flippermizer_task_explanations.js && node --check flippermizer_task_repository_data.js && node --check flippermizer_task_repository_cfg.js && npm run check:flyers",
-    "check:flyers": "node tools/validate_flyer_assets.mjs",
-    "test:ap-ui": "node tools/test_standalone_ap_ui.js",
+    "check": "node --check electron/main.js && node --check electron/preload.js && node --check electron/standalone-overlay-bridge.js && node --check electron/standalone-gift-house-test.js && node --check flippermizer_table_repository.js && node --check flippermizer_task_explanations.js",
     "dist:dir": "node tools/ensure_home_icon_ico.js && electron-builder --dir && node tools/stamp_unpacked_icon.js",
     "dist:portable": "npm run dist:dir && electron-builder --win portable --prepackaged dist/win-unpacked",
     "dist": "npm run dist:portable"
@@ -34,12 +32,8 @@
       "electron/standalone-overlay-bridge.js",
       "electron/standalone-gift-house-test.js",
       "flippermizer_overlay_tower_v3.html",
-      "flippermizer_yaml_options.html",
       "flippermizer_table_repository.js",
       "flippermizer_task_explanations.js",
-      "flippermizer_task_repository.html",
-      "flippermizer_task_repository_data.js",
-      "flippermizer_task_repository_cfg.js",
       "vendor/**/*",
       "build/home-icon.ico",
       "build/icon.ico",
