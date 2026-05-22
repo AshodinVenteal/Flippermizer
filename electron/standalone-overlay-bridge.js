@@ -2,6 +2,7 @@
   "use strict";
 
   try{
+    window.__flprHomeEdition = true;
     const now = Date.now();
     const muteUntil = now + 5000;
     window.__flprBossHitAudioMuteUntil = Math.max(
@@ -116,6 +117,17 @@
     response: null,
     saveTimer: null
   };
+  const standalonePerformanceRuntime = {
+    lastSeedSaveSig: "",
+    lastSeedSaveAt: 0,
+    pendingSeedSaveTimer: 0,
+    lastProfileUiSig: "",
+    lastProfileUiAt: 0,
+    pendingHudPositionTimer: 0,
+    lastCounterSig: "",
+    lastCounterAt: 0
+  };
+  try{ window.__flprStandalonePerformanceRuntime = standalonePerformanceRuntime; }catch(_){}
   const standaloneProfileRuntime = {
     selectedMode: "",
     switchingMode: false,
@@ -724,7 +736,7 @@
         transform:translateY(0) scale(1) !important;
         transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease, filter .18s ease, opacity .18s ease !important;
         text-align:left !important;
-        font-family:'Press Start 2P', var(--mono, monospace) !important;
+        font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeChoice:hover,
       body.flprStandaloneOriginalClient .standaloneModeChoice:focus-visible{
@@ -744,13 +756,13 @@
         font-size:28px !important;
         line-height:1.12 !important;
         color:rgba(238,255,252,.98) !important;
-        font-family:'Press Start 2P', var(--mono, monospace) !important;
+        font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeChoiceText{
         font-size:17px !important;
         line-height:1.38 !important;
         color:rgba(190,226,238,.84) !important;
-        font-family:'Press Start 2P', var(--mono, monospace) !important;
+        font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
       }
       body.flprStandaloneOriginalClient #viewChecks #checksCountersDock:not(.expanded) .counterDrawer:not(.open):not(.autoOpen){
         opacity:1 !important;
@@ -812,7 +824,7 @@
         box-shadow:0 0 10px rgba(0,217,255,.20), inset 0 0 0 1px rgba(255,255,255,.08) !important;
         color:rgba(207,235,246,.72) !important;
         opacity:1 !important;
-        font-family:'Press Start 2P', var(--mono, monospace) !important;
+        font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
         font-size:7px !important;
         line-height:1 !important;
         letter-spacing:0 !important;
@@ -842,7 +854,7 @@
         font-size:14px !important;
         line-height:1.24 !important;
         color:rgba(255,224,122,.92) !important;
-        font-family:'Press Start 2P', var(--mono, monospace) !important;
+        font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeGate.choosing .standaloneModeChoice:not(.selected){
         opacity:.28 !important;
@@ -1804,7 +1816,7 @@
         border-radius:8px !important;
         background:linear-gradient(180deg, rgba(255,118,86,.18), rgba(255,77,109,.09)) !important;
         color:rgba(255,226,205,.96) !important;
-        font-family:'Press Start 2P', monospace !important;
+        font-family:var(--flprUiFontFamily) !important;
         font-size:5.2px !important;
         line-height:1.35 !important;
         text-align:center !important;
@@ -2728,7 +2740,7 @@
         z-index:5 !important;
         pointer-events:none !important;
         white-space:nowrap !important;
-        font-family:'Press Start 2P', monospace !important;
+        font-family:var(--flprUiFontFamily) !important;
         font-size:20px !important;
         line-height:1 !important;
         letter-spacing:0 !important;
@@ -5499,6 +5511,38 @@
     };
   }
 
+  function standaloneSeedSaveSignature(patch){
+    try{
+      if(!patch) return "";
+      const checkedIds = Array.isArray(patch.checkedLocIds) ? patch.checkedLocIds.slice().map(Number).filter(Number.isFinite).sort((a, b)=>a - b) : [];
+      const balls = [];
+      const worlds = [];
+      const snapshot = patch.stateSnapshot || {};
+      Object.entries(snapshot?.balls || {}).forEach(([key, value])=>{
+        if(value) balls.push(String(key));
+      });
+      Object.entries(snapshot?.worlds || {}).forEach(([key, world])=>{
+        worlds.push(`${key}:${world?.locked === true ? "1" : "0"}:${Array.isArray(world?.tables) ? world.tables.join(",") : ""}`);
+      });
+      balls.sort();
+      worlds.sort();
+      return JSON.stringify({
+        seedName: patch.seedName,
+        checked: checkedIds,
+        balls,
+        worlds,
+        bossTable: snapshot?.bossTable || "",
+        selected: snapshot?.selected || "",
+        highScores: snapshot?.tableHighScores || {},
+        extraBallTokens: snapshot?.extraBallTokens || 0,
+        extraBallAssignments: snapshot?.extraBallAssignments || {},
+        junkRedeems: snapshot?.junkRedeems || {}
+      });
+    }catch(_){
+      return `${patch?.seedName || ""}|${patch?.checked || 0}|${patch?.total || 0}`;
+    }
+  }
+
   function standaloneUpsertCurrentSeedSave(extra){
     if(standaloneProfileRuntime.activeSeedLoadConfirmId && extra?.reason !== "seed-load" && extra?.force !== true) return null;
     const activeState = standaloneProfileState();
@@ -5506,6 +5550,14 @@
     if(!active) return null;
     const patch = standaloneCurrentSingleplayerSeedSavePatch(extra);
     if(!patch) return null;
+    const force = extra?.force === true || extra?.reason === "seed-load" || extra?.createdAt;
+    const sig = standaloneSeedSaveSignature(patch);
+    const now = Date.now();
+    if(!force && sig && sig === standalonePerformanceRuntime.lastSeedSaveSig && (now - standalonePerformanceRuntime.lastSeedSaveAt) < 15000){
+      return null;
+    }
+    standalonePerformanceRuntime.lastSeedSaveSig = sig;
+    standalonePerformanceRuntime.lastSeedSaveAt = now;
     const list = Array.isArray(active.seedSaves) ? active.seedSaves.slice() : [];
     const idx = list.findIndex((entry)=>String(entry?.id || "") === patch.id);
     const previous = idx >= 0 ? list[idx] : null;
@@ -5527,6 +5579,17 @@
     standaloneRenderRunBriefing();
     standaloneRenderNextAchievement();
     return next;
+  }
+
+  function standaloneScheduleSeedSave(extra, delayMs){
+    try{
+      const ms = Math.max(0, Number(delayMs) || 0);
+      if(standalonePerformanceRuntime.pendingSeedSaveTimer) clearTimeout(standalonePerformanceRuntime.pendingSeedSaveTimer);
+      standalonePerformanceRuntime.pendingSeedSaveTimer = setTimeout(()=>{
+        standalonePerformanceRuntime.pendingSeedSaveTimer = 0;
+        standaloneUpsertCurrentSeedSave(extra || {});
+      }, ms);
+    }catch(_){}
   }
 
   function standaloneSavedSeedById(seedId){
@@ -6053,13 +6116,27 @@
     const hasProfile = !!standaloneActiveProfile();
     hud.hidden = !hasProfile;
     const mode = standaloneCurrentMenuMode();
-    hud.innerHTML = `
-      <img class="standaloneModeHudLogo" src="Flippermizer Images/FlippermizerLogo.png" alt="Flippermizer">
-    `;
+    const sig = hasProfile ? `logo|${mode}|${standaloneSettings.logoLocked !== false ? "locked" : "unlocked"}` : "hidden";
+    if(hud.dataset.renderSig !== sig){
+      hud.dataset.renderSig = sig;
+      hud.innerHTML = `
+        <img class="standaloneModeHudLogo" src="Flippermizer Images/FlippermizerLogo.png" alt="Flippermizer">
+      `;
+    }
     standalonePositionModeHud();
-    try{ requestAnimationFrame(()=>standalonePositionModeHud()); }catch(_){}
+    try{
+      if(!standalonePerformanceRuntime.pendingHudPositionTimer){
+        standalonePerformanceRuntime.pendingHudPositionTimer = setTimeout(()=>{
+          standalonePerformanceRuntime.pendingHudPositionTimer = 0;
+          try{ standalonePositionModeHud(); standalonePositionModeSwitchHud(); }catch(_){}
+        }, 180);
+      }
+      requestAnimationFrame(()=>standalonePositionModeHud());
+    }catch(_){}
+    [80, 240, 520, 960].forEach((delay)=>setTimeout(()=>{
+      try{ standalonePositionModeHud(); standalonePositionModeSwitchHud(); }catch(_){}
+    }, delay));
     standaloneRenderModeSwitchHud(mode);
-    [0, 80, 240, 520, 960, 1500, 2400].forEach((delay)=>setTimeout(standalonePositionModeHud, delay));
   }
 
   function standaloneRenderModeSwitchHud(modeOverride){
@@ -6069,13 +6146,19 @@
     hud.hidden = !hasProfile;
     const mode = modeOverride || standaloneCurrentMenuMode();
     const houseActive = activeControlTab() === "house";
-    hud.innerHTML = `
-      <button class="standaloneModeHudBtn${!houseActive && mode === "singleplayer" ? " active" : ""}" data-standalone-mode-toggle="singleplayer" type="button" aria-pressed="${!houseActive && mode === "singleplayer" ? "true" : "false"}">SP</button>
-      <button class="standaloneModeHudBtn${!houseActive && mode === "archipelago" ? " active" : ""}" data-standalone-mode-toggle="archipelago" type="button" aria-pressed="${!houseActive && mode === "archipelago" ? "true" : "false"}">MP</button>
-      <button class="standaloneModeHudBtn houseBtn${houseActive ? " active" : ""}" data-standalone-mode-toggle="house" type="button" aria-pressed="${houseActive ? "true" : "false"}">HOUSE</button>
-    `;
+    const sig = `${mode}|${houseActive ? "house" : "main"}`;
+    if(hud.dataset.renderSig !== sig){
+      hud.dataset.renderSig = sig;
+      hud.innerHTML = `
+        <button class="standaloneModeHudBtn${!houseActive && mode === "singleplayer" ? " active" : ""}" data-standalone-mode-toggle="singleplayer" type="button" aria-pressed="${!houseActive && mode === "singleplayer" ? "true" : "false"}">SP</button>
+        <button class="standaloneModeHudBtn${!houseActive && mode === "archipelago" ? " active" : ""}" data-standalone-mode-toggle="archipelago" type="button" aria-pressed="${!houseActive && mode === "archipelago" ? "true" : "false"}">MP</button>
+        <button class="standaloneModeHudBtn houseBtn${houseActive ? " active" : ""}" data-standalone-mode-toggle="house" type="button" aria-pressed="${houseActive ? "true" : "false"}">HOUSE</button>
+      `;
+    }
     standalonePositionModeSwitchHud();
-    [0, 80, 240, 520].forEach((delay)=>setTimeout(standalonePositionModeSwitchHud, delay));
+    [80, 240, 520].forEach((delay)=>setTimeout(()=>{
+      try{ standalonePositionModeSwitchHud(); }catch(_){}
+    }, delay));
   }
 
   function standaloneRenderProfileHud(){
@@ -6876,6 +6959,30 @@
   }
 
   function standaloneRefreshProfileUi(){
+    let sig = "";
+    try{
+      const active = standaloneActiveProfile();
+      sig = JSON.stringify({
+        profile: active?.id || "",
+        mode: standaloneProfileRuntime.selectedMode || "",
+        ready: !!standaloneProfileRuntime.randomizerReady,
+        started: !!standaloneProfileRuntime.randomizerStarted,
+        reason: standaloneProfileRuntime.randomizerReason || "",
+        seed: ap?.seedName || "",
+        checked: ap?.checked?.size || 0,
+        connected: !!ap?.connected,
+        inherent: !!ap?.inherentSeedActive,
+        activeTab: document.querySelector(".controlsTabBtn.active")?.dataset?.ctrlTab || ""
+      });
+      const now = Date.now();
+      if(sig === standalonePerformanceRuntime.lastProfileUiSig && (now - standalonePerformanceRuntime.lastProfileUiAt) < 1500){
+        standaloneRefreshRandomizerGate();
+        try{ standalonePositionModeHud(); standalonePositionModeSwitchHud(); }catch(_){}
+        return;
+      }
+      standalonePerformanceRuntime.lastProfileUiSig = sig;
+      standalonePerformanceRuntime.lastProfileUiAt = now;
+    }catch(_){}
     standaloneRenderProfileHud();
     standaloneRenderModeHud();
     standaloneRenderSeedSaveList();
@@ -7207,7 +7314,7 @@
           }else{
             standaloneRefreshProfileUi();
           }
-          standaloneUpsertCurrentSeedSave({ reason:"poll" });
+          standaloneScheduleSeedSave({ reason:"poll" }, 2200);
         }catch(_){}
       }, 1000);
     }
@@ -7880,6 +7987,21 @@
 
   function renderStandaloneCounters(){
     try{
+      const sig = [
+        ap?.junk?.easy || 0,
+        ap?.junk?.med || 0,
+        ap?.junk?.frag || 0,
+        ap?.junk?.easyTotal || 0,
+        ap?.junk?.medTotal || 0,
+        ap?.junk?.fragTotal || 0,
+        state?.extraBallTokens || 0,
+        ap?.checked?.size || 0,
+        ap?.receivedByIndex?.size || 0
+      ].join("|");
+      const now = Date.now();
+      if(sig === standalonePerformanceRuntime.lastCounterSig && (now - standalonePerformanceRuntime.lastCounterAt) < 2500) return;
+      standalonePerformanceRuntime.lastCounterSig = sig;
+      standalonePerformanceRuntime.lastCounterAt = now;
       if(typeof updateCounterBars === "function") updateCounterBars();
       if(typeof updateCountCheckUI === "function") updateCountCheckUI();
     }catch(_){}
@@ -17723,6 +17845,15 @@
     standaloneRefreshProfileUi();
     applyControlFontScale();
     setControlTab(current);
+    try{
+      standaloneRenderModeHud();
+      standaloneRenderModeSwitchHud(standaloneCurrentMenuMode());
+      standalonePositionModeHud();
+      standalonePositionModeSwitchHud();
+      [80, 240, 520].forEach((delay)=>setTimeout(()=>{
+        try{ standalonePositionModeHud(); standalonePositionModeSwitchHud(); }catch(_){}
+      }, delay));
+    }catch(_){}
     return true;
   }
   try{ window.flprStandaloneRebuildControls = rebuildStandaloneControls; }catch(_){}

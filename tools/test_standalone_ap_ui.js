@@ -600,14 +600,60 @@ async function run() {
     !/PATCH NOTES/i.test(patchNotesHomeProbe.title || "") ||
     !/Home Edition/i.test(patchNotesHomeProbe.sub || "") ||
     patchNotesHomeProbe.itemCount !== 3 ||
-    !/Checks header layout/i.test(patchNotesHomeProbe.firstItem || "") ||
-    !/Stream header polish/i.test(patchNotesHomeProbe.body || "") ||
-    !/Score modifier/i.test(patchNotesHomeProbe.body || "") ||
-    /Patch notes control|Relics button|Score entry\nManual score entry/i.test(patchNotesHomeProbe.body || "") ||
+    !/Home performance pass/i.test(patchNotesHomeProbe.firstItem || "") ||
+    !/Font and header controls/i.test(patchNotesHomeProbe.body || "") ||
+    !/Score reward tracking/i.test(patchNotesHomeProbe.body || "") ||
+    !/Hubot Sans/i.test(patchNotesHomeProbe.body || "") ||
+    /Home Edition icon|Checks BALLS button|Checks header layout|Stream header polish|Score modifier|Patch notes control|Relics button|Score entry\nManual score entry/i.test(patchNotesHomeProbe.body || "") ||
     !patchNotesHomeProbe.dontShow ||
     !/Don'?t Show Next Time/i.test(patchNotesHomeProbe.dontShowText || "")
   ){
     throw new Error(`Home Edition patch notes did not appear on first launch: ${JSON.stringify(patchNotesHomeProbe)}`);
+  }
+
+  const homeHeaderFontProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    try{ setHeader(); }catch(_){}
+    await delay(80);
+    const selector = document.getElementById("flprUiFontMode");
+    const beforeClass = document.body.className || "";
+    if(selector){
+      selector.value = "hubot";
+      selector.dispatchEvent(new Event("change", { bubbles:true }));
+    }else if(typeof applyFlprUiFontMode === "function"){
+      applyFlprUiFontMode("hubot");
+    }
+    await delay(80);
+    const hubotProbe = {
+      className: document.body.className || "",
+      dataset: document.body.dataset?.flprUiFont || "",
+      stored: (()=>{ try{ return JSON.parse(localStorage.getItem("flpr_settings_v1") || "{}").uiFontMode || ""; }catch(_){ return ""; } })()
+    };
+    try{ if(typeof applyFlprUiFontMode === "function") applyFlprUiFontMode("pixel"); }catch(_){}
+    await delay(20);
+    return {
+      title: document.getElementById("headerTitle")?.textContent || "",
+      titleClass: document.getElementById("headerTitle")?.className || "",
+      brandClass: document.getElementById("brandTop")?.className || "",
+      titleBadgePrefix: getComputedStyle(document.getElementById("flprTitleBadgeBtn"), "::before")?.content || "",
+      selectorExists: !!selector,
+      optionText: selector ? Array.from(selector.options).map((opt)=>opt.textContent || "") : [],
+      beforeClass,
+      hubotProbe
+    };
+  });
+  if(
+    !/HOME EDITION/.test(homeHeaderFontProbe.title || "") ||
+    !/streamEditionTitle/.test(homeHeaderFontProbe.titleClass || "") ||
+    !/streamEditionBrandTop/.test(homeHeaderFontProbe.brandClass || "") ||
+    !/PLAYER TITLE/i.test(homeHeaderFontProbe.titleBadgePrefix || "") ||
+    !homeHeaderFontProbe.selectorExists ||
+    !homeHeaderFontProbe.optionText.some((txt)=>/HUBOT SANS/i.test(txt)) ||
+    !/flprFontHubot/.test(homeHeaderFontProbe.hubotProbe.className || "") ||
+    homeHeaderFontProbe.hubotProbe.dataset !== "hubot" ||
+    homeHeaderFontProbe.hubotProbe.stored !== "hubot"
+  ){
+    throw new Error(`Home Edition header/font controls were not applied: ${JSON.stringify(homeHeaderFontProbe)}`);
   }
 
   const patchNotesOnceProbe = await page.evaluate(async () => {
@@ -651,6 +697,8 @@ async function run() {
     const previous = {
       bodyClass: document.body.className,
       launcher: window.flprLauncher,
+      homeEdition: window.__flprHomeEdition,
+      streamEdition: window.__flprStreamEdition,
       stored: localStorage.getItem(key),
       suppressed: localStorage.getItem(suppressKey)
     };
@@ -658,6 +706,8 @@ async function run() {
       localStorage.removeItem(key);
       localStorage.removeItem(suppressKey);
       document.body.classList.remove("flprStandaloneOriginalClient");
+      window.__flprHomeEdition = false;
+      window.__flprStreamEdition = true;
       window.flprLauncher = { openPage(){ return Promise.resolve(); } };
       const shown = typeof flprMaybeShowPatchNotes === "function" ? flprMaybeShowPatchNotes({ delayMs:0 }) : false;
       await delay(80);
@@ -678,6 +728,14 @@ async function run() {
       try{
         if(previous.launcher === undefined) delete window.flprLauncher;
         else window.flprLauncher = previous.launcher;
+      }catch(_){}
+      try{
+        if(previous.homeEdition === undefined) delete window.__flprHomeEdition;
+        else window.__flprHomeEdition = previous.homeEdition;
+      }catch(_){}
+      try{
+        if(previous.streamEdition === undefined) delete window.__flprStreamEdition;
+        else window.__flprStreamEdition = previous.streamEdition;
       }catch(_){}
       try{
         if(previous.stored == null) localStorage.removeItem(key);
@@ -720,6 +778,13 @@ async function run() {
       },
       checked: ids.map((id)=>[id, !!ap?.checked?.has?.(id)]),
       pending: ids.map((id)=>[id, ap?.pendingByLoc?.get?.(id)]),
+      recent: ids.map((id)=>[id, ap?.recentSentByLoc?.get?.(id)]),
+      itemName990001: ap?.itemNameById?.get?.(990001),
+      locNames: ids.map((id)=>[id, ap?.locNameById?.get?.(id)]),
+      validCheckLocs: ids.map((id)=>[id, !!ap?.validCheckLocIds?.has?.(id)]),
+      receivedAll: Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row)=>({ ...row })) : null,
+      receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : null,
+      receivedStorage: localStorage.getItem("flpr_ap_received_v1"),
       highScores: (()=>{ try{ return JSON.stringify(state?.tableHighScores || {}); }catch(_){ return "{}"; } })(),
       profileRuntime: window.__flprStandaloneProfileRuntime ? {
         selectedMode: window.__flprStandaloneProfileRuntime.selectedMode || "",
@@ -744,6 +809,16 @@ async function run() {
         ap.checked.delete(id);
         ap.pendingByLoc.delete(id);
       });
+      ap.recentSentByLoc = ap.recentSentByLoc instanceof Map ? ap.recentSentByLoc : new Map();
+      ids.forEach((id)=>ap.recentSentByLoc.delete(id));
+      ap.itemNameById = ap.itemNameById || new Map();
+      ap.itemNameById.set(990001, "Score Test Reward");
+      ap.locNameById = ap.locNameById || new Map();
+      ids.forEach((id, index)=>ap.locNameById.set(id, nodes[index].full));
+      ap.validCheckLocIds = ap.validCheckLocIds || new Set();
+      ids.forEach((id)=>ap.validCheckLocIds.add(id));
+      ap.receivedAll = [];
+      ap.receivedKeySet = new Set();
       apSend = (packet) => {
         packets.push(packet);
         return true;
@@ -759,12 +834,28 @@ async function run() {
       await delay(1900);
       const locationPackets = packets.filter((pkt)=>String(pkt?.cmd || "") === "LocationChecks");
       const sentIds = locationPackets.flatMap((pkt)=>Array.isArray(pkt?.locations) ? pkt.locations : []);
+      handleCheckedLocations([ids[0]], { awardAchievements:false, source:"score-test-room-update" });
+      const pairedAfterRoomUpdate = typeof apPeekPendingPairingForLoc === "function" ? apPeekPendingPairingForLoc(ids[0]) : null;
+      processReceivedItem({ item:990001, location:ids[0], player:1, flags:0 }, 990001, ids[0], { noPopup:true, noFeed:true, isSnapshot:true });
+      const rewardRow = (ap.receivedAll || []).find((row)=>Number(row?.locId) === ids[0]) || null;
       return {
         missingRender:false,
         missingScorePanel:false,
         modText: modBtn?.textContent || "",
         sentIds,
         pendingIds: ids.filter((id)=>ap.pendingByLoc.has(id)),
+        pairedAfterRoomUpdate: pairedAfterRoomUpdate ? {
+          id:Number(pairedAfterRoomUpdate.id || 0),
+          tableName:String(pairedAfterRoomUpdate.tableName || ""),
+          checkName:String(pairedAfterRoomUpdate.checkName || ""),
+          locationName:String(pairedAfterRoomUpdate.locationName || "")
+        } : null,
+        rewardRow: rewardRow ? {
+          itemName:String(rewardRow.itemName || ""),
+          locId:Number(rewardRow.locId || 0),
+          locationName:String(rewardRow.locationName || ""),
+          checkName:String(rewardRow.checkName || "")
+        } : null,
         highScore: typeof getTableHighScoreValue === "function" ? getTableHighScoreValue(tableKey, tableName) : 0
       };
     }finally{
@@ -778,6 +869,14 @@ async function run() {
         if(previous.balls.b3 === undefined) delete state.balls[`${tableKey}|3`]; else state.balls[`${tableKey}|3`] = previous.balls.b3;
         previous.checked.forEach(([id, wasChecked])=> wasChecked ? ap.checked.add(id) : ap.checked.delete(id));
         previous.pending.forEach(([id, pending])=> pending ? ap.pendingByLoc.set(id, pending) : ap.pendingByLoc.delete(id));
+        previous.recent.forEach(([id, recent])=> recent ? ap.recentSentByLoc.set(id, recent) : ap.recentSentByLoc.delete(id));
+        if(previous.itemName990001 === undefined) ap.itemNameById.delete(990001); else ap.itemNameById.set(990001, previous.itemName990001);
+        previous.locNames.forEach(([id, name])=> name === undefined ? ap.locNameById.delete(id) : ap.locNameById.set(id, name));
+        previous.validCheckLocs.forEach(([id, had])=> had ? ap.validCheckLocIds.add(id) : ap.validCheckLocIds.delete(id));
+        if(previous.receivedAll) ap.receivedAll = previous.receivedAll.map((row)=>({ ...row }));
+        if(previous.receivedKeySet) ap.receivedKeySet = new Set(previous.receivedKeySet);
+        if(previous.receivedStorage == null) localStorage.removeItem("flpr_ap_received_v1"); else localStorage.setItem("flpr_ap_received_v1", previous.receivedStorage);
+        if(typeof renderReceivedList === "function") renderReceivedList(ap.receivedAll || []);
         ap.pendingQueue = Array.isArray(ap.pendingQueue) ? ap.pendingQueue.filter((entry)=>!ids.includes(Number(entry?.id))) : [];
         state.tableHighScores = JSON.parse(previous.highScores || "{}");
         if(previous.profileRuntime && window.__flprStandaloneProfileRuntime){
@@ -796,7 +895,14 @@ async function run() {
     scoreAutoRedeemProbe.missingScorePanel ||
     scoreAutoRedeemProbe.modText !== "1X" ||
     ![910001, 910002, 910003].every((id)=>scoreAutoRedeemProbe.sentIds.includes(id)) ||
-    scoreAutoRedeemProbe.highScore !== 3250
+    scoreAutoRedeemProbe.highScore !== 3250 ||
+    !scoreAutoRedeemProbe.pairedAfterRoomUpdate ||
+    scoreAutoRedeemProbe.pairedAfterRoomUpdate.id !== 910001 ||
+    !/Easy Score/i.test(`${scoreAutoRedeemProbe.pairedAfterRoomUpdate.checkName || ""} ${scoreAutoRedeemProbe.pairedAfterRoomUpdate.locationName || ""}`) ||
+    !scoreAutoRedeemProbe.rewardRow ||
+    scoreAutoRedeemProbe.rewardRow.itemName !== "Score Test Reward" ||
+    scoreAutoRedeemProbe.rewardRow.locId !== 910001 ||
+    !/Easy Score/i.test(scoreAutoRedeemProbe.rewardRow.checkName || "")
   ){
     throw new Error(`Score entry did not auto-redeem beaten score thresholds: ${JSON.stringify(scoreAutoRedeemProbe)}`);
   }
@@ -5023,6 +5129,10 @@ async function run() {
       activeView: String(activeView || ""),
       bodyClass: document.body.className,
       launcher: window.flprLauncher,
+      homeFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprHomeEdition"),
+      homeFlag: window.__flprHomeEdition,
+      streamFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprStreamEdition"),
+      streamFlag: window.__flprStreamEdition,
       apJunk: ap?.junk ? { ...ap.junk } : null,
       extraBallTokens: Number(state?.extraBallTokens || 0),
       extraBallAssignments: state?.extraBallAssignments ? { ...state.extraBallAssignments } : null,
@@ -5049,6 +5159,8 @@ async function run() {
     try{
       if(typeof showView === "function") showView("checks");
       document.body.classList.remove("flprStandaloneOriginalClient");
+      window.__flprHomeEdition = false;
+      window.__flprStreamEdition = true;
       window.flprLauncher = { openPage(){ return Promise.resolve(); } };
       ap.junk = { easy:2, med:2, frag:4, easyTotal:17, medTotal:17, fragTotal:9 };
       state.junkRedeems = { easy:17, medium:17 };
@@ -5069,6 +5181,14 @@ async function run() {
       try{
         if(previous.launcher === undefined) delete window.flprLauncher;
         else window.flprLauncher = previous.launcher;
+      }catch(_){}
+      try{
+        if(previous.homeFlagHad) window.__flprHomeEdition = previous.homeFlag;
+        else delete window.__flprHomeEdition;
+      }catch(_){}
+      try{
+        if(previous.streamFlagHad) window.__flprStreamEdition = previous.streamFlag;
+        else delete window.__flprStreamEdition;
       }catch(_){}
       try{ if(previous.apJunk) ap.junk = { ...previous.apJunk }; }catch(_){}
       try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
@@ -5129,6 +5249,8 @@ async function run() {
       activeView: String(activeView || ""),
       bodyClass: document.body.className,
       launcher: window.flprLauncher,
+      homeFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprHomeEdition"),
+      homeFlag: window.__flprHomeEdition,
       streamFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprStreamEdition"),
       streamFlag: window.__flprStreamEdition,
       connected: !!ap?.connected,
@@ -5155,10 +5277,12 @@ async function run() {
     const packets = [];
     const configureRuntime = (stream) => {
       if(stream){
+        window.__flprHomeEdition = false;
         window.__flprStreamEdition = true;
         document.body.classList.remove("flprStandaloneOriginalClient");
         window.flprLauncher = { openPage(){ return Promise.resolve(); } };
       }else{
+        window.__flprHomeEdition = true;
         window.__flprStreamEdition = false;
         document.body.classList.add("flprStandaloneOriginalClient");
         try{ delete window.flprLauncher; }catch(_){ window.flprLauncher = undefined; }
@@ -5221,6 +5345,10 @@ async function run() {
         else window.flprLauncher = previous.launcher;
       }catch(_){}
       try{
+        if(previous.homeFlagHad) window.__flprHomeEdition = previous.homeFlag;
+        else delete window.__flprHomeEdition;
+      }catch(_){}
+      try{
         if(previous.streamFlagHad) window.__flprStreamEdition = previous.streamFlag;
         else delete window.__flprStreamEdition;
       }catch(_){}
@@ -5278,6 +5406,10 @@ async function run() {
       activeView: String(activeView || ""),
       bodyClass: document.body.className,
       launcher: window.flprLauncher,
+      homeFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprHomeEdition"),
+      homeFlag: window.__flprHomeEdition,
+      streamFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprStreamEdition"),
+      streamFlag: window.__flprStreamEdition,
       apJunk: ap?.junk ? { ...ap.junk } : null,
       extraBallTokens: Number(state?.extraBallTokens || 0),
       extraBallAssignments: state?.extraBallAssignments ? { ...state.extraBallAssignments } : null,
@@ -5300,6 +5432,8 @@ async function run() {
     window.addEventListener("unhandledrejection", onReject);
     try{
       document.body.classList.remove("flprStandaloneOriginalClient");
+      window.__flprHomeEdition = false;
+      window.__flprStreamEdition = true;
       window.flprLauncher = { openPage(){ return Promise.resolve(); } };
       if(typeof processReceivedItem !== "function") return { missingProcess:true };
       originalShowView = showView;
@@ -5381,6 +5515,14 @@ async function run() {
       try{
         if(previous.launcher === undefined) delete window.flprLauncher;
         else window.flprLauncher = previous.launcher;
+      }catch(_){}
+      try{
+        if(previous.homeFlagHad) window.__flprHomeEdition = previous.homeFlag;
+        else delete window.__flprHomeEdition;
+      }catch(_){}
+      try{
+        if(previous.streamFlagHad) window.__flprStreamEdition = previous.streamFlag;
+        else delete window.__flprStreamEdition;
       }catch(_){}
       try{
         for(const item of previous.itemNames || []){
