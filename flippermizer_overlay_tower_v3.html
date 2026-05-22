@@ -183,7 +183,7 @@ body.flprFontPixel{
 body.flprFontHubot{
   --flprUiFontFamily:var(--flprFontHubot);
   --flprTitleFontFamily:var(--flprFontHubot);
-  --flprFontSizeAdjust:0.84;
+  --flprFontSizeAdjust:0.62;
 }
 body.flprFontArcade{
   --flprUiFontFamily:var(--flprFontArcade);
@@ -888,6 +888,48 @@ body.controlsLayoutDragging *{
     0 0 12px rgba(0,217,255,.35),
     0 3px 12px rgba(0,0,0,.48);
   white-space:nowrap;
+}
+body.flprFontHubot .brandTop.streamEditionBrandTop{
+  row-gap:2px;
+}
+body.flprFontHubot .headerTitle.streamEditionTitle{
+  font-size:29px;
+  line-height:1;
+  letter-spacing:0;
+  text-transform:none;
+}
+body.flprFontArcade .headerTitle.streamEditionTitle{
+  text-transform:none;
+}
+body.flprFontHubot .brandTop.streamEditionBrandTop .flprTitleBadgeBtn{
+  margin-left:112px;
+  font-size:15px;
+  line-height:1;
+  letter-spacing:0;
+  min-height:25px;
+  padding:3px 9px 4px;
+}
+body.flprFontHubot .brandTop.streamEditionBrandTop .flprTitleBadgeBtn::before{
+  content:"Player Title:";
+  font-size:13px;
+  line-height:1;
+  letter-spacing:0;
+}
+body.flprFontArcade .brandTop.streamEditionBrandTop .flprTitleBadgeBtn::before{
+  content:"Player Title:";
+}
+body.flprFontHubot .relicsHeaderBtn{
+  letter-spacing:0;
+}
+body.flprFontHubot .relicsHeaderBtn .relicsHeaderLabel{
+  font-size:12px;
+}
+body.flprFontHubot .tab{
+  font-size:11px;
+  letter-spacing:0;
+}
+body.flprFontHubot .checksTitle{
+  font-size:12px;
 }
 .headerTitle.logoTitle{
   display:flex;
@@ -28154,6 +28196,7 @@ function applyFlprUiFontMode(mode, opts){
     document.body.classList.add(selected.className);
     document.body.dataset.flprUiFont = selected.value;
   }catch(_){}
+  try{ applyFlprReadableFontLabels(selected.value); }catch(_){}
   try{
     document.querySelectorAll("#flprUiFontMode").forEach((sel)=>{
       if(sel && sel.value !== selected.value) sel.value = selected.value;
@@ -28161,6 +28204,65 @@ function applyFlprUiFontMode(mode, opts){
   }catch(_){}
   if(!(opts && opts.save === false)) saveSettings({ uiFontMode:selected.value });
   return selected.value;
+}
+function flprUsesReadableFont(mode){
+  const raw = mode || document.body?.dataset?.flprUiFont || "pixel";
+  return normalizeFlprUiFontMode(raw) !== "pixel";
+}
+function flprTitleCaseLabel(label){
+  const raw = String(label || "").trim();
+  if(!raw) return raw;
+  return raw.toLowerCase().replace(/\b([a-z])/g, (m)=>m.toUpperCase());
+}
+function flprSetLeadingText(el, text){
+  if(!el) return;
+  const next = String(text || "");
+  const nodes = Array.from(el.childNodes || []);
+  for(const node of nodes){
+    if(node && node.nodeType === 3 && String(node.nodeValue || "").trim()){
+      node.nodeValue = next;
+      return;
+    }
+  }
+  el.insertBefore(document.createTextNode(next), el.firstChild || null);
+}
+function flprApplyText(selector, pixelText, readableText){
+  const readable = flprUsesReadableFont();
+  try{
+    document.querySelectorAll(selector).forEach((el)=>{
+      el.textContent = readable ? readableText : pixelText;
+    });
+  }catch(_){}
+}
+function applyFlprReadableFontLabels(mode){
+  const readable = flprUsesReadableFont(mode);
+  try{
+    flprSetLeadingText(document.getElementById("tabTower"), readable ? "Tower" : "TOWER");
+    flprSetLeadingText(document.getElementById("tabOverview"), readable ? "Overview" : "OVERVIEW");
+    flprSetLeadingText(document.getElementById("tabChecks"), readable ? "Checks" : "CHECKS");
+    flprSetLeadingText(document.getElementById("tabHints"), readable ? "Hints" : "HINTS");
+  }catch(_){}
+  try{
+    const title = document.getElementById("headerTitle");
+    if(title && !title.classList.contains("logoTitle")){
+      const rawTitle = editionHeaderLabel();
+      title.textContent = readable ? flprTitleCaseLabel(rawTitle) : rawTitle;
+    }
+  }catch(_){}
+  try{
+    document.querySelectorAll(".relicsHeaderLabel").forEach((el)=>{
+      el.textContent = readable ? "Relics" : "RELICS";
+    });
+  }catch(_){}
+  try{
+    const badge = document.querySelector("#flprTitleBadgeBtn .txt");
+    if(badge){
+      const raw = String(badge.dataset.rawTitle || badge.textContent || "");
+      badge.textContent = readable ? flprTitleCaseLabel(raw) : raw;
+    }
+  }catch(_){}
+  flprApplyText(".checksTitle", "CHECKS; BY WORLD", "Checks by World");
+  flprApplyText("#relicsTitle", "RELICS", "Relics");
 }
 
 const OVERLAY_CONTROL_LAYOUT_KEY = "overlayControlLayout";
@@ -32427,10 +32529,14 @@ function renderHeaderTitleBadge(){
   }
   const eq = achFindShopItem(String(achStore?.shop?.equipped?.title || ""));
   const txt = btn.querySelector(".txt");
-  if(txt) txt.textContent = eq ? String(eq.titleText || eq.name || "TITLE") : "NO TITLE";
+  if(txt){
+    txt.dataset.rawTitle = eq ? String(eq.titleText || eq.name || "TITLE") : "NO TITLE";
+    txt.textContent = txt.dataset.rawTitle;
+  }
   btn.title = eq
     ? `${String(eq.name || "Title")} | Source; FLPRP Shop`
     : "No title equipped yet. Open Achievements -> Shop.";
+  try{ applyFlprReadableFontLabels(); }catch(_){}
 }
 function renderRelicsHeaderBtn(){
   const btn = document.getElementById("relicsOpenBtn");
@@ -47629,6 +47735,7 @@ function setHeaderBrandTitle(title){
     title.classList.add("streamEditionTitle");
     title.removeAttribute("aria-label");
     title.textContent = editionHeaderLabel();
+    try{ applyFlprReadableFontLabels(); }catch(_){}
     queueStreamHeaderRelicsPosition();
     return;
   }
@@ -47637,6 +47744,7 @@ function setHeaderBrandTitle(title){
   title.classList.remove("streamEditionTitle");
   title.removeAttribute("aria-label");
   title.textContent = "FLIPPERMIZER";
+  try{ applyFlprReadableFontLabels(); }catch(_){}
   queueStreamHeaderRelicsPosition();
 }
 function setHeader(){
