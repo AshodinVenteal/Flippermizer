@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XCOM 2 War of the Chosen YAML Options</title>
+<style>
+:root{
+  --bg:#101418;
+  --bg2:#171d23;
+  --panel:#f7f8f9;
+  --panel2:#eef2f4;
+  --ink:#162027;
+  --muted:#5c6870;
+  --line:#cbd5dc;
+  --lineDark:#82919b;
+  --accent:#0f766e;
+  --accent2:#2563eb;
+  --gold:#b7791f;
+  --danger:#b42318;
+  --shadow:rgba(5,10,15,.24);
+  --mono:Consolas, "Courier New", monospace;
+  --ui:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%;margin:0}
+body{
+  color:var(--ink);
+  font-family:var(--ui);
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(135deg, var(--bg), #1a2a2b 54%, #24212a);
+  background-size:32px 32px,32px 32px,auto;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.55}
+.app{width:min(1680px, calc(100vw - 28px));margin:0 auto;padding:16px 0 22px}
+.topbar{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:14px;
+  align-items:start;
+  padding:16px;
+  color:#f8fafc;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:8px;
+  background:linear-gradient(135deg, rgba(15,118,110,.88), rgba(37,99,235,.62) 62%, rgba(183,121,31,.54));
+  box-shadow:0 14px 32px var(--shadow);
+}
+h1{margin:0;font-size:clamp(24px,3vw,38px);line-height:1.08;letter-spacing:0}
+.meta{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;color:#e9f2f7;font-size:13px}
+.pill{display:inline-flex;align-items:center;min-height:30px;padding:5px 9px;border:1px solid rgba(255,255,255,.28);border-radius:8px;background:rgba(0,0,0,.2);font-family:var(--mono)}
+.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.button{
+  min-height:38px;
+  border:1px solid rgba(255,255,255,.34);
+  border-radius:8px;
+  padding:8px 12px;
+  color:#fff;
+  background:rgba(12,18,24,.32);
+  font-weight:700;
+}
+.button.primary{background:rgba(15,118,110,.96)}
+.button.gold{background:rgba(183,121,31,.96)}
+.workspace{display:grid;grid-template-columns:minmax(360px,.9fr) minmax(460px,1fr);gap:14px;align-items:start;margin-top:14px}
+.panel{
+  min-width:0;
+  overflow:hidden;
+  border:1px solid var(--lineDark);
+  border-radius:8px;
+  background:linear-gradient(180deg,var(--panel),var(--panel2));
+  box-shadow:0 12px 28px var(--shadow);
+}
+.panelHeader{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  min-height:54px;
+  padding:12px 14px;
+  color:#fff;
+  background:linear-gradient(90deg,#24323a,#0f766e);
+}
+.panelHeader h2{margin:0;font-size:17px;line-height:1.2;letter-spacing:0}
+.panelKicker{font-family:var(--mono);font-size:12px;color:#dce8ed;white-space:nowrap}
+.panelBody{padding:14px}
+.fieldGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}
+.field{display:grid;gap:6px}
+.field.full{grid-column:1/-1}
+.field label,.optionCode,.entryKeyLabel{font-family:var(--mono);font-size:12px;font-weight:700;color:#33424b}
+input,select,textarea{
+  width:100%;
+  min-width:0;
+  border:1px solid #aab7bf;
+  border-radius:8px;
+  padding:9px 10px;
+  color:var(--ink);
+  background:#fff;
+}
+textarea{resize:vertical}
+.toolbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(160px,240px);gap:10px;margin-bottom:12px}
+.groupSection{margin-bottom:14px}
+.groupSection:last-child{margin-bottom:0}
+.groupTitle{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+  padding-bottom:7px;
+  border-bottom:1px solid var(--line);
+}
+.groupTitle h3{margin:0;font-size:16px;line-height:1.2}
+.optionBlock{
+  display:grid;
+  gap:10px;
+  margin-bottom:10px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:rgba(255,255,255,.62);
+}
+.optionBlock:last-child{margin-bottom:0}
+.optionHead{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
+.optionTitle{margin:0;font-size:15px;line-height:1.25}
+.optionCode{padding:3px 7px;border:1px solid var(--line);border-radius:8px;background:#f8fafc;white-space:nowrap}
+.optionDesc{margin:0;color:var(--muted);font-size:13px;line-height:1.45;white-space:pre-line}
+.rangeNote{display:flex;gap:8px;flex-wrap:wrap;margin-top:-2px}
+.rangeNote span{font-family:var(--mono);font-size:11px;color:#fff;padding:3px 7px;border-radius:8px;background:#50616b}
+.directControl{display:grid;gap:9px}
+.choiceControl{display:grid;grid-template-columns:minmax(180px,280px) minmax(0,1fr);gap:9px;align-items:center}
+.choiceNote{min-height:36px;display:flex;align-items:center;color:var(--muted);font-size:12px;line-height:1.3}
+.toggleControl{display:flex;align-items:center;gap:10px;width:max-content;max-width:100%}
+.toggleControl input{position:absolute;width:auto;opacity:0;pointer-events:none}
+.switchRail{
+  position:relative;
+  width:54px;
+  height:30px;
+  flex:0 0 auto;
+  border:1px solid #8fa0aa;
+  border-radius:999px;
+  background:#d8e1e6;
+  transition:background .16s ease,border-color .16s ease;
+}
+.switchRail::after{
+  content:"";
+  position:absolute;
+  top:3px;
+  left:3px;
+  width:22px;
+  height:22px;
+  border-radius:999px;
+  background:#fff;
+  box-shadow:0 2px 7px rgba(0,0,0,.22);
+  transition:transform .16s ease;
+}
+.toggleControl input:checked + .switchRail{background:var(--accent);border-color:var(--accent)}
+.toggleControl input:checked + .switchRail::after{transform:translateX(24px)}
+.switchText{font-weight:800;color:#27343c}
+.rangeControl{display:grid;gap:9px}
+.rangeModeRow{display:grid;grid-template-columns:minmax(180px,280px) minmax(0,1fr);gap:9px;align-items:center}
+.rangeValueRow{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:9px;align-items:center}
+.rangeValueRow input[type="range"]{padding:0}
+.rangeValueRow input:disabled{opacity:.58}
+.rangeValueRow.hidden{display:none}
+.entryList{display:grid;gap:7px}
+.entryRow{display:grid;grid-template-columns:minmax(120px,.9fr) minmax(90px,.45fr) minmax(130px,1fr) 34px;gap:7px;align-items:start}
+.entryRow input{min-height:36px;padding:7px 8px;font-family:var(--mono);font-size:13px}
+.entryNote{min-height:36px;display:flex;align-items:center;color:var(--muted);font-size:12px;line-height:1.25}
+.miniButton{
+  min-height:34px;
+  border:1px solid var(--lineDark);
+  border-radius:8px;
+  padding:6px 9px;
+  color:var(--ink);
+  background:#fff;
+  font-weight:700;
+}
+.miniButton.add{width:max-content;color:#fff;background:var(--accent);border-color:var(--accent)}
+.miniButton.remove{padding:0;color:#fff;background:var(--danger);border-color:var(--danger)}
+.rawInput{min-height:90px;font-family:var(--mono);font-size:13px;line-height:1.45}
+.yamlOutput{min-height:calc(100vh - 206px);font-family:var(--mono);font-size:13px;line-height:1.45;white-space:pre;tab-size:2}
+.status{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.4}
+.hidden{display:none}
+@media (max-width:980px){
+  .topbar,.workspace{grid-template-columns:1fr}
+  .actions{justify-content:flex-start}
+  .fieldGrid,.toolbar,.choiceControl,.rangeModeRow{grid-template-columns:1fr}
+  .entryRow{grid-template-columns:1fr 120px 1fr 34px}
+  .yamlOutput{min-height:420px}
+}
+@media (max-width:620px){
+  .app{width:min(100% - 18px,1680px);padding-top:9px}
+  .topbar,.panelBody{padding:12px}
+  .entryRow{grid-template-columns:1fr}
+  .miniButton.remove{width:42px;min-height:34px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div>
+      <h1>XCOM 2 War of the Chosen YAML Options</h1>
+      <div class="meta">
+        <span class="pill" id="sourcePill"></span>
+        <span class="pill" id="versionPill"></span>
+        <span class="pill" id="countPill"></span>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="button primary" type="button" id="copyBtn">Copy YAML</button>
+      <button class="button gold" type="button" id="downloadBtn">Download</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="panel">
+      <div class="panelHeader">
+        <h2>Options</h2>
+        <span class="panelKicker" id="visibleCount"></span>
+      </div>
+      <div class="panelBody">
+        <div class="fieldGrid">
+          <div class="field">
+            <label for="playerName">Player Name</label>
+            <input id="playerName" type="text" maxlength="64">
+          </div>
+          <div class="field">
+            <label for="requiresVersion">AP Version</label>
+            <input id="requiresVersion" type="text">
+          </div>
+          <div class="field full">
+            <label for="description">Description</label>
+            <input id="description" type="text">
+          </div>
+        </div>
+        <div class="toolbar">
+          <input id="searchBox" type="search" placeholder="Search options">
+          <select id="groupFilter" aria-label="Group filter"></select>
+        </div>
+        <div id="optionsMount"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panelHeader">
+        <h2>YAML Output</h2>
+        <span class="panelKicker" id="yamlStatus">Ready</span>
+      </div>
+      <div class="panelBody">
+        <textarea class="yamlOutput" id="yamlOutput" spellcheck="false" readonly></textarea>
+        <div class="status" id="statusLine"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const PAGE_DATA = {"sourceName":"YAMLs/XCOM 2 War of the Chosen.yaml","fileName":"xcom_2_war_of_the_chosen_yaml_options.html","slug":"xcom_2_war_of_the_chosen","templateName":"Player{number}","templateDescription":"Default XCOM 2 War of the Chosen Template","game":"XCOM 2 War of the Chosen","requiresVersion":"0.6.7","worldVersion":"0.10.10","options":[{"key":"progression_balancing","label":"Progression Balancing","group":"Game Options","description":"A system that can move progression earlier, to try and prevent the player from getting stuck and bored early.\n\nA lower setting means more getting stuck. A higher setting means less getting stuck.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 99","rangeMin":0,"rangeMax":99,"kind":"entries","entries":[{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-99","value":"0","note":"random value between 0 and 99"},{"key":"disabled","value":"0","note":"equivalent to 0"},{"key":"normal","value":"50","note":"equivalent to 50"},{"key":"extreme","value":"0","note":"equivalent to 99"}],"control":"range"},{"key":"accessibility","label":"Accessibility","group":"Game Options","description":"Set rules for reachability of your items/locations.\n\n**Full:** ensure everything can be reached and acquired.\n\n**Minimal:** ensure what is needed to reach your goal can be acquired.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"full","value":"50","note":""},{"key":"minimal","value":"0","note":""}],"control":"choice"},{"key":"alien_hunters_dlc","label":"Alien Hunters Dlc","group":"DLC Options","description":"Set which locations and items from the Alien Hunters DLC are enabled.\n\nall:                  All Alien Hunters DLC locations and items are enabled.\nno_integrated_dlc:    Experimental Weapons location is disabled; for playing without the Integrated DLC option.\nno_alien_rulers:      Alien Ruler locations are disabled; for avoiding tedious encounters.\nnone:                 All Alien Hunters DLC locations and items are disabled; for playing without the Alien Hunters DLC.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"all","value":"0","note":""},{"key":"no_integrated_dlc","value":"0","note":""},{"key":"no_alien_rulers","value":"0","note":""},{"key":"none","value":"50","note":""}],"control":"choice"},{"key":"goal","label":"Goal","group":"Goal Options","description":"Set the goal of the seed.\n\nalien_fortress:         Beat the Alien Fortress Assault mission. (final mission)\nnetwork_tower:          Beat the ADVENT Network Tower Assault mission. (second to last mission)\nchosen_stronghold_1:    Beat any Chosen Stronghold Assault mission.\nchosen_stronghold_2:    Beat any two Chosen Stronghold Assault missions.\nchosen_stronghold_3:    Beat all three Chosen Stronghold Assault missions.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"alien_fortress","value":"50","note":""},{"key":"network_tower","value":"0","note":""},{"key":"chosen_stronghold_1","value":"0","note":""},{"key":"chosen_stronghold_2","value":"0","note":""},{"key":"chosen_stronghold_3","value":"0","note":""}],"control":"choice"},{"key":"campaign_completion_requirements","label":"Campaign Completion Requirements","group":"Goal Options","description":"Require these objectives to be completed for the final mission to be unlocked.\nSet all if you wish to experience a more vanilla XCOM 2 story progression.\n\n'PsiGateObjective':         Require completion of the psi gate research.\n'StasisSuitObjective':      Require completion of the stasis suit research.\n'AvatarCorpseObjective':    Require acquisition of an avatar corpse.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"enemy_sanity","label":"Enemy Sanity","group":"Location Options","description":"Enable locations for the first kill of each enemy type.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"false","value":"0","note":""},{"key":"true","value":"50","note":""}],"control":"toggle"},{"key":"item_sanity","label":"Item Sanity","group":"Location Options","description":"Enable locations for the first use of each item type.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"false","value":"50","note":""},{"key":"true","value":"0","note":""}],"control":"toggle"},{"key":"chosen_hunt_sanity","label":"Chosen Hunt Sanity","group":"Location Options","description":"Shuffle Chosen Hunt covert actions and their rewards, i.e. Resistance Faction influence and Chosen Stronghold missions.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"false","value":"50","note":""},{"key":"true","value":"0","note":""}],"control":"toggle"},{"key":"progressive_items","label":"Progressive Items","group":"Item Options","description":"Force these items to be collected in order.\nValid values: 'RifleTech', 'RifleTech+' (includes [Tech] Modular Weapons),\n'ArmorTech', 'ArmorTech+' (includes [Tech] Hybrid Materials),\n'MeleeWeaponTech', 'GREMLINTech', 'PsionicsTech'","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"['GREMLINTech', 'ArmorTech', 'PsionicsTech', 'MeleeWeaponTech', 'RifleTech']","control":"raw"},{"key":"chosen_weapon_fragments","label":"Chosen Weapon Fragments","group":"Item Options","description":"Split Chosen weapons into two or three fragments each. Collect all fragments to unlock the corresponding tech.\nThis should decrease the likelihood of receiving Chosen weapons too early and trivializing the game.\nNOTE: This option requires enabling additional vacant locations, e.g. through Enemysanity or Itemsanity.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"off","value":"50","note":""},{"key":"two","value":"0","note":""},{"key":"three","value":"0","note":""}],"control":"choice"},{"key":"early_proving_ground","label":"Early Proving Ground","group":"Item Options","description":"Force the Proving Ground to be unlockable very early (sphere 1).\nThis ensures access to many powerful items but may significantly increase the amount of reachable locations.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"false","value":"50","note":""},{"key":"true","value":"0","note":""}],"control":"toggle"},{"key":"resource_share","label":"Resource Share","group":"Filler Options","description":"Set the share of filler items to be resources.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 100","rangeMin":0,"rangeMax":100,"kind":"entries","entries":[{"key":"65","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-100","value":"0","note":"random value between 0 and 100"}],"control":"range"},{"key":"weapon_mod_share","label":"Weapon Mod Share","group":"Filler Options","description":"Set the share of filler items to be weapon upgrades.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 100","rangeMin":0,"rangeMax":100,"kind":"entries","entries":[{"key":"15","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-100","value":"0","note":"random value between 0 and 100"}],"control":"range"},{"key":"pcs_share","label":"Pcs Share","group":"Filler Options","description":"Set the share of filler items to be PCSs.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 100","rangeMin":0,"rangeMax":100,"kind":"entries","entries":[{"key":"10","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-100","value":"0","note":"random value between 0 and 100"}],"control":"range"},{"key":"staff_share","label":"Staff Share","group":"Filler Options","description":"Set the share of filler items to be staff.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 100","rangeMin":0,"rangeMax":100,"kind":"entries","entries":[{"key":"10","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-100","value":"0","note":"random value between 0 and 100"}],"control":"range"},{"key":"trap_share","label":"Trap Share","group":"Filler Options","description":"Set the share of filler items to be traps.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 100","rangeMin":0,"rangeMax":100,"kind":"entries","entries":[{"key":"0","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-100","value":"0","note":"random value between 0 and 100"}],"control":"range"},{"key":"nothing_share","label":"Nothing Share","group":"Filler Options","description":"Set the share of filler items to be nothing.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 100","rangeMin":0,"rangeMax":100,"kind":"entries","entries":[{"key":"0","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-100","value":"0","note":"random value between 0 and 100"}],"control":"range"},{"key":"enemy_rando","label":"Enemy Rando","group":"Randomization Options","description":"Enable enemy shuffle, randomizing both scripted and procedural encounters.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"false","value":"50","note":""},{"key":"true","value":"0","note":""}],"control":"toggle"},{"key":"enemy_plando","label":"Enemy Plando","group":"Randomization Options","description":"If enemy rando is enabled, constrain enemy placements.\nDefine explicit shuffle groups with the 'forced' key.\nExempt enemies from shuffling with the 'fixed' key.\n\nExample: {\n'forced': [\n[['Sectoid', 'Muton'], ['Viper', 'Archon']],\n[['Adv'], ['Adv']]\n],\n'fixed': ['Gatekeeper', 'Sectopod']\n}\nSectoids and Mutons will be replaced by Vipers and Archons randomly.\nAll ADVENT enemies will be replaced by random ADVENT enemies.\nGatekeepers and Sectopods will not be shuffled.\nAll other enemies will be shuffled among each other.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"fixed","value":"[]","note":""},{"key":"forced","value":"[]","note":""}],"control":"map"},{"key":"hint_research_projects","label":"Hint Research Projects","group":"Config Options","description":"Enable research project hints in the Avenger laboratory and shadow chamber.\nCan be changed in-game via Mod Config Menu.\n\noff:       Reveal no item info and don't create server hints.\npartial:   Reveal item categories but don't create server hints.\nfull:      Reveal all item info and create server hints.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"off","value":"50","note":""},{"key":"partial","value":"0","note":""},{"key":"full","value":"0","note":""}],"control":"choice"},{"key":"skip_mission_types","label":"Skip Mission Types","group":"Config Options","description":"Automatically skip these mission types when they are spawned from a regular calendar event.\nCan be changed in-game via Mod Config Menu.\nValid values: 'SupplyRaid', 'CouncilMission', 'ResistanceOp'","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"['CouncilMission', 'SupplyRaid', 'ResistanceOp']","control":"raw"},{"key":"disable_covert_action_risks","label":"Disable Covert Action Risks","group":"Config Options","description":"Disable these covert action risks.\nCan be changed in-game via Mod Config Menu.\nValid values: 'Ambush', 'Capture'","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"['Capture', 'Ambush']","control":"raw"},{"key":"supply_raid_reward_base","label":"Supply Raid Reward Base","group":"Config Options","description":"Set the amount of resources that are rewarded for skipped supply raids.\nThe base represents a percentage of set maximum values for supplies (200), alien alloys (80), elerium crystals (40) and elerium cores (3).\nThe error determines the range of possible values, e.g. 35-65% for default settings.\nCan be changed in-game via Mod Config Menu.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 100","rangeMin":0,"rangeMax":100,"kind":"entries","entries":[{"key":"50","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-100","value":"0","note":"random value between 0 and 100"}],"control":"range"},{"key":"supply_raid_reward_error","label":"Supply Raid Reward Error","group":"Config Options","description":"Set the amount of resources that are rewarded for skipped supply raids.\nThe base represents a percentage of set maximum values for supplies (200), alien alloys (80), elerium crystals (40) and elerium cores (3).\nThe error determines the range of possible values, e.g. 35-65% for default settings.\nCan be changed in-game via Mod Config Menu.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 100","rangeMin":0,"rangeMax":100,"kind":"entries","entries":[{"key":"15","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-100","value":"0","note":"random value between 0 and 100"}],"control":"range"},{"key":"extra_xp_gain","label":"Extra Xp Gain","group":"Config Options","description":"Set the amount of extra XP that soldiers gain passively.\nEach time an enemy dies, each soldier has the given fraction of a kill attributed to them, speeding up promotions.\nBecause this system is agnostic to who got the final hit, soldiers with low kill counts will benefit more from the increase.\nIn general, the effect will be much stronger than it seems; the default setting for example will work out to a 35% increase in XP from kills,\nbut something like a 140% increase in XP from assists, meaning the actual bonus lies somewhere in between.\nCan be changed in-game via Mod Config Menu.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 200","rangeMin":0,"rangeMax":200,"kind":"entries","entries":[{"key":"35","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-200","value":"0","note":"random value between 0 and 200"}],"control":"range"},{"key":"extra_corpse_gain","label":"Extra Corpse Gain","group":"Config Options","description":"Set the amount of extra corpses that each enemy drops.\nCan be changed in-game via Mod Config Menu.\n\nYou can define additional values between the minimum and maximum values.\nMinimum value is 0\nMaximum value is 5","rangeMin":0,"rangeMax":5,"kind":"entries","entries":[{"key":"1","value":"50","note":""},{"key":"random","value":"0","note":""},{"key":"random-low","value":"0","note":"random value weighted towards lower values"},{"key":"random-high","value":"0","note":"random value weighted towards higher values"},{"key":"random-range-0-5","value":"0","note":"random value between 0 and 5"}],"control":"range"},{"key":"instant_rookie_training","label":"Instant Rookie Training","group":"Config Options","description":"Make training rookies in the GTS instant.\nCan be changed in-game via Mod Config Menu.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"false","value":"50","note":""},{"key":"true","value":"0","note":""}],"control":"toggle"},{"key":"disable_day_one_traps","label":"Disable Day One Traps","group":"Config Options","description":"Disable traps when they are received during the first day of a campaign.\nOne use for this is if you wish to retire traps received during previous runs after a restart.\nCan be changed in-game via Mod Config Menu.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"false","value":"50","note":""},{"key":"true","value":"0","note":""}],"control":"toggle"},{"key":"remove_corpse_costs","label":"Remove Corpse Costs","group":"Config Options","description":"Remove corpse costs from all items.","rangeMin":null,"rangeMax":null,"kind":"entries","entries":[{"key":"false","value":"50","note":""},{"key":"true","value":"0","note":""}],"control":"toggle"},{"key":"active_mods","label":"Active Mods","group":"Mod Options","description":"Activate these mods from the x2wotc/mods directory.\nThis is only relevant when modding *the APWorld* (NOT the game), leave empty if you're unsure what that means.\nList all available mods with the /mods client command.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"local_items","label":"Local Items","group":"Item & Location Options","description":"Forces these items to be in their native world.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"non_local_items","label":"Non Local Items","group":"Item & Location Options","description":"Forces these items to be outside their native world.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"start_inventory","label":"Start Inventory","group":"Item & Location Options","description":"Start with the specified amount of these items. Example: \"Bomb: 1\"","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"{}","control":"raw"},{"key":"start_inventory_from_pool","label":"Start Inventory From Pool","group":"Item & Location Options","description":"Start with the specified amount of these items and don't place them in the world. Example: \"Bomb: 1\"\n\nThe game decides what the replacement items will be.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"{}","control":"raw"},{"key":"start_hints","label":"Start Hints","group":"Item & Location Options","description":"Start with these item's locations prefilled into the ``!hint`` command.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"start_location_hints","label":"Start Location Hints","group":"Item & Location Options","description":"Start with these locations and their item prefilled into the ``!hint`` command.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"exclude_locations","label":"Exclude Locations","group":"Item & Location Options","description":"Prevent these locations from having an important item.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"priority_locations","label":"Priority Locations","group":"Item & Location Options","description":"Prevent these locations from having an unimportant item.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"item_links","label":"Item Links","group":"Item & Location Options","description":"Share part of your item pool with other players.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"},{"key":"plando_items","label":"Plando Items","group":"Item & Location Options","description":"Generic items plando.","rangeMin":null,"rangeMax":null,"kind":"raw","raw":"[]","control":"raw"}]};
+const els = {};
+
+function init(){
+  ["sourcePill","versionPill","countPill","visibleCount","copyBtn","downloadBtn","playerName","requiresVersion","description","searchBox","groupFilter","optionsMount","yamlOutput","yamlStatus","statusLine"].forEach((id) => {
+    els[id] = document.getElementById(id);
+  });
+
+  els.playerName.value = PAGE_DATA.templateName || "Player";
+  els.description.value = PAGE_DATA.templateDescription || "";
+  els.requiresVersion.value = PAGE_DATA.requiresVersion || "";
+  els.sourcePill.textContent = PAGE_DATA.sourceName;
+  els.versionPill.textContent = PAGE_DATA.worldVersion ? `World ${PAGE_DATA.worldVersion}` : "World version unset";
+  els.countPill.textContent = `${PAGE_DATA.options.length} options`;
+
+  renderGroupFilter();
+  renderOptions();
+  bindEvents();
+  updateAll();
+}
+
+function renderGroupFilter(){
+  const groups = [...new Set(PAGE_DATA.options.map((option) => option.group || "Options"))];
+  els.groupFilter.innerHTML = "";
+  const all = document.createElement("option");
+  all.value = "";
+  all.textContent = "All groups";
+  els.groupFilter.appendChild(all);
+  groups.forEach((group) => {
+    const option = document.createElement("option");
+    option.value = group;
+    option.textContent = group;
+    els.groupFilter.appendChild(option);
+  });
+}
+
+function renderOptions(){
+  els.optionsMount.innerHTML = "";
+  const groups = [...new Set(PAGE_DATA.options.map((option) => option.group || "Options"))];
+  groups.forEach((groupName) => {
+    const groupOptions = PAGE_DATA.options.filter((option) => (option.group || "Options") === groupName);
+    const section = document.createElement("section");
+    section.className = "groupSection";
+    section.dataset.group = groupName;
+    section.innerHTML = `
+      <div class="groupTitle">
+        <h3>${escapeHtml(groupName)}</h3>
+        <span class="panelKicker">${groupOptions.length} option${groupOptions.length === 1 ? "" : "s"}</span>
+      </div>
+      <div class="groupOptions"></div>
+    `;
+    const mount = section.querySelector(".groupOptions");
+    groupOptions.forEach((option) => mount.appendChild(renderOption(option)));
+    els.optionsMount.appendChild(section);
+  });
+}
+
+function renderOption(option){
+  const block = document.createElement("article");
+  block.className = "optionBlock";
+  block.dataset.optionKey = option.key;
+  block.dataset.group = option.group || "Options";
+  block.dataset.search = `${option.key} ${option.label} ${option.description || ""} ${option.group || ""}`.toLowerCase();
+  block.innerHTML = `
+    <div class="optionHead">
+      <div>
+        <h4 class="optionTitle">${escapeHtml(option.label)}</h4>
+      </div>
+      <span class="optionCode">${escapeHtml(option.key)}</span>
+    </div>
+  `;
+
+  if(option.description){
+    const desc = document.createElement("p");
+    desc.className = "optionDesc";
+    desc.textContent = option.description;
+    block.appendChild(desc);
+  }
+
+  if(option.rangeMin !== null || option.rangeMax !== null){
+    const range = document.createElement("div");
+    range.className = "rangeNote";
+    if(option.rangeMin !== null) range.innerHTML += `<span>Min ${option.rangeMin}</span>`;
+    if(option.rangeMax !== null) range.innerHTML += `<span>Max ${option.rangeMax}</span>`;
+    block.appendChild(range);
+  }
+
+  if(option.control === "toggle") block.appendChild(renderToggleControl(option));
+  else if(option.control === "range") block.appendChild(renderRangeControl(option));
+  else if(option.control === "choice") block.appendChild(renderChoiceControl(option));
+  else if(option.control === "map") block.appendChild(renderMapControl(option));
+  else block.appendChild(renderRawControl(option));
+
+  return block;
+}
+
+function renderToggleControl(option){
+  const selected = selectedEntry(option);
+  const checked = normalizeBooleanKey(selected.key) === "true";
+  const label = document.createElement("label");
+  label.className = "toggleControl directControl";
+  label.dataset.control = "toggle";
+  label.innerHTML = `
+    <input class="weightedToggle" type="checkbox" ${checked ? "checked" : ""}>
+    <span class="switchRail" aria-hidden="true"></span>
+    <span class="switchText"></span>
+  `;
+  const input = label.querySelector("input");
+  const text = label.querySelector(".switchText");
+  const sync = () => {
+    text.textContent = input.checked ? "True" : "False";
+  };
+  input.addEventListener("change", () => {
+    sync();
+    updateAll();
+  });
+  sync();
+  return label;
+}
+
+function renderChoiceControl(option){
+  const wrap = document.createElement("div");
+  wrap.className = "choiceControl directControl";
+  wrap.dataset.control = "choice";
+
+  const select = document.createElement("select");
+  select.className = "choiceSelect";
+  const selected = selectedEntry(option);
+  option.entries.forEach((entry) => {
+    const choice = document.createElement("option");
+    choice.value = entry.key;
+    choice.textContent = humanizeValue(entry.key);
+    choice.dataset.note = entry.note || "";
+    select.appendChild(choice);
+  });
+  select.value = selected.key || option.entries[0]?.key || "";
+
+  const note = document.createElement("div");
+  note.className = "choiceNote";
+  const sync = () => {
+    const selectedOption = select.selectedOptions[0];
+    note.textContent = selectedOption ? selectedOption.dataset.note || "" : "";
+  };
+  select.addEventListener("change", () => {
+    sync();
+    updateAll();
+  });
+  wrap.appendChild(select);
+  wrap.appendChild(note);
+  sync();
+  return wrap;
+}
+
+function renderRangeControl(option){
+  const wrap = document.createElement("div");
+  wrap.className = "rangeControl directControl";
+  wrap.dataset.control = "range";
+
+  const selected = selectedEntry(option);
+  const selectedIsNumber = isNumericText(selected.key);
+  const customValue = selectedIsNumber ? Number(selected.key) : defaultRangeValue(option, selected);
+  const min = Number.isFinite(Number(option.rangeMin)) ? Number(option.rangeMin) : 0;
+  const max = Number.isFinite(Number(option.rangeMax)) ? Number(option.rangeMax) : Math.max(99, customValue);
+  const clampedValue = clamp(customValue, min, max);
+
+  const modeRow = document.createElement("div");
+  modeRow.className = "rangeModeRow";
+  const mode = document.createElement("select");
+  mode.className = "rangeMode";
+  mode.innerHTML = `<option value="__custom__">Custom value</option>`;
+  option.entries.filter((entry) => !isNumericText(entry.key)).forEach((entry) => {
+    const choice = document.createElement("option");
+    choice.value = entry.key;
+    choice.textContent = humanizeValue(entry.key);
+    choice.dataset.note = entry.note || "";
+    mode.appendChild(choice);
+  });
+  mode.value = selectedIsNumber ? "__custom__" : selected.key;
+
+  const note = document.createElement("div");
+  note.className = "choiceNote";
+  modeRow.appendChild(mode);
+  modeRow.appendChild(note);
+
+  const valueRow = document.createElement("div");
+  valueRow.className = "rangeValueRow";
+  const slider = document.createElement("input");
+  slider.className = "rangeSlider";
+  slider.type = "range";
+  slider.min = String(min);
+  slider.max = String(max);
+  slider.step = "1";
+  slider.value = String(clampedValue);
+  const number = document.createElement("input");
+  number.className = "rangeNumber";
+  number.type = "number";
+  number.min = String(min);
+  number.max = String(max);
+  number.step = "1";
+  number.value = String(clampedValue);
+  valueRow.appendChild(slider);
+  valueRow.appendChild(number);
+
+  const syncValue = (source) => {
+    const value = clamp(Number(source.value || min), min, max);
+    slider.value = String(value);
+    number.value = String(value);
+  };
+  const syncMode = () => {
+    const custom = mode.value === "__custom__";
+    const selectedOption = mode.selectedOptions[0];
+    if(!custom){
+      const selectedRangeEntry = (option.entries || []).find((entry) => entry.key === mode.value);
+      const equivalent = selectedRangeEntry ? equivalentValue(selectedRangeEntry.note) : null;
+      if(equivalent !== null) syncValue({value: equivalent});
+    }
+    slider.disabled = !custom;
+    number.disabled = !custom;
+    note.textContent = custom ? `Value ${number.value}` : selectedOption ? selectedOption.dataset.note || "" : "";
+  };
+  slider.addEventListener("input", () => {
+    syncValue(slider);
+    syncMode();
+    updateAll();
+  });
+  number.addEventListener("input", () => {
+    syncValue(number);
+    syncMode();
+    updateAll();
+  });
+  mode.addEventListener("change", () => {
+    syncMode();
+    updateAll();
+  });
+
+  wrap.appendChild(modeRow);
+  wrap.appendChild(valueRow);
+  syncMode();
+  return wrap;
+}
+
+function renderMapControl(option){
+  const wrap = document.createElement("div");
+  wrap.className = "directControl";
+  wrap.dataset.control = "map";
+  const list = document.createElement("div");
+  list.className = "entryList";
+  list.dataset.entryList = option.key;
+  option.entries.forEach((entry) => list.appendChild(renderEntryRow(entry)));
+  wrap.appendChild(list);
+  const add = document.createElement("button");
+  add.type = "button";
+  add.className = "miniButton add";
+  add.textContent = "Add Entry";
+  add.addEventListener("click", () => {
+    list.appendChild(renderEntryRow({key:"", value:"0", note:""}));
+    updateAll();
+  });
+  wrap.appendChild(add);
+  return wrap;
+}
+
+function renderRawControl(option){
+  const textarea = document.createElement("textarea");
+  textarea.className = "rawInput";
+  textarea.spellcheck = false;
+  textarea.dataset.control = "raw";
+  textarea.dataset.rawOption = option.key;
+  textarea.value = option.raw || "";
+  textarea.addEventListener("input", updateAll);
+  return textarea;
+}
+
+function renderEntryRow(entry){
+  const row = document.createElement("div");
+  row.className = "entryRow";
+
+  const keyInput = document.createElement("input");
+  keyInput.className = "entryKey";
+  keyInput.type = "text";
+  keyInput.value = entry.key || "";
+  keyInput.setAttribute("aria-label", "Entry key");
+  keyInput.addEventListener("input", updateAll);
+
+  const valueInput = document.createElement("input");
+  valueInput.className = "entryValue";
+  valueInput.type = isNumericText(entry.value) ? "number" : "text";
+  if(valueInput.type === "number"){
+    valueInput.min = "0";
+    valueInput.step = "1";
+  }
+  valueInput.value = entry.value || "0";
+  valueInput.setAttribute("aria-label", "Entry value");
+  valueInput.addEventListener("input", updateAll);
+
+  const note = document.createElement("div");
+  note.className = "entryNote";
+  note.textContent = entry.note || "";
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "miniButton remove";
+  remove.textContent = "X";
+  remove.setAttribute("aria-label", "Remove entry");
+  remove.addEventListener("click", () => {
+    row.remove();
+    updateAll();
+  });
+
+  row.appendChild(keyInput);
+  row.appendChild(valueInput);
+  row.appendChild(note);
+  row.appendChild(remove);
+  return row;
+}
+
+function selectedEntry(option){
+  return (option.entries || []).find((entry) => Number(entry.value) > 0) || (option.entries || [])[0] || {key:"", value:"0", note:""};
+}
+
+function normalizeBooleanKey(value){
+  return String(value || "").trim().toLowerCase();
+}
+
+function defaultRangeValue(option, selected){
+  if(selected && isNumericText(selected.key)) return Number(selected.key);
+  const equivalent = selected ? equivalentValue(selected.note) : null;
+  if(equivalent !== null) return equivalent;
+  const normal = (option.entries || []).find((entry) => entry.key === "normal");
+  const normalEquivalent = normal ? equivalentValue(normal.note) : null;
+  if(normalEquivalent !== null) return normalEquivalent;
+  const numeric = (option.entries || []).find((entry) => isNumericText(entry.key));
+  if(numeric) return Number(numeric.key);
+  const min = Number(option.rangeMin);
+  const max = Number(option.rangeMax);
+  if(Number.isFinite(min) && Number.isFinite(max)) return Math.round((min + max) / 2);
+  return Number.isFinite(min) ? min : 0;
+}
+
+function equivalentValue(note){
+  const match = String(note || "").match(/equivalent to\s+(-?\d+)/i);
+  return match ? Number(match[1]) : null;
+}
+
+function humanizeValue(value){
+  const text = String(value ?? "");
+  if(text === "__custom__") return "Custom value";
+  return text.replace(/^['"]|['"]$/g, "").replace(/[_-]+/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function clamp(value, min, max){
+  const safe = Number.isFinite(value) ? value : min;
+  return Math.max(min, Math.min(max, safe));
+}
+
+function bindEvents(){
+  els.playerName.addEventListener("input", updateAll);
+  els.description.addEventListener("input", updateAll);
+  els.requiresVersion.addEventListener("input", updateAll);
+  els.searchBox.addEventListener("input", filterOptions);
+  els.groupFilter.addEventListener("change", filterOptions);
+  els.copyBtn.addEventListener("click", copyYaml);
+  els.downloadBtn.addEventListener("click", downloadYaml);
+}
+
+function updateAll(){
+  els.yamlOutput.value = buildYaml();
+  els.yamlStatus.textContent = validateState();
+  els.statusLine.textContent = `${els.yamlOutput.value.split("\n").length - 1} YAML lines generated`;
+  filterOptions();
+}
+
+function filterOptions(){
+  const query = (els.searchBox.value || "").trim().toLowerCase();
+  const group = els.groupFilter.value;
+  let visible = 0;
+  document.querySelectorAll(".groupSection").forEach((section) => {
+    let sectionVisible = 0;
+    section.querySelectorAll(".optionBlock").forEach((block) => {
+      const matchesGroup = !group || block.dataset.group === group;
+      const matchesQuery = !query || block.dataset.search.includes(query);
+      const show = matchesGroup && matchesQuery;
+      block.classList.toggle("hidden", !show);
+      if(show){
+        visible += 1;
+        sectionVisible += 1;
+      }
+    });
+    section.classList.toggle("hidden", sectionVisible === 0);
+  });
+  els.visibleCount.textContent = `${visible} visible`;
+}
+
+function validateState(){
+  if(!(els.playerName.value || "").trim()) return "Needs Name";
+  if(!PAGE_DATA.options.length) return "No Options";
+  return "Ready";
+}
+
+function buildYaml(){
+  const lines = [];
+  lines.push(`# Generated by ${PAGE_DATA.fileName}`);
+  lines.push(`# Source: ${PAGE_DATA.sourceName}`);
+  lines.push(`name: ${yamlScalar((els.playerName.value || "").trim() || "Player")}`);
+  lines.push(`description: ${yamlScalar((els.description.value || "").trim() || `${PAGE_DATA.game} player options.`, true)}`);
+  lines.push(`game: ${yamlScalar(PAGE_DATA.game, true)}`);
+
+  const version = (els.requiresVersion.value || "").trim();
+  if(version || PAGE_DATA.worldVersion){
+    lines.push("requires:");
+    if(version) lines.push(`  version: ${yamlScalar(version)}`);
+    if(PAGE_DATA.worldVersion){
+      lines.push("  game:");
+      lines.push(`    ${yamlKey(PAGE_DATA.game)}: ${yamlScalar(PAGE_DATA.worldVersion)}`);
+    }
+  }
+
+  lines.push("");
+  lines.push(`${yamlKey(PAGE_DATA.game)}:`);
+
+  PAGE_DATA.options.forEach((option) => {
+    const block = document.querySelector(`[data-option-key="${cssEscape(option.key)}"]`);
+    if(!block) return;
+    if(option.control === "toggle"){
+      const checked = block.querySelector(".weightedToggle").checked;
+      appendWeightedSelection(lines, option, checked ? "true" : "false");
+    }else if(option.control === "choice"){
+      const selected = block.querySelector(".choiceSelect").value;
+      appendWeightedSelection(lines, option, selected);
+    }else if(option.control === "range"){
+      const mode = block.querySelector(".rangeMode").value;
+      if(mode === "__custom__"){
+        appendWeightedRangeSelection(lines, option, block.querySelector(".rangeNumber").value);
+      }else{
+        appendWeightedSelection(lines, option, mode);
+      }
+    }else if(option.control === "map"){
+      appendMapEntries(lines, option, block);
+    }else{
+      const raw = block.querySelector(".rawInput").value;
+      appendRawOption(lines, option.key, raw);
+    }
+  });
+
+  return lines.join("\n") + "\n";
+}
+
+function appendWeightedSelection(lines, option, selectedKey){
+  lines.push(`  ${yamlKey(option.key)}:`);
+  let found = false;
+  (option.entries || []).forEach((entry) => {
+    const selected = String(entry.key) === String(selectedKey);
+    if(selected) found = true;
+    lines.push(`    ${yamlKey(entry.key)}: ${selected ? 50 : 0}`);
+  });
+  if(!found && selectedKey){
+    lines.push(`    ${yamlKey(selectedKey)}: 50`);
+  }
+}
+
+function appendWeightedRangeSelection(lines, option, rawValue){
+  const min = Number.isFinite(Number(option.rangeMin)) ? Number(option.rangeMin) : 0;
+  const max = Number.isFinite(Number(option.rangeMax)) ? Number(option.rangeMax) : 99;
+  const selectedKey = String(clamp(Math.round(Number(rawValue || min)), min, max));
+  lines.push(`  ${yamlKey(option.key)}:`);
+  let found = false;
+  (option.entries || []).forEach((entry) => {
+    const selected = String(entry.key) === selectedKey;
+    if(selected) found = true;
+    lines.push(`    ${yamlKey(entry.key)}: ${selected ? 50 : 0}`);
+  });
+  if(!found){
+    lines.splice(lines.length - (option.entries || []).length, 0, `    ${yamlKey(selectedKey)}: 50`);
+  }
+}
+
+function appendMapEntries(lines, option, block){
+  const rows = [...block.querySelectorAll(".entryRow")].map((row) => {
+    const key = row.querySelector(".entryKey").value.trim();
+    const value = row.querySelector(".entryValue").value.trim();
+    return {key, value};
+  }).filter((entry) => entry.key);
+  if(!rows.length){
+    lines.push(`  ${yamlKey(option.key)}: {}`);
+    return;
+  }
+  lines.push(`  ${yamlKey(option.key)}:`);
+  rows.forEach((entry) => {
+    lines.push(`    ${yamlKey(entry.key)}: ${yamlValue(entry.value || "0")}`);
+  });
+}
+
+function appendRawOption(lines, key, raw){
+  const text = String(raw || "").trim();
+  if(!text){
+    lines.push(`  ${yamlKey(key)}: []`);
+    return;
+  }
+  if(!text.includes("\n")){
+    lines.push(`  ${yamlKey(key)}: ${text}`);
+    return;
+  }
+  lines.push(`  ${yamlKey(key)}:`);
+  const rawLines = text.replace(/\s+$/g, "").split("\n");
+  const filled = rawLines.filter((line) => line.trim());
+  const minIndent = filled.reduce((min, line) => Math.min(min, line.match(/^\s*/)[0].length), Infinity);
+  rawLines.forEach((line) => {
+    lines.push(line.trim() ? "    " + line.slice(minIndent) : "");
+  });
+}
+
+async function copyYaml(){
+  const text = els.yamlOutput.value;
+  try{
+    if(navigator.clipboard && window.isSecureContext){
+      await navigator.clipboard.writeText(text);
+    }else{
+      els.yamlOutput.focus();
+      els.yamlOutput.select();
+      document.execCommand("copy");
+      els.yamlOutput.setSelectionRange(0, 0);
+    }
+    flashStatus("Copied");
+  }catch(_){
+    els.yamlOutput.focus();
+    els.yamlOutput.select();
+    flashStatus("Selected");
+  }
+}
+
+function downloadYaml(){
+  const name = sanitizeFileName((els.playerName.value || "").trim() || PAGE_DATA.slug || "Player");
+  const blob = new Blob([els.yamlOutput.value], {type:"text/yaml;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${name}.yaml`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 500);
+  flashStatus("Downloaded");
+}
+
+function flashStatus(text){
+  els.yamlStatus.textContent = text;
+  clearTimeout(flashStatus.timer);
+  flashStatus.timer = setTimeout(updateAll, 900);
+}
+
+function yamlScalar(value, forceQuote = false){
+  const text = String(value ?? "");
+  if(!forceQuote && /^-?\d+(\.\d+)?$/.test(text)) return text;
+  if(!forceQuote && /^[A-Za-z0-9_./-]+$/.test(text) && !isYamlKeyword(text)) return text;
+  return `"${text.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+}
+
+function yamlKey(value){
+  const text = String(value ?? "");
+  if(/^-?\d+(\.\d+)?$/.test(text)) return text;
+  if(/^[A-Za-z0-9_./-]+$/.test(text) && !isYamlKeyword(text)) return text;
+  return `'${text.replace(/'/g, "''")}'`;
+}
+
+function yamlValue(value){
+  const text = String(value ?? "").trim();
+  if(!text) return "0";
+  if(/^-?\d+(\.\d+)?$/.test(text)) return text;
+  if(/^(true|false|null)$/i.test(text)) return text.toLowerCase();
+  if(/^(\[|\{|'|"|>|\||!|&|\*)/.test(text)) return text;
+  return yamlScalar(text, true);
+}
+
+function isYamlKeyword(value){
+  return /^(true|false|null|yes|no|on|off|y|n)$/i.test(String(value));
+}
+
+function isNumericText(value){
+  return /^-?\d+(\.\d+)?$/.test(String(value || "").trim());
+}
+
+function sanitizeFileName(value){
+  return String(value || "Player").replace(/[^A-Za-z0-9_.-]+/g, "_").replace(/^_+|_+$/g, "") || "Player";
+}
+
+function cssEscape(value){
+  if(window.CSS && CSS.escape) return CSS.escape(value);
+  return String(value).replace(/["\\]/g, "\\$&");
+}
+
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[char]);
+}
+
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>

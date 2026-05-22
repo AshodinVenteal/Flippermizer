@@ -1,53 +1,95 @@
 # Flippermizer
 
-A fully built, runnable and re-runnable Archipelago AP Manual World client built in-browser (including ab Electron launcher .exe variant) that will allow you to play through Pinball tables (currently only the 25 set shown here) and randomize your objectives, what you need to complete, and the objectives to finish the randomizer.
+Flippermizer! Pinball Randomized! is a pinball randomizer client for Archipelago and singleplayer Home Edition runs. It randomizes pinball table objectives, tracks received and sent items, opens tables through progression, and wraps the run in a cyber-pinball UI built from HTML, CSS, JavaScript, and Electron.
 
-It was built entirely by me, Ashodin, using CSS, JS, and HTML code over months from scratch, learning as I go, and copy-pasting code from other example sources online to retroactively understand the code as I built it.
+The current release focus is **Flippermizer! Pinball Randomized! | Home Edition**, a desktop client built for Archipelago multiworld play and local singleplayer seeds without stream-only integrations.
 
-Streams utilizing Flippermizer can be seen at http://twitch.tv/ashodin on Tuesdays every week.
+## Home Edition 1.0 RC2
 
-## What's Included?
+Home Edition 1.0 RC2 is the current release candidate intended for real Archipelago run use. It is published from the `home-edition` branch with the tag `home-edition-v1.0.0-rc2`.
 
-- `flippermizer_overlay_tower_v3.html`
-- `flippermizer_yaml_options.html`
-- `flippermizer_standalone_client.html`
-- `flippermizer_standalone_client.css`
-- `flippermizer_standalone_client.js`
-- `flippermizer_table_repository.js`
-- `flippermizer_task_explanations.js`
-- `flippermizer_table_repository_library.html`
-- runtime assets in `WorldsBanners/`, `Flippermizer Images/`, `sounds/`, and `vendor/`
+Release assets:
 
-## Not Included
+- `Flippermizer-Home-Edition-1.0.0-portable.exe` - Windows portable Electron launcher.
+- `Flippermizer-Home-Edition-1.0.0-upload-bundle.zip` - launcher plus helper files for setup and distribution.
 
-- Archipelago world source and `.apworld` build artifacts
-- Electron launcher, bots, local bridge services, and packaging output
-- backup HTML snapshots and local-only development files
+The upload bundle includes:
 
-## Notes
+- Home Edition portable launcher.
+- `flippermizer_yaml_options.html` for generating Flippermizer AP player YAML.
+- `manual_flippermizerworldsofpinball_base_game.apworld`.
+- This README.
 
-- This publish copy removes local absolute file paths.
-- The local FLPR bot bridge is disabled by default in the published overlay copy.
-- JSZip is vendored locally at `vendor/jszip.min.js`.
-- Shared Stream/Home Edition UI and integration expectations live in `STYLE_GUIDE.md`.
+The included AP World no longer emits Boss Key items into Archipelago generation. Home Edition handles boss key discovery, boss table presentation, and boss progression locally while normal checks still report through Archipelago.
 
-## Run
+## Latest Update Patch Notes
 
-Open `flippermizer_overlay_tower_v3.html` in a browser or OBS browser source.
+- Home Edition now throttles background seed-save, profile HUD, counter, and auto-swap refresh work to reduce lag when clicking and hovering in the launcher.
+- Visuals / Music now includes a bundled font selector with Press Start 2P, Hubot Sans, and Jersey 15, and the Home header uses the Stream-style layout with HOME EDITION branding.
+- Score checks now keep their pending redemption metadata long enough to pair with later AP ReceivedItems snapshots, including the case where RoomUpdate confirms the check first.
+- Cross-game ReceivedItems now wait for known DataPackage item names instead of processing as generic `Item #...` placeholders, restoring Progressive Ball reward handling.
+- Published Home Edition 1.0 RC2 from the `home-edition` branch.
+- Added the Task Repository Editor, repeated-task grouping, template table markers, and exportable template guidance for task/title/tooltip cleanup.
+- Normalized Home and Stream task titles and strategy tooltips with `GUIDE:` / `NOTE:` labels preserved in task hover cards.
+- Packaged the Windows portable launcher and an upload bundle for players.
+- Added the YAML Options helper and latest AP World to the release bundle.
+- Updated the AP World package so Boss Key and Boss Key Hint item counts are zero.
+- Added profile/save support for Home Edition, including profile identity, FLPRP, local seed saves, and progression tracking.
+- Split controls into singleplayer and multiplayer flows, with AP connection, item log, connection log, and hints focused under multiplayer.
+- Added AP Text Client-style connection logging with color-coded player, item, hint, and status text.
+- Added Received, Sent, and Hint logs with selectable/copyable entries and scroll retention.
+- Improved AP sync handling so received/sent logs do not replay when the server state has not changed.
+- Added corrected AP sent-item reporting so external players see the item actually sent by the server.
+- Added full-size progression sent/received notifications and color-coded item type presentation.
+- Added strategy guide tooltips for tasks and score goals, with table-specific corrections.
+- Added boss table flow, boss table checks, siege timing, boss victory presentation, and phase music behavior.
+- Stabilized table selection so AP sync, now-playing artifacts, and episode/live systems do not move the selected table in Home Edition.
+- Removed stream-only systems from Home Edition, including chat stream hangman, FLPR-Bot sync, now-playing artifacts, and episode/live notifications.
+- Added visuals/music options for background choices, logo positioning, hardware acceleration, and launcher display preferences.
+- Cleaned the repository so tracked Markdown is limited to this README and generated AP logs, old upload bundles, backups, and episode helper scripts are no longer tracked.
+- Filler Junk Items in Home Edition now play the Stream Edition easy/medium randomize roll before updating the junk drawers.
+- Simplified junk counter drawers: Easy, Medium, and Fragment counters now show piece progress plus a small READY count for spendable rewards.
+- Added readable collapsed counter chips for junk redeems and Extra Ball tokens so hidden drawer handles still show what is ready.
+- Fixed Grand Lizard's Home Edition task catalog so it renders a full six-check set with distinct easy, medium, and hard objectives.
+- Reworked the siege intro so the selected table morphs from its normal bubble card into the full siege card while the other table cards fade away.
+- Updated the siege intro staging so the attacking force approaches the selected table first, then the castle appears before defense controls unlock.
+- Reworked the siege-clear victory into a full-screen defense animation with the damaged castle visible, the attacking force driven off, victory lights, cheer timing, and regression coverage.
+- Fixed the Home Edition launcher defense-button path so clearing a siege from Electron reliably plays the full-screen siege victory animation without double-playing it.
+- Filler, junk, and Pinball Fragment rewards delivered through live AP received snapshots now show the same full-size received-item notification as other item rewards.
 
-For the built-in bestiary link, keep `flippermizer_table_repository_library.html` in the same folder as the overlay file.
+## Running Home Edition
 
-For Flippermizer AP player YAML setup, open `flippermizer_yaml_options.html` in a browser.
+Use the packaged release for normal play:
 
-For the standalone AP client, use **Flippermizer! Pinball Randomized! | Home Edition**. It provides a pared-back Multiworld/Singleplayer interface without stream integrations, traps, or bonus pinball.
+1. Download `Flippermizer-Home-Edition-1.0.0-upload-bundle.zip` from the RC2 release.
+2. Extract it.
+3. Run `Flippermizer-Home-Edition-1.0.0-portable.exe`.
+4. For Archipelago generation, use the included `.apworld` and the YAML helper.
 
-## Home Edition
-
-Flippermizer! Pinball Randomized! | Home Edition can be packaged as a Windows executable:
+## Building From Source
 
 ```powershell
 npm install
+npm run check
 npm run dist:portable
 ```
 
 The unpacked app and portable build are written to `dist/`.
+
+## New World Flyer Routine
+
+When adding or staging new worlds, every new table flyer must come directly from the same source-acquisition pass used for the table build and guide research. Do not create placeholder flyer art.
+
+Use `WorldsBanners/BestiaryFlyers/<TABLE_CODE>.jpg` for newly sourced flyer assets. If a new JPG replaces an older PNG for the same table code, remove the PNG from both the overlay asset folder and the parent packaging asset folder, update the table repository and overlay defaults to the JPG, and add a PNG-to-JPG migration for existing saved state.
+
+Run `npm run check:flyers` before a new world is considered ready. The check fails if a banner ref points at a missing asset, if a placeholder-style flyer name is present, or if a table keeps both JPG and PNG flyer variants.
+
+## Important Files
+
+- `electron/` - Electron launcher, preload, and Home Edition bridge.
+- `flippermizer_overlay_tower_v3.html` - main UI surface.
+- `flippermizer_yaml_options.html` - AP YAML helper.
+- `flippermizer_table_repository.js` - table data and metadata.
+- `flippermizer_task_explanations.js` - task and strategy guide text.
+- `ap_multiworld_test/world_source/` - Flippermizer AP World source.
+- `WorldsBanners/`, `Flippermizer Images/`, `sounds/`, `vendor/` - runtime assets.

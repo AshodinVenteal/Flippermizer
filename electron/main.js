@@ -5,8 +5,8 @@ const path = require("path");
 const APP_TITLE = "Flippermizer! Pinball Randomized! | Home Edition";
 const APP_SHORT_NAME = "Flippermizer Home Edition";
 const APP_ID = "net.flippermizer.homeedition";
-const APP_ICON = path.join(__dirname, "..", "build", process.platform === "win32" ? "icon.ico" : "icon.png");
-const APP_ICON_FALLBACK = path.join(__dirname, "..", "Flippermizer Images", "FM-Icon64x64.png");
+const APP_ICON_HOME_IMAGE = path.join(__dirname, "..", "Flippermizer Images", "flippermizericon-Home-Edition-64x64.png");
+const APP_ICON_PACKAGE = path.join(__dirname, "..", "build", process.platform === "win32" ? "home-icon.ico" : "icon.png");
 const OVERLAY_BASE_HEIGHT = 1450;
 const DEFAULT_WINDOW_BOUNDS = { width: 1600, height: 960 };
 const MIN_WINDOW_BOUNDS = { width: 1280, height: 720 };
@@ -194,9 +194,9 @@ function scheduleWindowStateSave(win){
 }
 
 function loadAppIcon(){
-  const preferred = nativeImage.createFromPath(APP_ICON);
+  const preferred = nativeImage.createFromPath(APP_ICON_HOME_IMAGE);
   if(!preferred.isEmpty()) return preferred;
-  return nativeImage.createFromPath(APP_ICON_FALLBACK);
+  return nativeImage.createFromPath(APP_ICON_PACKAGE);
 }
 
 function notifyOverlayViewport(win){
@@ -271,7 +271,7 @@ function createWindow(){
     backgroundColor: "#04121f",
     autoHideMenuBar: true,
     show: false,
-    icon: appIcon.isEmpty() ? APP_ICON : appIcon,
+    icon: appIcon.isEmpty() ? APP_ICON_PACKAGE : appIcon,
     title: APP_TITLE,
     webPreferences: {
       contextIsolation: true,
