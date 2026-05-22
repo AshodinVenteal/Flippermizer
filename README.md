@@ -1,8 +1,8 @@
 # Flippermizer
 
-A fully built, runnable and re-runnable Archipelago AP Manual World client built in-browser (soon to have an Electron launcher .exe variant) that will allow you to play through Pinball tables (currently only the 25 set shown here) and randomize your objectives, what you need to complete, and the objectives to finish the randomizer.
+A fully built, runnable and re-runnable Archipelago AP Manual World client built in-browser (including ab Electron launcher .exe variant) that will allow you to play through Pinball tables (currently only the 25 set shown here) and randomize your objectives, what you need to complete, and the objectives to finish the randomizer.
 
-It was built entirely by me, Ashodin, using CSS, JS, and HTML code over the past month from scratch, learning as I go, and copy-pasting code from other example sources online to retroactively understand the code as I built it.
+It was built entirely by me, Ashodin, using CSS, JS, and HTML code over months from scratch, learning as I go, and copy-pasting code from other example sources online to retroactively understand the code as I built it.
 
 Streams utilizing Flippermizer can be seen at http://twitch.tv/ashodin on Tuesdays every week.
 
