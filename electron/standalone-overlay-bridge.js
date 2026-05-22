@@ -125,7 +125,8 @@
     lastProfileUiAt: 0,
     pendingHudPositionTimer: 0,
     lastCounterSig: "",
-    lastCounterAt: 0
+    lastCounterAt: 0,
+    lastGateSeedSaveAt: 0
   };
   try{ window.__flprStandalonePerformanceRuntime = standalonePerformanceRuntime; }catch(_){}
   const standaloneProfileRuntime = {
@@ -7314,9 +7315,13 @@
           }else{
             standaloneRefreshProfileUi();
           }
-          standaloneScheduleSeedSave({ reason:"poll" }, 2200);
+          const now = Date.now();
+          if(!standalonePerformanceRuntime.pendingSeedSaveTimer && (now - Number(standalonePerformanceRuntime.lastGateSeedSaveAt || 0)) >= 15000){
+            standalonePerformanceRuntime.lastGateSeedSaveAt = now;
+            standaloneScheduleSeedSave({ reason:"poll" }, 900);
+          }
         }catch(_){}
-      }, 1000);
+      }, 2500);
     }
     if(!window.__flprStandaloneRandomizerStartGateBound){
       window.__flprStandaloneRandomizerStartGateBound = true;
@@ -17901,7 +17906,13 @@
       window.addEventListener("resize", applyStandaloneWindowScale, { passive:true });
     }
     if(!window.__flprStandaloneCounterTimer){
-      window.__flprStandaloneCounterTimer = setInterval(renderStandaloneCounters, 500);
+      window.__flprStandaloneCounterTimer = setInterval(renderStandaloneCounters, 1000);
+      try{
+        window.addEventListener("beforeunload", ()=>{
+          try{ clearInterval(window.__flprStandaloneCounterTimer); }catch(_){}
+          window.__flprStandaloneCounterTimer = 0;
+        }, { once:true });
+      }catch(_){}
     }
     attempt();
     let ticks = 0;
