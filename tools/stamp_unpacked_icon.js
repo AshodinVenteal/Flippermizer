@@ -3,6 +3,7 @@ const path = require("path");
 const { spawnSync } = require("child_process");
 
 const root = path.resolve(__dirname, "..");
+const homeIconSourcePath = path.join(root, "Flippermizer Images", "FM-Icon64x64.png");
 const iconPath = path.join(root, "build", "icon.ico");
 const rceditPath = path.join(root, "node_modules", "electron-winstaller", "vendor", "rcedit.exe");
 const unpackedExe = path.join(root, "dist", "win-unpacked", "Flippermizer Home Edition.exe");
@@ -13,7 +14,8 @@ function requireFile(filePath, label){
   }
 }
 
-requireFile(iconPath, "Icon");
+requireFile(homeIconSourcePath, "Home Edition icon source");
+requireFile(iconPath, "Windows icon");
 requireFile(rceditPath, "rcedit");
 requireFile(unpackedExe, "Unpacked executable");
 

@@ -1,0 +1,19 @@
+name: Flippermizer
+description: "Stream seed 2026-05-19: Toccata Terror and Tabletop Rumblespot plus three non-overlapping random worlds."
+game: Flippermizer
+
+Flippermizer:
+  progression_balancing: 50
+  accessibility: items
+  boss_keys_required_for_boss_table_open: 3
+  filter_mode_trap_enabled: true
+  task_shuffle_enabled: true
+  random_start_tables_open: false
+  filler_traps: 16
+  score_adjustment_mode: normal
+  base_game_active_table_count: 25
+  base_game_selection_mode: curated_catalog_groups
+  base_game_curated_world_groups: "toccata_terror, tabletop_rumblespot, nineties_movie_mayhem, pixel_quest, ramps_rumpus"
+  base_game_random_one_featured_designer_only: false
+  base_game_starting_open_table_count: 5
+  base_game_enabled: true

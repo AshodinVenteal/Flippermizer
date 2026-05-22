@@ -4,9 +4,9 @@ Flippermizer! Pinball Randomized! is a pinball randomizer client for Archipelago
 
 The current release focus is **Flippermizer! Pinball Randomized! | Home Edition**, a desktop client built for Archipelago multiworld play and local singleplayer seeds without stream-only integrations.
 
-## Home Edition 1.0 RC1
+## Home Edition 1.0 RC2
 
-Home Edition 1.0 RC1 is the first release candidate intended for real Archipelago run use. It is published from the `home-edition` branch with the tag `home-edition-v1.0.0-rc1`.
+Home Edition 1.0 RC2 is the current release candidate intended for real Archipelago run use. It is published from the `home-edition` branch with the tag `home-edition-v1.0.0-rc2`.
 
 Release assets:
 
@@ -24,7 +24,9 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 
 ## Latest Update Patch Notes
 
-- Published Home Edition 1.0 RC1 from the `home-edition` branch.
+- Published Home Edition 1.0 RC2 from the `home-edition` branch.
+- Added the Task Repository Editor, repeated-task grouping, template table markers, and exportable template guidance for task/title/tooltip cleanup.
+- Normalized Home and Stream task titles and strategy tooltips with `GUIDE:` / `NOTE:` labels preserved in task hover cards.
 - Packaged the Windows portable launcher and an upload bundle for players.
 - Added the YAML Options helper and latest AP World to the release bundle.
 - Updated the AP World package so Boss Key and Boss Key Hint item counts are zero.
@@ -55,7 +57,7 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 
 Use the packaged release for normal play:
 
-1. Download `Flippermizer-Home-Edition-1.0.0-upload-bundle.zip` from the RC1 release.
+1. Download `Flippermizer-Home-Edition-1.0.0-upload-bundle.zip` from the RC2 release.
 2. Extract it.
 3. Run `Flippermizer-Home-Edition-1.0.0-portable.exe`.
 4. For Archipelago generation, use the included `.apworld` and the YAML helper.
@@ -69,6 +71,14 @@ npm run dist:portable
 ```
 
 The unpacked app and portable build are written to `dist/`.
+
+## New World Flyer Routine
+
+When adding or staging new worlds, every new table flyer must come directly from the same source-acquisition pass used for the table build and guide research. Do not create placeholder flyer art.
+
+Use `WorldsBanners/BestiaryFlyers/<TABLE_CODE>.jpg` for newly sourced flyer assets. If a new JPG replaces an older PNG for the same table code, remove the PNG from both the overlay asset folder and the parent packaging asset folder, update the table repository and overlay defaults to the JPG, and add a PNG-to-JPG migration for existing saved state.
+
+Run `npm run check:flyers` before a new world is considered ready. The check fails if a banner ref points at a missing asset, if a placeholder-style flyer name is present, or if a table keeps both JPG and PNG flyer variants.
 
 ## Important Files
 
