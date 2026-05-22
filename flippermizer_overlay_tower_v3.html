@@ -159,6 +159,7 @@
   --flprFontHubot:'Hubot Sans', 'Segoe UI', system-ui, sans-serif;
   --flprUiFontFamily:var(--flprFontPixel);
   --flprTitleFontFamily:var(--flprFontArcade);
+  --flprFontSizeAdjust:none;
   --mono:var(--flprUiFontFamily);
 
   --captureW: 910px; /* 15% reduced */
@@ -177,14 +178,22 @@
 body.flprFontPixel{
   --flprUiFontFamily:var(--flprFontPixel);
   --flprTitleFontFamily:var(--flprFontArcade);
+  --flprFontSizeAdjust:none;
 }
 body.flprFontHubot{
   --flprUiFontFamily:var(--flprFontHubot);
   --flprTitleFontFamily:var(--flprFontHubot);
+  --flprFontSizeAdjust:0.84;
 }
 body.flprFontArcade{
   --flprUiFontFamily:var(--flprFontArcade);
   --flprTitleFontFamily:var(--flprFontArcade);
+  --flprFontSizeAdjust:1.04;
+}
+
+body,
+body *{
+  font-size-adjust:var(--flprFontSizeAdjust);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
@@ -21739,10 +21748,7 @@ body.flprShopSparksSlime .spark{
         <button class="cBtn danger" id="episodeEndBtn" style="display: none;">EPISODE END</button>
       </div><div class="apHint" id="episodeStateTxt" data-episode-status="idle">EPISODE STATUS; IDLE. Achievements, records, and FLPRP are paused until START is pressed.</div><div style="height:14px"></div><div class="cSectionTitle">PROGRESS</div><div class="cRow">
         <button class="cBtn danger" id="wipeProgressBtn">WIPE PROGRESS (KEEP BANNERS)</button>
-      </div><div class="cNote" id="bonusPinballUtilityNote">Show the embedded Bonus Pinball field over the overlay for layout editing and tests.</div><div class="cRow"><button class="cBtn" id="bonusPinballToggleBtn" type="button">SHOW BONUS PINBALL</button></div><div style="height:14px"></div><div class="cSectionTitle">TABLE REPOSITORY</div><div class="cNote">Open the Bestiary-style library plus task and tooltip review queues.</div><div class="cRow">
-        <a class="cBtn" href="./flippermizer_table_repository_library.html" target="_blank" rel="noopener">OPEN TABLE BESTIARY</a>
-        <a class="cBtn" href="./flippermizer_task_repository.html" target="_blank" rel="noopener">OPEN TASK REPOSITORY</a>
-      </div></div><div class="connectCol connectColRight"><div class="cSectionTitle" id="receivedHdr" style="margin-top:12px;">RECEIVED ITEMS (88)</div><div class="cRow" style="gap:8px;">
+      </div><div class="cNote" id="bonusPinballUtilityNote">Show the embedded Bonus Pinball field over the overlay for layout editing and tests.</div><div class="cRow"><button class="cBtn" id="bonusPinballToggleBtn" type="button">SHOW BONUS PINBALL</button></div></div><div class="connectCol connectColRight"><div class="cSectionTitle" id="receivedHdr" style="margin-top:12px;">RECEIVED ITEMS (88)</div><div class="cRow" style="gap:8px;">
   <button class="cBtn" id="apSyncReceivedBtn">SYNC RECEIVED</button>
   <button class="cBtn danger" id="apClearReceivedBtn">CLEAR LIST</button>
 </div><div class="recvWrap">
@@ -53923,10 +53929,6 @@ function compactConnectControlsLayout(panelConnect){
   const inherentSeedUtility = ensureInherentSeedUtilityControl();
   const apToolsGrid = ensureApConnectionToolsGrid(connectRow, flprBotUtility, inherentSeedUtility);
   const bonusPinballPanel = ensureBonusPinballControlsPanel();
-  const repoTitle = findControlsSectionTitle(panelConnect, "TABLE REPOSITORY");
-  const repoNote = repoTitle?.nextElementSibling;
-  const repoRow = repoTitle ? repoTitle.parentElement?.querySelector('a[href*="flippermizer_table_repository_library.html"]')?.closest(".cRow") : null;
-
   const recvTitle = document.getElementById("receivedHdr");
   const recvRow = document.getElementById("apSyncReceivedBtn")?.closest(".cRow");
   const recvWrap = panelConnect.querySelector(".recvWrap") || document.querySelector(".recvWrap");
@@ -53990,7 +53992,7 @@ function compactConnectControlsLayout(panelConnect){
     ghost.setAttribute("aria-hidden", "true");
     panelConnect.appendChild(ghost);
   }
-  unique([progTitle, progRow, repoTitle, repoNote, repoRow]).forEach((node)=>moveTo(ghost, node));
+  unique([progTitle, progRow]).forEach((node)=>moveTo(ghost, node));
   const hasMeaningfulFallbackContent = (child)=>{
     if(!child || child.classList?.contains("connectPanelSection") || child.classList?.contains("controlsGhost")) return false;
     const hasControls = !!child.querySelector?.("input,button,select,textarea,a[href],.recvWrap,.countGrid");
