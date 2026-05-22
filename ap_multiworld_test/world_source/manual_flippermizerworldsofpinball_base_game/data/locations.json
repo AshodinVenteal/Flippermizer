@@ -3034,7 +3034,7 @@
         "requires": "|Progressive Ball - Genesis:1|"
     },
     {
-        "name": "Genesis - Easy Score (500,000+)",
+        "name": "Genesis - Easy Score (158,301+)",
         "region": "Ball 1 Sphere",
         "category": [
             "Genesis",
@@ -3055,7 +3055,7 @@
         "requires": "|Progressive Ball - Genesis:2|"
     },
     {
-        "name": "Genesis - Medium Score (1,500,000+)",
+        "name": "Genesis - Medium Score (517,370+)",
         "region": "Ball 2 Sphere",
         "category": [
             "Genesis",
@@ -3076,7 +3076,7 @@
         "requires": "|Progressive Ball - Genesis:3|"
     },
     {
-        "name": "Genesis - Hard Score (3,500,000+)",
+        "name": "Genesis - Hard Score (1,386,426+)",
         "region": "Ball 3 Sphere",
         "category": [
             "Genesis",
@@ -3097,7 +3097,7 @@
         "requires": "|Progressive Ball - Haunted House:1|"
     },
     {
-        "name": "Haunted House - Easy Score (250,000+)",
+        "name": "Haunted House - Easy Score (59,682+)",
         "region": "Ball 1 Sphere",
         "category": [
             "HauntedHouse",
@@ -3118,7 +3118,7 @@
         "requires": "|Progressive Ball - Haunted House:2|"
     },
     {
-        "name": "Haunted House - Medium Score (750,000+)",
+        "name": "Haunted House - Medium Score (145,453+)",
         "region": "Ball 2 Sphere",
         "category": [
             "HauntedHouse",
@@ -3139,7 +3139,7 @@
         "requires": "|Progressive Ball - Haunted House:3|"
     },
     {
-        "name": "Haunted House - Hard Score (1,500,000+)",
+        "name": "Haunted House - Hard Score (270,164+)",
         "region": "Ball 3 Sphere",
         "category": [
             "HauntedHouse",
@@ -3160,7 +3160,7 @@
         "requires": "|Progressive Ball - The Incredible Hulk:1|"
     },
     {
-        "name": "The Incredible Hulk - Easy Score (75,000+)",
+        "name": "The Incredible Hulk - Easy Score (59,354+)",
         "region": "Ball 1 Sphere",
         "category": [
             "TheIncredibleHulk",
@@ -3181,7 +3181,7 @@
         "requires": "|Progressive Ball - The Incredible Hulk:2|"
     },
     {
-        "name": "The Incredible Hulk - Medium Score (175,000+)",
+        "name": "The Incredible Hulk - Medium Score (128,060+)",
         "region": "Ball 2 Sphere",
         "category": [
             "TheIncredibleHulk",
@@ -3202,7 +3202,7 @@
         "requires": "|Progressive Ball - The Incredible Hulk:3|"
     },
     {
-        "name": "The Incredible Hulk - Hard Score (350,000+)",
+        "name": "The Incredible Hulk - Hard Score (207,860+)",
         "region": "Ball 3 Sphere",
         "category": [
             "TheIncredibleHulk",
@@ -5615,7 +5615,7 @@
         "requires": "|Progressive Ball - Monopoly:1|"
     },
     {
-        "name": "Monopoly - Easy Score (5,000,000+)",
+        "name": "Monopoly - Easy Score (1,542,261+)",
         "region": "Ball 1 Sphere",
         "category": [
             "Monopoly",
@@ -5636,7 +5636,7 @@
         "requires": "|Progressive Ball - Monopoly:2|"
     },
     {
-        "name": "Monopoly - Medium Score (20,000,000+)",
+        "name": "Monopoly - Medium Score (4,990,600+)",
         "region": "Ball 2 Sphere",
         "category": [
             "Monopoly",
@@ -5657,7 +5657,7 @@
         "requires": "|Progressive Ball - Monopoly:3|"
     },
     {
-        "name": "Monopoly - Hard Score (75,000,000+)",
+        "name": "Monopoly - Hard Score (9,938,959+)",
         "region": "Ball 3 Sphere",
         "category": [
             "Monopoly",
@@ -5678,7 +5678,7 @@
         "requires": "|Progressive Ball - Dungeons & Dragons:1|"
     },
     {
-        "name": "Dungeons & Dragons - Easy Score (600,000+)",
+        "name": "Dungeons & Dragons - Easy Score (166,352+)",
         "region": "Ball 1 Sphere",
         "category": [
             "DungeonsDragons",
@@ -5699,7 +5699,7 @@
         "requires": "|Progressive Ball - Dungeons & Dragons:2|"
     },
     {
-        "name": "Dungeons & Dragons - Medium Score (1,750,000+)",
+        "name": "Dungeons & Dragons - Medium Score (550,594+)",
         "region": "Ball 2 Sphere",
         "category": [
             "DungeonsDragons",
@@ -5720,7 +5720,7 @@
         "requires": "|Progressive Ball - Dungeons & Dragons:3|"
     },
     {
-        "name": "Dungeons & Dragons - Hard Score (4,500,000+)",
+        "name": "Dungeons & Dragons - Hard Score (1,241,783+)",
         "region": "Ball 3 Sphere",
         "category": [
             "DungeonsDragons",
@@ -5741,7 +5741,7 @@
         "requires": "|Progressive Ball - World Poker Tour:1|"
     },
     {
-        "name": "World Poker Tour - Easy Score (25,000,000+)",
+        "name": "World Poker Tour - Easy Score (4,094,586+)",
         "region": "Ball 1 Sphere",
         "category": [
             "WorldPokerTour",
@@ -5762,7 +5762,7 @@
         "requires": "|Progressive Ball - World Poker Tour:2|"
     },
     {
-        "name": "World Poker Tour - Medium Score (90,000,000+)",
+        "name": "World Poker Tour - Medium Score (12,170,908+)",
         "region": "Ball 2 Sphere",
         "category": [
             "WorldPokerTour",
@@ -5783,7 +5783,7 @@
         "requires": "|Progressive Ball - World Poker Tour:3|"
     },
     {
-        "name": "World Poker Tour - Hard Score (250,000,000+)",
+        "name": "World Poker Tour - Hard Score (25,203,476+)",
         "region": "Ball 3 Sphere",
         "category": [
             "WorldPokerTour",
@@ -5804,7 +5804,7 @@
         "requires": "|Progressive Ball - High Roller Casino:1|"
     },
     {
-        "name": "High Roller Casino - Easy Score (10,000,000+)",
+        "name": "High Roller Casino - Easy Score (29,591,534+)",
         "region": "Ball 1 Sphere",
         "category": [
             "HighRollerCasino",
@@ -5825,7 +5825,7 @@
         "requires": "|Progressive Ball - High Roller Casino:2|"
     },
     {
-        "name": "High Roller Casino - Medium Score (45,000,000+)",
+        "name": "High Roller Casino - Medium Score (84,398,263+)",
         "region": "Ball 2 Sphere",
         "category": [
             "HighRollerCasino",
@@ -5846,7 +5846,7 @@
         "requires": "|Progressive Ball - High Roller Casino:3|"
     },
     {
-        "name": "High Roller Casino - Hard Score (125,000,000+)",
+        "name": "High Roller Casino - Hard Score (166,071,626+)",
         "region": "Ball 3 Sphere",
         "category": [
             "HighRollerCasino",
@@ -5867,7 +5867,7 @@
         "requires": "|Progressive Ball - Who Dunnit:1|"
     },
     {
-        "name": "Who Dunnit - Easy Score (50,000,000+)",
+        "name": "Who Dunnit - Easy Score (167,032,972+)",
         "region": "Ball 1 Sphere",
         "category": [
             "WhoDunnit",
@@ -5888,7 +5888,7 @@
         "requires": "|Progressive Ball - Who Dunnit:2|"
     },
     {
-        "name": "Who Dunnit - Medium Score (175,000,000+)",
+        "name": "Who Dunnit - Medium Score (525,587,710+)",
         "region": "Ball 2 Sphere",
         "category": [
             "WhoDunnit",
@@ -5909,7 +5909,7 @@
         "requires": "|Progressive Ball - Who Dunnit:3|"
     },
     {
-        "name": "Who Dunnit - Hard Score (500,000,000+)",
+        "name": "Who Dunnit - Hard Score (1,218,046,696+)",
         "region": "Ball 3 Sphere",
         "category": [
             "WhoDunnit",

@@ -38,6 +38,18 @@ HARD_TASK_FORBIDDEN_OBJECTIVE_RE = re.compile(
     r"\b(?:start|begin|qualify|reach|complete|play|light)\b.*\b(?:wizard\s*mode|wizard|grand\s*finale|join\s*the\s*cirqus|battle\s*for\s*the\s*kingdom|final\s*battle|final\s*frontier|champion\s*challenge)\b",
     re.IGNORECASE,
 )
+BOSS_TABLE_TASK_LOCATION_NAMES = [
+    "Boss Table - Rip a Spinner",
+    "Boss Table - Make a 2-Shot Combo",
+    "Boss Table - Make a 3-Shot Combo",
+    "Boss Table - Shoot Left Orbit/Loop/Lane",
+    "Boss Table - Shoot Right Orbit/Loop/Lane",
+    "Boss Table - Shoot Any Ramp",
+    "Boss Table - Hit Any Scoop or Saucer",
+    "Boss Table - Complete Top Lanes",
+    "Boss Table - Complete a Target Bank",
+    "Boss Table - Start Any Multiball",
+]
 
 
 def _get_ut_regen_slot_data(world: World) -> dict[str, Any]:
@@ -783,6 +795,25 @@ def _get_metasizer_selection_mode(world: World, multiworld: MultiWorld, player: 
     return requested, applied, fallback_reason
 
 
+def _select_metasizer_boss_table_entry(
+    active_entries: list[dict[str, Any]],
+    seed_name: str,
+    numeric_seed: str,
+    player: int,
+) -> dict[str, Any]:
+    candidates = [
+        dict(entry)
+        for entry in active_entries
+        if str(entry.get("name") or "").strip()
+    ]
+    if not candidates:
+        return {}
+    candidates.sort(key=lambda entry: _metasizer_normalize_lookup_key(entry.get("name")))
+    signature = ",".join(str(entry.get("code") or entry.get("name") or "").strip() for entry in candidates)
+    rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|boss_table_v1|{signature}")
+    return dict(rng.choice(candidates))
+
+
 def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, player: int) -> dict[str, Any]:
     enabled = bool(get_option_value(multiworld, player, "base_game_enabled"))
     table_entries = _metasizer_table_entries()
@@ -971,11 +1002,19 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
         opening_entries = []
     opening_tables = [str(entry.get("name") or "").strip() for entry in opening_entries]
     world_layout = _build_metasizer_world_layout(active_entries, opening_tables)
+    boss_table_entry = _select_metasizer_boss_table_entry(active_entries, seed_name, numeric_seed, player)
+    boss_table_name = str(boss_table_entry.get("name") or "").strip()
+    boss_table_checks = _build_boss_table_checks_payload(boss_table_name, seed_name, numeric_seed, player)
 
     payload["active_table_count"] = len(active_tables)
     payload["starting_open_count"] = len(opening_tables)
     payload["active_tables"] = active_tables
     payload["active_table_entries"] = active_entries
+    payload["boss_table"] = boss_table_name
+    payload["boss_table_name"] = boss_table_name
+    payload["boss_table_code"] = str(boss_table_entry.get("code") or "").strip()
+    payload["boss_table_entry"] = boss_table_entry
+    payload["boss_table_checks"] = boss_table_checks
     payload["starting_open_tables"] = opening_tables
     payload["starting_open_entries"] = opening_entries
     payload["effective_active_table_count"] = len(active_tables)
@@ -1120,6 +1159,52 @@ def _generic_task_allowed_for_difficulty(pick: dict[str, Any], difficulty: str) 
     return HARD_TASK_FORBIDDEN_OBJECTIVE_RE.search(text) is None
 
 
+def _generic_task_requirement_categories(pick: dict[str, Any]) -> set[str]:
+    text = " ".join(
+        str(pick.get(field, "") or "")
+        for field in ("title", "source_location")
+    ).strip().lower()
+    compact = _metasizer_normalize_lookup_key(text)
+    categories: set[str] = set()
+
+    def has_word(*words: str) -> bool:
+        return any(re.search(rf"\b{re.escape(word)}\b", text) for word in words)
+
+    if "multiball" in compact or "multiball" in text or re.search(r"\block(?:\s+\d+)?\s+balls?\b", text) or "lightlock" in compact:
+        categories.add("requires:multiball")
+    if "jackpot" in compact:
+        categories.add("requires:jackpot")
+        # Every jackpot task in the pool is gated by multiball or a jackpot mode.
+        # Treat it as multiball-overlapping so E/M/H cannot stack "start MB"
+        # with "collect MB jackpot" on the same table.
+        categories.add("requires:multiball")
+    if has_word("mode", "mission", "round", "feature", "hurry-up", "hurryup") or any(token in compact for token in ("startanymode", "startamode", "completeanymode", "complete1mode", "startanymission", "completeanymission", "startanysongmode", "completeanysongmode")):
+        categories.add("requires:mode")
+    if has_word("wizard") or any(token in compact for token in ("grandfinale", "jointhecirqus", "battleforthekingdom", "finalbattle", "finalfrontier", "championchallenge", "ruletheuniverse")):
+        categories.add("requires:wizard")
+    if has_word("combo"):
+        categories.add("requires:combo")
+    if has_word("goal", "goals"):
+        categories.add("requires:goal")
+    if has_word("ramp", "ramps"):
+        categories.add("requires:ramp")
+    if has_word("orbit", "orbits", "loop", "loops"):
+        categories.add("requires:orbit_loop")
+    if has_word("lane", "lanes", "rollover", "rollovers"):
+        categories.add("requires:lane")
+    if has_word("target", "targets", "drop", "drops", "bank"):
+        categories.add("requires:target_bank")
+    if has_word("spinner", "spinners"):
+        categories.add("requires:spinner")
+    if has_word("scoop", "saucer", "hole"):
+        categories.add("requires:scoop_saucer")
+    if has_word("bonus", "multiplier", "multipliers"):
+        categories.add("requires:bonus_multiplier")
+    if has_word("extra ball", "extraball"):
+        categories.add("requires:extra_ball")
+    return categories
+
+
 def _extract_generic_task_location(location_name: str) -> tuple[str, str] | None:
     match = GENERIC_TASK_RE.match(str(location_name or "").strip())
     if not match:
@@ -1199,7 +1284,7 @@ def _filter_slot_payload_entries_to_active_tables(payload: dict[str, Any], activ
 def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: int) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "enabled": False,
-        "version": 3,
+        "version": 4,
         "mode": "generic_task_slots",
         "entries": [],
         "by_location": {},
@@ -1222,7 +1307,7 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
     seed_name = str(getattr(multiworld, "seed_name", ""))
     numeric_seed = str(getattr(multiworld, "seed", ""))
     shuffle_enabled = True
-    rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|generic_checks_v3")
+    rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|generic_checks_v4")
 
     entries: list[dict[str, Any]] = []
     by_location: dict[str, dict[str, Any]] = {}
@@ -1292,9 +1377,55 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
             return f"{table_name}:mode_completion"
         return norm
 
+    def combo_duplicate_count(values: list[str]) -> int:
+        seen_values: set[str] = set()
+        duplicates = 0
+        for value in values:
+            if not value:
+                continue
+            if value in seen_values:
+                duplicates += 1
+            else:
+                seen_values.add(value)
+        return duplicates
+
+    def combo_category_duplicate_count(category_sets: list[set[str]]) -> int:
+        counts: dict[str, int] = {}
+        for category_set in category_sets:
+            for category in category_set:
+                counts[category] = counts.get(category, 0) + 1
+        return sum(max(0, count - 1) for count in counts.values())
+
+    def combo_rank(combo: list[tuple[str, dict[str, Any]]]) -> tuple[int, int, int, int]:
+        category_sets = [entry["requirement_categories"] for _, entry in combo]
+        families = [str(entry.get("family", "")) for _, entry in combo]
+        signatures = [str(entry.get("signature", "")) for _, entry in combo]
+        shuffled_rank_sum = sum(int(entry.get("shuffle_index", 0)) for _, entry in combo)
+        return (
+            combo_category_duplicate_count(category_sets),
+            combo_duplicate_count(families),
+            combo_duplicate_count(signatures),
+            shuffled_rank_sum,
+        )
+
+    def choose_task_combo(candidates_by_difficulty: dict[str, list[dict[str, Any]]]) -> dict[str, dict[str, Any]]:
+        combos: list[list[tuple[str, dict[str, Any]]]] = [[]]
+        for difficulty in ("Hard", "Medium", "Easy"):
+            candidates = candidates_by_difficulty.get(difficulty) or []
+            if not candidates:
+                continue
+            combos = [combo + [(difficulty, candidate)] for combo in combos for candidate in candidates]
+        best_combo: list[tuple[str, dict[str, Any]]] = []
+        best_rank: tuple[int, int, int, int] | None = None
+        for combo in combos:
+            rank = combo_rank(combo)
+            if best_rank is None or rank < best_rank:
+                best_combo = combo
+                best_rank = rank
+        return {difficulty: candidate for difficulty, candidate in best_combo}
+
     for table in sorted(grouped_by_table.keys()):
-        used_signatures: set[str] = set()
-        used_families: set[str] = set()
+        candidates_by_difficulty: dict[str, list[dict[str, Any]]] = {}
         for difficulty in ("Easy", "Medium", "Hard"):
             locations = grouped_by_table.get(table, {}).get(difficulty, [])
             if not locations:
@@ -1313,27 +1444,26 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
             candidates = list(task_entries)
             if shuffle_enabled:
                 rng.shuffle(candidates)
-            pick = None
-            pick_rank: tuple[int, int, int] | None = None
-            for idx, candidate in enumerate(candidates):
-                signature = task_signature(candidate, difficulty)
-                family = task_family_signature(table, candidate, difficulty)
-                rank = (
-                    1 if family and family in used_families else 0,
-                    1 if signature and signature in used_signatures else 0,
-                    idx,
-                )
-                if pick is None or rank < pick_rank:
-                    pick = candidate
-                    pick_rank = rank
-            if pick is None:
-                pick = candidates[0]
-            signature = task_signature(pick, difficulty)
-            family = task_family_signature(table, pick, difficulty)
-            if signature:
-                used_signatures.add(signature)
-            if family:
-                used_families.add(family)
+            candidates_by_difficulty[difficulty] = [
+                {
+                    "pick": candidate,
+                    "signature": task_signature(candidate, difficulty),
+                    "family": task_family_signature(table, candidate, difficulty),
+                    "requirement_categories": _generic_task_requirement_categories(candidate),
+                    "shuffle_index": idx,
+                }
+                for idx, candidate in enumerate(candidates)
+            ]
+
+        selected_by_difficulty = choose_task_combo(candidates_by_difficulty)
+        for difficulty in ("Easy", "Medium", "Hard"):
+            selected = selected_by_difficulty.get(difficulty)
+            if not selected:
+                continue
+            pick = selected["pick"]
+            signature = str(selected.get("signature", ""))
+            family = str(selected.get("family", ""))
+            requirement_categories = set(selected.get("requirement_categories") or set())
             display_name = str(pick.get("title", "")).strip() or f"{difficulty} Task"
             explanation = str(pick.get("explanation", "")).strip()
             source_location = str(pick.get("source_location", "")).strip()
@@ -1349,10 +1479,90 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
                     "objective": display_name,
                     "explanation": explanation,
                     "source_location": source_location,
+                    "task_signature": signature,
+                    "task_family": family,
+                    "requirement_categories": sorted(requirement_categories),
                     "randomized": shuffle_enabled,
                 }
                 entries.append(entry)
                 by_location[loc_name] = entry
+
+    payload["enabled"] = bool(entries)
+    payload["entries"] = entries
+    payload["by_location"] = by_location
+    return payload
+
+
+def _build_boss_table_checks_payload(
+    boss_table_name: str,
+    seed_name: str,
+    numeric_seed: str,
+    player: int,
+) -> dict[str, Any]:
+    table_name = str(boss_table_name or "").strip()
+    payload: dict[str, Any] = {
+        "enabled": False,
+        "version": 1,
+        "table": table_name,
+        "entries": [],
+        "by_location": {},
+    }
+    if not table_name:
+        return payload
+
+    pools = _load_generic_check_pools()
+    table_pool = pools.get(table_name, {}) if isinstance(pools, dict) else {}
+    if not isinstance(table_pool, dict):
+        return payload
+
+    candidates: list[dict[str, Any]] = []
+    seen_signatures: set[str] = set()
+    for difficulty in ("Easy", "Medium", "Hard"):
+        for raw_entry in table_pool.get(difficulty, []) or []:
+            if not isinstance(raw_entry, dict):
+                continue
+            if str(raw_entry.get("type", "")).strip().lower() == "score":
+                continue
+            if not _generic_task_allowed_for_difficulty(raw_entry, difficulty):
+                continue
+            signature = _metasizer_normalize_lookup_key(
+                str(raw_entry.get("source_location") or "") + " " + str(raw_entry.get("title") or "")
+            )
+            if signature and signature in seen_signatures:
+                continue
+            if signature:
+                seen_signatures.add(signature)
+            entry = dict(raw_entry)
+            entry["difficulty"] = difficulty
+            candidates.append(entry)
+
+    if not candidates:
+        return payload
+
+    rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|boss_table_checks_v1|{table_name}")
+    rng.shuffle(candidates)
+
+    entries: list[dict[str, Any]] = []
+    by_location: dict[str, dict[str, Any]] = {}
+    for idx, location_name in enumerate(BOSS_TABLE_TASK_LOCATION_NAMES):
+        pick = candidates[idx % len(candidates)]
+        title = str(pick.get("title") or "").strip() or str(pick.get("source_location") or "").strip() or "Boss Task"
+        entry = {
+            "location": location_name,
+            "table": table_name,
+            "target_table": table_name,
+            "kind": "task",
+            "task_type": "task",
+            "difficulty": str(pick.get("difficulty") or "").strip(),
+            "display_name": title,
+            "objective": title,
+            "explanation": str(pick.get("explanation") or "").strip(),
+            "source_location": str(pick.get("source_location") or "").strip(),
+            "randomized": True,
+            "slot_index": idx,
+        }
+        entries.append(entry)
+        by_location[location_name] = entry
 
     payload["enabled"] = bool(entries)
     payload["entries"] = entries

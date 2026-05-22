@@ -13,6 +13,7 @@ Thumbs.db
 *.apworld
 *.md
 !README.md
+!MOBILE_CONTINUATION.md
 *.sfc
 __pycache__/
 *.pyc

@@ -61,6 +61,7 @@ const dataPackage = {
           "Progressive Ball - Corvette": 1008,
           "Boss Key": 1009,
           "Hint: Boss Key": 1010,
+          "Hint: Ball Location": 1011,
           "Progressive Ball - Skateball": 4004,
           "Progressive Ball - Cyclone": 4005
         },
@@ -503,7 +504,24 @@ async function waitFor(page, predicateSource, timeoutMs = 15000) {
     }
     await delay(100);
   }
-  throw new Error(`Timed out waiting for renderer condition; last=${last}`);
+  let rendererState = null;
+  try {
+    rendererState = await page.evaluate(`(() => ({
+      bodyClass: document.body?.className || "",
+      profileGateHidden: !!document.querySelector('#standaloneProfileGate[hidden]'),
+      profileGateVisible: !!document.querySelector('#standaloneProfileGate:not([hidden])'),
+      modeGateHidden: !!document.querySelector('#standaloneModeGate[hidden]'),
+      modeGateVisible: !!document.querySelector('#standaloneModeGate:not([hidden])'),
+      profileHud: document.querySelector('#standaloneProfileHud')?.innerText || "",
+      profileRuntime: window.__flprStandaloneProfileRuntime ? {
+        selectedMode: window.__flprStandaloneProfileRuntime.selectedMode || "",
+        randomizerReady: !!window.__flprStandaloneProfileRuntime.randomizerReady,
+        randomizerStarted: !!window.__flprStandaloneProfileRuntime.randomizerStarted,
+        appliedProfileId: window.__flprStandaloneProfileRuntime.appliedProfileId || ""
+      } : null
+    }))()`);
+  } catch (_) {}
+  throw new Error(`Timed out waiting for renderer condition; last=${last}; state=${JSON.stringify(rendererState)}`);
 }
 
 async function run() {
@@ -560,6 +578,333 @@ async function run() {
   }))()`);
   if(!bridgeProbe.tableLookup || !bridgeProbe.unlockFx || !bridgeProbe.sfxDedupe){
     throw new Error(`Standalone AP receive/audio bridges were not installed: ${JSON.stringify(bridgeProbe)}`);
+  }
+
+  const patchNotesHomeProbe = await waitFor(page, `
+    const overlay = document.getElementById("flprPatchNotesOverlay");
+    if(!overlay || overlay.classList.contains("hidden")) return false;
+    return {
+      visible: true,
+      title: document.getElementById("flprPatchNotesTitle")?.textContent || "",
+      sub: document.getElementById("flprPatchNotesSub")?.textContent || "",
+      body: document.getElementById("flprPatchNotesBody")?.innerText || "",
+      itemCount: document.querySelectorAll("#flprPatchNotesBody .flprPatchNotesItem").length,
+      firstItem: document.querySelector("#flprPatchNotesBody .flprPatchNotesItem")?.innerText || "",
+      dontShow: !!document.getElementById("flprPatchNotesDontShow"),
+      dontShowText: document.querySelector(".flprPatchNotesDontShow")?.innerText || "",
+      storageKey: window.FLPR_PATCH_NOTES_SEEN_LS_KEY || ""
+    };
+  `, 6000);
+  if(
+    !patchNotesHomeProbe.visible ||
+    !/PATCH NOTES/i.test(patchNotesHomeProbe.title || "") ||
+    !/Home Edition/i.test(patchNotesHomeProbe.sub || "") ||
+    patchNotesHomeProbe.itemCount !== 3 ||
+    !/Home performance pass/i.test(patchNotesHomeProbe.firstItem || "") ||
+    !/Font and header controls/i.test(patchNotesHomeProbe.body || "") ||
+    !/Score reward tracking/i.test(patchNotesHomeProbe.body || "") ||
+    !/Hubot Sans/i.test(patchNotesHomeProbe.body || "") ||
+    /Home Edition icon|Checks BALLS button|Checks header layout|Stream header polish|Score modifier|Patch notes control|Relics button|Score entry\nManual score entry/i.test(patchNotesHomeProbe.body || "") ||
+    !patchNotesHomeProbe.dontShow ||
+    !/Don'?t Show Next Time/i.test(patchNotesHomeProbe.dontShowText || "")
+  ){
+    throw new Error(`Home Edition patch notes did not appear on first launch: ${JSON.stringify(patchNotesHomeProbe)}`);
+  }
+
+  const homeHeaderFontProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    try{ setHeader(); }catch(_){}
+    await delay(80);
+    const selector = document.getElementById("flprUiFontMode");
+    const beforeClass = document.body.className || "";
+    if(selector){
+      selector.value = "hubot";
+      selector.dispatchEvent(new Event("change", { bubbles:true }));
+    }else if(typeof applyFlprUiFontMode === "function"){
+      applyFlprUiFontMode("hubot");
+    }
+    await delay(80);
+    const hubotProbe = {
+      className: document.body.className || "",
+      dataset: document.body.dataset?.flprUiFont || "",
+      stored: (()=>{ try{ return JSON.parse(localStorage.getItem("flpr_settings_v1") || "{}").uiFontMode || ""; }catch(_){ return ""; } })()
+    };
+    try{ if(typeof applyFlprUiFontMode === "function") applyFlprUiFontMode("pixel"); }catch(_){}
+    await delay(20);
+    return {
+      title: document.getElementById("headerTitle")?.textContent || "",
+      titleClass: document.getElementById("headerTitle")?.className || "",
+      brandClass: document.getElementById("brandTop")?.className || "",
+      titleBadgePrefix: getComputedStyle(document.getElementById("flprTitleBadgeBtn"), "::before")?.content || "",
+      selectorExists: !!selector,
+      optionText: selector ? Array.from(selector.options).map((opt)=>opt.textContent || "") : [],
+      beforeClass,
+      hubotProbe
+    };
+  });
+  if(
+    !/HOME EDITION/.test(homeHeaderFontProbe.title || "") ||
+    !/streamEditionTitle/.test(homeHeaderFontProbe.titleClass || "") ||
+    !/streamEditionBrandTop/.test(homeHeaderFontProbe.brandClass || "") ||
+    !/PLAYER TITLE/i.test(homeHeaderFontProbe.titleBadgePrefix || "") ||
+    !homeHeaderFontProbe.selectorExists ||
+    !homeHeaderFontProbe.optionText.some((txt)=>/HUBOT SANS/i.test(txt)) ||
+    !/flprFontHubot/.test(homeHeaderFontProbe.hubotProbe.className || "") ||
+    homeHeaderFontProbe.hubotProbe.dataset !== "hubot" ||
+    homeHeaderFontProbe.hubotProbe.stored !== "hubot"
+  ){
+    throw new Error(`Home Edition header/font controls were not applied: ${JSON.stringify(homeHeaderFontProbe)}`);
+  }
+
+  const patchNotesOnceProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const key = window.FLPR_PATCH_NOTES_SEEN_LS_KEY || "flpr_changelog_patch_notes_seen_v1";
+    const suppressKey = window.FLPR_PATCH_NOTES_SUPPRESS_LS_KEY || "flpr_changelog_patch_notes_suppress_v1";
+    const checkbox = document.getElementById("flprPatchNotesDontShow");
+    if(checkbox){
+      checkbox.checked = true;
+      checkbox.dispatchEvent(new Event("change", { bubbles:true }));
+    }
+    try{ flprDismissPatchNotes(); }catch(_){}
+    await delay(80);
+    const stored = localStorage.getItem(key) || "";
+    const suppressed = localStorage.getItem(suppressKey) || "";
+    const reshow = typeof flprMaybeShowPatchNotes === "function" ? flprMaybeShowPatchNotes({ delayMs:0 }) : null;
+    await delay(80);
+    const overlay = document.getElementById("flprPatchNotesOverlay");
+    return {
+      stored,
+      suppressed,
+      reshow,
+      hiddenAfterReshow: !overlay || overlay.classList.contains("hidden"),
+      aria: overlay?.getAttribute("aria-hidden") || ""
+    };
+  });
+  if(
+    !/Home Edition::/.test(patchNotesOnceProbe.stored || "") ||
+    !/Home Edition::/.test(patchNotesOnceProbe.suppressed || "") ||
+    patchNotesOnceProbe.reshow !== false ||
+    !patchNotesOnceProbe.hiddenAfterReshow ||
+    patchNotesOnceProbe.aria !== "true"
+  ){
+    throw new Error(`Patch notes were not remembered after Home Edition dismissal: ${JSON.stringify(patchNotesOnceProbe)}`);
+  }
+
+  const patchNotesStreamProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const key = window.FLPR_PATCH_NOTES_SEEN_LS_KEY || "flpr_changelog_patch_notes_seen_v1";
+    const suppressKey = window.FLPR_PATCH_NOTES_SUPPRESS_LS_KEY || "flpr_changelog_patch_notes_suppress_v1";
+    const previous = {
+      bodyClass: document.body.className,
+      launcher: window.flprLauncher,
+      homeEdition: window.__flprHomeEdition,
+      streamEdition: window.__flprStreamEdition,
+      stored: localStorage.getItem(key),
+      suppressed: localStorage.getItem(suppressKey)
+    };
+    try{
+      localStorage.removeItem(key);
+      localStorage.removeItem(suppressKey);
+      document.body.classList.remove("flprStandaloneOriginalClient");
+      window.__flprHomeEdition = false;
+      window.__flprStreamEdition = true;
+      window.flprLauncher = { openPage(){ return Promise.resolve(); } };
+      const shown = typeof flprMaybeShowPatchNotes === "function" ? flprMaybeShowPatchNotes({ delayMs:0 }) : false;
+      await delay(80);
+      const overlay = document.getElementById("flprPatchNotesOverlay");
+      const sub = document.getElementById("flprPatchNotesSub")?.textContent || "";
+      const visible = !!overlay && !overlay.classList.contains("hidden");
+      try{ flprDismissPatchNotes(); }catch(_){}
+      const stored = localStorage.getItem(key) || "";
+      return {
+        shown,
+        visible,
+        sub,
+        stored,
+        hiddenAfterDismiss: !overlay || overlay.classList.contains("hidden")
+      };
+    }finally{
+      try{ document.body.className = previous.bodyClass; }catch(_){}
+      try{
+        if(previous.launcher === undefined) delete window.flprLauncher;
+        else window.flprLauncher = previous.launcher;
+      }catch(_){}
+      try{
+        if(previous.homeEdition === undefined) delete window.__flprHomeEdition;
+        else window.__flprHomeEdition = previous.homeEdition;
+      }catch(_){}
+      try{
+        if(previous.streamEdition === undefined) delete window.__flprStreamEdition;
+        else window.__flprStreamEdition = previous.streamEdition;
+      }catch(_){}
+      try{
+        if(previous.stored == null) localStorage.removeItem(key);
+        else localStorage.setItem(key, previous.stored);
+      }catch(_){}
+      try{
+        if(previous.suppressed == null) localStorage.removeItem(suppressKey);
+        else localStorage.setItem(suppressKey, previous.suppressed);
+      }catch(_){}
+    }
+  });
+  if(
+    patchNotesStreamProbe.shown !== true ||
+    !patchNotesStreamProbe.visible ||
+    !/Stream Edition/i.test(patchNotesStreamProbe.sub || "") ||
+    !/Stream Edition::/.test(patchNotesStreamProbe.stored || "") ||
+    !patchNotesStreamProbe.hiddenAfterDismiss
+  ){
+    throw new Error(`Stream Edition patch notes did not use a separate once-per-version key: ${JSON.stringify(patchNotesStreamProbe)}`);
+  }
+
+  const scoreAutoRedeemProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const worldKey = (typeof getFirstPlayableWorldKey === "function" ? getFirstPlayableWorldKey() : "w1") || "w1";
+    const tableKey = `${worldKey}|0`;
+    const tableName = String(state?.worlds?.[worldKey]?.tables?.[0] || "Score Test Table");
+    const ids = [910001, 910002, 910003];
+    const nodes = [
+      { id:ids[0], full:`${tableName} - Easy Score (1,000+)`, short:"Easy Score (1,000+)", genericDifficulty:"easy" },
+      { id:ids[1], full:`${tableName} - Medium Score (2,000+)`, short:"Medium Score (2,000+)", genericDifficulty:"medium" },
+      { id:ids[2], full:`${tableName} - Hard Score (3,000+)`, short:"Hard Score (3,000+)", genericDifficulty:"hard" }
+    ];
+    const previous = {
+      connected: !!ap?.connected,
+      apSend: typeof apSend === "function" ? apSend : null,
+      balls: {
+        b1: state?.balls?.[`${tableKey}|1`],
+        b2: state?.balls?.[`${tableKey}|2`],
+        b3: state?.balls?.[`${tableKey}|3`]
+      },
+      checked: ids.map((id)=>[id, !!ap?.checked?.has?.(id)]),
+      pending: ids.map((id)=>[id, ap?.pendingByLoc?.get?.(id)]),
+      recent: ids.map((id)=>[id, ap?.recentSentByLoc?.get?.(id)]),
+      itemName990001: ap?.itemNameById?.get?.(990001),
+      locNames: ids.map((id)=>[id, ap?.locNameById?.get?.(id)]),
+      validCheckLocs: ids.map((id)=>[id, !!ap?.validCheckLocIds?.has?.(id)]),
+      receivedAll: Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row)=>({ ...row })) : null,
+      receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : null,
+      receivedStorage: localStorage.getItem("flpr_ap_received_v1"),
+      highScores: (()=>{ try{ return JSON.stringify(state?.tableHighScores || {}); }catch(_){ return "{}"; } })(),
+      profileRuntime: window.__flprStandaloneProfileRuntime ? {
+        selectedMode: window.__flprStandaloneProfileRuntime.selectedMode || "",
+        randomizerReady: !!window.__flprStandaloneProfileRuntime.randomizerReady,
+        randomizerStarted: !!window.__flprStandaloneProfileRuntime.randomizerStarted,
+        randomizerReason: window.__flprStandaloneProfileRuntime.randomizerReason || "",
+        readyDoorKey: window.__flprStandaloneProfileRuntime.readyDoorKey || ""
+      } : null
+    };
+    const packets = [];
+    const parent = document.createElement("div");
+    parent.style.cssText = "position:absolute;left:-10000px;top:-10000px;width:1000px;height:700px;";
+    try{
+      document.body.appendChild(parent);
+      state.balls = state.balls || {};
+      state.balls[`${tableKey}|1`] = true;
+      delete state.balls[`${tableKey}|2`];
+      delete state.balls[`${tableKey}|3`];
+      ap.connected = true;
+      ap.pendingByLoc = ap.pendingByLoc || new Map();
+      ids.forEach((id)=>{
+        ap.checked.delete(id);
+        ap.pendingByLoc.delete(id);
+      });
+      ap.recentSentByLoc = ap.recentSentByLoc instanceof Map ? ap.recentSentByLoc : new Map();
+      ids.forEach((id)=>ap.recentSentByLoc.delete(id));
+      ap.itemNameById = ap.itemNameById || new Map();
+      ap.itemNameById.set(990001, "Score Test Reward");
+      ap.locNameById = ap.locNameById || new Map();
+      ids.forEach((id, index)=>ap.locNameById.set(id, nodes[index].full));
+      ap.validCheckLocIds = ap.validCheckLocIds || new Set();
+      ids.forEach((id)=>ap.validCheckLocIds.add(id));
+      ap.receivedAll = [];
+      ap.receivedKeySet = new Set();
+      apSend = (packet) => {
+        packets.push(packet);
+        return true;
+      };
+      if(typeof renderTableBlock !== "function") return { missingRender:true };
+      renderTableBlock(parent, tableName, nodes, { tableKey });
+      const modBtn = parent.querySelector(".checksScoreModBtn");
+      const form = parent.querySelector(".checksScorePanel");
+      const input = parent.querySelector(".checksScoreInput");
+      if(!form || !input) return { missingScorePanel:true, html:parent.innerHTML.slice(0, 300) };
+      input.value = "3,250";
+      form.dispatchEvent(new Event("submit", { bubbles:true, cancelable:true }));
+      await delay(1900);
+      const locationPackets = packets.filter((pkt)=>String(pkt?.cmd || "") === "LocationChecks");
+      const sentIds = locationPackets.flatMap((pkt)=>Array.isArray(pkt?.locations) ? pkt.locations : []);
+      handleCheckedLocations([ids[0]], { awardAchievements:false, source:"score-test-room-update" });
+      const pairedAfterRoomUpdate = typeof apPeekPendingPairingForLoc === "function" ? apPeekPendingPairingForLoc(ids[0]) : null;
+      processReceivedItem({ item:990001, location:ids[0], player:1, flags:0 }, 990001, ids[0], { noPopup:true, noFeed:true, isSnapshot:true });
+      const rewardRow = (ap.receivedAll || []).find((row)=>Number(row?.locId) === ids[0]) || null;
+      return {
+        missingRender:false,
+        missingScorePanel:false,
+        modText: modBtn?.textContent || "",
+        sentIds,
+        pendingIds: ids.filter((id)=>ap.pendingByLoc.has(id)),
+        pairedAfterRoomUpdate: pairedAfterRoomUpdate ? {
+          id:Number(pairedAfterRoomUpdate.id || 0),
+          tableName:String(pairedAfterRoomUpdate.tableName || ""),
+          checkName:String(pairedAfterRoomUpdate.checkName || ""),
+          locationName:String(pairedAfterRoomUpdate.locationName || "")
+        } : null,
+        rewardRow: rewardRow ? {
+          itemName:String(rewardRow.itemName || ""),
+          locId:Number(rewardRow.locId || 0),
+          locationName:String(rewardRow.locationName || ""),
+          checkName:String(rewardRow.checkName || "")
+        } : null,
+        highScore: typeof getTableHighScoreValue === "function" ? getTableHighScoreValue(tableKey, tableName) : 0
+      };
+    }finally{
+      try{ parent.remove(); }catch(_){}
+      try{
+        ap.connected = previous.connected;
+        if(previous.apSend) apSend = previous.apSend;
+        state.balls = state.balls || {};
+        if(previous.balls.b1 === undefined) delete state.balls[`${tableKey}|1`]; else state.balls[`${tableKey}|1`] = previous.balls.b1;
+        if(previous.balls.b2 === undefined) delete state.balls[`${tableKey}|2`]; else state.balls[`${tableKey}|2`] = previous.balls.b2;
+        if(previous.balls.b3 === undefined) delete state.balls[`${tableKey}|3`]; else state.balls[`${tableKey}|3`] = previous.balls.b3;
+        previous.checked.forEach(([id, wasChecked])=> wasChecked ? ap.checked.add(id) : ap.checked.delete(id));
+        previous.pending.forEach(([id, pending])=> pending ? ap.pendingByLoc.set(id, pending) : ap.pendingByLoc.delete(id));
+        previous.recent.forEach(([id, recent])=> recent ? ap.recentSentByLoc.set(id, recent) : ap.recentSentByLoc.delete(id));
+        if(previous.itemName990001 === undefined) ap.itemNameById.delete(990001); else ap.itemNameById.set(990001, previous.itemName990001);
+        previous.locNames.forEach(([id, name])=> name === undefined ? ap.locNameById.delete(id) : ap.locNameById.set(id, name));
+        previous.validCheckLocs.forEach(([id, had])=> had ? ap.validCheckLocIds.add(id) : ap.validCheckLocIds.delete(id));
+        if(previous.receivedAll) ap.receivedAll = previous.receivedAll.map((row)=>({ ...row }));
+        if(previous.receivedKeySet) ap.receivedKeySet = new Set(previous.receivedKeySet);
+        if(previous.receivedStorage == null) localStorage.removeItem("flpr_ap_received_v1"); else localStorage.setItem("flpr_ap_received_v1", previous.receivedStorage);
+        if(typeof renderReceivedList === "function") renderReceivedList(ap.receivedAll || []);
+        ap.pendingQueue = Array.isArray(ap.pendingQueue) ? ap.pendingQueue.filter((entry)=>!ids.includes(Number(entry?.id))) : [];
+        state.tableHighScores = JSON.parse(previous.highScores || "{}");
+        if(previous.profileRuntime && window.__flprStandaloneProfileRuntime){
+          window.__flprStandaloneProfileRuntime.selectedMode = previous.profileRuntime.selectedMode || "";
+          window.__flprStandaloneProfileRuntime.randomizerReady = !!previous.profileRuntime.randomizerReady;
+          window.__flprStandaloneProfileRuntime.randomizerStarted = !!previous.profileRuntime.randomizerStarted;
+          window.__flprStandaloneProfileRuntime.randomizerReason = previous.profileRuntime.randomizerReason || "";
+          window.__flprStandaloneProfileRuntime.readyDoorKey = previous.profileRuntime.readyDoorKey || "";
+          try{ if(typeof standaloneRefreshProfileUi === "function") standaloneRefreshProfileUi(); }catch(_){}
+        }
+      }catch(_){}
+    }
+  });
+  if(
+    scoreAutoRedeemProbe.missingRender ||
+    scoreAutoRedeemProbe.missingScorePanel ||
+    scoreAutoRedeemProbe.modText !== "1X" ||
+    ![910001, 910002, 910003].every((id)=>scoreAutoRedeemProbe.sentIds.includes(id)) ||
+    scoreAutoRedeemProbe.highScore !== 3250 ||
+    !scoreAutoRedeemProbe.pairedAfterRoomUpdate ||
+    scoreAutoRedeemProbe.pairedAfterRoomUpdate.id !== 910001 ||
+    !/Easy Score/i.test(`${scoreAutoRedeemProbe.pairedAfterRoomUpdate.checkName || ""} ${scoreAutoRedeemProbe.pairedAfterRoomUpdate.locationName || ""}`) ||
+    !scoreAutoRedeemProbe.rewardRow ||
+    scoreAutoRedeemProbe.rewardRow.itemName !== "Score Test Reward" ||
+    scoreAutoRedeemProbe.rewardRow.locId !== 910001 ||
+    !/Easy Score/i.test(scoreAutoRedeemProbe.rewardRow.checkName || "")
+  ){
+    throw new Error(`Score entry did not auto-redeem beaten score thresholds: ${JSON.stringify(scoreAutoRedeemProbe)}`);
   }
 
   const profileGateInitialProbe = await page.evaluate(`(() => ({
@@ -1151,10 +1496,27 @@ async function run() {
       wrapHidden: wrap ? wrap.getAttribute("aria-hidden") : null,
       fxActive: !!fx.active,
       fxOpening: !!fx.opening,
-      threatDelay: Number(window.__bossThreatDelayUntil || 0)
+      threatDelay: Number(window.__bossThreatDelayUntil || 0),
+      apBossKeyCount: window.__apBossKeyCount,
+      prevApBossKeyCount: window.__prevApBossKeyCount,
+      bossKeys: Array.isArray(window.bossKeysState || bossKeysState)
+        ? (window.bossKeysState || bossKeysState).map((key) => key ? { ...key } : key)
+        : null
     };
     try{
       if(typeof stopBossIncomingAlert === "function") stopBossIncomingAlert();
+      const bossRequired = typeof getBossKeysRequiredForOpen === "function" ? Number(getBossKeysRequiredForOpen()) || 3 : 3;
+      window.__apBossKeyCount = bossRequired;
+      window.__prevApBossKeyCount = bossRequired;
+      try{
+        const keys = window.bossKeysState || bossKeysState;
+        if(Array.isArray(keys)){
+          keys.forEach((key, keyIndex) => {
+            if(key) key.acquired = keyIndex < bossRequired;
+          });
+        }
+        if(typeof bossKeysSyncLegacyMirror === "function") bossKeysSyncLegacyMirror(bossRequired);
+      }catch(_){}
       const clearedSeenKey = typeof window.flprStandaloneClearBossIncomingSeenForTest === "function"
         ? window.flprStandaloneClearBossIncomingSeenForTest()
         : "";
@@ -1240,6 +1602,16 @@ async function run() {
         window.__openingRandomizerFx.opening = previous.fxOpening;
       }
       window.__bossThreatDelayUntil = previous.threatDelay;
+      window.__apBossKeyCount = previous.apBossKeyCount;
+      window.__prevApBossKeyCount = previous.prevApBossKeyCount;
+      try{
+        const keys = window.bossKeysState || bossKeysState;
+        if(Array.isArray(keys) && Array.isArray(previous.bossKeys)){
+          keys.forEach((key, keyIndex) => {
+            if(key && previous.bossKeys[keyIndex]) Object.assign(key, previous.bossKeys[keyIndex]);
+          });
+        }
+      }catch(_){}
       try{ if(typeof standaloneRefreshProfileUi === "function") standaloneRefreshProfileUi(); }catch(_){}
     }
   });
@@ -1621,6 +1993,43 @@ async function run() {
           const entry = window.flprGetBundledTaskCatalog?.()?.byTable?.["rolling stones"];
           return entry?.tasksByDifficulty || {};
         })(),
+        grandLizardCatalog: (() => {
+          const entry = window.flprGetBundledTaskCatalog?.()?.byTable?.["grand lizard"];
+          return entry?.tasksByDifficulty || {};
+        })(),
+        grandLizardPickedSets: (() => {
+          const entry = window.flprGetBundledTaskCatalog?.()?.byTable?.["grand lizard"];
+          const tasks = entry?.tasksByDifficulty || {};
+          const pick = (list, tableIndex, offset) => {
+            const pool = Array.isArray(list) ? list.map((value) => String(value || "").trim()).filter(Boolean) : [];
+            if(!pool.length) return "";
+            const idx = Math.abs((Math.max(0, Number(tableIndex) || 0) * 7) + Number(offset || 0)) % pool.length;
+            return pool[idx] || "";
+          };
+          return Array.from({ length: 8 }, (_, tableIndex) => [
+            pick(tasks.easy, tableIndex, 0),
+            pick(tasks.medium, tableIndex, 2),
+            pick(tasks.hard, tableIndex, 4)
+          ]);
+        })(),
+        grandLizardMediumTip: window.flprStandaloneTaskTooltipForTest("Grand Lizard", "Shoot the Upper Playfield Twice", {
+          table: "Grand Lizard",
+          target_table: "Grand Lizard",
+          source_table: "Grand Lizard",
+          source_location: "Shoot the Upper Playfield Twice",
+          objective: "Shoot the Upper Playfield Twice",
+          display_name: "Shoot the Upper Playfield Twice",
+          title: "Shoot the Upper Playfield Twice"
+        }),
+        grandLizardHardTip: window.flprStandaloneTaskTooltipForTest("Grand Lizard", "Collect a Multiball Jackpot", {
+          table: "Grand Lizard",
+          target_table: "Grand Lizard",
+          source_table: "Grand Lizard",
+          source_location: "Collect a Multiball Jackpot",
+          objective: "Collect a Multiball Jackpot",
+          display_name: "Collect a Multiball Jackpot",
+          title: "Collect a Multiball Jackpot"
+        }),
         rollingMediumTip: window.flprStandaloneTaskTooltipForTest("Rolling Stones", "Collect Bonus", {
           table: "Rolling Stones",
           target_table: "Rolling Stones",
@@ -1678,6 +2087,16 @@ async function run() {
     !Array.isArray(tooltipProbe.rollingCatalog?.hard) ||
     tooltipProbe.rollingCatalog.hard.join("|") !== "Collect 20-40-60 Bonus" ||
     /multiball|jackpot/i.test([...(tooltipProbe.rollingCatalog?.medium || []), ...(tooltipProbe.rollingCatalog?.hard || [])].join("|")) ||
+    !Array.isArray(tooltipProbe.grandLizardCatalog?.easy) ||
+    tooltipProbe.grandLizardCatalog.easy.join("|") !== "Shoot to Access the Upper Playfield|Complete 1 Upper Playfield Lane Set" ||
+    !Array.isArray(tooltipProbe.grandLizardCatalog?.medium) ||
+    tooltipProbe.grandLizardCatalog.medium.join("|") !== "Shoot the Upper Playfield Twice|Start Multiball (Lock Balls)" ||
+    !Array.isArray(tooltipProbe.grandLizardCatalog?.hard) ||
+    tooltipProbe.grandLizardCatalog.hard.join("|") !== "Collect a Multiball Jackpot|Complete 2 Upper Playfield Objectives" ||
+    !Array.isArray(tooltipProbe.grandLizardPickedSets) ||
+    tooltipProbe.grandLizardPickedSets.some((set) => !Array.isArray(set) || set.length !== 3 || new Set(set).size !== 3 || set.some((value) => !value)) ||
+    !String(tooltipProbe.grandLizardMediumTip || "").includes("Reach the upper playfield twice") ||
+    !String(tooltipProbe.grandLizardHardTip || "").includes("Start Multiball from locked balls") ||
     !String(tooltipProbe.rollingMediumTip || "").includes("Remove the Collect Bonus target") ||
     !String(tooltipProbe.rollingHardTip || "").includes("Collect 1-5 targets") ||
     !String(tooltipProbe.rollingTargetTip || "").includes("upper-right drop target bank") ||
@@ -2158,6 +2577,44 @@ async function run() {
     throw new Error(`Standalone Boss Key hint did not fire and move to the Hints panel: ${JSON.stringify(bossHintFireProbe)}`);
   }
 
+  const canonicalHintNameProbe = await page.evaluate(() => {
+    const tables = [
+      { tableName:"Fathom" },
+      { tableName:"Corvette" },
+      { tableName:"Vector Test Table" }
+    ];
+    const ballRecognizer = (() => {
+      try{
+        if(typeof isHintBallItemName === "function" && typeof isHintBallItemName.__flprStandaloneOriginalIsHintBallItemName === "function"){
+          return isHintBallItemName.__flprStandaloneOriginalIsHintBallItemName;
+        }
+      }catch(_){}
+      return (typeof isHintBallItemName === "function") ? isHintBallItemName : null;
+    })();
+    return {
+      ballButtonText: document.getElementById("hintBallLocationBtn")?.textContent || "",
+      bossButtonText: document.getElementById("hintBossKeyBtn")?.textContent || "",
+      generatedBall: typeof inherentRewardFor === "function" ? inherentRewardFor(0, 1, "Fathom", tables) : "",
+      generatedBoss: typeof inherentRewardFor === "function" ? inherentRewardFor(1, 2, "Corvette", tables) : "",
+      canonicalBallRecognized: ballRecognizer ? ballRecognizer("Hint: Ball Location") : false,
+      canonicalBossRecognized: typeof isHintBossKeyItemName === "function" ? isHintBossKeyItemName("Hint: Boss Key") : false,
+      legacyBallRecognized: ballRecognizer ? ballRecognizer("Hint Ball Location") : false,
+      legacyBossRecognized: typeof isHintBossKeyItemName === "function" ? isHintBossKeyItemName("Hint Boss Key") : false
+    };
+  });
+  if(
+    String(canonicalHintNameProbe.ballButtonText || "").trim() !== "HINT: BALL LOCATION" ||
+    String(canonicalHintNameProbe.bossButtonText || "").trim() !== "HINT: BOSS KEY" ||
+    canonicalHintNameProbe.generatedBall !== "Hint: Ball Location" ||
+    canonicalHintNameProbe.generatedBoss !== "Hint: Boss Key" ||
+    !canonicalHintNameProbe.canonicalBallRecognized ||
+    !canonicalHintNameProbe.canonicalBossRecognized ||
+    !canonicalHintNameProbe.legacyBallRecognized ||
+    !canonicalHintNameProbe.legacyBossRecognized
+  ){
+    throw new Error(`Hint item names were not canonicalized with colon labels: ${JSON.stringify(canonicalHintNameProbe)}`);
+  }
+
   const corvetteUnlockProbe = await waitFor(page, `
     const key = typeof getTableKeyForName === 'function' ? (getTableKeyForName('Corvette') || '') : '';
     const level = key ? (
@@ -2521,6 +2978,81 @@ async function run() {
     throw new Error(`Checks page manual table selection was not pinned through refresh churn: ${JSON.stringify(checksSelectionProbe)}`);
   }
 
+  const toccataChecksSelectionProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const worldKey = "w1";
+    const phantomKey = `${worldKey}|1`;
+    const hauntedKey = `${worldKey}|2`;
+    const previous = {
+      selected: String(state?.selected || ""),
+      currentWorld: String(ap?.currentWorld || ""),
+      activeView: String(activeView || ""),
+      world: state?.worlds?.[worldKey] ? JSON.parse(JSON.stringify(state.worlds[worldKey])) : null,
+      nowPlaying: state?.nowPlaying ? state.nowPlaying[worldKey] : undefined,
+      balls: state?.balls ? { ...state.balls } : {}
+    };
+    try{
+      state.worlds = state.worlds || {};
+      state.worlds[worldKey] = {
+        ...(state.worlds[worldKey] || {}),
+        label: "World 1; Toccata Terror Test",
+        locked: false,
+        tables: ["Genesis", "Phantom of the Opera", "Haunted House", "The Incredible Hulk", "Theatre of Magic"]
+      };
+      state.balls = state.balls || {};
+      state.balls[`${phantomKey}|1`] = true;
+      state.balls[`${hauntedKey}|1`] = true;
+      state.nowPlaying = state.nowPlaying || {};
+      state.nowPlaying[worldKey] = 2;
+      state.selected = worldKey;
+      ap.currentWorld = worldKey;
+      if(typeof showView === "function") showView("checks");
+      else { activeView = "checks"; if(typeof setTabUI === "function") setTabUI(); }
+      if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+      if(typeof renderChecks === "function") renderChecks();
+      await delay(100);
+      const beforeActive = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      const beforeOrder = Array.from(document.querySelectorAll("#checksBody .tableBlock")).map((node) => node.getAttribute("data-tablekey") || "");
+      document.querySelector(`#checksBody .tableBlock[data-tablekey="${CSS.escape(phantomKey)}"]`)?.click();
+      await delay(180);
+      const afterActive = document.querySelector("#checksBody .tableBlock.nowPlayingChecks")?.getAttribute("data-tablekey") || "";
+      const afterOrder = Array.from(document.querySelectorAll("#checksBody .tableBlock")).map((node) => node.getAttribute("data-tablekey") || "");
+      return {
+        beforeActive,
+        afterActive,
+        beforeOrder,
+        afterOrder,
+        nowPlaying: Number(state?.nowPlaying?.[worldKey]),
+        currentWorld: String(ap?.currentWorld || ""),
+        animation: !!document.querySelector("#checksBody.checksDrawerAnim, .checksSwapGhost"),
+        phantomText: document.querySelector(`#checksBody .tableBlock[data-tablekey="${CSS.escape(phantomKey)}"]`)?.innerText || "",
+        hauntedText: document.querySelector(`#checksBody .tableBlock[data-tablekey="${CSS.escape(hauntedKey)}"]`)?.innerText || ""
+      };
+    }finally{
+      try{
+        if(previous.world) state.worlds[worldKey] = previous.world;
+        if(previous.nowPlaying === undefined) delete state.nowPlaying[worldKey];
+        else state.nowPlaying[worldKey] = previous.nowPlaying;
+        state.balls = { ...previous.balls };
+        state.selected = previous.selected;
+        ap.currentWorld = previous.currentWorld;
+        if(typeof showView === "function") showView(previous.activeView || "checks");
+        if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs();
+        if(typeof renderChecks === "function") renderChecks();
+      }catch(_){}
+    }
+  });
+  if(
+    toccataChecksSelectionProbe.beforeActive !== "w1|2" ||
+    toccataChecksSelectionProbe.afterActive !== "w1|1" ||
+    toccataChecksSelectionProbe.nowPlaying !== 1 ||
+    toccataChecksSelectionProbe.currentWorld !== "w1" ||
+    toccataChecksSelectionProbe.animation ||
+    toccataChecksSelectionProbe.beforeOrder?.join("|") !== toccataChecksSelectionProbe.afterOrder?.join("|")
+  ){
+    throw new Error(`Phantom of the Opera selection drifted back to Haunted House or moved table order: ${JSON.stringify(toccataChecksSelectionProbe)}`);
+  }
+
   const checksWorldTabSwitchProbe = await page.evaluate(async () => {
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const worlds = Object.keys(state?.worlds || {}).filter((wk) => {
@@ -2786,6 +3318,65 @@ async function run() {
     throw new Error(`Duplicate ReceivedItems packet was not suppressed before replay: ${JSON.stringify(duplicateReceivedPacketProbe)}`);
   }
 
+  const bossKeyGateProbe = await page.evaluate(() => {
+    const previous = {
+      apBossKeyCount: window.__apBossKeyCount,
+      prevApBossKeyCount: window.__prevApBossKeyCount,
+      bossOpen: state?.bossOpen,
+      bossWorldLocked: state?.worlds?.boss?.locked,
+      selected: state?.selected,
+      currentWorld: ap?.currentWorld,
+      bossKeys: Array.isArray(window.bossKeysState || bossKeysState)
+        ? (window.bossKeysState || bossKeysState).map((key) => key ? { ...key } : key)
+        : null
+    };
+    try{
+      const keys = window.bossKeysState || bossKeysState;
+      if(Array.isArray(keys)) keys.forEach((key) => { if(key) key.acquired = false; });
+      window.__apBossKeyCount = 0;
+      window.__prevApBossKeyCount = 0;
+      if(typeof bossKeysSyncLegacyMirror === "function") bossKeysSyncLegacyMirror(0);
+      if(state?.worlds?.boss) state.worlds.boss.locked = false;
+      state.bossOpen = true;
+      if(typeof bossKeysRender === "function") bossKeysRender();
+      const forceResult = typeof forceBossWorldUnlocked === "function" ? forceBossWorldUnlocked("stale-open-regression") : null;
+      return {
+        forceResult,
+        unlocked: typeof isBossUnlocked === "function" ? isBossUnlocked() : null,
+        revealReady: typeof isBossTableRevealReady === "function" ? isBossTableRevealReady() : null,
+        bossOpen: !!state?.bossOpen,
+        bossLocked: !!state?.worlds?.boss?.locked,
+        dockOpen: !!document.getElementById("bossDock")?.classList.contains("bossOpen")
+      };
+    }finally{
+      window.__apBossKeyCount = previous.apBossKeyCount;
+      window.__prevApBossKeyCount = previous.prevApBossKeyCount;
+      state.bossOpen = previous.bossOpen;
+      if(state?.worlds?.boss) state.worlds.boss.locked = previous.bossWorldLocked;
+      state.selected = previous.selected;
+      ap.currentWorld = previous.currentWorld;
+      try{
+        const keys = window.bossKeysState || bossKeysState;
+        if(Array.isArray(keys) && Array.isArray(previous.bossKeys)){
+          keys.forEach((key, keyIndex) => {
+            if(key && previous.bossKeys[keyIndex]) Object.assign(key, previous.bossKeys[keyIndex]);
+          });
+        }
+      }catch(_){}
+      try{ if(typeof bossKeysRender === "function") bossKeysRender(); }catch(_){}
+    }
+  });
+  if(
+    bossKeyGateProbe.forceResult !== false ||
+    bossKeyGateProbe.unlocked ||
+    bossKeyGateProbe.revealReady ||
+    bossKeyGateProbe.bossOpen ||
+    !bossKeyGateProbe.bossLocked ||
+    bossKeyGateProbe.dockOpen
+  ){
+    throw new Error(`Boss opened without required Boss Keys: ${JSON.stringify(bossKeyGateProbe)}`);
+  }
+
   const bossRoutingProbe = await page.evaluate((params) => {
     const {
       tableName,
@@ -2985,12 +3576,29 @@ async function run() {
       musicRefs: { ...(state.musicRefs || {}) },
       musicRefreshScenario: typeof musicRefreshScenario === "function" ? musicRefreshScenario : null,
       musicCrossfadeToScenario: typeof musicCrossfadeToScenario === "function" ? musicCrossfadeToScenario : null,
-      damageSeen: window.__bossDamageSeen instanceof Set ? new Set(window.__bossDamageSeen) : null
+      damageSeen: window.__bossDamageSeen instanceof Set ? new Set(window.__bossDamageSeen) : null,
+      apBossKeyCount: window.__apBossKeyCount,
+      prevApBossKeyCount: window.__prevApBossKeyCount,
+      bossKeys: Array.isArray(window.bossKeysState || bossKeysState)
+        ? (window.bossKeysState || bossKeysState).map((key) => key ? { ...key } : key)
+        : null
     };
     const calls = [];
     try{
       state.bossTable = "Vector Test Table";
       if(state.worlds?.boss) state.worlds.boss.locked = false;
+      const bossRequired = typeof getBossKeysRequiredForOpen === "function" ? Number(getBossKeysRequiredForOpen()) || 3 : 3;
+      window.__apBossKeyCount = bossRequired;
+      window.__prevApBossKeyCount = bossRequired;
+      try{
+        const keys = window.bossKeysState || bossKeysState;
+        if(Array.isArray(keys)){
+          keys.forEach((key, keyIndex) => {
+            if(key) key.acquired = keyIndex < bossRequired;
+          });
+        }
+        if(typeof bossKeysSyncLegacyMirror === "function") bossKeysSyncLegacyMirror(bossRequired);
+      }catch(_){}
       state.balls = state.balls || {};
       state.balls["boss|0|1"] = true;
       state.balls["boss|0|2"] = true;
@@ -3033,6 +3641,18 @@ async function run() {
       if(previous.musicRefreshScenario) { musicRefreshScenario = previous.musicRefreshScenario; window.musicRefreshScenario = previous.musicRefreshScenario; }
       if(previous.musicCrossfadeToScenario) { musicCrossfadeToScenario = previous.musicCrossfadeToScenario; window.musicCrossfadeToScenario = previous.musicCrossfadeToScenario; }
       if(previous.damageSeen) window.__bossDamageSeen = previous.damageSeen;
+      window.__apBossKeyCount = previous.apBossKeyCount;
+      window.__prevApBossKeyCount = previous.prevApBossKeyCount;
+      try{
+        const keys = window.bossKeysState || bossKeysState;
+        if(Array.isArray(keys) && Array.isArray(previous.bossKeys)){
+          keys.forEach((key, keyIndex) => {
+            if(key && previous.bossKeys[keyIndex]){
+              Object.assign(key, previous.bossKeys[keyIndex]);
+            }
+          });
+        }
+      }catch(_){}
     }
   });
   if(
@@ -3042,6 +3662,108 @@ async function run() {
     bossPhase2MusicProbe.phaseState?.pct !== 40
   ){
     throw new Error(`Boss phase 2 music did not crossfade after boss damage crossed 50%: ${JSON.stringify(bossPhase2MusicProbe)}`);
+  }
+
+  const lockedBossMusicSuppressionProbe = await page.evaluate(() => {
+    const previous = {
+      activeView: String(activeView || ""),
+      selected: state?.selected,
+      currentWorld: ap?.currentWorld,
+      bossTable: state?.bossTable,
+      bossOpen: state?.bossOpen,
+      bossHpLive: { ...(state.bossHpLive || {}) },
+      bossHpTest: { ...(state.bossHpTest || {}) },
+      bossWorldLocked: state.worlds?.boss?.locked,
+      musicRefs: { ...(state.musicRefs || {}) },
+      musicPlayScenario: typeof musicPlayScenario === "function" ? musicPlayScenario : null,
+      musicStop: typeof musicStop === "function" ? musicStop : null,
+      apBossKeyCount: window.__apBossKeyCount,
+      prevApBossKeyCount: window.__prevApBossKeyCount,
+      bossKeys: Array.isArray(window.bossKeysState || bossKeysState)
+        ? (window.bossKeysState || bossKeysState).map((key) => key ? { ...key } : key)
+        : null
+    };
+    const calls = [];
+    const stops = [];
+    try{
+      activeView = "tower";
+      state.selected = "w1";
+      ap.currentWorld = "w1";
+      state.bossTable = "Vector Test Table";
+      state.bossOpen = false;
+      if(state.worlds?.boss) state.worlds.boss.locked = true;
+      window.__apBossKeyCount = 0;
+      window.__prevApBossKeyCount = 0;
+      try{
+        const keys = window.bossKeysState || bossKeysState;
+        if(Array.isArray(keys)){
+          keys.forEach((key) => { if(key) key.acquired = false; });
+        }
+        if(typeof bossKeysSyncLegacyMirror === "function") bossKeysSyncLegacyMirror(0);
+      }catch(_){}
+      state.bossHpLive = { max:100, cur:40, name:"Vector Test Table", inited:true };
+      state.bossHpTest = { ...(state.bossHpTest || {}), show:false, max:100, cur:40, name:"Vector Test Table", forceShowCard:false };
+      state.musicRefs = { ...(state.musicRefs || {}), boss_battle_beginning:"data:audio/mp3;base64,AA==", boss_battle_phase2:"data:audio/mp3;base64,AA==" };
+      const mgr = typeof musicEnsureManager === "function" ? musicEnsureManager() : (window.__flprMusic ||= {});
+      mgr.lockedUntil = 0;
+      mgr.current = "boss_battle_beginning";
+      mgr.currentUrl = "locked-boss-test";
+      mgr.crossfadeTarget = "";
+      mgr.crossfadeAudio = null;
+      mgr.audio = { paused:false, volume:1, pause(){ this.paused = true; }, removeAttribute(){}, load(){} };
+      musicPlayScenario = function lockedBossMusicPlayProbe(name, opts){
+        calls.push({ name, forceStopIfMissing: !!opts?.forceStopIfMissing });
+        mgr.current = String(name || "");
+        mgr.currentUrl = `${String(name || "")}-locked-boss-test`;
+        return true;
+      };
+      window.musicPlayScenario = musicPlayScenario;
+      musicStop = function lockedBossMusicStopProbe(opts){
+        stops.push({ clearSrc: !!opts?.clearSrc });
+        mgr.current = "";
+        mgr.currentUrl = "";
+        if(mgr.audio) mgr.audio.paused = true;
+      };
+      window.musicStop = musicStop;
+      if(typeof musicRefreshScenario === "function") musicRefreshScenario();
+      return {
+        calls,
+        stops,
+        current: String(mgr.current || ""),
+        bossOpen: typeof musicIsBossTableOpenForPlayback === "function" ? !!musicIsBossTableOpenForPlayback() : null,
+        shouldPlayBoss: typeof musicShouldPlayBossBattle === "function" ? !!musicShouldPlayBossBattle(40) : null
+      };
+    }finally{
+      activeView = previous.activeView;
+      state.selected = previous.selected;
+      ap.currentWorld = previous.currentWorld;
+      state.bossTable = previous.bossTable;
+      state.bossOpen = previous.bossOpen;
+      state.bossHpLive = previous.bossHpLive;
+      state.bossHpTest = previous.bossHpTest;
+      if(state.worlds?.boss) state.worlds.boss.locked = previous.bossWorldLocked;
+      state.musicRefs = previous.musicRefs;
+      if(previous.musicPlayScenario) { musicPlayScenario = previous.musicPlayScenario; window.musicPlayScenario = previous.musicPlayScenario; }
+      if(previous.musicStop) { musicStop = previous.musicStop; window.musicStop = previous.musicStop; }
+      window.__apBossKeyCount = previous.apBossKeyCount;
+      window.__prevApBossKeyCount = previous.prevApBossKeyCount;
+      try{
+        const keys = window.bossKeysState || bossKeysState;
+        if(Array.isArray(keys) && Array.isArray(previous.bossKeys)){
+          keys.forEach((key, keyIndex) => {
+            if(key && previous.bossKeys[keyIndex]) Object.assign(key, previous.bossKeys[keyIndex]);
+          });
+        }
+      }catch(_){}
+    }
+  });
+  if(
+    lockedBossMusicSuppressionProbe.bossOpen !== false ||
+    lockedBossMusicSuppressionProbe.shouldPlayBoss !== false ||
+    lockedBossMusicSuppressionProbe.calls.some((call) => /^boss_battle/.test(String(call.name || ""))) ||
+    /^boss_battle/.test(String(lockedBossMusicSuppressionProbe.current || ""))
+  ){
+    throw new Error(`Locked boss HP still triggered boss battle music: ${JSON.stringify(lockedBossMusicSuppressionProbe)}`);
   }
 
   const bossVictoryAutoAwardProbe = await page.evaluate((params) => {
@@ -3444,8 +4166,9 @@ async function run() {
   const progressiveSiegePipelineProbe = await page.evaluate(async () => {
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const previousIntroMs = window.__flprStandaloneSiegeIntroMs;
-    window.__flprStandaloneSiegeIntroMs = 900;
+    window.__flprStandaloneSiegeIntroMs = 1600;
     if(typeof besiegedClear === "function") besiegedClear("test-reset");
+    window.__flprLastSiegeStartCinematic = null;
     if(typeof closeOverviewModal === "function") closeOverviewModal();
     const targetKey = typeof getTableKeyForName === "function" ? (getTableKeyForName("Corvette") || "") : "";
     const parts = String(targetKey || "").split("|");
@@ -3504,22 +4227,68 @@ async function run() {
     };
     const deadline = Date.now() + 8200;
     let intro = null;
+    const phaseOrder = [];
+    const phaseSamples = [];
+    const rectInfo = (node) => {
+      if(!node) return null;
+      const r = node.getBoundingClientRect();
+      return { left:r.left, top:r.top, right:r.right, bottom:r.bottom, width:r.width, height:r.height };
+    };
+    const scopedToViewport = (node) => {
+      const viewport = document.querySelector(".viewport");
+      if(!node || !viewport || node.parentElement !== viewport) return false;
+      const r = node.getBoundingClientRect();
+      const v = viewport.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 &&
+        r.left >= v.left - 2 &&
+        r.top >= v.top - 2 &&
+        r.right <= v.right + 2 &&
+        r.bottom <= v.bottom + 2;
+    };
     while(Date.now() < deadline){
-      await delay(140);
+      await delay(80);
       const live = typeof besiegedGetState === "function" ? besiegedGetState() : state?.besiegedEvent;
       const activeIntro = !!document.body.classList.contains("flprStandaloneSiegeIntroActive");
       const lastIntro = window.__flprStandaloneLastSiegeIntro || null;
       if(activeIntro || (lastIntro && lastIntro.completed === false)){
+        const targetCard = document.querySelector("#selectedBody .pentaCard.besiegedTarget");
+        const startOverlay = document.getElementById("flprSiegeStartOverlay");
+        const nonTargets = Array.from(document.querySelectorAll("#selectedBody .pentaCard:not(.besiegedTarget)"));
+        const targetClass = targetCard?.className || "";
+        const hasArmy = /\bflprStandaloneSiegeIntroArmy\b/.test(targetClass);
+        const hasCastle = /\bflprStandaloneSiegeIntroCastle\b/.test(targetClass);
+        const hasReady = /\bflprStandaloneSiegeIntroReady\b/.test(targetClass);
+        [["army", hasArmy], ["castle", hasCastle], ["ready", hasReady]].forEach(([phase, on]) => {
+          if(on && !phaseOrder.includes(phase)) phaseOrder.push(phase);
+        });
+        phaseSamples.push({
+          targetClass,
+          hasArmy,
+          hasCastle,
+          hasReady,
+          lastIntroPhase: lastIntro?.lastPhase || "",
+          lastIntroOrder: Array.isArray(lastIntro?.phaseOrder) ? lastIntro.phaseOrder.slice() : []
+        });
         intro = {
           activeIntro,
           activeView: String(activeView || ""),
           tableKey: String(live?.tableKey || ""),
           worldKey: String(live?.worldKey || ""),
           queueState: typeof window.flprStandaloneSiegeQueueState === "function" ? window.flprStandaloneSiegeQueueState() : null,
-          targetClass: document.querySelector("#selectedBody .pentaCard.besiegedTarget")?.className || "",
+          targetClass,
+          morphAnimations: targetCard?.getAnimations?.().map((animation) => animation.id || animation.animationName || "") || [],
+          fadedSiblingCount: nonTargets.filter((node) => Number.parseFloat(getComputedStyle(node).opacity || "1") < 0.16).length,
+          phaseOrder: phaseOrder.slice(),
+          phaseSamples: phaseSamples.slice(-12),
+          startCinematic: window.__flprLastSiegeStartCinematic || null,
+          startOverlayVisible: !!startOverlay,
+          startOverlayScoped: scopedToViewport(startOverlay),
+          startOverlayParent: startOverlay?.parentElement?.className || "",
+          startOverlayRect: rectInfo(startOverlay),
+          viewportRect: rectInfo(document.querySelector(".viewport")),
           lastIntro
         };
-        break;
+        if(hasCastle || phaseSamples.length >= 16) break;
       }
     }
     await delay(1120);
@@ -3553,6 +4322,20 @@ async function run() {
     !progressiveSiegePipelineProbe.intro ||
     progressiveSiegePipelineProbe.intro.tableKey !== progressiveSiegePipelineProbe.siegeKey ||
     progressiveSiegePipelineProbe.intro.activeView !== "tower" ||
+    !progressiveSiegePipelineProbe.intro.morphAnimations?.includes("flprStandaloneSiegeTargetMorph") ||
+    Number(progressiveSiegePipelineProbe.intro.fadedSiblingCount || 0) < 4 ||
+    !progressiveSiegePipelineProbe.intro.lastIntro?.morph ||
+    Number(progressiveSiegePipelineProbe.intro.lastIntro?.morph?.sx || 1) >= 0.92 ||
+    Number(progressiveSiegePipelineProbe.intro.lastIntro?.morph?.sy || 1) >= 0.92 ||
+    !progressiveSiegePipelineProbe.intro.phaseOrder?.includes("army") ||
+    !progressiveSiegePipelineProbe.intro.phaseOrder?.includes("castle") ||
+    progressiveSiegePipelineProbe.intro.phaseOrder.indexOf("army") > progressiveSiegePipelineProbe.intro.phaseOrder.indexOf("castle") ||
+    !progressiveSiegePipelineProbe.intro.startCinematic?.shown ||
+    !progressiveSiegePipelineProbe.intro.startOverlayScoped ||
+    progressiveSiegePipelineProbe.intro.startCinematic?.tableKey !== progressiveSiegePipelineProbe.siegeKey ||
+    Number(progressiveSiegePipelineProbe.intro.startCinematic?.troopCount || 0) < 10 ||
+    Number(progressiveSiegePipelineProbe.intro.startCinematic?.projectileCount || 0) < 6 ||
+    !(Number(progressiveSiegePipelineProbe.intro.lastIntro?.phaseTimings?.armyAt || 0) < Number(progressiveSiegePipelineProbe.intro.lastIntro?.phaseTimings?.castleAt || 0)) ||
     progressiveSiegePipelineProbe.after?.tableKey !== progressiveSiegePipelineProbe.siegeKey ||
     progressiveSiegePipelineProbe.after?.worldKey !== progressiveSiegePipelineProbe.siegeWorld ||
     progressiveSiegePipelineProbe.after?.activeView !== "tower" ||
@@ -4091,6 +4874,1142 @@ async function run() {
   const activeDrawerFx = (rewardStateAfterResync.drawerFx || []).filter((entry) => /\b(autoOpen|pulse|redeemFx)\b/.test(entry.cls || ""));
   if(activeDrawerFx.length){
     throw new Error(`Repeated Sync triggered counter drawer animation: ${JSON.stringify(activeDrawerFx)}`);
+  }
+
+  const junkCounterDrawerProbe = await page.evaluate(() => {
+    const previous = {
+      activeView: String(activeView || ""),
+      apJunk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : { easy:0, medium:0 }
+    };
+    const forceCollapsed = () => {
+      const dock = document.querySelector('#checksCountersDock');
+      if(dock) dock.classList.remove('expanded', 'active', 'retreating', 'showRetreatBar');
+      document.querySelectorAll('#checksCountersDock .counterDrawer').forEach((drawer) => {
+        drawer.classList.remove('open', 'autoOpen', 'pulse', 'redeemFx');
+      });
+    };
+    const readDrawers = () => {
+      forceCollapsed();
+      return Array.from(document.querySelectorAll('#checksCountersDock .counterDrawer')).map((drawer) => {
+        const chip = drawer.querySelector('.flprStandaloneCollapsedRedeemCounter');
+        const chipStyle = chip ? getComputedStyle(chip) : null;
+        const drawerStyle = getComputedStyle(drawer);
+        const head = drawer.querySelector('.counterDrawerHead');
+        const headStyle = head ? getComputedStyle(head) : null;
+        const badge = drawer.querySelector('.counterDrawerReadyBadge');
+        const badgeStyle = badge ? getComputedStyle(badge) : null;
+        return {
+          key: drawer.dataset.counter || "",
+          text: drawer.innerText || drawer.textContent || "",
+          badge: drawer.querySelector('.counterDrawerReadyBadge')?.textContent || "",
+          badgeOpacity: badgeStyle?.opacity || "",
+          progress: drawer.querySelector('.drawerVal')?.textContent || "",
+          readyLine: drawer.querySelector('.counterReadyLine')?.textContent || "",
+          drawerOpacity: drawerStyle?.opacity || "",
+          headOpacity: headStyle?.opacity || "",
+          collapsed: chip?.innerText || chip?.textContent || "",
+          collapsedCount: chip?.dataset?.count || "",
+          collapsedLabel: chip?.dataset?.label || "",
+          collapsedDisplay: chipStyle?.display || "",
+          collapsedOpacity: chipStyle?.opacity || ""
+        };
+      });
+    };
+    try{
+      if(typeof showView === "function") showView("checks");
+      state.junkRedeems = { easy:2, medium:1 };
+      state.extraBallTokens = 3;
+      ap.junk = { ...(ap.junk || {}), easy:1, med:2, frag:4, easyTotal:9, medTotal:8, fragTotal:19 };
+      if(typeof initCounterDrawers === "function") initCounterDrawers();
+      if(typeof updateCounterBars === "function") updateCounterBars();
+      const before = readDrawers();
+      const beforeText = before.map((entry) => entry.text).join("\\n");
+      const oldWords = /\\b(Banked|Redeems|Redeemed|Collected|Total gained)\\b/i.test(beforeText);
+      const consumed = typeof consumeJunkRedeemBalance === "function" ? consumeJunkRedeemBalance("easy", 1) : false;
+      if(typeof updateCounterBars === "function") updateCounterBars();
+      const after = readDrawers();
+      return { before, after, oldWords, consumed };
+    }finally{
+      try{ if(previous.apJunk) ap.junk = { ...previous.apJunk }; }catch(_){}
+      try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
+      try{ state.junkRedeems = { ...previous.junkRedeems }; }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  const drawerByKeyBefore = Object.fromEntries((junkCounterDrawerProbe.before || []).map((entry) => [entry.key, entry]));
+  const drawerByKeyAfter = Object.fromEntries((junkCounterDrawerProbe.after || []).map((entry) => [entry.key, entry]));
+  if(
+    junkCounterDrawerProbe.oldWords ||
+    drawerByKeyBefore.easy?.progress !== "1/3" ||
+    drawerByKeyBefore.easy?.badge !== "2" ||
+    drawerByKeyBefore.easy?.readyLine !== "READY: 2" ||
+    drawerByKeyBefore.med?.progress !== "2/3" ||
+    drawerByKeyBefore.med?.badge !== "1" ||
+    drawerByKeyBefore.med?.readyLine !== "READY: 1" ||
+    drawerByKeyBefore.frag?.progress !== "4/5" ||
+    drawerByKeyBefore.frag?.badge !== "3" ||
+    drawerByKeyBefore.frag?.readyLine !== "READY: 3" ||
+    drawerByKeyBefore.easy?.collapsedCount !== "2" ||
+    drawerByKeyBefore.easy?.collapsedLabel !== "RDY" ||
+    drawerByKeyBefore.easy?.collapsedDisplay === "none" ||
+    Number(drawerByKeyBefore.easy?.drawerOpacity || 0) !== 1 ||
+    Number(drawerByKeyBefore.easy?.badgeOpacity || 0) !== 1 ||
+    Number(drawerByKeyBefore.easy?.collapsedOpacity || 0) !== 1 ||
+    Number(drawerByKeyBefore.easy?.headOpacity || 1) >= 0.6 ||
+    drawerByKeyBefore.med?.collapsedCount !== "1" ||
+    drawerByKeyBefore.med?.collapsedLabel !== "RDY" ||
+    drawerByKeyBefore.frag?.collapsedCount !== "3" ||
+    drawerByKeyBefore.frag?.collapsedLabel !== "EB" ||
+    !junkCounterDrawerProbe.consumed ||
+    drawerByKeyAfter.easy?.badge !== "1" ||
+    drawerByKeyAfter.easy?.readyLine !== "READY: 1" ||
+    drawerByKeyAfter.easy?.collapsedCount !== "1"
+  ){
+    throw new Error(`Junk counter drawer UI did not simplify ready/progress display: ${JSON.stringify(junkCounterDrawerProbe)}`);
+  }
+
+  const scoutHeaderMarkerProbe = await page.evaluate(() => {
+    const previous = {
+      activeView: String(activeView || ""),
+      marks: (() => {
+        try{ return JSON.parse(JSON.stringify(relicGetSimpleRunState()?.scoutTableMarks || {})); }catch(_){ return null; }
+      })(),
+      ball: !!state?.balls?.["w1|0|1"]
+    };
+    const host = document.createElement("div");
+    host.id = "scoutHeaderMarkerProbeHost";
+    host.style.position = "absolute";
+    host.style.left = "0";
+    host.style.top = "0";
+    host.style.width = "720px";
+    host.style.visibility = "hidden";
+    (document.querySelector("#viewChecks") || document.body).appendChild(host);
+    try{
+      if(typeof showView === "function") showView("checks");
+      state.balls = state.balls || {};
+      state.balls["w1|0|1"] = true;
+      if(typeof relicClearScoutTableMarks === "function") relicClearScoutTableMarks();
+      if(typeof relicSetScoutTableMark === "function") relicSetScoutTableMark("w1|0", "progress", "");
+      if(typeof renderTableBlock !== "function") return { missing:true };
+      renderTableBlock(host, "Fathom", [], { tableKey:"w1|0" });
+      const block = host.querySelector(".tableBlock");
+      const head = host.querySelector(".tableHead");
+      const tag = host.querySelector(".tableBlock > .relicMarkerHeaderTag");
+      const blockRect = block?.getBoundingClientRect();
+      const tagRect = tag?.getBoundingClientRect();
+      return {
+        missing:false,
+        blockClass: block?.className || "",
+        headClass: head?.className || "",
+        markerParent: tag?.parentElement?.className || "",
+        markerAfterHead: !!(tag && head && tag.previousElementSibling === head),
+        tagText: tag?.textContent || "",
+        parens: /[()]/.test(tag?.textContent || ""),
+        tagWidth: tagRect?.width || 0,
+        blockWidth: blockRect?.width || 0
+      };
+    }finally{
+      try{ host.remove(); }catch(_){}
+      try{
+        const runSimple = relicGetSimpleRunState();
+        runSimple.scoutTableMarks = previous.marks || {};
+      }catch(_){}
+      try{
+        if(previous.ball) state.balls["w1|0|1"] = true;
+        else delete state.balls["w1|0|1"];
+      }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  if(
+    scoutHeaderMarkerProbe.missing ||
+    scoutHeaderMarkerProbe.tagText !== "PROGRESSION STILL HERE" ||
+    scoutHeaderMarkerProbe.parens ||
+    !/\bhasRelicHeaderMarker\b/.test(scoutHeaderMarkerProbe.blockClass || "") ||
+    !/\bhasRelicHeaderMarker\b/.test(scoutHeaderMarkerProbe.headClass || "") ||
+    !/\btableBlock\b/.test(scoutHeaderMarkerProbe.markerParent || "") ||
+    !scoutHeaderMarkerProbe.markerAfterHead ||
+    scoutHeaderMarkerProbe.tagWidth < Math.max(400, (scoutHeaderMarkerProbe.blockWidth || 0) * 0.82)
+  ){
+    throw new Error(`Scout Hint table marker did not become a full-width readable header tag: ${JSON.stringify(scoutHeaderMarkerProbe)}`);
+  }
+
+  const relicLazySusanLayoutProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const previous = {
+      detailOpen: !!relicUiState?.detailOpen,
+      detailId: String(relicUiState?.detailId || ""),
+      susanAngle: relicUiState?.susanAngle,
+      hidden: document.getElementById("relicsOverlay")?.classList.contains("hidden"),
+      aria: document.getElementById("relicsOverlay")?.getAttribute("aria-hidden")
+    };
+    try{
+      if(typeof openRelicsOverlay !== "function") return { missing:true };
+      relicUiState.detailOpen = false;
+      openRelicsOverlay();
+      await delay(120);
+      const body = document.getElementById("relicsBody");
+      const pane = body?.querySelector(".relicCarouselWidePane");
+      const shell = body?.querySelector(".relicArchiveShell");
+      const side = body?.querySelector(".relicDetailSide");
+      const susan = body?.querySelector("#relicLazySusan");
+      const oldDossier = body?.querySelector(".relicDossierPane");
+      const detailLayer = document.getElementById("relicDetailLayer");
+      const card = body?.querySelector(".relicCarouselCard[data-relic-id]:not(.isLocked)") || body?.querySelector(".relicCarouselCard[data-relic-id]");
+      const bodyRect = body?.getBoundingClientRect();
+      const paneRect = pane?.getBoundingClientRect();
+      const susanRect = susan?.getBoundingClientRect();
+      const compactBefore = !!side?.classList.contains("isCompact");
+      if(card) card.click();
+      await delay(140);
+      const popup = detailLayer?.querySelector(".relicDetailPopup");
+      const shade = detailLayer?.querySelector(".relicDetailPopupShade");
+      const expandedSide = body?.querySelector(".relicDetailSide.isExpanded");
+      const closeBtn = detailLayer?.querySelector("[data-relic-detail-close]");
+      if(closeBtn) closeBtn.click();
+      await delay(100);
+      const compactAfter = !!body?.querySelector(".relicDetailSide.isCompact");
+      const popupAfter = detailLayer?.querySelector(".relicDetailPopup");
+      return {
+        missing:false,
+        hasWidePane: !!pane,
+        hasShell: !!shell,
+        hasDetailLayer: !!detailLayer,
+        oldDossier: !!oldDossier,
+        compactBefore,
+        popupAfterClick: !!popup,
+        shadeAfterClick: !!shade,
+        expandedAfterClick: !!expandedSide,
+        compactAfter,
+        popupClosed: !popupAfter,
+        bodyWidth: bodyRect?.width || 0,
+        paneWidth: paneRect?.width || 0,
+        susanWidth: susanRect?.width || 0
+      };
+    }finally{
+      try{ relicUiState.detailOpen = previous.detailOpen; }catch(_){}
+      try{ relicUiState.detailId = previous.detailId; }catch(_){}
+      try{ relicUiState.susanAngle = previous.susanAngle; }catch(_){}
+      try{
+        const overlay = document.getElementById("relicsOverlay");
+        if(previous.hidden) {
+          if(typeof closeRelicsOverlay === "function") closeRelicsOverlay({ silent:true });
+          else overlay?.classList.add("hidden");
+        }else{
+          overlay?.classList.remove("hidden");
+          if(previous.aria != null) overlay?.setAttribute("aria-hidden", previous.aria);
+        }
+      }catch(_){}
+    }
+  });
+  if(
+    relicLazySusanLayoutProbe.missing ||
+    !relicLazySusanLayoutProbe.hasWidePane ||
+    !relicLazySusanLayoutProbe.hasShell ||
+    !relicLazySusanLayoutProbe.hasDetailLayer ||
+    relicLazySusanLayoutProbe.oldDossier ||
+    !relicLazySusanLayoutProbe.compactBefore ||
+    !relicLazySusanLayoutProbe.popupAfterClick ||
+    !relicLazySusanLayoutProbe.shadeAfterClick ||
+    relicLazySusanLayoutProbe.expandedAfterClick ||
+    !relicLazySusanLayoutProbe.compactAfter ||
+    !relicLazySusanLayoutProbe.popupClosed ||
+    relicLazySusanLayoutProbe.paneWidth < (relicLazySusanLayoutProbe.bodyWidth * 0.92) ||
+    relicLazySusanLayoutProbe.susanWidth < 430
+  ){
+    throw new Error(`Relic Lazy Susan layout/detail popup did not open and close correctly: ${JSON.stringify(relicLazySusanLayoutProbe)}`);
+  }
+
+  const streamCounterRewardSuppressionProbe = await page.evaluate(() => {
+    const previous = {
+      activeView: String(activeView || ""),
+      bodyClass: document.body.className,
+      launcher: window.flprLauncher,
+      homeFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprHomeEdition"),
+      homeFlag: window.__flprHomeEdition,
+      streamFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprStreamEdition"),
+      streamFlag: window.__flprStreamEdition,
+      apJunk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      extraBallAssignments: state?.extraBallAssignments ? { ...state.extraBallAssignments } : null,
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : { easy:0, medium:0 }
+    };
+    const read = () => ({
+      disabled: typeof counterRewardRedemptionsDisabled === "function" ? counterRewardRedemptionsDisabled() : null,
+      easyBalance: typeof getJunkRedeemBalance === "function" ? getJunkRedeemBalance("easy") : null,
+      mediumBalance: typeof getJunkRedeemBalance === "function" ? getJunkRedeemBalance("medium") : null,
+      apJunk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      extraBallAssignments: state?.extraBallAssignments ? { ...state.extraBallAssignments } : null,
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : null,
+      drawers: Array.from(document.querySelectorAll('#checksCountersDock .counterDrawer')).map((drawer) => ({
+        key: drawer.dataset.counter || "",
+        progress: drawer.querySelector('.drawerVal')?.textContent || "",
+        badge: drawer.querySelector('.counterDrawerReadyBadge')?.textContent || "",
+        readyLine: drawer.querySelector('.counterReadyLine')?.textContent || "",
+        canRedeem: drawer.classList.contains("canRedeem"),
+        targetArmed: drawer.classList.contains("targetArmed"),
+        tip: drawer.querySelector('.counterDrawerHead')?.getAttribute("data-tip") || ""
+      }))
+    });
+    try{
+      if(typeof showView === "function") showView("checks");
+      document.body.classList.remove("flprStandaloneOriginalClient");
+      window.__flprHomeEdition = false;
+      window.__flprStreamEdition = true;
+      window.flprLauncher = { openPage(){ return Promise.resolve(); } };
+      ap.junk = { easy:2, med:2, frag:4, easyTotal:17, medTotal:17, fragTotal:9 };
+      state.junkRedeems = { easy:17, medium:17 };
+      state.extraBallTokens = 2;
+      state.extraBallAssignments = { "w1|0":1 };
+      if(typeof updateCounterBarsQuietly === "function") updateCounterBarsQuietly();
+      else if(typeof updateCounterBars === "function") updateCounterBars();
+      const afterReset = read();
+      const addResult = typeof addJunkRedeemBalance === "function" ? addJunkRedeemBalance("medium", 1) : null;
+      const consumeResult = typeof consumeJunkRedeemBalance === "function" ? consumeJunkRedeemBalance("easy", 1) : null;
+      const armResult = typeof armJunkRedeemTargetMode === "function" ? armJunkRedeemTargetMode("easy") : null;
+      if(typeof updateCounterBarsQuietly === "function") updateCounterBarsQuietly();
+      else if(typeof updateCounterBars === "function") updateCounterBars();
+      const afterBlocked = read();
+      return { afterReset, afterBlocked, addResult, consumeResult, armResult };
+    }finally{
+      try{ document.body.className = previous.bodyClass; }catch(_){}
+      try{
+        if(previous.launcher === undefined) delete window.flprLauncher;
+        else window.flprLauncher = previous.launcher;
+      }catch(_){}
+      try{
+        if(previous.homeFlagHad) window.__flprHomeEdition = previous.homeFlag;
+        else delete window.__flprHomeEdition;
+      }catch(_){}
+      try{
+        if(previous.streamFlagHad) window.__flprStreamEdition = previous.streamFlag;
+        else delete window.__flprStreamEdition;
+      }catch(_){}
+      try{ if(previous.apJunk) ap.junk = { ...previous.apJunk }; }catch(_){}
+      try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
+      try{
+        if(previous.extraBallAssignments) state.extraBallAssignments = { ...previous.extraBallAssignments };
+        else delete state.extraBallAssignments;
+      }catch(_){}
+      try{ state.junkRedeems = { ...previous.junkRedeems }; }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{
+        if(typeof updateCounterBarsQuietly === "function") updateCounterBarsQuietly();
+        else if(typeof updateCounterBars === "function") updateCounterBars();
+      }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  const streamDrawers = Object.fromEntries((streamCounterRewardSuppressionProbe.afterBlocked?.drawers || []).map((entry) => [entry.key, entry]));
+  if(
+    streamCounterRewardSuppressionProbe.afterReset?.disabled !== true ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.easyBalance !== 0 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.mediumBalance !== 0 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.apJunk?.easy !== 2 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.apJunk?.med !== 2 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.apJunk?.frag !== 4 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.apJunk?.easyTotal !== 17 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.apJunk?.medTotal !== 17 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.apJunk?.fragTotal !== 9 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.extraBallTokens !== 0 ||
+    Object.keys(streamCounterRewardSuppressionProbe.afterBlocked?.extraBallAssignments || {}).length !== 0 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.junkRedeems?.easy !== 0 ||
+    streamCounterRewardSuppressionProbe.afterBlocked?.junkRedeems?.medium !== 0 ||
+    streamCounterRewardSuppressionProbe.addResult !== 0 ||
+    streamCounterRewardSuppressionProbe.consumeResult !== false ||
+    streamCounterRewardSuppressionProbe.armResult !== false ||
+    streamDrawers.easy?.progress !== "2/3" ||
+    streamDrawers.med?.progress !== "2/3" ||
+    streamDrawers.frag?.progress !== "4/5" ||
+    streamDrawers.easy?.badge !== "" ||
+    streamDrawers.med?.badge !== "" ||
+    streamDrawers.frag?.badge !== "" ||
+    streamDrawers.easy?.canRedeem ||
+    streamDrawers.med?.canRedeem ||
+    streamDrawers.frag?.canRedeem ||
+    !/display-only/i.test(streamDrawers.easy?.tip || "") ||
+    !/display-only/i.test(streamDrawers.frag?.tip || "")
+  ){
+    throw new Error(`Stream Edition counter rewards were not suppressed: ${JSON.stringify(streamCounterRewardSuppressionProbe)}`);
+  }
+
+  const streamCheckSentNotificationProbe = await page.evaluate(() => {
+    const worldKey = "__stream_toast_probe";
+    const tableName = "Stream Toast Probe";
+    const locs = [
+      { id:990091, full:`${tableName} - Easy: Light lane`, short:"Light lane", genericDifficulty:"easy" },
+      { id:990092, full:`${tableName} - Easy: Orbit shot`, short:"Orbit shot", genericDifficulty:"easy" }
+    ];
+    const previous = {
+      activeView: String(activeView || ""),
+      bodyClass: document.body.className,
+      launcher: window.flprLauncher,
+      homeFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprHomeEdition"),
+      homeFlag: window.__flprHomeEdition,
+      streamFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprStreamEdition"),
+      streamFlag: window.__flprStreamEdition,
+      connected: !!ap?.connected,
+      ws: ap?.ws,
+      checkSyncTimer: ap?.checkSyncTimer || null,
+      lastCheckTriggeredSyncAt: Number(ap?.lastCheckTriggeredSyncAt || 0),
+      currentWorld: String(ap?.currentWorld || ""),
+      pendingQueue: Array.isArray(ap?.pendingQueue) ? ap.pendingQueue.map((row) => ({ ...row })) : [],
+      pendingByLoc: ap?.pendingByLoc instanceof Map ? new Map(ap.pendingByLoc) : new Map(),
+      checked: ap?.checked instanceof Set ? new Set(ap.checked) : new Set(),
+      validCheckLocIds: ap?.validCheckLocIds instanceof Set ? new Set(ap.validCheckLocIds) : new Set(),
+      locById: ap?.locById instanceof Map ? new Map(ap.locById) : new Map(),
+      balls: state?.balls ? { ...state.balls } : {},
+      worldHad: !!(state?.worlds && Object.prototype.hasOwnProperty.call(state.worlds, worldKey)),
+      world: state?.worlds?.[worldKey] ? { ...state.worlds[worldKey] } : null,
+      selected: String(state?.selected || ""),
+      nowPlaying: state?.nowPlaying ? { ...state.nowPlaying } : null,
+      toast: typeof toast === "function" ? toast : null,
+      windowToast: window.toast,
+      playSfx: typeof playSfx === "function" ? playSfx : null,
+      apLog: typeof apLog === "function" ? apLog : null
+    };
+    const toastCalls = [];
+    const packets = [];
+    const configureRuntime = (stream) => {
+      if(stream){
+        window.__flprHomeEdition = false;
+        window.__flprStreamEdition = true;
+        document.body.classList.remove("flprStandaloneOriginalClient");
+        window.flprLauncher = { openPage(){ return Promise.resolve(); } };
+      }else{
+        window.__flprHomeEdition = true;
+        window.__flprStreamEdition = false;
+        document.body.classList.add("flprStandaloneOriginalClient");
+        try{ delete window.flprLauncher; }catch(_){ window.flprLauncher = undefined; }
+      }
+    };
+    const runClick = (stream, node) => {
+      configureRuntime(stream);
+      const before = toastCalls.length;
+      const parent = document.createElement("div");
+      parent.style.display = "none";
+      document.body.appendChild(parent);
+      try{
+        renderTableBlock(parent, tableName, [node], { tableKey:`${worldKey}|0` });
+        const btn = parent.querySelector(".nodeBtn");
+        const helperValue = typeof shouldShowCheckSentNotification === "function" ? shouldShowCheckSentNotification() : null;
+        if(!btn) return { stream, helperValue, missingButton:true };
+        btn.click();
+        return {
+          stream,
+          helperValue,
+          missingButton:false,
+          checkSentTitles: toastCalls.slice(before).filter((call) => String(call.title || "") === "CHECK SENT").length,
+          allTitles: toastCalls.slice(before).map((call) => String(call.title || "")),
+          pending: !!ap?.pendingByLoc?.has?.(node.id)
+        };
+      }finally{
+        try{ parent.remove(); }catch(_){}
+      }
+    };
+    try{
+      if(!state.worlds || typeof state.worlds !== "object") state.worlds = {};
+      if(!state.balls || typeof state.balls !== "object") state.balls = {};
+      state.worlds[worldKey] = { label:tableName, tables:[tableName], locked:false };
+      state.balls[`${worldKey}|0|1`] = true;
+      ap.connected = true;
+      ap.ws = { readyState:WebSocket.OPEN, send(text){ packets.push(String(text || "")); } };
+      ap.currentWorld = worldKey;
+      ap.pendingQueue = [];
+      ap.pendingByLoc = new Map();
+      ap.checked = new Set(previous.checked);
+      locs.forEach((node) => {
+        ap.checked.delete(node.id);
+        try{ ap.validCheckLocIds.add(node.id); }catch(_){}
+        try{ ap.locById.set(node.id, node); }catch(_){}
+      });
+      window.toast = function(kind, title, value, ms){
+        toastCalls.push({ kind:String(kind || ""), title:String(title || ""), value:String(value || ""), ms:Number(ms || 0) });
+        return null;
+      };
+      toast = window.toast;
+      if(typeof playSfx === "function") playSfx = function(){ return null; };
+      if(typeof apLog === "function") apLog = function(){ return null; };
+      const originalClient = runClick(false, locs[0]);
+      const streamClient = runClick(true, locs[1]);
+      return { originalClient, streamClient, packets:packets.length, toastCalls };
+    }finally{
+      try{ document.body.className = previous.bodyClass; }catch(_){}
+      try{
+        if(previous.launcher === undefined) delete window.flprLauncher;
+        else window.flprLauncher = previous.launcher;
+      }catch(_){}
+      try{
+        if(previous.homeFlagHad) window.__flprHomeEdition = previous.homeFlag;
+        else delete window.__flprHomeEdition;
+      }catch(_){}
+      try{
+        if(previous.streamFlagHad) window.__flprStreamEdition = previous.streamFlag;
+        else delete window.__flprStreamEdition;
+      }catch(_){}
+      try{ ap.connected = previous.connected; }catch(_){}
+      try{ ap.ws = previous.ws; }catch(_){}
+      try{
+        if(ap.checkSyncTimer && ap.checkSyncTimer !== previous.checkSyncTimer) clearTimeout(ap.checkSyncTimer);
+        ap.checkSyncTimer = previous.checkSyncTimer;
+        ap.lastCheckTriggeredSyncAt = previous.lastCheckTriggeredSyncAt;
+      }catch(_){}
+      try{ ap.currentWorld = previous.currentWorld; }catch(_){}
+      try{ ap.pendingQueue = previous.pendingQueue.map((row) => ({ ...row })); }catch(_){}
+      try{ ap.pendingByLoc = new Map(previous.pendingByLoc); }catch(_){}
+      try{ ap.checked = new Set(previous.checked); }catch(_){}
+      try{ ap.validCheckLocIds = new Set(previous.validCheckLocIds); }catch(_){}
+      try{ ap.locById = new Map(previous.locById); }catch(_){}
+      try{ state.balls = { ...previous.balls }; }catch(_){}
+      try{
+        if(previous.worldHad) state.worlds[worldKey] = previous.world;
+        else delete state.worlds[worldKey];
+      }catch(_){}
+      try{ state.selected = previous.selected; }catch(_){}
+      try{
+        if(previous.nowPlaying) state.nowPlaying = { ...previous.nowPlaying };
+        else delete state.nowPlaying;
+      }catch(_){}
+      try{
+        if(previous.toast){
+          window.toast = previous.windowToast || previous.toast;
+          toast = previous.toast;
+        }
+      }catch(_){}
+      try{ if(previous.playSfx) playSfx = previous.playSfx; }catch(_){}
+      try{ if(previous.apLog) apLog = previous.apLog; }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  if(
+    streamCheckSentNotificationProbe.originalClient?.missingButton ||
+    streamCheckSentNotificationProbe.streamClient?.missingButton ||
+    streamCheckSentNotificationProbe.originalClient?.helperValue !== true ||
+    streamCheckSentNotificationProbe.streamClient?.helperValue !== false ||
+    streamCheckSentNotificationProbe.originalClient?.checkSentTitles !== 1 ||
+    streamCheckSentNotificationProbe.streamClient?.checkSentTitles !== 0 ||
+    !streamCheckSentNotificationProbe.originalClient?.pending ||
+    !streamCheckSentNotificationProbe.streamClient?.pending
+  ){
+    throw new Error(`Stream Edition Check Sent notification suppression failed: ${JSON.stringify(streamCheckSentNotificationProbe)}`);
+  }
+
+  const streamCounterReceivedFlowProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const previous = {
+      activeView: String(activeView || ""),
+      bodyClass: document.body.className,
+      launcher: window.flprLauncher,
+      homeFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprHomeEdition"),
+      homeFlag: window.__flprHomeEdition,
+      streamFlagHad: Object.prototype.hasOwnProperty.call(window, "__flprStreamEdition"),
+      streamFlag: window.__flprStreamEdition,
+      apJunk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      extraBallAssignments: state?.extraBallAssignments ? { ...state.extraBallAssignments } : null,
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : { easy:0, medium:0 },
+      receivedAll: Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row) => ({ ...row })) : null,
+      receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : null,
+      receivedSeen: ap?.receivedSeen instanceof Set ? Array.from(ap.receivedSeen) : null,
+      receivedByIndex: ap?.receivedByIndex instanceof Map ? Array.from(ap.receivedByIndex.entries()).map(([key, value]) => [key, { ...value }]) : null,
+      rewardState: localStorage.getItem("flpr_standalone_ap_reward_state_v1"),
+      itemNames: [191006, 191007, 1005].map((id) => ({ id, had: !!ap?.itemNameById?.has?.(id), name: ap?.itemNameById?.get?.(id) || "" }))
+    };
+    let originalShowOverviewModal = null;
+    let originalShowView = null;
+    let checksCalls = 0;
+    const modalArgs = [];
+    const runtimeErrors = [];
+    const onError = (event) => runtimeErrors.push(String(event?.message || event?.error?.message || event || ""));
+    const onReject = (event) => runtimeErrors.push(String(event?.reason?.message || event?.reason || event || ""));
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onReject);
+    try{
+      document.body.classList.remove("flprStandaloneOriginalClient");
+      window.__flprHomeEdition = false;
+      window.__flprStreamEdition = true;
+      window.flprLauncher = { openPage(){ return Promise.resolve(); } };
+      if(typeof processReceivedItem !== "function") return { missingProcess:true };
+      originalShowView = showView;
+      window.showView = function(next, opts){
+        if(String(next || "") === "checks") checksCalls += 1;
+        return originalShowView.apply(this, arguments);
+      };
+      showView = window.showView;
+      originalShowOverviewModal = showOverviewModal;
+      window.showOverviewModal = function(args){
+        modalArgs.push({ ...(args || {}) });
+        try{ if(typeof showOverviewModalNow === "function") showOverviewModalNow(args || {}); }catch(_){}
+        return 580;
+      };
+      showOverviewModal = window.showOverviewModal;
+      try{ if(typeof showView === "function") showView("overview"); }catch(_){}
+      document.querySelectorAll("#toastWrap .apItemToast").forEach((node) => node.remove());
+      try{ document.getElementById("ovModal")?.classList.add("hidden"); }catch(_){}
+      if(!ap.itemNameById) ap.itemNameById = new Map();
+      ap.itemNameById.set(191006, "Easy Junk Item");
+      ap.itemNameById.set(191007, "Medium Junk Item");
+      ap.itemNameById.set(1005, "Pinball Fragment");
+      ap.junk = { easy:0, med:0, frag:0, easyTotal:0, medTotal:0, fragTotal:0 };
+      state.junkRedeems = { easy:0, medium:0 };
+      state.extraBallTokens = 0;
+      state.extraBallAssignments = {};
+      ap.receivedAll = [];
+      ap.receivedKeySet = new Set();
+      ap.receivedSeen = new Set();
+      ap.receivedByIndex = new Map();
+      localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+      if(typeof updateCounterBarsQuietly === "function") updateCounterBarsQuietly();
+      else if(typeof updateCounterBars === "function") updateCounterBars();
+      processReceivedItem({ item:191006, location:3007, player:1, flags:0 }, 991006, 3007, { noPopup:false, noFeed:true, isSnapshot:false });
+      processReceivedItem({ item:191007, location:3008, player:1, flags:0 }, 991007, 3008, { noPopup:false, noFeed:true, isSnapshot:false });
+      processReceivedItem({ item:1005, location:3009, player:1, flags:0 }, 991005, 3009, { noPopup:false, noFeed:true, isSnapshot:false });
+      await delay(4550);
+      const drawers = Object.fromEntries(Array.from(document.querySelectorAll('#checksCountersDock .counterDrawer')).map((drawer) => [drawer.dataset.counter || "", {
+        progress: drawer.querySelector('.drawerVal')?.textContent || "",
+        badge: drawer.querySelector('.counterDrawerReadyBadge')?.textContent || "",
+        canRedeem: drawer.classList.contains("canRedeem"),
+        targetArmed: drawer.classList.contains("targetArmed"),
+        open: drawer.classList.contains("open"),
+        autoOpen: drawer.classList.contains("autoOpen"),
+        pulse: drawer.classList.contains("pulse"),
+        redeemFx: drawer.classList.contains("redeemFx")
+      }]));
+      return {
+        missingProcess:false,
+        disabled: typeof counterRewardRedemptionsDisabled === "function" ? counterRewardRedemptionsDisabled() : null,
+        checksCalls,
+        activeView: String(activeView || ""),
+        modalTitles: modalArgs.map((args) => String(args.title || "")),
+        modalTags: modalArgs.map((args) => String(args.tag || "")),
+        topRightText: Array.from(document.querySelectorAll("#toastWrap .apItemToast")).map((node) => node.innerText || "").join("\n"),
+        apJunk: ap?.junk ? { ...ap.junk } : null,
+        junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : null,
+        extraBallTokens: Number(state?.extraBallTokens || 0),
+        extraBallAssignments: state?.extraBallAssignments ? { ...state.extraBallAssignments } : null,
+        drawers,
+        errors: runtimeErrors.slice()
+      };
+    }finally{
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onReject);
+      try{
+        if(originalShowOverviewModal){
+          window.showOverviewModal = originalShowOverviewModal;
+          showOverviewModal = originalShowOverviewModal;
+        }
+      }catch(_){}
+      try{
+        if(originalShowView){
+          window.showView = originalShowView;
+          showView = originalShowView;
+        }
+      }catch(_){}
+      try{ document.body.className = previous.bodyClass; }catch(_){}
+      try{
+        if(previous.launcher === undefined) delete window.flprLauncher;
+        else window.flprLauncher = previous.launcher;
+      }catch(_){}
+      try{
+        if(previous.homeFlagHad) window.__flprHomeEdition = previous.homeFlag;
+        else delete window.__flprHomeEdition;
+      }catch(_){}
+      try{
+        if(previous.streamFlagHad) window.__flprStreamEdition = previous.streamFlag;
+        else delete window.__flprStreamEdition;
+      }catch(_){}
+      try{
+        for(const item of previous.itemNames || []){
+          if(item.had) ap.itemNameById.set(item.id, item.name);
+          else ap.itemNameById.delete(item.id);
+        }
+      }catch(_){}
+      try{ if(previous.apJunk) ap.junk = { ...previous.apJunk }; }catch(_){}
+      try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
+      try{
+        if(previous.extraBallAssignments) state.extraBallAssignments = { ...previous.extraBallAssignments };
+        else delete state.extraBallAssignments;
+      }catch(_){}
+      try{ state.junkRedeems = { ...previous.junkRedeems }; }catch(_){}
+      try{ if(previous.receivedAll) ap.receivedAll = previous.receivedAll.map((row) => ({ ...row })); }catch(_){}
+      try{ ap.receivedKeySet = new Set(previous.receivedKeySet || []); }catch(_){}
+      try{ ap.receivedSeen = new Set(previous.receivedSeen || []); }catch(_){}
+      try{ ap.receivedByIndex = new Map((previous.receivedByIndex || []).map(([key, value]) => [key, { ...value }])); }catch(_){}
+      try{
+        if(previous.rewardState == null) localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+        else localStorage.setItem("flpr_standalone_ap_reward_state_v1", previous.rewardState);
+      }catch(_){}
+      try{ document.querySelectorAll("#toastWrap .apItemToast").forEach((node) => node.remove()); }catch(_){}
+      try{ document.getElementById("ovModal")?.classList.add("hidden"); }catch(_){}
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll || []); }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{
+        if(typeof updateCounterBarsQuietly === "function") updateCounterBarsQuietly();
+        else if(typeof updateCounterBars === "function") updateCounterBars();
+      }catch(_){}
+      try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  if(
+    streamCounterReceivedFlowProbe.missingProcess ||
+    streamCounterReceivedFlowProbe.disabled !== true ||
+    streamCounterReceivedFlowProbe.activeView !== "checks" ||
+    streamCounterReceivedFlowProbe.checksCalls < 1 ||
+    !streamCounterReceivedFlowProbe.modalTitles.includes("JUNK ITEM RECEIVED") ||
+    !streamCounterReceivedFlowProbe.modalTitles.includes("PINBALL FRAGMENT RECEIVED") ||
+    !streamCounterReceivedFlowProbe.modalTags.includes("JUNK") ||
+    !streamCounterReceivedFlowProbe.modalTags.includes("FRAG") ||
+    /FILLER ITEM RECEIVED/i.test(streamCounterReceivedFlowProbe.topRightText || "") ||
+    streamCounterReceivedFlowProbe.apJunk?.easy !== 1 ||
+    streamCounterReceivedFlowProbe.apJunk?.med !== 1 ||
+    streamCounterReceivedFlowProbe.apJunk?.frag !== 1 ||
+    streamCounterReceivedFlowProbe.junkRedeems?.easy !== 0 ||
+    streamCounterReceivedFlowProbe.junkRedeems?.medium !== 0 ||
+    streamCounterReceivedFlowProbe.extraBallTokens !== 0 ||
+    Object.keys(streamCounterReceivedFlowProbe.extraBallAssignments || {}).length !== 0 ||
+    streamCounterReceivedFlowProbe.drawers?.easy?.progress !== "1/3" ||
+    streamCounterReceivedFlowProbe.drawers?.med?.progress !== "1/3" ||
+    streamCounterReceivedFlowProbe.drawers?.frag?.progress !== "1/5" ||
+    streamCounterReceivedFlowProbe.drawers?.easy?.canRedeem ||
+    streamCounterReceivedFlowProbe.drawers?.med?.canRedeem ||
+    streamCounterReceivedFlowProbe.drawers?.frag?.canRedeem ||
+    !streamCounterReceivedFlowProbe.drawers?.easy?.open ||
+    !streamCounterReceivedFlowProbe.drawers?.med?.open ||
+    !streamCounterReceivedFlowProbe.drawers?.frag?.open ||
+    !streamCounterReceivedFlowProbe.drawers?.easy?.pulse ||
+    !streamCounterReceivedFlowProbe.drawers?.med?.pulse ||
+    !streamCounterReceivedFlowProbe.drawers?.frag?.pulse ||
+    streamCounterReceivedFlowProbe.errors.length
+  ){
+    throw new Error(`Stream Edition counter received flow did not stay display-only with the right modal flow: ${JSON.stringify(streamCounterReceivedFlowProbe)}`);
+  }
+
+  const twitchLiveRefreshProbe = await page.evaluate(() => {
+    if(typeof twitchVideoCanAutoRefresh !== "function") return { missing:true };
+    const previous = {
+      live: flprTwitchChat.streamLive,
+      blockedAt: flprTwitchChat.videoAutoRefreshBlockedAt
+    };
+    try{
+      flprTwitchChat.streamLive = true;
+      flprTwitchChat.videoAutoRefreshBlockedAt = 0;
+      const autoWhileLive = twitchVideoCanAutoRefresh("stream live", { force:true, allowWhileLive:true });
+      const normalWhileLive = twitchVideoCanAutoRefresh("watchdog", { force:true });
+      const manualWhileLive = twitchVideoCanAutoRefresh("manual", { force:true, manual:true });
+      return { autoWhileLive, normalWhileLive, manualWhileLive };
+    }finally{
+      try{ flprTwitchChat.streamLive = previous.live; }catch(_){}
+      try{ flprTwitchChat.videoAutoRefreshBlockedAt = previous.blockedAt; }catch(_){}
+    }
+  });
+  if(
+    twitchLiveRefreshProbe.missing ||
+    twitchLiveRefreshProbe.autoWhileLive !== false ||
+    twitchLiveRefreshProbe.normalWhileLive !== false ||
+    twitchLiveRefreshProbe.manualWhileLive !== true
+  ){
+    throw new Error(`Twitch video auto-refresh was not paused while live: ${JSON.stringify(twitchLiveRefreshProbe)}`);
+  }
+
+  const explicitFillerJunkRollProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const previous = {
+      junk: ap?.junk ? { ...ap.junk } : null,
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : null,
+      receivedAll: Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row) => ({ ...row })) : null,
+      receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : null,
+      receivedSeen: ap?.receivedSeen instanceof Set ? Array.from(ap.receivedSeen) : null,
+      receivedByIndex: ap?.receivedByIndex instanceof Map ? Array.from(ap.receivedByIndex.entries()).map(([key, value]) => [key, { ...value }]) : null,
+      rewardState: localStorage.getItem("flpr_standalone_ap_reward_state_v1"),
+      activeView: String(activeView || ""),
+      selected: String(state?.selected || ""),
+      currentWorld: String(ap?.currentWorld || ""),
+      itemNameHad: !!ap?.itemNameById?.has?.(1006),
+      itemName: ap?.itemNameById?.get?.(1006)
+    };
+    const runtimeErrors = [];
+    const onError = (event) => runtimeErrors.push(String(event?.message || event?.error?.message || event || ""));
+    const onReject = (event) => runtimeErrors.push(String(event?.reason?.message || event?.reason || event || ""));
+    let originalShowView = null;
+    let checksCalls = 0;
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onReject);
+    try{
+      document.querySelectorAll(".junkRollOverlay").forEach((node) => node.remove());
+      if(typeof processReceivedItem !== "function") return { missingProcess:true };
+      try{ if(typeof besiegedClear === "function") besiegedClear("test-explicit-filler-junk"); }catch(_){}
+      try{ if(typeof showView === "function") showView("overview"); }catch(_){}
+      originalShowView = showView;
+      window.showView = function(next, opts){
+        if(String(next || "") === "checks") checksCalls += 1;
+        return originalShowView.apply(this, arguments);
+      };
+      showView = window.showView;
+      ap.junk = { easy:2, med:0, frag:0, easyTotal:0, medTotal:0, fragTotal:0 };
+      state.junkRedeems = { easy:0, medium:0 };
+      if(!ap.itemNameById) ap.itemNameById = new Map();
+      ap.itemNameById.set(1006, "Easy Junk Item");
+      ap.receivedAll = [];
+      ap.receivedKeySet = new Set();
+      ap.receivedSeen = new Set();
+      ap.receivedByIndex = new Map();
+      localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+      if(typeof updateCounterBarsQuietly === "function") updateCounterBarsQuietly();
+      else if(typeof updateCounterBars === "function") updateCounterBars();
+      processReceivedItem({ item:1006, location:3008, player:1, flags:0 }, 880001, 3008, { noPopup:false, noFeed:true });
+      await delay(3980);
+      const overlayDuring = !!document.querySelector(".junkRollOverlay");
+      const dieDuring = document.querySelector(".junkRollDie")?.textContent || "";
+      await delay(2820);
+      const overlayAfter = !!document.querySelector(".junkRollOverlay");
+      const easyDrawer = document.querySelector('#checksCountersDock .counterDrawer[data-counter="easy"]');
+      const dock = document.querySelector('#checksCountersDock');
+      return {
+        flag: !!window.__flprStandaloneRollExplicitFillerJunk,
+        overlayDuring,
+        dieDuring,
+        overlayAfter,
+        checksCalls,
+        activeView: String(activeView || ""),
+        easyRedeems: Number(state?.junkRedeems?.easy || 0),
+        junk: ap?.junk ? { ...ap.junk } : null,
+        easyDrawerClass: easyDrawer?.className || "",
+        dockClass: dock?.className || "",
+        errors: runtimeErrors.slice()
+      };
+    }finally{
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onReject);
+      try{
+        if(originalShowView){
+          window.showView = originalShowView;
+          showView = originalShowView;
+        }
+      }catch(_){}
+      try{ document.querySelectorAll(".junkRollOverlay").forEach((node) => node.remove()); }catch(_){}
+      try{
+        if(previous.itemNameHad) ap.itemNameById.set(1006, previous.itemName);
+        else ap.itemNameById.delete(1006);
+      }catch(_){}
+      try{ if(previous.junk) ap.junk = { ...previous.junk }; }catch(_){}
+      try{
+        if(previous.junkRedeems) state.junkRedeems = { ...previous.junkRedeems };
+        else delete state.junkRedeems;
+      }catch(_){}
+      try{ if(previous.receivedAll) ap.receivedAll = previous.receivedAll.map((row) => ({ ...row })); }catch(_){}
+      try{ ap.receivedKeySet = new Set(previous.receivedKeySet || []); }catch(_){}
+      try{ ap.receivedSeen = new Set(previous.receivedSeen || []); }catch(_){}
+      try{ ap.receivedByIndex = new Map((previous.receivedByIndex || []).map(([key, value]) => [key, { ...value }])); }catch(_){}
+      try{
+        if(previous.rewardState == null) localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+        else localStorage.setItem("flpr_standalone_ap_reward_state_v1", previous.rewardState);
+      }catch(_){}
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll || []); }catch(_){}
+      try{ state.selected = previous.selected; ap.currentWorld = previous.currentWorld; }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+      try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof renderChecksWorldTabs === "function") renderChecksWorldTabs(); }catch(_){}
+      try{ if(typeof renderChecks === "function") renderChecks(); }catch(_){}
+    }
+  });
+  if(
+    !explicitFillerJunkRollProbe.flag ||
+    explicitFillerJunkRollProbe.missingProcess ||
+    !explicitFillerJunkRollProbe.overlayDuring ||
+    explicitFillerJunkRollProbe.overlayAfter ||
+    explicitFillerJunkRollProbe.checksCalls !== 0 ||
+    explicitFillerJunkRollProbe.activeView !== "overview" ||
+    /\b(?:open|autoOpen|pulse|redeemFx)\b/.test(explicitFillerJunkRollProbe.easyDrawerClass || "") ||
+    /\b(?:expanded|active|showRetreatBar)\b/.test(explicitFillerJunkRollProbe.dockClass || "") ||
+    explicitFillerJunkRollProbe.errors.length
+  ){
+    throw new Error(`Home Edition explicit filler junk did not stay on Overview without drawer animation: ${JSON.stringify(explicitFillerJunkRollProbe)}`);
+  }
+
+  const junkChecksFireOnceProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const previous = {
+      activeView: String(activeView || ""),
+      apJunk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : null,
+      receivedAll: Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row) => ({ ...row })) : null,
+      receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : null,
+      receivedSeen: ap?.receivedSeen instanceof Set ? Array.from(ap.receivedSeen) : null,
+      receivedByIndex: ap?.receivedByIndex instanceof Map ? Array.from(ap.receivedByIndex.entries()).map(([key, value]) => [key, { ...value }]) : null,
+      rewardState: localStorage.getItem("flpr_standalone_ap_reward_state_v1"),
+      rollFlag: window.__flprStandaloneRollExplicitFillerJunk,
+      itemNameHad: !!ap?.itemNameById?.has?.(1006),
+      itemName: ap?.itemNameById?.get?.(1006)
+    };
+    const runtimeErrors = [];
+    const onError = (event) => runtimeErrors.push(String(event?.message || event?.error?.message || event || ""));
+    const onReject = (event) => runtimeErrors.push(String(event?.reason?.message || event?.reason || event || ""));
+    let originalShowView = null;
+    let checksCalls = 0;
+    try{
+      window.addEventListener("error", onError);
+      window.addEventListener("unhandledrejection", onReject);
+      originalShowView = showView;
+      if(typeof showView === "function") showView("checks");
+      else { activeView = "checks"; if(typeof setTabUI === "function") setTabUI(); }
+      window.showView = function(next, opts){
+        if(String(next || "") === "checks") checksCalls += 1;
+        return originalShowView.apply(this, arguments);
+      };
+      showView = window.showView;
+      window.__flprStandaloneRollExplicitFillerJunk = false;
+      if(!ap.itemNameById) ap.itemNameById = new Map();
+      ap.itemNameById.set(1006, "Easy Junk Item");
+      ap.junk = { easy:0, med:0, frag:0, easyTotal:0, medTotal:0, fragTotal:0 };
+      state.junkRedeems = { easy:0, medium:0 };
+      state.extraBallTokens = 0;
+      ap.receivedAll = [];
+      ap.receivedKeySet = new Set();
+      ap.receivedSeen = new Set();
+      ap.receivedByIndex = new Map();
+      localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+      try{ document.getElementById("ovModal")?.classList.add("hidden"); }catch(_){}
+      for(let i = 0; i < 3; i++){
+        const locId = 889101 + i;
+        const itemIndex = 889101 + i;
+        processReceivedItem({ item:1006, location:locId, player:1, flags:0 }, itemIndex, locId, {
+          noPopup:false,
+          noFeed:true,
+          isSnapshot:false
+        });
+      }
+      await delay(4400);
+      const easyDrawer = document.querySelector('#checksCountersDock .counterDrawer[data-counter="easy"]');
+      const dock = document.querySelector('#checksCountersDock');
+      return {
+        checksCalls,
+        activeView: String(activeView || ""),
+        easyRedeems: Number(state?.junkRedeems?.easy || 0),
+        mediumRedeems: Number(state?.junkRedeems?.medium || 0),
+        junk: ap?.junk ? { ...ap.junk } : null,
+        easyDrawerClass: easyDrawer?.className || "",
+        dockClass: dock?.className || "",
+        errors: runtimeErrors.slice()
+      };
+    }finally{
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onReject);
+      try{
+        if(originalShowView){
+          window.showView = originalShowView;
+          showView = originalShowView;
+        }
+      }catch(_){}
+      try{ window.__flprStandaloneRollExplicitFillerJunk = previous.rollFlag; }catch(_){}
+      try{
+        if(previous.itemNameHad) ap.itemNameById.set(1006, previous.itemName);
+        else ap.itemNameById.delete(1006);
+      }catch(_){}
+      try{ if(previous.apJunk) ap.junk = { ...previous.apJunk }; }catch(_){}
+      try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
+      try{
+        if(previous.junkRedeems) state.junkRedeems = { ...previous.junkRedeems };
+        else delete state.junkRedeems;
+      }catch(_){}
+      try{ if(previous.receivedAll) ap.receivedAll = previous.receivedAll.map((row) => ({ ...row })); }catch(_){}
+      try{ ap.receivedKeySet = new Set(previous.receivedKeySet || []); }catch(_){}
+      try{ ap.receivedSeen = new Set(previous.receivedSeen || []); }catch(_){}
+      try{ ap.receivedByIndex = new Map((previous.receivedByIndex || []).map(([key, value]) => [key, { ...value }])); }catch(_){}
+      try{
+        if(previous.rewardState == null) localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+        else localStorage.setItem("flpr_standalone_ap_reward_state_v1", previous.rewardState);
+      }catch(_){}
+      try{ document.querySelectorAll(".junkRollOverlay").forEach((node) => node.remove()); }catch(_){}
+      try{ document.getElementById("ovModal")?.classList.add("hidden"); }catch(_){}
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll || []); }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{ if(typeof renderReceivedList === "function") renderReceivedList(ap.receivedAll || []); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  if(
+    junkChecksFireOnceProbe.errors.length ||
+    junkChecksFireOnceProbe.checksCalls !== 0 ||
+    junkChecksFireOnceProbe.activeView !== "overview" ||
+    junkChecksFireOnceProbe.easyRedeems !== 1 ||
+    junkChecksFireOnceProbe.mediumRedeems !== 0 ||
+    !junkChecksFireOnceProbe.junk ||
+    junkChecksFireOnceProbe.junk.easy !== 0 ||
+    junkChecksFireOnceProbe.junk.easyTotal !== 1 ||
+    /\b(?:open|autoOpen|pulse|redeemFx)\b/.test(junkChecksFireOnceProbe.easyDrawerClass || "") ||
+    /\b(?:expanded|active|showRetreatBar)\b/.test(junkChecksFireOnceProbe.dockClass || "")
+  ){
+    throw new Error(`Live junk set moved to Checks, animated the drawer, or failed to bank once: ${JSON.stringify(junkChecksFireOnceProbe)}`);
+  }
+
+  const completedCounterNormalizerProbe = await page.evaluate(() => {
+    const previous = {
+      activeView: String(activeView || ""),
+      apJunk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      extraBallAssignments: state?.extraBallAssignments ? { ...state.extraBallAssignments } : null,
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : { easy:0, medium:0 },
+      standaloneApRewardState: state?.standaloneApRewardState ? JSON.parse(JSON.stringify(state.standaloneApRewardState)) : null,
+      rewardState: localStorage.getItem("flpr_standalone_ap_reward_state_v1")
+    };
+    try{
+      if(typeof showView === "function") showView("checks");
+      localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+      ap.junk = { easy:3, med:3, frag:5, easyTotal:0, medTotal:0, fragTotal:5 };
+      state.junkRedeems = { easy:0, medium:0 };
+      state.extraBallTokens = 0;
+      state.extraBallAssignments = {};
+      if(typeof updateCounterBarsQuietly === "function") updateCounterBarsQuietly();
+      else if(typeof updateCounterBars === "function") updateCounterBars();
+      const afterCompleted = {
+        junk: ap?.junk ? { ...ap.junk } : null,
+        junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : null,
+        extraBallTokens: Number(state?.extraBallTokens || 0),
+        easyDrawerCanRedeem: !!document.querySelector('#checksCountersDock .counterDrawer[data-counter="easy"]')?.classList.contains("canRedeem"),
+        medDrawerCanRedeem: !!document.querySelector('#checksCountersDock .counterDrawer[data-counter="med"]')?.classList.contains("canRedeem")
+      };
+      localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+      try{ delete state.standaloneApRewardState; }catch(_){ state.standaloneApRewardState = null; }
+      ap.junk = { easy:0, med:0, frag:0, easyTotal:2, medTotal:1, fragTotal:0 };
+      state.junkRedeems = { easy:0, medium:0 };
+      const firstDelta = typeof bankCounterRewardEarnedDeltasFromTotals === "function"
+        ? bankCounterRewardEarnedDeltasFromTotals("test-delta")
+        : false;
+      const afterFirstDelta = state?.junkRedeems ? { ...state.junkRedeems } : null;
+      const secondDelta = typeof bankCounterRewardEarnedDeltasFromTotals === "function"
+        ? bankCounterRewardEarnedDeltasFromTotals("test-delta-again")
+        : false;
+      const afterSecondDelta = state?.junkRedeems ? { ...state.junkRedeems } : null;
+      return { afterCompleted, firstDelta, afterFirstDelta, secondDelta, afterSecondDelta };
+    }finally{
+      try{ if(previous.apJunk) ap.junk = { ...previous.apJunk }; }catch(_){}
+      try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
+      try{
+        if(previous.extraBallAssignments) state.extraBallAssignments = { ...previous.extraBallAssignments };
+        else delete state.extraBallAssignments;
+      }catch(_){}
+      try{ state.junkRedeems = { ...previous.junkRedeems }; }catch(_){}
+      try{
+        if(previous.standaloneApRewardState) state.standaloneApRewardState = previous.standaloneApRewardState;
+        else delete state.standaloneApRewardState;
+      }catch(_){}
+      try{
+        if(previous.rewardState == null) localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+        else localStorage.setItem("flpr_standalone_ap_reward_state_v1", previous.rewardState);
+      }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{ if(typeof updateCounterBarsQuietly === "function") updateCounterBarsQuietly(); else if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  if(
+    completedCounterNormalizerProbe.afterCompleted?.junk?.easy !== 0 ||
+    completedCounterNormalizerProbe.afterCompleted?.junk?.med !== 0 ||
+    completedCounterNormalizerProbe.afterCompleted?.junk?.frag !== 0 ||
+    completedCounterNormalizerProbe.afterCompleted?.junk?.easyTotal !== 1 ||
+    completedCounterNormalizerProbe.afterCompleted?.junk?.medTotal !== 1 ||
+    completedCounterNormalizerProbe.afterCompleted?.junkRedeems?.easy !== 1 ||
+    completedCounterNormalizerProbe.afterCompleted?.junkRedeems?.medium !== 1 ||
+    completedCounterNormalizerProbe.afterCompleted?.extraBallTokens !== 1 ||
+    !completedCounterNormalizerProbe.afterCompleted?.easyDrawerCanRedeem ||
+    !completedCounterNormalizerProbe.afterCompleted?.medDrawerCanRedeem ||
+    completedCounterNormalizerProbe.firstDelta !== true ||
+    completedCounterNormalizerProbe.afterFirstDelta?.easy !== 2 ||
+    completedCounterNormalizerProbe.afterFirstDelta?.medium !== 1 ||
+    completedCounterNormalizerProbe.secondDelta !== false ||
+    completedCounterNormalizerProbe.afterSecondDelta?.easy !== 2 ||
+    completedCounterNormalizerProbe.afterSecondDelta?.medium !== 1
+  ){
+    throw new Error(`Completed junk counters did not bank once or inventory deltas re-added: ${JSON.stringify(completedCounterNormalizerProbe)}`);
+  }
+
+  const counterRewardModalProbe = await page.evaluate(async () => {
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const previous = {
+      activeView: String(activeView || ""),
+      junk: ap?.junk ? { ...ap.junk } : null,
+      extraBallTokens: Number(state?.extraBallTokens || 0),
+      junkRedeems: state?.junkRedeems ? { ...state.junkRedeems } : { easy:0, medium:0 },
+      receivedAll: Array.isArray(ap?.receivedAll) ? ap.receivedAll.map((row) => ({ ...row })) : null,
+      receivedKeySet: ap?.receivedKeySet instanceof Set ? Array.from(ap.receivedKeySet) : null,
+      rewardState: localStorage.getItem("flpr_standalone_ap_reward_state_v1")
+    };
+    const runtimeErrors = [];
+    const onError = (event) => runtimeErrors.push(String(event?.message || event?.error?.message || event || ""));
+    const onReject = (event) => runtimeErrors.push(String(event?.reason?.message || event?.reason || event || ""));
+    window.addEventListener("error", onError);
+    window.addEventListener("unhandledrejection", onReject);
+    try{
+      try{ document.getElementById("ovModal")?.classList.add("hidden"); }catch(_){}
+      try{ standaloneItemPanel?.counterRewardModalSeen?.clear?.(); }catch(_){}
+      try{ if(typeof showView === "function") showView("overview"); }catch(_){}
+      await delay(40);
+      if(typeof processReceivedItem !== "function") return { missingProcess:true };
+      processReceivedItem({ item:1005, location:3009, player:1, flags:0 }, 881005, 3009, {
+        noPopup:false,
+        noFeed:true,
+        isSnapshot:true
+      });
+      await delay(320);
+      const modal = document.getElementById("ovModal");
+      const card = document.getElementById("ovModalCard");
+      const big = document.getElementById("ovModalBig");
+      return {
+        missingProcess:false,
+        visible: !!modal && !modal.classList.contains("hidden"),
+        title: document.getElementById("ovModalTitle")?.textContent || "",
+        tag: document.getElementById("ovModalTag")?.textContent || "",
+        big: big?.textContent || "",
+        sub: document.getElementById("ovModalSub")?.textContent || "",
+        meta: document.getElementById("ovModalMeta")?.textContent || "",
+        cardCls: card?.className || "",
+        bigCls: big?.className || "",
+        activeView: String(activeView || ""),
+        errors: runtimeErrors.slice()
+      };
+    }finally{
+      window.removeEventListener("error", onError);
+      window.removeEventListener("unhandledrejection", onReject);
+      try{ document.getElementById("ovModal")?.classList.add("hidden"); }catch(_){}
+      try{ if(previous.junk) ap.junk = { ...previous.junk }; }catch(_){}
+      try{ state.extraBallTokens = previous.extraBallTokens; }catch(_){}
+      try{ state.junkRedeems = { ...previous.junkRedeems }; }catch(_){}
+      try{ if(previous.receivedAll) ap.receivedAll = previous.receivedAll.map((row) => ({ ...row })); }catch(_){}
+      try{ ap.receivedKeySet = new Set(previous.receivedKeySet || []); }catch(_){}
+      try{
+        if(previous.rewardState == null) localStorage.removeItem("flpr_standalone_ap_reward_state_v1");
+        else localStorage.setItem("flpr_standalone_ap_reward_state_v1", previous.rewardState);
+      }catch(_){}
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(ap.receivedAll || []); }catch(_){}
+      try{ if(typeof saveState === "function") saveState(); }catch(_){}
+      try{ if(typeof renderReceivedList === "function") renderReceivedList(); }catch(_){}
+      try{ if(typeof updateCounterBars === "function") updateCounterBars(); }catch(_){}
+      try{ if(typeof showView === "function") showView(previous.activeView || "checks"); }catch(_){}
+    }
+  });
+  if(
+    counterRewardModalProbe.missingProcess ||
+    !counterRewardModalProbe.visible ||
+    !/PINBALL FRAGMENT RECEIVED/i.test(counterRewardModalProbe.title || "") ||
+    !/FRAG/i.test(counterRewardModalProbe.tag || "") ||
+    !/Pinball Fragment/i.test(counterRewardModalProbe.big || "") ||
+    !/FROM; AshodinNoTrap/i.test(counterRewardModalProbe.sub || "") ||
+    !/Dirty Harry - Junk Lane 3/i.test(counterRewardModalProbe.meta || "") ||
+    !/\bapItem-filler\b/.test(counterRewardModalProbe.cardCls || "") ||
+    !/\bapItem-filler\b/.test(counterRewardModalProbe.bigCls || "") ||
+    counterRewardModalProbe.errors.length
+  ){
+    throw new Error(`Counter reward snapshot item did not show the full received modal: ${JSON.stringify(counterRewardModalProbe)}`);
   }
 
   const junkTaskRedeemProbe = await page.evaluate(async () => {
@@ -5012,7 +6931,23 @@ async function run() {
     const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     const previousHold = window.__flprStandaloneSiegeVictoryHoldMs;
     const previousExtraBalls = Number(state?.extraBallTokens || 0);
+    const previousMusicLockForDuration = window.musicLockScenarioForDuration;
+    const previousMusicLock = window.musicLockScenario;
+    const musicCalls = [];
     window.__flprStandaloneSiegeVictoryHoldMs = 900;
+    window.__flprLastSiegeVictoryCinematic = null;
+    try{
+      window.musicLockScenarioForDuration = function(name, durationMs, opts){
+        musicCalls.push({ name:String(name || ""), durationMs:Number(durationMs || 0), fadeMs:Number(opts?.fadeMs || 0), fadeLeadMs:Number(opts?.fadeLeadMs || 0) });
+        return true;
+      };
+      musicLockScenarioForDuration = window.musicLockScenarioForDuration;
+      window.musicLockScenario = function(name, lockMs){
+        musicCalls.push({ fallback:true, name:String(name || ""), durationMs:Number(lockMs || 0) });
+        return true;
+      };
+      musicLockScenario = window.musicLockScenario;
+    }catch(_){}
     const nonBossWorlds = Object.keys(state?.worlds || {}).filter((wk) => {
       try { return !isBossWorldId(wk, state) && Array.isArray(state.worlds[wk]?.tables) && state.worlds[wk].tables.length; } catch (_) { return false; }
     });
@@ -5036,18 +6971,67 @@ async function run() {
       });
     }catch(_){}
     await delay(90);
+    try{
+      if(typeof besiegedStartDefense === "function") besiegedStartDefense();
+      if(state?.besiegedEvent?.active){
+        const now = Date.now();
+        state.besiegedEvent.defenseStartedAt = now - 260000;
+        state.besiegedEvent.defenseDeadlineAt = now + 40000;
+      }
+    }catch(_){}
+    await delay(40);
     const liveBefore = typeof besiegedGetState === "function" ? besiegedGetState() : state?.besiegedEvent;
-    const cleared = typeof besiegedClear === "function" && besiegedClear("tower-target");
-    await delay(180);
+    const defenseBtn = document.querySelector(".pentaCard.besiegedTarget .besiegedTargetBtn");
+    const buttonText = defenseBtn?.innerText || "";
+    if(defenseBtn) defenseBtn.click();
+    await delay(220);
+    const cleared = !(typeof besiegedIsActive === "function" ? !!besiegedIsActive() : !!state?.besiegedEvent?.active);
     const overlay = document.getElementById("flprStandaloneSiegeVictoryOverlay");
+    const overview = document.getElementById("viewOverview");
+    const rectInfo = (node) => {
+      if(!node) return null;
+      const r = node.getBoundingClientRect();
+      return { left:r.left, top:r.top, right:r.right, bottom:r.bottom, width:r.width, height:r.height };
+    };
+    const overlayRect = rectInfo(overlay);
+    const overviewRect = rectInfo(overview);
+    const overlayScoped = !!(overlay && overview && overlay.parentElement === overview && overlayRect && overviewRect &&
+      overlayRect.width > 0 && overlayRect.height > 0 &&
+      overlayRect.left >= overviewRect.left - 2 &&
+      overlayRect.top >= overviewRect.top - 2 &&
+      overlayRect.right <= overviewRect.right + 2 &&
+      overlayRect.bottom <= overviewRect.bottom + 2);
     const immediate = {
       activated,
+      activeView: String(activeView || ""),
       activeBefore: !!liveBefore?.active,
+      buttonExists: !!defenseBtn,
+      buttonText,
       cleared: !!cleared,
       overlayVisible: !!overlay,
+      overlayScoped,
+      overlayParent: overlay?.parentElement?.className || "",
+      overlayRect,
+      overviewRect,
       text: overlay?.innerText || "",
       card: !!overlay?.querySelector(".flprStandaloneSiegeVictoryCard"),
+      battle: !!overlay?.querySelector(".flprStandaloneSiegeVictoryBattle"),
+      castle: !!overlay?.querySelector(".flprStandaloneSiegeVictoryCastle"),
+      damagedCastle: !!overlay?.querySelector(".flprStandaloneSiegeVictoryCastle.damage3, .flprStandaloneSiegeVictoryCastle.damage4"),
+      retreatingTroops: overlay?.querySelectorAll(".flprStandaloneSiegeVictoryTroop").length || 0,
+      helpers: overlay?.querySelectorAll(".flprStandaloneSiegeVictoryHelper").length || 0,
+      waterStreams: overlay?.querySelectorAll(".flprStandaloneSiegeVictoryHelperWater").length || 0,
+      dousedFlames: overlay?.querySelectorAll(".flprStandaloneSiegeVictoryCastle .flprStandaloneSiegeVictoryFlame").length || 0,
+      fireworksBackground: (() => {
+        const fw = overlay?.querySelector(".flprStandaloneSiegeVictoryFireworks");
+        const battle = overlay?.querySelector(".flprStandaloneSiegeVictoryBattle");
+        if(!fw || !battle) return false;
+        return Number(getComputedStyle(fw).zIndex || 0) < Number(getComputedStyle(battle).zIndex || 0);
+      })(),
+      damageLevel: Number(overlay?.dataset?.damageLevel || 0) || 0,
       fireworks: overlay?.querySelectorAll(".flprStandaloneSiegeFirework").length || 0,
+      lastVictory: window.__flprLastSiegeVictoryCinematic || null,
+      musicCalls: musicCalls.slice(),
       groove: !!document.querySelector(".stage")?.classList?.contains("victoryGroove")
     };
     await delay(1650);
@@ -5059,19 +7043,53 @@ async function run() {
     state.extraBallTokens = previousExtraBalls;
     if(previousHold == null) delete window.__flprStandaloneSiegeVictoryHoldMs;
     else window.__flprStandaloneSiegeVictoryHoldMs = previousHold;
+    try{
+      if(previousMusicLockForDuration === undefined) delete window.musicLockScenarioForDuration;
+      else window.musicLockScenarioForDuration = previousMusicLockForDuration;
+      musicLockScenarioForDuration = window.musicLockScenarioForDuration;
+    }catch(_){}
+    try{
+      if(previousMusicLock === undefined) delete window.musicLockScenario;
+      else window.musicLockScenario = previousMusicLock;
+      musicLockScenario = window.musicLockScenario;
+    }catch(_){}
     try{ saveState(); }catch(_){}
     return { targetName, immediate, after };
   });
   if(
     !siegeClearVictoryProbe.immediate.activated ||
     !siegeClearVictoryProbe.immediate.activeBefore ||
+    !siegeClearVictoryProbe.immediate.buttonExists ||
     !siegeClearVictoryProbe.immediate.cleared ||
+    siegeClearVictoryProbe.immediate.activeView !== "overview" ||
     !siegeClearVictoryProbe.immediate.overlayVisible ||
+    !siegeClearVictoryProbe.immediate.overlayScoped ||
     !siegeClearVictoryProbe.immediate.card ||
+    !siegeClearVictoryProbe.immediate.battle ||
+    !siegeClearVictoryProbe.immediate.castle ||
+    !siegeClearVictoryProbe.immediate.damagedCastle ||
+    siegeClearVictoryProbe.immediate.damageLevel < 3 ||
+    siegeClearVictoryProbe.immediate.retreatingTroops < 8 ||
+    siegeClearVictoryProbe.immediate.helpers < 2 ||
+    siegeClearVictoryProbe.immediate.waterStreams < 2 ||
+    siegeClearVictoryProbe.immediate.dousedFlames < 2 ||
+    !siegeClearVictoryProbe.immediate.fireworksBackground ||
+    !siegeClearVictoryProbe.immediate.lastVictory?.shown ||
+    !siegeClearVictoryProbe.immediate.lastVictory?.scopedToOverview ||
+    siegeClearVictoryProbe.immediate.lastVictory?.helperCount < 2 ||
+    siegeClearVictoryProbe.immediate.lastVictory?.waterStreamCount < 2 ||
+    siegeClearVictoryProbe.immediate.lastVictory?.dousedFlameCount < 2 ||
+    siegeClearVictoryProbe.immediate.lastVictory?.fireworksBackground !== true ||
+    siegeClearVictoryProbe.immediate.lastVictory?.tableName !== siegeClearVictoryProbe.targetName ||
+    siegeClearVictoryProbe.immediate.lastVictory?.music?.durationMs !== 1660 ||
+    siegeClearVictoryProbe.immediate.lastVictory?.music?.fadeMs < 420 ||
+    siegeClearVictoryProbe.immediate.musicCalls?.[0]?.name !== "randomizer_win" ||
+    siegeClearVictoryProbe.immediate.musicCalls?.[0]?.durationMs !== 1660 ||
+    siegeClearVictoryProbe.immediate.musicCalls?.[0]?.fadeMs < 420 ||
     !siegeClearVictoryProbe.immediate.text.includes(`${siegeClearVictoryProbe.targetName} is free!`) ||
     !/The .+ is defeated!/.test(siegeClearVictoryProbe.immediate.text || "") ||
     siegeClearVictoryProbe.immediate.fireworks < 1 ||
-    !siegeClearVictoryProbe.immediate.groove ||
+    siegeClearVictoryProbe.immediate.groove ||
     siegeClearVictoryProbe.after.overlayVisible ||
     siegeClearVictoryProbe.after.groove ||
     siegeClearVictoryProbe.after.active

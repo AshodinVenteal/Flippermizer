@@ -1,0 +1,1059 @@
+[
+    {
+        "count": "0",
+        "name": "Backhand Only",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    },
+    {
+        "count": "20",
+        "name": "Boss Damage 16%",
+        "category": [
+            "Boss",
+            "Boss Damage",
+            "Victory"
+        ],
+        "progression": true,
+        "local": true
+    },
+    {
+        "count": "10",
+        "name": "Boss Key",
+        "category": [
+            "Progression",
+            "Key"
+        ],
+        "progression": true
+    },
+    {
+        "count": "0",
+        "name": "Dead Bounce Once",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    },
+    {
+        "count": "0",
+        "name": "Dead Flip",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    },
+    {
+        "count": "11",
+        "name": "Easy Junk Piece (1 of 3)",
+        "category": [
+            "Filler",
+            "Easy"
+        ],
+        "filler": true
+    },
+    {
+        "count": "0",
+        "name": "Filter Mode Trap",
+        "category": [
+            "One Ball",
+            "Effect",
+            "FilterTrap"
+        ],
+        "trap": true
+    },
+    {
+        "count": "10",
+        "name": "Hint: Ball Location",
+        "category": [
+            "Filler",
+            "Hint"
+        ],
+        "useful": true
+    },
+    {
+        "count": "12",
+        "name": "Hint: Boss Key",
+        "category": [
+            "Filler",
+            "Hint"
+        ],
+        "useful": true
+    },
+    {
+        "count": "0",
+        "name": "Intentional Drain",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    },
+    {
+        "count": "11",
+        "name": "Medium Junk Piece (1 of 3)",
+        "category": [
+            "Filler",
+            "Medium"
+        ],
+        "filler": true
+    },
+    {
+        "count": "0",
+        "name": "No Cradle Allowed",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    },
+    {
+        "count": "0",
+        "name": "No Nudging",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    },
+    {
+        "count": "0",
+        "name": "Orbit First Shot",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    },
+    {
+        "count": "15",
+        "name": "Pinball Fragment (1 of 5)",
+        "category": [
+            "Filler",
+            "Easy",
+            "Medium"
+        ],
+        "filler": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - AC/DC",
+        "category": [
+            "Progression",
+            "Ball",
+            "ACDC"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Aerosmith",
+        "category": [
+            "Progression",
+            "Ball",
+            "Aerosmith"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Al's Garage Band Goes on a World Tour",
+        "category": [
+            "Progression",
+            "Ball",
+            "AlsGarageBandGoesonaWorldTour"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Attack from Mars",
+        "category": [
+            "Progression",
+            "Ball",
+            "AttackfromMars"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Bad Cats",
+        "category": [
+            "Progression",
+            "Ball",
+            "BadCats"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Batman 66",
+        "category": [
+            "Progression",
+            "Ball",
+            "Batman66"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Batman Forever",
+        "category": [
+            "Progression",
+            "Ball",
+            "BatmanForever"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Baywatch",
+        "category": [
+            "Progression",
+            "Ball",
+            "Baywatch"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Bram Stoker's Dracula",
+        "category": [
+            "Progression",
+            "Ball",
+            "BramStokersDracula"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Bride of Pinbot",
+        "category": [
+            "Progression",
+            "Ball",
+            "BrideofPinbot"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Circus",
+        "category": [
+            "Progression",
+            "Ball",
+            "Circus"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Cirqus Voltaire",
+        "category": [
+            "Progression",
+            "Ball",
+            "CirqusVoltaire"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - City Slicker",
+        "category": [
+            "Progression",
+            "Ball",
+            "CitySlicker"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Comet",
+        "category": [
+            "Progression",
+            "Ball",
+            "Comet"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Congo",
+        "category": [
+            "Progression",
+            "Ball",
+            "Congo"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Corvette",
+        "category": [
+            "Progression",
+            "Ball",
+            "Corvette"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Creature from the Black Lagoon",
+        "category": [
+            "Progression",
+            "Ball",
+            "CreaturefromtheBlackLagoon"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Cyclone",
+        "category": [
+            "Progression",
+            "Ball",
+            "Cyclone"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Deadpool",
+        "category": [
+            "Progression",
+            "Ball",
+            "Deadpool"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Demolition Man",
+        "category": [
+            "Progression",
+            "Ball",
+            "DemolitionMan"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Dirty Harry",
+        "category": [
+            "Progression",
+            "Ball",
+            "DirtyHarry"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Dolly Parton",
+        "category": [
+            "Progression",
+            "Ball",
+            "DollyParton"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Dr. Dude",
+        "category": [
+            "Progression",
+            "Ball",
+            "DrDude"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Elvira and the Party Monsters",
+        "category": [
+            "Progression",
+            "Ball",
+            "ElviraandthePartyMonsters"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Elvis",
+        "category": [
+            "Progression",
+            "Ball",
+            "Elvis"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Fathom",
+        "category": [
+            "Progression",
+            "Ball",
+            "Fathom"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Freddy: A Nightmare on Elm Street",
+        "category": [
+            "Progression",
+            "Ball",
+            "FreddyANightmareonElmStreet"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Game of Thrones",
+        "category": [
+            "Progression",
+            "Ball",
+            "GameofThrones"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Genesis",
+        "category": [
+            "Progression",
+            "Ball",
+            "Genesis"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Ghostbusters",
+        "category": [
+            "Progression",
+            "Ball",
+            "Ghostbusters"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Gold Ball",
+        "category": [
+            "Progression",
+            "Ball",
+            "GoldBall"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - GoldenEye",
+        "category": [
+            "Progression",
+            "Ball",
+            "GoldenEye"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Grand Lizard",
+        "category": [
+            "Progression",
+            "Ball",
+            "GrandLizard"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Harlem Globetrotters",
+        "category": [
+            "Progression",
+            "Ball",
+            "HarlemGlobetrotters"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Haunted House",
+        "category": [
+            "Progression",
+            "Ball",
+            "HauntedHouse"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - High Speed",
+        "category": [
+            "Progression",
+            "Ball",
+            "HighSpeed"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Hollywood Heat",
+        "category": [
+            "Progression",
+            "Ball",
+            "HollywoodHeat"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Hook",
+        "category": [
+            "Progression",
+            "Ball",
+            "Hook"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Hurricane",
+        "category": [
+            "Progression",
+            "Ball",
+            "Hurricane"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - The Incredible Hulk",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheIncredibleHulk"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Independence Day",
+        "category": [
+            "Progression",
+            "Ball",
+            "IndependenceDay"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Iron Man Vault Edition",
+        "category": [
+            "Progression",
+            "Ball",
+            "IronManVaultEdition"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Jokerz",
+        "category": [
+            "Progression",
+            "Ball",
+            "Jokerz"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Judge Dredd",
+        "category": [
+            "Progression",
+            "Ball",
+            "JudgeDredd"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Jurassic Park",
+        "category": [
+            "Progression",
+            "Ball",
+            "JurassicPark"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Last Action Hero",
+        "category": [
+            "Progression",
+            "Ball",
+            "LastActionHero"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Lord of the Rings",
+        "category": [
+            "Progression",
+            "Ball",
+            "LordoftheRings"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Medieval Madness",
+        "category": [
+            "Progression",
+            "Ball",
+            "MedievalMadness"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Meteor",
+        "category": [
+            "Progression",
+            "Ball",
+            "Meteor"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Monster Bash",
+        "category": [
+            "Progression",
+            "Ball",
+            "MonsterBash"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Mr. & Mrs. Pac-Man",
+        "category": [
+            "Progression",
+            "Ball",
+            "MrMrsPacMan"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Mystery Castle",
+        "category": [
+            "Progression",
+            "Ball",
+            "MysteryCastle"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - No Fear Dangerous Sports",
+        "category": [
+            "Progression",
+            "Ball",
+            "NoFearDangerousSports"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Paragon",
+        "category": [
+            "Progression",
+            "Ball",
+            "Paragon"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Party Animal",
+        "category": [
+            "Progression",
+            "Ball",
+            "PartyAnimal"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Party Zone",
+        "category": [
+            "Progression",
+            "Ball",
+            "PartyZone"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Phantom of the Opera",
+        "category": [
+            "Progression",
+            "Ball",
+            "PhantomoftheOpera"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Police Force",
+        "category": [
+            "Progression",
+            "Ball",
+            "PoliceForce"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Q*bert's Quest",
+        "category": [
+            "Progression",
+            "Ball",
+            "QbertsQuest"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Robocop",
+        "category": [
+            "Progression",
+            "Ball",
+            "Robocop"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Rolling Stones",
+        "category": [
+            "Progression",
+            "Ball",
+            "RollingStones"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Scared Stiff",
+        "category": [
+            "Progression",
+            "Ball",
+            "ScaredStiff"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Skateball",
+        "category": [
+            "Progression",
+            "Ball",
+            "Skateball"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Space Invaders",
+        "category": [
+            "Progression",
+            "Ball",
+            "SpaceInvaders"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Spider-Man Vault Edition",
+        "category": [
+            "Progression",
+            "Ball",
+            "SpiderManVaultEdition"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Star Trek Stern 2013",
+        "category": [
+            "Progression",
+            "Ball",
+            "StarTrekStern2013"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Star Trek The Next Generation",
+        "category": [
+            "Progression",
+            "Ball",
+            "Startreknextgen"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Stargate",
+        "category": [
+            "Progression",
+            "Ball",
+            "Stargate"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Starship Troopers",
+        "category": [
+            "Progression",
+            "Ball",
+            "StarshipTroopers"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Street Fighter II",
+        "category": [
+            "Progression",
+            "Ball",
+            "StreetFighterII"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Super Mario Bros.",
+        "category": [
+            "Progression",
+            "Ball",
+            "SuperMarioBros"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Tales from the Crypt",
+        "category": [
+            "Progression",
+            "Ball",
+            "TalesfromtheCrypt"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Tales of the Arabian Nights",
+        "category": [
+            "Progression",
+            "Ball",
+            "TalesoftheArabianNights"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Taxi",
+        "category": [
+            "Progression",
+            "Ball",
+            "Taxi"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - The A-Team",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheATeam"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - The Adventures of Rocky and Bullwinkle and Friends",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheAdventuresofRockyandBullwinkleandFriends"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - The Beatles",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheBeatles"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - The Getaway",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheGetaway"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - The Walking Dead",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheWalkingDead"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - The X-Files",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheXFiles"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Theatre of Magic",
+        "category": [
+            "Progression",
+            "Ball",
+            "TheatreofMagic"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Vector",
+        "category": [
+            "Progression",
+            "Ball",
+            "Vector"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Whirlwind",
+        "category": [
+            "Progression",
+            "Ball",
+            "Whirlwind"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - White Water",
+        "category": [
+            "Progression",
+            "Ball",
+            "WhiteWater"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - World Cup Soccer",
+        "category": [
+            "Progression",
+            "Ball",
+            "WorldCupSoccer"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Monopoly",
+        "category": [
+            "Progression",
+            "Ball",
+            "Monopoly"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Dungeons & Dragons",
+        "category": [
+            "Progression",
+            "Ball",
+            "DungeonsDragons"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - World Poker Tour",
+        "category": [
+            "Progression",
+            "Ball",
+            "WorldPokerTour"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - High Roller Casino",
+        "category": [
+            "Progression",
+            "Ball",
+            "HighRollerCasino"
+        ],
+        "progression": true
+    },
+    {
+        "count": "3",
+        "name": "Progressive Ball - Who Dunnit",
+        "category": [
+            "Progression",
+            "Ball",
+            "WhoDunnit"
+        ],
+        "progression": true
+    },
+    {
+        "count": "0",
+        "name": "Soft Plunge Only",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    },
+    {
+        "count": "0",
+        "name": "Tilt Warning Required",
+        "category": [
+            "One Ball",
+            "Effect"
+        ],
+        "trap": true
+    }
+]

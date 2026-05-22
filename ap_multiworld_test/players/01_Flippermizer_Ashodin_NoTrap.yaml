@@ -1,8 +1,8 @@
-name: AshodinNoTrap
+name: Flippermizer
 description: "Standalone Flippermizer no-trap AP client multiworld redemption test."
-game: Manual_FlippermizerBaseGame_Ashodin
+game: Flippermizer
 
-Manual_FlippermizerBaseGame_Ashodin:
+Flippermizer:
   progression_balancing: 50
   accessibility: items
   boss_keys_required_for_boss_table_open: 3

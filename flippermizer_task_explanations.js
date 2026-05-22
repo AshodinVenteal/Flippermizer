@@ -351,8 +351,12 @@
       "defeat the forcefield": "Hit the three Forcefield standup targets to drop the forcefield. Once it is down, shoot the saucer/hole behind it to start or finish the saucer attack."
     },
     "ac dc": {
+      "start any multiball": "Qualify any main multiball: Jam by shooting 6 ramps, Album by completing 3 target banks, or Tour by shooting 8 loops. When a multiball insert flashes, shoot the right ramp to start it.",
+      "spell f i r e once": "Roll through the unlit FIRE inlane/outlane letters, using flipper lane-change to rotate the lit lanes if needed. One full FIRE completion satisfies this task and builds toward relighting Song Jackpot.",
       "start 2x playfield": "Playfield Multipliers - Hit the bell three times to start 2X playfield scoring for 20 seconds. Bell hits during 2X reset the timer, but the bell is a dangerous shot even when made cleanly.",
-      "start 3x playfield": "Playfield Multipliers - Hit the bell three times to start 2X playfield scoring, then hit the bell three more times while 2X is running to start 3X playfield for 20 seconds. Any bell hit during 3X resets the timer."
+      "collect a song jackpot": "The Song Jackpot is lit at game start; otherwise complete FIRE 3 times to relight it. Shoot the right ramp to load the Cannon, then fire at the center AC/DC target.",
+      "start 3x playfield": "Playfield Multipliers - Hit the bell three times to start 2X playfield scoring, then hit the bell three more times while 2X is running to start 3X playfield for 20 seconds. Any bell hit during 3X resets the timer.",
+      "start a multiball and collect a jackpot": "Qualify and start any main multiball, then shoot any lit jackpot shot before the multiball ends. Jam, Album, or Tour Multiball all satisfy the start requirement."
     },
     "bride of pinbot": {
       "advance the metamorphosis steps once": "Bride face/metamorphosis - Shoot the left ramp into the Face structure to advance Bride progress. If the space shuttle is lit the ramp may divert to the PinBot board, but a slightly weaker ramp shot can still fall into the Face and advance the Bride."
@@ -364,7 +368,13 @@
     },
     "grand lizard": {
       "shoot to access the upper playfield": "A-B ramps and upper playfield - Shoot either the A or B ramp all the way to the dragon head so the ball is fed onto the upper playfield. Once there, complete the 4-bank or 3-bank drop targets for the upper-playfield awards.",
-      "complete 1 upper playfield objective": "Upper playfield - Get to the upper playfield through the A or B ramp, then finish either drop-target objective: clear the 4-bank before the scan timer ends for its lit value, or clear the 3-bank to build the cave value and collect its award."
+      "complete 1 upper playfield lane set": "Upper playfield - Get to the upper playfield through the A or B ramp, then finish either drop-target objective: clear the 4-bank before the scan timer ends for its lit value, or clear the 3-bank to build the cave value and collect its award.",
+      "complete 1 upper playfield objective": "Upper playfield - Get to the upper playfield through the A or B ramp, then finish either drop-target objective: clear the 4-bank before the scan timer ends for its lit value, or clear the 3-bank to build the cave value and collect its award.",
+      "shoot the upper playfield twice": "A-B ramps and upper playfield - Reach the upper playfield twice through the A or B ramp. Prioritize controlled ramp feeds, then use the upper flipper time to clear either drop-target objective before the bank resets.",
+      "start multiball lock balls": "Multiball locks - Raise the lock path, then lock balls for Multiball. Locked balls can be stolen in multiplayer rules, so treat each lock as progress you may need to resecure.",
+      "start multiball": "Multiball locks - Raise the lock path, then lock balls for Multiball. Locked balls can be stolen in multiplayer rules, so treat each lock as progress you may need to resecure.",
+      "collect a multiball jackpot": "Multiball jackpot - Start Multiball from locked balls, then keep control long enough to shoot the lit jackpot shot once before the mode collapses.",
+      "complete 2 upper playfield objectives": "Upper playfield endurance - Reach the upper playfield through the A or B ramp and complete two upper-playfield drop-target objectives in one game. Favor controlled ramp entries over risky recovery shots."
     },
     "deadpool": {
       "start any battle mode": "At the start of a ball, or after completing the DEAD targets, shoot the scoop to start a Battle. Hit flashing shots to damage the enemy, then shoot the scoop within 10 seconds after winning to finish them off.",
@@ -484,6 +494,53 @@
 
   const SCORE_STRATEGY_OVERRIDES_BY_TABLE = Object.freeze({
     [normalizeTableKey("Rolling Stones")]: "Score {target} on Rolling Stones. Best scoring: Collect Bonus - drop the Collect Bonus target, build 20/40/60 with 1-5 targets, then shoot the scoop. Target bank - clear the upper-right drops."
+  });
+  const SCORE_TARGET_OVERRIDES_BY_TABLE = Object.freeze({
+    [normalizeTableKey("Monopoly")]: Object.freeze({
+      easy: Object.freeze(["1,542,261+"]),
+      medium: Object.freeze(["4,990,600+"]),
+      hard: Object.freeze(["9,938,959+"])
+    }),
+    [normalizeTableKey("Dungeons & Dragons")]: Object.freeze({
+      easy: Object.freeze(["166,352+"]),
+      medium: Object.freeze(["550,594+"]),
+      hard: Object.freeze(["1,241,783+"])
+    }),
+    [normalizeTableKey("World Poker Tour")]: Object.freeze({
+      easy: Object.freeze(["4,094,586+"]),
+      medium: Object.freeze(["12,170,908+"]),
+      hard: Object.freeze(["25,203,476+"])
+    }),
+    [normalizeTableKey("High Roller Casino")]: Object.freeze({
+      easy: Object.freeze(["29,591,534+"]),
+      medium: Object.freeze(["84,398,263+"]),
+      hard: Object.freeze(["166,071,626+"])
+    }),
+    [normalizeTableKey("Who Dunnit")]: Object.freeze({
+      easy: Object.freeze(["167,032,972+"]),
+      medium: Object.freeze(["525,587,710+"]),
+      hard: Object.freeze(["1,218,046,696+"])
+    }),
+    [normalizeTableKey("Grand Lizard")]: Object.freeze({
+      easy: Object.freeze(["91,852+"]),
+      medium: Object.freeze(["280,887+"]),
+      hard: Object.freeze(["635,636+"])
+    }),
+    [normalizeTableKey("Genesis")]: Object.freeze({
+      easy: Object.freeze(["158,301+"]),
+      medium: Object.freeze(["517,370+"]),
+      hard: Object.freeze(["1,386,426+"])
+    }),
+    [normalizeTableKey("Haunted House")]: Object.freeze({
+      easy: Object.freeze(["59,682+"]),
+      medium: Object.freeze(["145,453+"]),
+      hard: Object.freeze(["270,164+"])
+    }),
+    [normalizeTableKey("The Incredible Hulk")]: Object.freeze({
+      easy: Object.freeze(["59,354+"]),
+      medium: Object.freeze(["128,060+"]),
+      hard: Object.freeze(["207,860+"])
+    })
   });
   const SCORE_STRATEGY_ROUTE_MAX_CHARS = 86;
   const SCORE_STRATEGY_TOTAL_MAX_CHARS = 340;
@@ -1616,6 +1673,142 @@
       "complete 2 tv modes in one game": "Wabac ramp modes - The left \"Wabac\" (pronounced Way-Back) ramp starts up to 8 various mini-modes, and playing them all starts Back In Time, which is the closest thing Rocky and Bullwinkle has to a wizard mode. At the start of the ball, one of the 8 award in front of the ramp will be flashing; make the ramp to collect that award. After collecting an award, or if there is nothing flashing in front of the ramp, shoot the center lane or the lower left scoop to make the next Wabac award start flashing. The order that you get Wabac awards is completely random and cannot be changed in any way.",
       "collect a super jackpot": "\"Tri-Ball\" (multiball) progression - During multiball, you can also make progress on the \"pie wheel\" again by hitting Bomb targets. If you complete the entire wheel with 3 shots to each target during multiball, the right ramp will be lit for Bullwinkle's Treasure for 15 seconds, which is a super jackpot worth 100,000,000 points that cannot be raised or doubled. Progress toward qualifying super jackpot is held in memory across multiballs. If 15 seconds pass without collecting the super jackpot, the opportunity goes away, and you will need to hit each Bomb target one more time to requalify it.",
       "complete the rocky and bullwinkle mode ladder": "Wabac ramp modes - The left \"Wabac\" (pronounced Way-Back) ramp starts up to 8 various mini-modes, and playing them all starts Back In Time, which is the closest thing Rocky and Bullwinkle has to a wizard mode. At the start of the ball, one of the 8 award in front of the ramp will be flashing; make the ramp to collect that award. After collecting an award, or if there is nothing flashing in front of the ramp, shoot the center lane or the lower left scoop to make the next Wabac award start flashing. The order that you get Wabac awards is completely random and cannot be changed in any way."
+    },
+    "monopoly": {
+      "collect one property": "Roll & Collect / board progress - Shoot Roll & Collect when lit to move around the Monopoly board and collect the property group you land on. The right ramp relights Roll & Collect.",
+      "shoot the railroad ramp": "Railroad ramp - Shoot the wire Railroad ramp to advance railroad progress or relight jackpot during multiball.",
+      "collect a chance award": "Chance scoop - Light Chance, then shoot the left scoop for awards such as board movement, points, or multiball starts.",
+      "collect a water works award": "Water Works - Plunge or shoot into the Water Works saucer. The rotating mini-flipper can block or clear the ball, and the value can be multiplied.",
+      "raise electric company power": "Electric Company - Shoot the Electric Company and feed the bumpers to raise power percentage. Higher power helps utility value and extra-ball progress.",
+      "lock 1 ball for monopoly multiball": "Multiball - Advancing around the board to GO lights lock. Shoot the center ramp lock path to hold a ball in Jail.",
+      "collect two properties in one game": "Property collection - Keep relighting Roll & Collect with the right ramp, then cash Roll & Collect to claim more property groups.",
+      "start cash grab": "Cash Grab - Open the Bank by spelling B-A-N-K at the bank door, then start the timed mode where ramps and loops score large values.",
+      "collect an electric company award at 50 power": "Electric Company - Build power with bumpers and the utility shot, then shoot Electric Company once the value is at least 50%.",
+      "start any property round": "Property modes - Landing on a property group starts that group's mode or award. Watch the display for the active objective and flashing shots.",
+      "start monopoly multiball": "Monopoly Multiball - Lock two balls through the center ramp path, then shoot the right ramp to start multiball.",
+      "collect a monopoly multiball jackpot": "Monopoly Multiball - Lit jackpots are available at shots such as the left ramp and Electric Company. Shoot a lit jackpot before multiball ends.",
+      "relight jackpots with the railroad ramp": "Monopoly Multiball - Shoot the Railroad ramp when jackpot relight is needed so the jackpot shots can be collected again.",
+      "collect an electric company double jackpot": "Monopoly Multiball - When Electric Company is lit for jackpot, shoot it from the upper flipper area for the higher-value collect.",
+      "light land grab through properties": "Land Grab - Collect all property groups to qualify Land Grab, a timed four-ball mode focused on building houses and hotels."
+    },
+    "dungeons dragons": {
+      "make the 100 000 skill shot": "Skill shot - Plunge with enough control for the ball to roll up the left ramp, trip both switches, then come back down the left side for 100,000.",
+      "hit any lit sword dust or shield target": "Bonus flame - Red Sword, yellow Dust, and blue Shield standups unlight flame diamonds when lit. Each lit hit builds carried bonus.",
+      "light any restore arrow": "Restore weapons - Clear every target in one color bank to light its Restore arrow. Shoot the matching lane to relight that bank.",
+      "shoot either teleport lane to lock a ball": "Teleport lanes - If no ball is locked, either teleport lane locks a ball. Later three-ball attempts may kick a lock back out before it sticks.",
+      "trigger magic save manually": "Magic Save - Use the side-button rail to close an outlane/inlane gap briefly. Repeated manual use shortens the save timer.",
+      "complete one dragon s flame": "Bonus flame - Finish all 20 flame diamonds for a full flame completion. Completed flames carry as bonus multiplier-style value between balls.",
+      "lock 1 ball in a teleport lane": "Teleport locks - Shoot a yellow or blue teleport lane and confirm the ball stays locked for a future multiball start.",
+      "advance dungeon level on the left ramp": "Dungeon Level - From the upper flipper, shoot the left side ramp to raise the timed playfield multiplier up to 5X.",
+      "complete the upper right inline drops": "Bell Tower - With the yellow lock holding a ball, the right ramp exposes inline drops worth 10,000, 25,000, and 50,000. Clear all three.",
+      "collect a dragon s lair saucer value": "Dragon's Lairs - Landing in either rear saucer scores the current flame-in-progress value and can release a matching locked ball.",
+      "start 3 ball multiball from the left ramp": "Multiball start - Lock two balls in the teleport lanes, then shoot the left side ramp from the upper flipper to release them.",
+      "qualify mystical million at the bell tower": "Mystical Million - Clear the upper-right inline drops, then shoot the full upper-right loop to qualify the timed million shot.",
+      "collect mystical million with the upper flipper": "Mystical Million - After qualifying it, the ball feeds the upper flipper. One-time the left side ramp within the short timer.",
+      "reach 5x flame bonus": "Bonus flame - Complete enough full flame cycles to light both 2X and 3X Flame at once, creating 5X completed-flame bonus value.",
+      "use magic save to return a ball to a flipper": "Magic Save - Time the manual save so the rail pops up as the ball enters the lane and feeds it safely back toward a flipper."
+    },
+    "world poker tour": {
+      "advance hold em with a ramp shot": "Hold Em hands - The two ramps advance flop, turn, and river progress. Three advances complete the current hand and light Poker Corner.",
+      "light poker corner by completing a hand": "Poker Corner - Complete a Hold Em hand with ramp or skill-shot progress to light the scoop left of the right ramp for mode start.",
+      "qualify ace in the hole lock": "Ace in the Hole - Hit the upper playfield jail enough times to open the bars so a ball can be locked there.",
+      "collect a cut the cards mystery award": "Cut the Cards - Relight mystery from the upper playfield left shot, then shoot the scoop right of the left ramp. In multiball this can award add-a-ball.",
+      "start any mode at poker corner": "Poker Corner modes - When Poker Corner is lit, use the right flipper to select a mode insert, then shoot the scoop to start it.",
+      "lock 1 ball for ace in the hole": "Ace in the Hole - Shoot the open upper playfield jail to lock one ball for the captive-ball release sequence.",
+      "start ace in the hole multiball": "Ace in the Hole - Lock the ball in jail, then bash the captive ball enough times to release it and start multiball.",
+      "complete a hold em hand with 3x active": "3X value - Save 3X for the ramp shot that completes a Hold Em hand, where the multiplier can turn the hand award into major points.",
+      "start all in multiball": "All In Multiball - Build loop progress toward All In, then start it when qualified. It stacks well with other multiballs.",
+      "collect an add a ball during multiball": "Cut the Cards - During multiball, shoot the lit Cut the Cards scoop to add a ball. Keep mystery relit when possible.",
+      "stack a mode with a multiball": "Mode stacking - Start a Poker Corner mode first, then bring in Ace in the Hole, All In, or another multiball while mode shots are active.",
+      "start all in and ace in the hole together": "Multiball stack - Set Ace in the Hole one shot from starting, prepare All In, then start both into the same scoring window.",
+      "collect multiple ace in the hole jackpots": "Ace in the Hole - Jackpots are ramps and the jail/captive-ball area. Collect enough jackpots to reopen the jail and continue the cycle.",
+      "earn a mode trophy": "Modes and trophies - Strong mode play earns trophies, and trophies raise the later Poker Wizard Multiball jackpot values.",
+      "collect a 3x ramp hand completion award": "3X hand award - Trigger 3X before the final ramp advance of a hand, then shoot that ramp cleanly to collect the multiplied completion."
+    },
+    "high roller casino": {
+      "make a roulette skill shot": "Skill shot - Full plunge sends the ball to the roulette wheel. Red, black, and green award bonus X, points, or chips and increase future value.",
+      "spin the slot machine": "Slot Machine - Shoot the left ramp to open the slots, then shoot the left ramp again to spin. Chip-paying results count as a Slot win.",
+      "win one casino game": "Casino games - Win any one of Craps, Blackjack, Slots, Roulette, Poker, or Hi-Lo for chips, points, and Casino Frenzy progress.",
+      "light one lock at the left ramp": "Slot Machine locks - After a Slot spin, the left ramp can light for a lock toward Slot Machine Multiball.",
+      "collect a roll and win board award": "Roll and Win - Hit the right standup to qualify it at the center ramp, then choose a die and collect the board space award.",
+      "start slot machine multiball": "Slot Machine Multiball - Spin Slots, light locks, and lock three balls at the left ramp to start the 4-ball multiball.",
+      "win three different casino games": "Casino Frenzy progress - Win three distinct casino games. Each unique win lights its insert toward Casino Frenzy.",
+      "collect a triple jackpot": "Slot Machine Multiball - Each major shot scores single, then double, then triple jackpot. Repeat one shot until the triple is collected.",
+      "qualify casino frenzy progress in three games": "Casino Frenzy - Light three of the six center inserts by winning their casino games.",
+      "collect an atm bonus orbit shot": "ATM Bonus - Roll through an inlane to light the opposite orbit briefly, then shoot it to collect and potentially multiply ATM value.",
+      "complete all six casino games for casino frenzy": "Casino Frenzy - Win Craps, Blackjack, Slots, Roulette, Poker, and Hi-Lo to light the mini-wizard multiball start at any major shot.",
+      "start casino frenzy": "Casino Frenzy - After all six games are complete, shoot any major shot to begin the 4-ball frenzy.",
+      "collect a super jackpot in casino frenzy": "Casino Frenzy - Light and score one jackpot type for each casino game, then shoot the center ramp for the Super Jackpot.",
+      "reach 100 chips for break the bank": "Break the Bank - Earn chips from skill shots and casino-game wins until the stack reaches 100 chips.",
+      "start break the bank": "Break the Bank - With 100 chips qualified, shoot a major shot to start the 4-ball Break the Bank multiball."
+    },
+    "who dunnit": {
+      "make the super skill shot": "Super skill shot - Soft plunge into the lower-left hidden lane for points, a Clue, bonus multiplier, and Basement Multiball lock credit.",
+      "collect one clue": "Clues - Complete Taxi progress or take a clue award. Each clue lights the Telephone to interrogate a suspect.",
+      "interrogate one suspect at the telephone": "Telephone - After collecting a Clue, shoot the Telephone to interrogate one suspect and learn who they point toward.",
+      "take the elevator to any floor mode": "Elevator modes - Shoot Up or Down to choose a floor, then shoot Exit to start that floor's mode or award.",
+      "light roulette from the right lane": "Roulette - Shoot the unlit right spinner lane, play Main Floor, or make Train Combos to light Roulette.",
+      "solve one crime case": "Crime case - Collect clues, interrogate, accuse the correct suspect, complete Chase the Killer, then collect the Telephone hurry-up to close the case.",
+      "start roof multiball": "Roof Multiball - Identify the killer, hit the Taxi Chase shot, then shoot the Telephone hurry-up before it times out.",
+      "start basement multiball": "Basement Multiball - Start it from the Basement elevator mode, a Slots award, or enough super skill shot lock credit.",
+      "collect a basement jackpot": "Basement Multiball - Shoot Roulette, Sewer, or complete all three Elevator shots to score the jackpot. Pop bumpers build the value.",
+      "collect two clues in one case": "Clue strategy - Keep gathering Taxi/Clue progress before finishing the case so Telephone and extra-ball progress build.",
+      "solve two crime cases in one game": "Crime cases - Start a new case after the first is closed, then repeat clue, suspect, chase, and Telephone hurry-up progress.",
+      "start roof multiball with a high hurry up value": "Roof hurry-up - After the Taxi Chase shot, shoot the Telephone quickly while the hurry-up is still near its starting value.",
+      "collect a large basement jackpot": "Basement jackpot - Build value with pop bumpers during Basement Multiball, especially after earning the Revolver, then shoot a jackpot lane.",
+      "play penthouse party": "Penthouse Party - Collect the Penthouse Key, reach Penthouse by elevator, and shoot Exit to start the timed all-shots mode.",
+      "win a high value roulette bet": "Roulette - Light Roulette, choose a large Red/Black bet, and win the 50/50 spin. Tournament mode alternates forced losses and wins."
+    },
+    "genesis": {
+      "spell any body part once": "Body parts - Complete Body from top lanes, Arms from the left ramp, Legs from the right ramp, or Brain from lit orbits.",
+      "shoot either ramp for arms or legs": "Ramps - The left ramp gives Arms letters and the right ramp gives Legs letters. Either ramp also scores direct points.",
+      "collect a brain letter from an orbit": "Brain letters - One orbit is lit at a time for Brain. Slingshots and collected letters alternate which orbit is lit.",
+      "complete the 1 2 3 drop sequence": "Drop targets - Hit flashing 1, then 2, then 3. A flashing 3 target spots a letter in the closest needed body part.",
+      "hit the vary target for a letter": "Vary-target - A full 40,000-point hit spots a letter in the most complete body part still needed for the current robot.",
+      "collect two unique body parts": "Body parts and playfield X - Each new body part for the current robot advances the playfield multiplier and can light a multiball ramp.",
+      "start multiball from a flashing ramp": "Multiball - After collecting a new body part, shoot the flashing ramp to lock a ball and start 2-ball play with doubled scoring.",
+      "advance playfield multiplier twice": "Playfield multiplier - Collect two non-duplicate body parts on the current robot to raise the multiplier twice.",
+      "collect a full 40 000 vary target shot": "Vary-target - Push the target fully back for 40,000 points. Full hits are also how letter spots and Lifeforce are collected.",
+      "light the next part extra ball insert": "Extra Ball - Collect enough non-duplicate body parts on one ball to light the Next Part Awards Extra Ball insert.",
+      "complete all four body parts": "Robot build - Collect Body, Arms, Legs, and Brain so Lifeforce lights at the vary-target.",
+      "assemble the robot with lifeforce": "Lifeforce - Once all four parts are complete, hit a full vary-target shot to assemble and reveal the robot.",
+      "build a 5x or better playfield multiplier": "Playfield multiplier - Finish body parts across robot cycles. The multiplier carries and can rise beyond 5X.",
+      "complete three 1 2 3 drop sequences": "Drop target sequence - Run the flashing 1-2-3 sequence repeatedly; progress resumes after the bank resets.",
+      "collect multiball scoring with playfield x running": "Multiball scoring - Start ramp multiball while playfield X is raised. All scoring is doubled on top of the playfield multiplier."
+    },
+    "haunted house": {
+      "reach the lower playfield": "Lower playfield access - Use the left top hole, Secret Passage, lit Trap Door, or upper-playfield drain hole to enter the lower playfield.",
+      "reach the upper playfield": "Upper playfield access - Shoot the main right ramp or rightmost top hole. Hit at least one upper switch to earn trip credit.",
+      "shoot the secret passage": "Secret Passage - Hit the center fake standup target. It drops away and sends the ball to the lower playfield while lighting Trap Door.",
+      "advance bonus multiplier once": "Playfield transfer - Any credited trip to the upper or lower playfield advances bonus multiplier toward 5X.",
+      "complete one drop target bank": "Drop targets - Clear the upper or lower playfield drop bank. Completions light extra ball and other bonus/scoring features.",
+      "visit all three playfields in one game": "Three playfields - Keep the ball alive on main, upper, and lower playfields. Drains from upper/lower return to main play.",
+      "light double bonus on any playfield": "Double Bonus - Complete that playfield's qualifier, then collect the matching top-hole award to double bonus advances there.",
+      "complete the upper playfield drops twice": "Upper playfield drops - Each completion lights targets and extra ball. Three completions help main double bonus and lower special.",
+      "complete the lower playfield drops twice": "Lower playfield drops - Two completions light upper playfield special, lower targets for bonus advances, and main playfield double scoring.",
+      "light the trap door": "Trap Door - Shoot Secret Passage, the unlit right mini-loop, or the lower-left bumper rollover to light the hidden lower-playfield entrance.",
+      "activate main playfield double scoring": "Main double scoring - Complete lower drops twice or upper drops three times on a single ball.",
+      "light double bonus on two playfields": "Double Bonus - Earn two separate top-hole Double Bonus qualifications before the ball drains.",
+      "reach 5x bonus multiplier": "Bonus multiplier - Repeated credited transfers to upper or lower playfields raise bonus multiplier to 5X.",
+      "complete upper playfield drops three times": "Upper drops - Clear the upper drop bank three times on one ball to light main double bonus and lower special progress.",
+      "collect an extra ball lit kicker award": "Extra Ball kicker - Drop bank or 1-2-3-4-5 progress lights the main right kicker. Hit it when Extra Ball is lit."
+    },
+    "the incredible hulk": {
+      "complete the 1 2 3 targets": "1-2-3 targets - Hit lit 1, 2, and 3. Completing all three lights the spinner for the rest of the ball and lights the right side lane once.",
+      "light the spinner for the ball": "Spinner - Complete 1-2-3 to light the spinner. Lit spinner spins score 1,000 plus a bonus advance each.",
+      "complete part of the 7 bank": "7-bank - Each drop target scores points and advances bonus. Clearing the whole bank collects the C in A-B-C.",
+      "advance bonus from a top lane": "Top lanes - All four top lanes add bonus and collect the lit bonus multiplier if the lane is lit.",
+      "use a kickback lane": "Kickbacks - The lower kickback lanes fire the ball back up. Before max bonus they add bonus; at max bonus they collect the full bonus.",
+      "complete the full 7 bank": "7-bank - Knock down all seven drop targets to score the bank completion and progress A-B-C.",
+      "reach 5x bonus multiplier": "Bonus X - Lit top lanes award the shown bonus multiplier. Ten-point switches rotate the lit lane and never go below current X.",
+      "collect bonus from a kickback lane": "Bonus collect - When base bonus is maxed at 20,000, both kickbacks light to collect bonus including multiplier.",
+      "light the right side lane": "Right side lane - Complete 1-2-3 to light the right side lane one time for its larger award.",
+      "complete a b c progress once": "A-B-C - Use both kickbacks once and complete the 7-bank to finish A-B-C and light inlane specials.",
+      "max base bonus to 20 000": "Bonus - Build base bonus through lanes, targets, star rollovers, and lit spinner spins until it reaches 20,000.",
+      "collect max bonus with multiplier": "Bonus collect - With 20,000 base bonus and a bonus multiplier active, enter a kickback lane to collect the full multiplied value.",
+      "complete the 7 bank twice": "7-bank - Clear all seven drop targets twice in one game for repeated scoring and A-B-C progress.",
+      "light both inlane specials": "Specials - Completing A-B-C lights both inlanes for Special; collecting one can light the same-side outlane special.",
+      "score a strong lit spinner stretch": "Lit spinner - After 1-2-3 is complete, keep feeding the spinner for 1,000 points plus bonus advance per spin."
     }
   });
   const RULES = [
@@ -2483,9 +2676,54 @@
   });
 
   const TABLE_TASK_CATALOG_OVERRIDES_BY_TABLE = Object.freeze({
+    [normalizeTableKey("Grand Lizard")]: Object.freeze({
+      easy: Object.freeze(["Shoot to Access the Upper Playfield", "Complete 1 Upper Playfield Lane Set"]),
+      medium: Object.freeze(["Shoot the Upper Playfield Twice", "Start Multiball (Lock Balls)"]),
+      hard: Object.freeze(["Collect a Multiball Jackpot", "Complete 2 Upper Playfield Objectives"])
+    }),
     [normalizeTableKey("Rolling Stones")]: Object.freeze({
       medium: Object.freeze(["Collect Bonus"]),
       hard: Object.freeze(["Collect 20-40-60 Bonus"])
+    }),
+    [normalizeTableKey("Monopoly")]: Object.freeze({
+      easy: Object.freeze(["Collect one property", "Shoot the Railroad ramp", "Collect a Chance award", "Collect a Water Works award", "Raise Electric Company power"]),
+      medium: Object.freeze(["Lock 1 ball for Monopoly Multiball", "Collect two properties in one game", "Start Cash Grab", "Collect an Electric Company award at 50% power", "Start any property round"]),
+      hard: Object.freeze(["Start Monopoly Multiball", "Collect a Monopoly Multiball jackpot", "Relight jackpots with the Railroad ramp", "Collect an Electric Company Double Jackpot", "Light Land Grab through properties"])
+    }),
+    [normalizeTableKey("Dungeons & Dragons")]: Object.freeze({
+      easy: Object.freeze(["Make the 100,000 skill shot", "Hit any lit Sword, Dust, or Shield target", "Light any Restore arrow", "Shoot either teleport lane to lock a ball", "Trigger Magic Save manually"]),
+      medium: Object.freeze(["Complete one Dragon's Flame", "Lock 1 ball in a teleport lane", "Advance Dungeon Level on the left ramp", "Complete the upper-right inline drops", "Collect a Dragon's Lair saucer value"]),
+      hard: Object.freeze(["Start 3-ball multiball from the left ramp", "Qualify Mystical Million at the Bell Tower", "Collect Mystical Million with the upper flipper", "Reach 5X Flame bonus", "Use Magic Save to return a ball to a flipper"])
+    }),
+    [normalizeTableKey("World Poker Tour")]: Object.freeze({
+      easy: Object.freeze(["Advance Hold Em with a ramp shot", "Light Poker Corner by completing a hand", "Qualify Ace in the Hole lock", "Collect a Cut the Cards mystery award", "Start any mode at Poker Corner"]),
+      medium: Object.freeze(["Lock 1 ball for Ace in the Hole", "Start Ace in the Hole Multiball", "Complete a Hold Em hand with 3X active", "Start All In Multiball", "Collect an add-a-ball during multiball"]),
+      hard: Object.freeze(["Stack a mode with a multiball", "Start All In and Ace in the Hole together", "Collect multiple Ace in the Hole jackpots", "Earn a mode trophy", "Collect a 3X ramp hand-completion award"])
+    }),
+    [normalizeTableKey("High Roller Casino")]: Object.freeze({
+      easy: Object.freeze(["Make a roulette skill shot", "Spin the Slot Machine", "Win one casino game", "Light one lock at the left ramp", "Collect a Roll and Win board award"]),
+      medium: Object.freeze(["Start Slot Machine Multiball", "Win three different casino games", "Collect a triple jackpot", "Qualify Casino Frenzy progress in three games", "Collect an ATM Bonus orbit shot"]),
+      hard: Object.freeze(["Complete all six casino games for Casino Frenzy", "Start Casino Frenzy", "Collect a Super Jackpot in Casino Frenzy", "Reach 100 chips for Break the Bank", "Start Break the Bank"])
+    }),
+    [normalizeTableKey("Who Dunnit")]: Object.freeze({
+      easy: Object.freeze(["Make the super skill shot", "Collect one Clue", "Interrogate one suspect at the Telephone", "Take the elevator to any floor mode", "Light Roulette from the right lane"]),
+      medium: Object.freeze(["Solve one crime case", "Start Roof Multiball", "Start Basement Multiball", "Collect a Basement jackpot", "Collect two Clues in one case"]),
+      hard: Object.freeze(["Solve two crime cases in one game", "Start Roof Multiball with a high hurry-up value", "Collect a large Basement jackpot", "Play Penthouse Party", "Win a high-value Roulette bet"])
+    }),
+    [normalizeTableKey("Genesis")]: Object.freeze({
+      easy: Object.freeze(["Spell any body part once", "Shoot either ramp for Arms or Legs", "Collect a Brain letter from an orbit", "Complete the 1-2-3 drop sequence", "Hit the vary-target for a letter"]),
+      medium: Object.freeze(["Collect two unique body parts", "Start multiball from a flashing ramp", "Advance playfield multiplier twice", "Collect a full 40,000 vary-target shot", "Light the Next Part extra ball insert"]),
+      hard: Object.freeze(["Complete all four body parts", "Assemble the robot with Lifeforce", "Build a 5X or better playfield multiplier", "Complete three 1-2-3 drop sequences", "Collect multiball scoring with playfield X running"])
+    }),
+    [normalizeTableKey("Haunted House")]: Object.freeze({
+      easy: Object.freeze(["Reach the lower playfield", "Reach the upper playfield", "Shoot the Secret Passage", "Advance bonus multiplier once", "Complete one drop-target bank"]),
+      medium: Object.freeze(["Visit all three playfields in one game", "Light Double Bonus on any playfield", "Complete the upper playfield drops twice", "Complete the lower playfield drops twice", "Light the Trap Door"]),
+      hard: Object.freeze(["Activate main playfield double scoring", "Light Double Bonus on two playfields", "Reach 5X bonus multiplier", "Complete upper playfield drops three times", "Collect an extra ball-lit kicker award"])
+    }),
+    [normalizeTableKey("The Incredible Hulk")]: Object.freeze({
+      easy: Object.freeze(["Complete the 1-2-3 targets", "Light the spinner for the ball", "Complete part of the 7-bank", "Advance bonus from a top lane", "Use a kickback lane"]),
+      medium: Object.freeze(["Complete the full 7-bank", "Reach 5X bonus multiplier", "Collect bonus from a kickback lane", "Light the right side lane", "Complete A-B-C progress once"]),
+      hard: Object.freeze(["Max base bonus to 20,000", "Collect max bonus with multiplier", "Complete the 7-bank twice", "Light both inlane specials", "Score a strong lit-spinner stretch"])
     })
   });
 
@@ -2538,6 +2776,12 @@
   }
 
   function buildCatalogScoreTargets(tableName, tableIndex){
+    const override = SCORE_TARGET_OVERRIDES_BY_TABLE[normalizeTableKey(tableName)];
+    if(override) return {
+      easy: Array.isArray(override.easy) ? override.easy.slice() : [],
+      medium: Array.isArray(override.medium) ? override.medium.slice() : [],
+      hard: Array.isArray(override.hard) ? override.hard.slice() : []
+    };
     let seed = 0;
     const src = String(tableName || "") + ":" + String(tableIndex || 0);
     for(let i = 0; i < src.length; i++) seed = ((seed * 31) + src.charCodeAt(i)) >>> 0;
