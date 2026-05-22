@@ -22948,8 +22948,8 @@ const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
 const FLPR_PATCH_NOTES_ITEMS_HOME = [
   {
-    k: "Home performance pass",
-    d: "Home Edition now throttles background save, profile, counter, and auto-swap work so clicks and hovers respond more smoothly."
+    k: "Home 1.1 performance pass",
+    d: "Home Edition now throttles background save, profile, counter, auto-swap, and Bonus Pinball polling work so clicks and hovers respond more smoothly."
   },
   {
     k: "Font and header controls",
@@ -25588,6 +25588,8 @@ let bossAssistNonceSeen = "";
 let bonusPinballUtilityWindow = null;
 let bonusPinballLastBroadcastSignal = null;
 let bonusPinballBridgeChannel = null;
+let bonusPinballBossAssistPollTimer = 0;
+let bonusPinballIntegratedSyncTimer = 0;
 let bonusPinballManualVisible = false;
 let bonusPinballFrameReady = false;
 let bonusPinballPendingClicks = [];
@@ -26392,8 +26394,23 @@ function flushIntegratedBonusPinballClicks(){
     try{ runIntegratedBonusPinballClick(item.buttonId, item.nameValue); }catch(_){}
   });
 }
+function shouldSyncIntegratedBonusPinballControls(){
+  try{
+    if(isIntegratedBonusPinballVisible() || bonusPinballManualVisible || bonusPinballPositionMode || bonusPinballResizeMode || bonusPinballGapMode) return true;
+    const panel = document.getElementById("bonusPinballControlsPanel");
+    const btn = document.getElementById("bonusPinballToggleBtn");
+    const target = panel || btn;
+    if(!target) return false;
+    const rect = target.getBoundingClientRect?.();
+    if(!rect || rect.width <= 0 || rect.height <= 0) return false;
+    const style = window.getComputedStyle ? window.getComputedStyle(target) : null;
+    return !style || (style.display !== "none" && style.visibility !== "hidden");
+  }catch(_){}
+  return false;
+}
 function syncIntegratedBonusPinballControls(){
   try{
+    if(!shouldSyncIntegratedBonusPinballControls()) return;
     const visible = isIntegratedBonusPinballVisible();
     const showBtn = document.getElementById("bonusPinballToggleBtn");
     if(showBtn){
@@ -26900,8 +26917,9 @@ function ensureIntegratedBonusPinball(){
   loadIntegratedBonusPinballComponent(host, mount);
   bonusPinballRestoreViewportState(viewportBefore);
   try{
-    if(!window.__flprBonusIntegratedSyncTimer){
-      window.__flprBonusIntegratedSyncTimer = setInterval(()=>{ try{ syncIntegratedBonusPinballControls(); }catch(_){} }, 1000);
+    if(!bonusPinballIntegratedSyncTimer){
+      bonusPinballIntegratedSyncTimer = setInterval(()=>{ try{ syncIntegratedBonusPinballControls(); }catch(_){} }, 2500);
+      window.__flprBonusIntegratedSyncTimer = bonusPinballIntegratedSyncTimer;
     }
   }catch(_){}
   return host;
@@ -27197,7 +27215,17 @@ function initBonusPinballBridgeChannel(){
   }
 }
 initBonusPinballBridgeChannel();
-setInterval(pollBonusPinballBossAssist, 900);
+try{
+  const pollDelay = (typeof BroadcastChannel === "undefined") ? 1200 : 5000;
+  bonusPinballBossAssistPollTimer = setInterval(pollBonusPinballBossAssist, pollDelay);
+}catch(_){}
+try{
+  window.addEventListener("beforeunload", ()=>{
+    try{ if(bonusPinballBossAssistPollTimer) clearInterval(bonusPinballBossAssistPollTimer); }catch(_){}
+    try{ if(bonusPinballIntegratedSyncTimer) clearInterval(bonusPinballIntegratedSyncTimer); }catch(_){}
+    try{ if(bonusPinballBridgeChannel) bonusPinballBridgeChannel.close(); }catch(_){}
+  }, { once:true });
+}catch(_){}
 
 // Optional FLPR-Bot sync (overlay -> bot local sync server).
 const FLPR_BOT_SYNC_CFG_LS = "flpr_bot_sync_cfg_v1";
@@ -31201,6 +31229,7 @@ function achResetProgressAndCurrency(){
 }
 window.flprAchievementStore = achStore;
 const achUi = { queue:[], active:null, timer:0 };
+let achStackTopRaf = 0;
 function achFmtWhen(ts){
   try{
     const d = new Date(Number(ts) || Date.now());
@@ -31208,6 +31237,17 @@ function achFmtWhen(ts){
     const mm = String(d.getMinutes()).padStart(2, "0");
     return `${hh}:${mm}`;
   }catch(_){ return "NOW"; }
+}
+function achScheduleStackTopUpdate(){
+  try{
+    if(achStackTopRaf) return;
+    achStackTopRaf = requestAnimationFrame(()=>{
+      achStackTopRaf = 0;
+      try{ achUpdateStackTop(); }catch(_){}
+    });
+  }catch(_){
+    try{ achUpdateStackTop(); }catch(__){}
+  }
 }
 function achUpdateStackTop(){
   try{
@@ -32432,9 +32472,25 @@ function achInitUiBindings(){
         if(ev.target === modal) achHideModal();
       });
     }
-    window.addEventListener("resize", achUpdateStackTop, { passive:true });
+    window.addEventListener("resize", achScheduleStackTopUpdate, { passive:true });
+    if(!window.__achStackObserver){
+      const observer = new MutationObserver(()=>achScheduleStackTopUpdate());
+      const toast = document.getElementById("toastWrap");
+      const power = document.getElementById("powerStack");
+      try{ if(toast) observer.observe(toast, { childList:true, subtree:false }); }catch(_){}
+      try{ if(power) observer.observe(power, { childList:true, subtree:false }); }catch(_){}
+      window.__achStackObserver = observer;
+    }
     if(!window.__achStackPosTimer){
-      window.__achStackPosTimer = setInterval(()=>{ try{ achUpdateStackTop(); }catch(_){} }, 320);
+      window.__achStackPosTimer = setInterval(()=>{ try{ achUpdateStackTop(); }catch(_){} }, 2400);
+      try{
+        window.addEventListener("beforeunload", ()=>{
+          try{ clearInterval(window.__achStackPosTimer); }catch(_){}
+          window.__achStackPosTimer = 0;
+          try{ window.__achStackObserver?.disconnect?.(); }catch(_){}
+          window.__achStackObserver = null;
+        }, { once:true });
+      }catch(_){}
     }
   }catch(_){}
 }
@@ -55724,7 +55780,7 @@ setInterval(()=>{
   try{ syncFlprBotBossStatus(false); }catch(_){}
 }, 2500);
 setTimeout(()=>{ try{ applyBonusPinballOverlayDim(); }catch(_){ } }, 220);
-setInterval(()=>{ try{ applyBonusPinballOverlayDim(); }catch(_){ } }, 700);
+setInterval(()=>{ try{ applyBonusPinballOverlayDim(); }catch(_){ } }, 5000);
 setTimeout(()=>{ try{ pollBonusPinballBossAssist(); }catch(_){ } }, 260);
 window.addEventListener("storage", (ev)=>{
   try{
