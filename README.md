@@ -4,14 +4,14 @@ Flippermizer! Pinball Randomized! is a pinball randomizer client for Archipelago
 
 The current release focus is **Flippermizer! Pinball Randomized! | Home Edition**, a desktop client built for Archipelago multiworld play and local singleplayer seeds without stream-only integrations.
 
-## Home Edition 1.0 RC2
+## Home Edition 1.1
 
-Home Edition 1.0 RC2 is the current release candidate intended for real Archipelago run use. It is published from the `home-edition` branch with the tag `home-edition-v1.0.0-rc2`.
+Home Edition 1.1 is the current stable release intended for real Archipelago run use. It is published from the `home-edition` branch with the tag `home-edition-v1.1.0`.
 
 Release assets:
 
-- `Flippermizer-Home-Edition-1.0.0-portable.exe` - Windows portable Electron launcher.
-- `Flippermizer-Home-Edition-1.0.0-upload-bundle.zip` - launcher plus helper files for setup and distribution.
+- `Flippermizer-Home-Edition-1.1.0-portable.exe` - Windows portable Electron launcher.
+- `Flippermizer-Home-Edition-1.1.0-upload-bundle.zip` - launcher plus helper files for setup and distribution.
 
 The upload bundle includes:
 
@@ -28,7 +28,8 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 - Visuals / Music now includes a bundled font selector with Press Start 2P, Hubot Sans, and Jersey 15, and the Home header uses the Stream-style layout with HOME EDITION branding.
 - Score checks now keep their pending redemption metadata long enough to pair with later AP ReceivedItems snapshots, including the case where RoomUpdate confirms the check first.
 - Cross-game ReceivedItems now wait for known DataPackage item names instead of processing as generic `Item #...` placeholders, restoring Progressive Ball reward handling.
-- Published Home Edition 1.0 RC2 from the `home-edition` branch.
+- Stream and Home runtime polling has been tightened so Bonus Pinball and launcher windows do less idle refresh work.
+- Promoted Home Edition 1.1 from the `home-edition` branch as the latest stable release.
 - Added the Task Repository Editor, repeated-task grouping, template table markers, and exportable template guidance for task/title/tooltip cleanup.
 - Normalized Home and Stream task titles and strategy tooltips with `GUIDE:` / `NOTE:` labels preserved in task hover cards.
 - Packaged the Windows portable launcher and an upload bundle for players.
@@ -61,9 +62,9 @@ The included AP World no longer emits Boss Key items into Archipelago generation
 
 Use the packaged release for normal play:
 
-1. Download `Flippermizer-Home-Edition-1.0.0-upload-bundle.zip` from the RC2 release.
+1. Download `Flippermizer-Home-Edition-1.1.0-upload-bundle.zip` from the latest Home Edition release.
 2. Extract it.
-3. Run `Flippermizer-Home-Edition-1.0.0-portable.exe`.
+3. Run `Flippermizer-Home-Edition-1.1.0-portable.exe`.
 4. For Archipelago generation, use the included `.apworld` and the YAML helper.
 
 ## Building From Source

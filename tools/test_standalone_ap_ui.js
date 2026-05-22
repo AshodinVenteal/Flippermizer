@@ -600,7 +600,7 @@ async function run() {
     !/PATCH NOTES/i.test(patchNotesHomeProbe.title || "") ||
     !/Home Edition/i.test(patchNotesHomeProbe.sub || "") ||
     patchNotesHomeProbe.itemCount !== 3 ||
-    !/Home performance pass/i.test(patchNotesHomeProbe.firstItem || "") ||
+    !/Home 1\.1 performance pass/i.test(patchNotesHomeProbe.firstItem || "") ||
     !/Font and header controls/i.test(patchNotesHomeProbe.body || "") ||
     !/Score reward tracking/i.test(patchNotesHomeProbe.body || "") ||
     !/Hubot Sans/i.test(patchNotesHomeProbe.body || "") ||
@@ -1413,8 +1413,8 @@ async function run() {
       };
     })()
   `);
-  if(!modeToggleProbe.exists || !modeToggleProbe.switchExists || modeToggleProbe.hidden || modeToggleProbe.switchHidden || !/FlippermizerLogo\.png/i.test(modeToggleProbe.logoSrc) || !/Flippermizer/i.test(modeToggleProbe.logoAlt) || modeToggleProbe.logoWidth < 520 || modeToggleProbe.logoHeight < 110 || modeToggleProbe.logoButtonCount !== 0 || !modeToggleProbe.text.includes("SP") || !modeToggleProbe.text.includes("MP") || !modeToggleProbe.text.includes("HOUSE") || modeToggleProbe.active !== "archipelago" || !modeToggleProbe.overhangsMenu || !modeToggleProbe.leftAligned || !modeToggleProbe.separatedFromProfile || !modeToggleProbe.sameRowAsPoints){
-    throw new Error(`Standalone logo and shifted SP/MP/HOUSE mode toggle were not positioned correctly above Menu: ${JSON.stringify(modeToggleProbe)}`);
+  if(!modeToggleProbe.exists || !modeToggleProbe.switchExists || modeToggleProbe.hidden || modeToggleProbe.switchHidden || !/FlippermizerLogo\.png/i.test(modeToggleProbe.logoSrc) || !/Flippermizer/i.test(modeToggleProbe.logoAlt) || modeToggleProbe.logoWidth < 520 || modeToggleProbe.logoHeight < 110 || modeToggleProbe.logoButtonCount !== 0 || !modeToggleProbe.text.includes("SP") || !modeToggleProbe.text.includes("MP") || !modeToggleProbe.text.includes("HOUSE") || modeToggleProbe.active !== "archipelago" || !modeToggleProbe.overhangsMenu || !modeToggleProbe.separatedFromProfile || !modeToggleProbe.sameRowAsPoints){
+    throw new Error(`Standalone logo and SP/MP/HOUSE mode toggle were not positioned correctly above Menu/profile: ${JSON.stringify(modeToggleProbe)}`);
   }
   const autoSwapDefaultProbe = await page.evaluate(`(() => ({
     inputValue: document.getElementById("swapSeconds")?.value || "",
