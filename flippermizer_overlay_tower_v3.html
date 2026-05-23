@@ -21740,12 +21740,12 @@ body.flprShopSparksSlime .spark{
         </div>
         <div>
           <div class="cLabel">PLAYER</div>
-          <input class="cInput" id="apPlayer" placeholder="Ashodin">
+          <input class="cInput" id="apPlayer" placeholder="FlippermizerWorldsofPinball">
           <div class="apHint">Use your slot name exactly.</div>
         </div>
         <div>
           <div class="cLabel">GAME (auto from RoomInfo)</div>
-          <input class="cInput" id="apGame" placeholder="leave blank">
+          <input class="cInput" id="apGame" placeholder="FlippermizerWorldsofPinball">
           <div class="apHint">Will auto-pick room game if blank/wrong.</div>
         </div>
         <div>
@@ -25591,24 +25591,28 @@ function updateBossThreatIndicators(){
 
 // ---------------- AP WebSocket; Checks UI ----------------
 const AP_LS_KEY = "flpr_ap_cfg_v1";
-const apDefault = { server:"", player:"Ashodin", game:"", pass:"" };
-const AP_FLIPPERMIZER_GAME_NAME = "Flippermizer";
+const apDefault = { server:"", player:"FlippermizerWorldsofPinball", game:"FlippermizerWorldsofPinball", pass:"" };
+const AP_FLIPPERMIZER_GAME_NAME = "FlippermizerWorldsofPinball";
 const AP_FLIPPERMIZER_STREAM_PLAYER = "Flippermizer";
 const AP_FLIPPERMIZER_LEGACY_GAME_NAMES = new Set([
   "Manual_FlippermizerBaseGame",
   "Manual_FlippermizerBaseGame_Ashodin",
   "Manual_Flippermizer_Ashodin",
+  "Flippermizer",
   "FlippermizerBaseGame"
 ]);
-const AP_FLIPPERMIZER_LEGACY_PLAYER_NAMES = new Set(["Ashodin", "Ashodin_BaseGame", "AshodinNoTrap"]);
+const AP_FLIPPERMIZER_LEGACY_PLAYER_NAMES = new Set(["Ashodin", "Ashodin_BaseGame", "AshodinNoTrap", "FlippermizerWorldsofPinball"]);
 function normalizeApCfgForRuntime(cfg){
   const next = { ...apDefault, ...(cfg && typeof cfg === "object" ? cfg : {}) };
   try{
+    const game = String(next.game || "").trim();
+    if(!game || AP_FLIPPERMIZER_LEGACY_GAME_NAMES.has(game)) next.game = AP_FLIPPERMIZER_GAME_NAME;
     if(isStreamEditionRuntime()){
       const player = String(next.player || "").trim();
       if(!player || AP_FLIPPERMIZER_LEGACY_PLAYER_NAMES.has(player)) next.player = AP_FLIPPERMIZER_STREAM_PLAYER;
-      const game = String(next.game || "").trim();
-      if(!game || AP_FLIPPERMIZER_LEGACY_GAME_NAMES.has(game)) next.game = AP_FLIPPERMIZER_GAME_NAME;
+    }else{
+      const player = String(next.player || "").trim();
+      if(!player || AP_FLIPPERMIZER_LEGACY_PLAYER_NAMES.has(player)) next.player = "FlippermizerWorldsofPinball";
     }
   }catch(_){}
   return next;
@@ -40873,7 +40877,7 @@ function apConnect(){
   const elPw = document.getElementById("apPass");
   ap.cfg = {
     server: (elS?.value || ap.cfg.server || "").trim(),
-    player: (elP?.value || ap.cfg.player || "Ashodin").trim(),
+    player: (elP?.value || ap.cfg.player || "FlippermizerWorldsofPinball").trim(),
     game: (elG?.value || ap.cfg.game || "").trim(),
     pass: (elPw?.value ?? ap.cfg.pass ?? "")
   };
@@ -52289,7 +52293,7 @@ async function loadInherentTestSeed(){
   ap.inherentSeedActive = true;
   ap.connected = true;
   ap.seedName = INHERENT_TEST_SEED_NAME;
-  ap.cfg = { ...(ap.cfg || {}), player: ap.cfg?.player || "Ashodin", game: AP_FLIPPERMIZER_GAME_NAME };
+  ap.cfg = { ...(ap.cfg || {}), player: ap.cfg?.player || "FlippermizerWorldsofPinball", game: AP_FLIPPERMIZER_GAME_NAME };
   ap.slot = 1;
   ap.team = 0;
   ap.slotInfoById = new Map();
@@ -55444,7 +55448,7 @@ function wireApControls(){
   const btnSaveAp = document.getElementById("saveApCfgBtn");
 
   if(s) s.value = ap.cfg.server || "";
-  if(p) p.value = ap.cfg.player || "Ashodin";
+  if(p) p.value = ap.cfg.player || "FlippermizerWorldsofPinball";
   if(g) g.value = ap.cfg.game || "";
   if(pw) pw.value = ap.cfg.pass || "";
   updateApConnectButtons(ap.connected ? "connected" : "offline");
@@ -55454,7 +55458,7 @@ function wireApControls(){
   if(btnSaveAp) btnSaveAp.onclick = ()=>{
     playSfx("click");
     ap.cfg.server = (s?.value || "").trim();
-    ap.cfg.player = (p?.value || "Ashodin").trim();
+    ap.cfg.player = (p?.value || "FlippermizerWorldsofPinball").trim();
     ap.cfg.game = (g?.value || "").trim();
     ap.cfg.pass = (pw?.value || "");
     saveApCfg(ap.cfg);

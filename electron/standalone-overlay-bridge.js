@@ -29,13 +29,15 @@
   const STANDALONE_DEFAULT_SWAP_SECONDS = 60;
   const STANDALONE_SWAP_DEFAULT_VERSION = 2;
   const STANDALONE_RANDOMIZER_OPEN_SCENARIO = "randomizer_open";
-  const STANDALONE_FLIPPERMIZER_GAME_NAME = "Flippermizer";
+  const STANDALONE_FLIPPERMIZER_GAME_NAME = "FlippermizerWorldsofPinball";
+  const STANDALONE_FLIPPERMIZER_HOME_PLAYER = "FlippermizerWorldsofPinball";
   const STANDALONE_FLIPPERMIZER_STREAM_PLAYER = "Flippermizer";
-  const STANDALONE_FLIPPERMIZER_LEGACY_PLAYER_NAMES = new Set(["Ashodin", "Ashodin_BaseGame", "AshodinNoTrap"]);
+  const STANDALONE_FLIPPERMIZER_LEGACY_PLAYER_NAMES = new Set(["Ashodin", "Ashodin_BaseGame", "AshodinNoTrap", "FlippermizerWorldsofPinball"]);
   const STANDALONE_FLIPPERMIZER_LEGACY_GAME_NAMES = new Set([
     "Manual_FlippermizerBaseGame",
     "Manual_FlippermizerBaseGame_Ashodin",
     "Manual_Flippermizer_Ashodin",
+    "Flippermizer",
     "FlippermizerBaseGame"
   ]);
   const STANDALONE_KNOWN_AP_ITEM_NAMES = Object.freeze({
@@ -85,18 +87,21 @@
   }
 
   function standaloneNormalizeApCfg(cfg){
-    const next = { server:"", player:"Ashodin", game:"", pass:"", ...(cfg && typeof cfg === "object" ? cfg : {}) };
+    const next = { server:"", player:standaloneApDefaultPlayer(), game:STANDALONE_FLIPPERMIZER_GAME_NAME, pass:"", ...(cfg && typeof cfg === "object" ? cfg : {}) };
+    const game = String(next.game || "").trim();
+    if(!game || STANDALONE_FLIPPERMIZER_LEGACY_GAME_NAMES.has(game)) next.game = STANDALONE_FLIPPERMIZER_GAME_NAME;
     if(standaloneIsStreamEditionRuntime()){
       const player = String(next.player || "").trim();
       if(!player || STANDALONE_FLIPPERMIZER_LEGACY_PLAYER_NAMES.has(player)) next.player = STANDALONE_FLIPPERMIZER_STREAM_PLAYER;
-      const game = String(next.game || "").trim();
-      if(!game || STANDALONE_FLIPPERMIZER_LEGACY_GAME_NAMES.has(game)) next.game = STANDALONE_FLIPPERMIZER_GAME_NAME;
+    }else{
+      const player = String(next.player || "").trim();
+      if(!player || STANDALONE_FLIPPERMIZER_LEGACY_PLAYER_NAMES.has(player)) next.player = STANDALONE_FLIPPERMIZER_HOME_PLAYER;
     }
     return next;
   }
 
   function standaloneApDefaultPlayer(){
-    return standaloneIsStreamEditionRuntime() ? STANDALONE_FLIPPERMIZER_STREAM_PLAYER : "Ashodin";
+    return standaloneIsStreamEditionRuntime() ? STANDALONE_FLIPPERMIZER_STREAM_PLAYER : STANDALONE_FLIPPERMIZER_HOME_PLAYER;
   }
 
   function readSettings(){
@@ -3867,7 +3872,7 @@
     try{
       if(typeof ap !== "undefined" && ap?.cfg) return standaloneNormalizeApCfg(ap.cfg);
     }catch(_){}
-    return standaloneNormalizeApCfg({ server:"", player:"Ashodin", game:"", pass:"" });
+    return standaloneNormalizeApCfg({ server:"", player:standaloneApDefaultPlayer(), game:STANDALONE_FLIPPERMIZER_GAME_NAME, pass:"" });
   }
 
   const STANDALONE_SEED_NAME = "FLPR_STANDALONE_SINGLEPLAYER_SEED";
@@ -5072,11 +5077,11 @@
             </div>
             <div>
               <div class="cLabel">PLAYER</div>
-              <input class="cInput" id="apPlayer" autocomplete="off" placeholder="Slot name" value="${escapeAttr(cfg.player || "Ashodin")}">
+              <input class="cInput" id="apPlayer" autocomplete="off" placeholder="Slot name" value="${escapeAttr(cfg.player || standaloneApDefaultPlayer())}">
             </div>
             <div>
               <div class="cLabel">GAME</div>
-              <input class="cInput" id="apGame" autocomplete="off" placeholder="Flippermizer" value="${escapeAttr(cfg.game || "")}">
+              <input class="cInput" id="apGame" autocomplete="off" placeholder="FlippermizerWorldsofPinball" value="${escapeAttr(cfg.game || STANDALONE_FLIPPERMIZER_GAME_NAME)}">
             </div>
             <div>
               <div class="cLabel">PASSWORD</div>
@@ -6535,8 +6540,8 @@
         });
         try{ if(typeof saveApCfg === "function") saveApCfg(ap.cfg); }catch(_){}
         standaloneControlAll("#apServer").forEach((node)=>{ node.value = ap.cfg.server || ""; });
-        standaloneControlAll("#apPlayer").forEach((node)=>{ node.value = ap.cfg.player || "Ashodin"; });
-        standaloneControlAll("#apGame").forEach((node)=>{ node.value = ap.cfg.game || ""; });
+        standaloneControlAll("#apPlayer").forEach((node)=>{ node.value = ap.cfg.player || standaloneApDefaultPlayer(); });
+        standaloneControlAll("#apGame").forEach((node)=>{ node.value = ap.cfg.game || STANDALONE_FLIPPERMIZER_GAME_NAME; });
         standaloneControlAll("#apPass").forEach((node)=>{ node.value = ap.cfg.pass || ""; });
       }
     }catch(_){}
@@ -17566,7 +17571,7 @@
       const next = {
         server: (s?.value || "").trim(),
         player: (p?.value || standaloneApDefaultPlayer()).trim(),
-        game: (g?.value || "").trim(),
+        game: (g?.value || STANDALONE_FLIPPERMIZER_GAME_NAME).trim(),
         pass: (pw?.value || "")
       };
       try{ standaloneControlAll("#apServer").forEach((node)=>{ node.value = next.server; }); }catch(_){}
@@ -17596,7 +17601,7 @@
 
     if(s && !s.__flprStandaloneValueLoaded){ s.value = cfg.server || ""; s.__flprStandaloneValueLoaded = true; }
     if(p && !p.__flprStandaloneValueLoaded){ p.value = cfg.player || standaloneApDefaultPlayer(); p.__flprStandaloneValueLoaded = true; }
-    if(g && !g.__flprStandaloneValueLoaded){ g.value = cfg.game || ""; g.__flprStandaloneValueLoaded = true; }
+    if(g && !g.__flprStandaloneValueLoaded){ g.value = cfg.game || STANDALONE_FLIPPERMIZER_GAME_NAME; g.__flprStandaloneValueLoaded = true; }
     if(pw && !pw.__flprStandaloneValueLoaded){ pw.value = cfg.pass || ""; pw.__flprStandaloneValueLoaded = true; }
 
     try{
