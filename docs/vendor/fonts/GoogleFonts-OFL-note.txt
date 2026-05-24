@@ -1,0 +1,6 @@
+Press Start 2P and Jersey 15 are bundled from Google Fonts.
+Both are distributed under the SIL Open Font License.
+
+Sources:
+https://fonts.google.com/specimen/Press+Start+2P
+https://fonts.google.com/specimen/Jersey+15
