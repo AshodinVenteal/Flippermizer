@@ -16,7 +16,7 @@ Release asset:
 
 ## Home Edition Player Options
 
-Build a trapless Home Edition YAML in the hosted player options page:
+Online, you can build a trapless Home Edition YAML in the hosted player options page:
 
 https://ashodinventeal.github.io/Flippermizer/player-options.html
 
