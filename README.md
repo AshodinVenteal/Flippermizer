@@ -14,6 +14,12 @@ Release asset:
 
 - `Flippermizer-Home-Edition-1.1.0-portable.exe`
 
+## Home Edition Player Options
+
+Build a trapless Home Edition YAML in the hosted player options page:
+
+https://ashodinventeal.github.io/Flippermizer/player-options.html
+
 ## Run From Source
 
 ```powershell
@@ -45,6 +51,7 @@ Open `flippermizer_overlay_tower_v3.html` directly for the basic HTML overlay ve
 ## Important Files
 
 - `electron/` - Electron launcher, preload, and Home Edition bridge.
+- `docs/player-options.html` - hosted Home Edition YAML/player options builder.
 - `flippermizer_overlay_tower_v3.html` - main HTML overlay surface.
 - `flippermizer_table_repository.js` - table data and metadata.
 - `flippermizer_task_explanations.js` - task and strategy guide text.
