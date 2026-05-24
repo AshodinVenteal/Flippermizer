@@ -20,6 +20,23 @@ Build a trapless Home Edition YAML in the hosted player options page:
 
 https://ashodinventeal.github.io/Flippermizer/player-options.html
 
+## Quick Start
+
+Home Edition runs now open a first-launch Quick Start inside the app. Open **Singleplayer -> Quick Start** any time to revisit it, or **Singleplayer -> Table List** for the expected table set.
+
+- A seed is a generated run layout: worlds, tables, checks, progression items, and surprise events.
+- Worlds are themed groups of tables. Clearing checks earns items that open more balls, more tables, and eventually the boss route.
+- Checks are table goals. Complete the listed VPX goal, then redeem it in Flippermizer; score checks can be entered manually from the Checks page.
+- Play checks on Ball 1 unless a future seed or rule screen explicitly says otherwise.
+- After a reward animation, Home Edition returns to Checks so the next goal is ready without losing the current table context.
+- Sieges are surprise defense events. Their score targets now scale by table era so early solid-state tables ask for smaller totals than later high-scoring tables.
+
+## Table Requirements And VPX Flow
+
+The in-app Table List is the source of truth for expected tables. Flippermizer uses real machine metadata where available, plus a small number of Original VPX entries where the seed expects them. Current compatibility notes are intentionally practical: use VPX builds that run the named tables reliably, keep the table names recognizable, and prefer stable community builds over experimental edits.
+
+For repeated Ball 1 attempts, fully restarting a table is often safer than using F3 if that table loses trough state or behaves oddly after script reset. Score capture and screen-reading tools are still future workflow helpers; for now the supported Home Edition flow is manual score entry and check redemption from the Checks page.
+
 ## Run From Source
 
 ```powershell

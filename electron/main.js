@@ -7,9 +7,10 @@ const APP_SHORT_NAME = "Flippermizer Home Edition";
 const APP_ID = "net.flippermizer.homeedition";
 const APP_ICON_HOME_IMAGE = path.join(__dirname, "..", "Flippermizer Images", "flippermizericon-Home-Edition-64x64.png");
 const APP_ICON_PACKAGE = path.join(__dirname, "..", "build", process.platform === "win32" ? "home-icon.ico" : "icon.png");
+const OVERLAY_BASE_WIDTH = 910 + 306 + 1280 + 16 + 32;
 const OVERLAY_BASE_HEIGHT = 1450;
 const DEFAULT_WINDOW_BOUNDS = { width: 1600, height: 960 };
-const MIN_WINDOW_BOUNDS = { width: 1280, height: 720 };
+const MIN_WINDOW_BOUNDS = { width: 900, height: 640 };
 const WINDOW_STATE_FILE = "standalone-window-state.json";
 const RENDERER_SETTINGS_FILE = "standalone-renderer-settings.json";
 const DEFAULT_RENDERER_SETTINGS = {
@@ -210,8 +211,9 @@ function notifyOverlayViewport(win){
 function fitOverlayZoom(win){
   if(!win || win.isDestroyed()) return;
   const bounds = win.getContentBounds();
+  const width = Math.max(1, bounds.width || OVERLAY_BASE_WIDTH);
   const height = Math.max(1, bounds.height || OVERLAY_BASE_HEIGHT);
-  const zoom = Math.max(0.1, Math.min(2.5, height / OVERLAY_BASE_HEIGHT));
+  const zoom = Math.max(0.1, Math.min(2.5, width / OVERLAY_BASE_WIDTH, height / OVERLAY_BASE_HEIGHT));
   try{
     if(Math.abs(win.webContents.getZoomFactor() - zoom) > 0.001){
       win.webContents.setZoomFactor(zoom);
