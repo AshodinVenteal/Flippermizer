@@ -22990,16 +22990,16 @@ const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
 const FLPR_PATCH_NOTES_ITEMS_HOME = [
   {
-    k: "Home 1.1 performance pass",
-    d: "Home Edition now throttles background save, profile, counter, auto-swap, and Bonus Pinball polling work so clicks and hovers respond more smoothly."
+    k: "Quick Start guide",
+    d: "Home Edition now opens a first-launch guide with seeds, worlds, checks, Ball 1 rules, sieges, VPX flow tips, and the expected table list."
   },
   {
-    k: "Font and header controls",
-    d: "Visuals/Music now includes a bundled app font selector with Press Start 2P, Hubot Sans, and Jersey 15, plus HOME EDITION header branding."
+    k: "Vertical display fit",
+    d: "The launcher window now scales against both width and height with a narrower minimum size, so critical controls stay reachable on portrait monitors."
   },
   {
-    k: "Score reward tracking",
-    d: "Score checks keep their pending metadata long enough to pair with AP snapshots, so validated score redeems can show their reward outcome."
+    k: "Checks flow and sieges",
+    d: "Reward popups now return players to Checks after the animation, and siege score targets scale down on early solid-state tables."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_STREAM = [
@@ -37147,6 +37147,47 @@ function besiegedParseScoreValue(text){
   const value = Number(String(match[1] || "").replace(/[^\d]/g, ""));
   return Number.isFinite(value) && value > 0 ? Math.round(value) : 0;
 }
+function besiegedResolveTableMeta(tableKey, tableName){
+  try{
+    const repo = (typeof getTableRepo === "function") ? getTableRepo() : null;
+    if(!repo || typeof repo.getTableMeta !== "function") return null;
+    const candidates = [tableName, tableKey].map((v)=>String(v || "").trim()).filter(Boolean);
+    for(const candidate of candidates){
+      let meta = repo.getTableMeta(candidate);
+      if(meta) return meta;
+      if(typeof repo.getCanonicalTableCode === "function"){
+        const code = repo.getCanonicalTableCode(candidate);
+        if(code){
+          meta = repo.getTableMeta(code);
+          if(meta) return meta;
+        }
+      }
+    }
+  }catch(_){}
+  return null;
+}
+function besiegedScoreScaleForTable(tableKey, tableName){
+  const meta = besiegedResolveTableMeta(tableKey, tableName);
+  const year = Number(meta?.year || 0) || 0;
+  const manufacturer = String(meta?.manufacturer || "").trim();
+  if(year > 0 && year <= 1981) return { factor:0.25, cap:650000, floor:180000 };
+  if(year > 0 && year <= 1985) return { factor:0.38, cap:1200000, floor:220000 };
+  if(year > 0 && year <= 1990) return { factor:0.55, cap:2200000, floor:300000 };
+  if(year > 0 && year <= 1994) return { factor:0.75, cap:4000000, floor:400000 };
+  if(/\bOriginal\s+VPX\b/i.test(manufacturer)) return { factor:0.72, cap:3600000, floor:350000 };
+  return { factor:1, cap:0, floor:100000 };
+}
+function besiegedScaleTargetScoreForTable(score, tableKey, tableName){
+  const value = Math.round(Number(score || 0) || 0);
+  if(!(value > 0)) return value;
+  const scale = besiegedScoreScaleForTable(tableKey, tableName);
+  let target = Math.round(value * Number(scale.factor || 1));
+  const cap = Number(scale.cap || 0) || 0;
+  const floor = Math.max(100000, Number(scale.floor || 100000) || 100000);
+  if(cap > 0) target = Math.min(target, cap);
+  target = Math.max(floor, target);
+  return Math.max(100000, Math.round(target / 10000) * 10000);
+}
 function besiegedResolveTargetScore(tableKey, tableName){
   const fallbackBase = 6400000;
   try{
@@ -37179,13 +37220,14 @@ function besiegedResolveTargetScore(tableKey, tableName){
     }
     if(target > 0) target = Math.max(100000, Math.round(target * 0.8));
     if(!(target > 0)) target = fallbackBase + Math.round(Math.random() * 1760000);
+    target = besiegedScaleTargetScoreForTable(target, tableKey, tableName);
     return {
       score: target,
       label: `${target.toLocaleString("en-US")}+`,
       tableName: String(tableName || "").trim()
     };
   }catch(_){}
-  const fallback = fallbackBase + Math.round(Math.random() * 1760000);
+  const fallback = besiegedScaleTargetScoreForTable(fallbackBase + Math.round(Math.random() * 1760000), tableKey, tableName);
   return {
     score: fallback,
     label: `${fallback.toLocaleString("en-US")}+`,

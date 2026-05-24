@@ -26,6 +26,8 @@
   const STANDALONE_ACHIEVEMENT_LS_KEY = "flpr_achievements_v1";
   const STANDALONE_ACHIEVEMENT_UI_LS_KEY = "flpr_achievements_ui_v1";
   const STANDALONE_EPISODE_LS_KEY = "flpr_episode_v1";
+  const STANDALONE_QUICK_START_SEEN_LS_KEY = "flpr_home_quick_start_seen_v1";
+  const STANDALONE_QUICK_START_VERSION = "home-feedback-onboarding-2026-05";
   const STANDALONE_DEFAULT_SWAP_SECONDS = 60;
   const STANDALONE_SWAP_DEFAULT_VERSION = 2;
   const STANDALONE_RANDOMIZER_OPEN_SCENARIO = "randomizer_open";
@@ -691,6 +693,172 @@
       }
       body.flprStandaloneOriginalClient .standaloneModeGate[hidden]{
         display:none !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartOverlay{
+        position:fixed !important;
+        inset:0 !important;
+        z-index:2147483644 !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        padding:24px !important;
+        background:
+          radial-gradient(circle at 50% 24%, rgba(0,217,255,.18), transparent 36%),
+          linear-gradient(180deg, rgba(0,6,14,.74), rgba(0,2,8,.92)) !important;
+        pointer-events:auto !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartOverlay[hidden]{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartCard{
+        width:min(1180px, calc(100vw - 48px)) !important;
+        max-height:calc(100vh - 48px) !important;
+        display:grid !important;
+        grid-template-rows:auto auto minmax(0, 1fr) auto !important;
+        gap:16px !important;
+        border:1px solid rgba(0,255,213,.72) !important;
+        border-radius:16px !important;
+        padding:24px !important;
+        background:
+          radial-gradient(100% 120% at 50% 0%, rgba(0,217,255,.15), transparent 56%),
+          linear-gradient(180deg, rgba(4,24,39,.98), rgba(0,8,18,.98)) !important;
+        box-shadow:
+          0 0 0 1px rgba(0,217,255,.18) inset,
+          0 24px 58px rgba(0,0,0,.58),
+          0 0 34px rgba(0,217,255,.22) !important;
+        overflow:hidden !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartHead{
+        display:flex !important;
+        justify-content:space-between !important;
+        align-items:flex-start !important;
+        gap:18px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTitle{
+        font-family:var(--flprTitleFontFamily, var(--flprUiFontFamily)) !important;
+        font-size:30px !important;
+        line-height:1.05 !important;
+        color:rgba(238,255,252,.98) !important;
+        text-shadow:0 0 14px rgba(0,217,255,.35) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartSub{
+        margin-top:8px !important;
+        font-size:12px !important;
+        line-height:1.45 !important;
+        color:rgba(190,226,238,.82) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTabs{
+        display:flex !important;
+        flex-wrap:wrap !important;
+        gap:8px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTab{
+        border:1px solid rgba(0,166,255,.62) !important;
+        border-radius:10px !important;
+        background:linear-gradient(180deg, rgba(7,26,44,.94), rgba(3,16,26,.94)) !important;
+        color:rgba(232,250,255,.88) !important;
+        padding:9px 12px !important;
+        font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
+        font-size:9px !important;
+        cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTab.active{
+        border-color:rgba(34,255,136,.92) !important;
+        color:rgba(34,255,136,.98) !important;
+        box-shadow:0 0 18px rgba(34,255,136,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartBody{
+        min-height:0 !important;
+        overflow:auto !important;
+        border:1px solid rgba(0,166,255,.34) !important;
+        border-radius:12px !important;
+        padding:16px !important;
+        background:linear-gradient(180deg, rgba(0,21,36,.72), rgba(0,8,18,.80)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartGrid{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:12px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartPanel{
+        border:1px solid rgba(0,166,255,.38) !important;
+        border-radius:10px !important;
+        padding:14px !important;
+        background:linear-gradient(180deg, rgba(0,34,62,.72), rgba(0,12,24,.84)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartPanel.wide{
+        grid-column:1 / -1 !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartPanel strong,
+      body.flprStandaloneOriginalClient .flprQuickStartListTitle{
+        display:block !important;
+        color:rgba(34,255,136,.98) !important;
+        font-size:10px !important;
+        line-height:1.25 !important;
+        margin-bottom:8px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartPanel span,
+      body.flprStandaloneOriginalClient .flprQuickStartPanel li,
+      body.flprStandaloneOriginalClient .flprQuickStartPanel p{
+        color:rgba(232,250,255,.82) !important;
+        font-size:10px !important;
+        line-height:1.55 !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartPanel ul,
+      body.flprStandaloneOriginalClient .flprQuickStartPanel ol{
+        margin:0 !important;
+        padding-left:18px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTableList{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:8px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTableRow{
+        display:grid !important;
+        grid-template-columns:1fr auto !important;
+        gap:8px !important;
+        align-items:center !important;
+        border:1px solid rgba(0,166,255,.28) !important;
+        border-radius:8px !important;
+        padding:8px !important;
+        background:rgba(0,12,24,.64) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTableRow .name{
+        color:rgba(232,250,255,.90) !important;
+        font-size:9px !important;
+        line-height:1.3 !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTableRow .meta{
+        color:rgba(255,214,122,.88) !important;
+        font-size:8px !important;
+        white-space:nowrap !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartFooter{
+        display:flex !important;
+        align-items:center !important;
+        justify-content:space-between !important;
+        gap:14px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartDontShow{
+        display:flex !important;
+        align-items:center !important;
+        gap:8px !important;
+        color:rgba(232,250,255,.74) !important;
+        font-size:10px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartActions{
+        display:flex !important;
+        flex-wrap:wrap !important;
+        justify-content:flex-end !important;
+        gap:8px !important;
+      }
+      @media (max-width:980px){
+        body.flprStandaloneOriginalClient .flprQuickStartCard{ padding:18px !important; }
+        body.flprStandaloneOriginalClient .flprQuickStartGrid,
+        body.flprStandaloneOriginalClient .flprQuickStartTableList{ grid-template-columns:1fr !important; }
+        body.flprStandaloneOriginalClient .flprQuickStartHead,
+        body.flprStandaloneOriginalClient .flprQuickStartFooter{ flex-direction:column !important; align-items:stretch !important; }
       }
       body.flprStandaloneOriginalClient .standaloneModeCard{
         width:min(1160px, calc(100vw - 48px)) !important;
@@ -5026,9 +5194,11 @@
           <div class="standaloneSectionTitle">SINGLEPLAYER <span class="mini">local seed</span></div>
           <div class="cRow connectActionRow">
             <button class="cBtn" id="standaloneStartSeedBtn" type="button">START SINGLEPLAYER SEED</button>
+            <button class="cBtn gray" id="standaloneQuickStartBtn" type="button">QUICK START</button>
+            <button class="cBtn gray" id="standaloneTableListBtn" type="button">TABLE LIST</button>
             <button class="cBtn danger" id="standaloneResetSeedBtn" type="button">RESET LOCAL RUN</button>
           </div>
-          <div class="apHint">Start or continue a local Home Edition seed to open the randomizer door and begin achievement tracking.</div>
+          <div class="apHint">Start or continue a local Home Edition seed. Use Quick Start for rules, Ball 1 expectations, worlds, checks, sieges, and table requirements.</div>
         </section>
 
         <section class="standaloneControlSection standaloneSingleplayerToolsSection" data-accent="blue">
@@ -5157,6 +5327,206 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
+  }
+
+  function standaloneQuickStartTables(){
+    try{
+      const repo = window.FLPR_TABLE_REPO;
+      const tables = Array.isArray(repo?.tables) ? repo.tables : [];
+      return tables
+        .filter((table)=>String(table?.code || "") !== "BOSS_TABLE")
+        .map((table)=>{
+          const code = String(table?.code || "").trim();
+          const meta = (repo && typeof repo.getTableMeta === "function") ? repo.getTableMeta(code) : null;
+          const name = String(meta?.displayName || table?.displayName || table?.name || code).trim();
+          const manufacturer = String(meta?.manufacturer || table?.manufacturer || "").trim();
+          const year = Number.isFinite(Number(meta?.year ?? table?.year)) ? String(Number(meta?.year ?? table?.year)) : "";
+          return { code, name, manufacturer, year };
+        })
+        .sort((a, b)=>a.name.localeCompare(b.name));
+    }catch(_){}
+    return [];
+  }
+
+  function standaloneQuickStartTableListMarkup(){
+    const rows = standaloneQuickStartTables();
+    if(!rows.length){
+      return `<div class="flprQuickStartPanel wide"><strong>TABLE LIST</strong><span>Table catalog is still loading. Open this again after the overlay finishes booting.</span></div>`;
+    }
+    return `
+      <div class="flprQuickStartPanel wide">
+        <strong>EXPECTED TABLE LIST (${rows.length})</strong>
+        <p>Home Edition expects VPX versions of these real-machine or curated original VPX tables. Use stable, complete VPX builds; nFozzy physics are welcome when available, but the app checks goals and scores rather than a specific table script.</p>
+        <div class="flprQuickStartTableList">
+          ${rows.map((row)=>`
+            <div class="flprQuickStartTableRow">
+              <span class="name">${standaloneEscapeHtml(row.name)}</span>
+              <span class="meta">${standaloneEscapeHtml([row.manufacturer, row.year].filter(Boolean).join(" "))}</span>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  function standaloneQuickStartTabMarkup(tab){
+    const key = String(tab || "start").trim().toLowerCase();
+    if(key === "worlds"){
+      return `
+        <div class="flprQuickStartGrid">
+          <div class="flprQuickStartPanel wide"><strong>WORLDS AND PROGRESSION</strong><span>A world is a five-table route. World 1 starts open. Progression Ball items open more balls or new tables. Boss Keys move you toward the boss table; the boss path unlocks after the required keys are earned.</span></div>
+          <div class="flprQuickStartPanel"><strong>WORLD 1; RAMPS RUMPUS</strong><span>Ramp-friendly early route. Learn how checks, score targets, and table unlocks behave here.</span></div>
+          <div class="flprQuickStartPanel"><strong>WORLD 2; MALT DESNIY WORLD</strong><span>A curated route with stronger table identity and more varied mechanical asks.</span></div>
+          <div class="flprQuickStartPanel"><strong>WORLD 3; VINTAGE TELEVISION</strong><span>TV and pop-culture tables. Expect more table-specific objectives once opened.</span></div>
+          <div class="flprQuickStartPanel"><strong>WORLD 4; SPINNER SPARRING</strong><span>Early solid-state and spinner-heavy pressure. Siege targets are now scaled down here.</span></div>
+          <div class="flprQuickStartPanel"><strong>WORLD 5; FEATURED DESIGNER</strong><span>A designer-focused set. The route teaches the design language through goals.</span></div>
+          <div class="flprQuickStartPanel"><strong>BOSS WORLD</strong><span>Boss access is gated by Boss Keys. Once opened, boss checks and the final objective are separated from regular table progression.</span></div>
+        </div>
+      `;
+    }
+    if(key === "checks"){
+      return `
+        <div class="flprQuickStartGrid">
+          <div class="flprQuickStartPanel"><strong>CHECKS</strong><span>Checks are goals. When you complete one in VPX, mark it in Flippermizer. Score checks can also be redeemed from the SCORE entry field when your entered score meets thresholds.</span></div>
+          <div class="flprQuickStartPanel"><strong>BALL 1 RULE</strong><span>Unless the app has unlocked another ball for that table, play from Ball 1 only. Restart the VPX table/run when needed so the attempt stays legitimate.</span></div>
+          <div class="flprQuickStartPanel"><strong>AFTER A CHECK</strong><span>The reward animation may briefly show the Overview, then Home Edition returns you to Checks so you can keep working the same route.</span></div>
+          <div class="flprQuickStartPanel"><strong>MANUAL VS AUTO</strong><span>Home Edition is mostly manual: you choose the VPX table, play the objective, enter scores when useful, and mark completed checks. AP-connected runs may receive item data from the server.</span></div>
+          <div class="flprQuickStartPanel wide"><strong>SIEGES</strong><span>A siege is a surprise defense event. Start Defense on the besieged table, play up to three balls, and hit the posted score within five minutes. Targets now scale down for early solid-state tables.</span></div>
+        </div>
+      `;
+    }
+    if(key === "tables"){
+      return standaloneQuickStartTableListMarkup();
+    }
+    if(key === "vpx"){
+      return `
+        <div class="flprQuickStartGrid">
+          <div class="flprQuickStartPanel"><strong>TABLE SWITCHING</strong><span>Use whatever VPX frontend or folder workflow is fastest for you. Flippermizer does not launch VPX tables directly yet.</span></div>
+          <div class="flprQuickStartPanel"><strong>RESETTING</strong><span>If F3 causes trough/ball issues on a table, fully restart that VPX table before the next Ball 1 attempt.</span></div>
+          <div class="flprQuickStartPanel"><strong>SCORES</strong><span>Manual score entry is supported on the Checks card. Score-reading/capture tooling is not bundled yet, but this is now called out as a future workflow target.</span></div>
+          <div class="flprQuickStartPanel"><strong>COMPATIBILITY</strong><span>The catalog is based on real pinball machines plus curated original VPX entries. Prefer complete, stable VPX releases with working scoring and rules.</span></div>
+        </div>
+      `;
+    }
+    return `
+      <div class="flprQuickStartGrid">
+        <div class="flprQuickStartPanel wide"><strong>FAST START</strong><span>Create or choose a profile, start a Singleplayer seed, pick one of the unlocked tables, play only the unlocked ball for that table, then mark checks as you complete them.</span></div>
+        <div class="flprQuickStartPanel"><strong>WHAT IS A SEED?</strong><span>A seed is a generated route of worlds, tables, checks, item rewards, boss keys, and surprises. Local seeds save to your active profile.</span></div>
+        <div class="flprQuickStartPanel"><strong>WHAT AM I TRYING TO DO?</strong><span>Complete checks to earn progression. Progression opens tables/balls, Boss Keys open the boss path, and resources help with longer-term runs.</span></div>
+        <div class="flprQuickStartPanel"><strong>WHAT ARE WORLDS?</strong><span>Worlds are five-table groups. You begin in World 1 and unlock deeper routes through items.</span></div>
+        <div class="flprQuickStartPanel"><strong>WHAT DO I DO AFTER A CHECK?</strong><span>Mark it in Checks or enter your score. The app grants the reward, then returns you to Checks so you can continue from there.</span></div>
+      </div>
+    `;
+  }
+
+  function standaloneSetQuickStartTab(tab){
+    const overlay = document.getElementById("flprQuickStartOverlay");
+    if(!overlay) return false;
+    const key = ["start","checks","worlds","tables","vpx"].includes(String(tab || "").trim().toLowerCase())
+      ? String(tab || "").trim().toLowerCase()
+      : "start";
+    overlay.dataset.quickStartTab = key;
+    overlay.querySelectorAll("[data-quick-start-tab]").forEach((btn)=>{
+      btn.classList.toggle("active", String(btn.dataset.quickStartTab || "") === key);
+    });
+    const body = overlay.querySelector("#flprQuickStartBody");
+    if(body) body.innerHTML = standaloneQuickStartTabMarkup(key);
+    return true;
+  }
+
+  function standaloneEnsureQuickStartOverlay(){
+    let overlay = document.getElementById("flprQuickStartOverlay");
+    if(overlay) return overlay;
+    overlay = document.createElement("div");
+    overlay.id = "flprQuickStartOverlay";
+    overlay.className = "flprQuickStartOverlay";
+    overlay.hidden = true;
+    overlay.setAttribute("aria-hidden", "true");
+    overlay.innerHTML = `
+      <div class="flprQuickStartCard" role="dialog" aria-modal="true" aria-labelledby="flprQuickStartTitle">
+        <div class="flprQuickStartHead">
+          <div>
+            <div class="flprQuickStartTitle" id="flprQuickStartTitle">Getting Started</div>
+            <div class="flprQuickStartSub">A quick rules briefing for Home Edition: seeds, worlds, checks, Ball 1, sieges, VPX workflow, and the table catalog.</div>
+          </div>
+          <button class="cBtn" id="flprQuickStartCloseTop" type="button">GOT IT</button>
+        </div>
+        <div class="flprQuickStartTabs" role="tablist">
+          <button class="flprQuickStartTab active" type="button" data-quick-start-tab="start">START</button>
+          <button class="flprQuickStartTab" type="button" data-quick-start-tab="checks">CHECKS</button>
+          <button class="flprQuickStartTab" type="button" data-quick-start-tab="worlds">WORLDS</button>
+          <button class="flprQuickStartTab" type="button" data-quick-start-tab="tables">TABLES</button>
+          <button class="flprQuickStartTab" type="button" data-quick-start-tab="vpx">VPX FLOW</button>
+        </div>
+        <div class="flprQuickStartBody" id="flprQuickStartBody"></div>
+        <div class="flprQuickStartFooter">
+          <label class="flprQuickStartDontShow">
+            <input id="flprQuickStartDontShow" type="checkbox">
+            <span>Don't show this automatically again</span>
+          </label>
+          <div class="flprQuickStartActions">
+            <button class="cBtn gray" id="flprQuickStartTablesBtn" type="button">TABLE LIST</button>
+            <button class="cBtn" id="flprQuickStartClose" type="button">GOT IT</button>
+          </div>
+        </div>
+      </div>
+    `;
+    overlay.addEventListener("click", (event)=>{
+      if(event.target === overlay) standaloneCloseQuickStart({ markSeen:true });
+      const tabBtn = event.target.closest?.("[data-quick-start-tab]");
+      if(tabBtn && overlay.contains(tabBtn)){
+        playClick();
+        standaloneSetQuickStartTab(tabBtn.dataset.quickStartTab || "start");
+      }
+    });
+    overlay.querySelector("#flprQuickStartClose")?.addEventListener("click", ()=>standaloneCloseQuickStart({ markSeen:true }));
+    overlay.querySelector("#flprQuickStartCloseTop")?.addEventListener("click", ()=>standaloneCloseQuickStart({ markSeen:true }));
+    overlay.querySelector("#flprQuickStartTablesBtn")?.addEventListener("click", ()=>{
+      playClick();
+      standaloneSetQuickStartTab("tables");
+    });
+    document.body.appendChild(overlay);
+    standaloneSetQuickStartTab("start");
+    return overlay;
+  }
+
+  function standaloneOpenQuickStart(tab, opts){
+    opts = opts || {};
+    const overlay = standaloneEnsureQuickStartOverlay();
+    standaloneSetQuickStartTab(tab || "start");
+    const dontShow = overlay.querySelector("#flprQuickStartDontShow");
+    if(dontShow) dontShow.checked = !!opts.auto;
+    overlay.hidden = false;
+    overlay.setAttribute("aria-hidden", "false");
+    overlay.dataset.auto = opts.auto ? "1" : "0";
+    setTimeout(()=>{ try{ overlay.querySelector("#flprQuickStartCloseTop")?.focus?.(); }catch(_){} }, 0);
+    return true;
+  }
+
+  function standaloneCloseQuickStart(opts){
+    opts = opts || {};
+    const overlay = document.getElementById("flprQuickStartOverlay");
+    if(!overlay) return false;
+    if(opts.forceSeen === true || overlay.querySelector("#flprQuickStartDontShow")?.checked){
+      try{ localStorage.setItem(STANDALONE_QUICK_START_SEEN_LS_KEY, STANDALONE_QUICK_START_VERSION); }catch(_){}
+    }
+    overlay.hidden = true;
+    overlay.setAttribute("aria-hidden", "true");
+    return true;
+  }
+
+  function standaloneMaybeShowQuickStart(){
+    try{
+      if(localStorage.getItem(STANDALONE_QUICK_START_SEEN_LS_KEY) === STANDALONE_QUICK_START_VERSION) return false;
+      const existing = document.getElementById("flprQuickStartOverlay");
+      if(existing && existing.hidden === false) return false;
+      if(document.querySelector(".standaloneProfileGate:not([hidden]), .standaloneModeGate:not([hidden])")){
+        setTimeout(standaloneMaybeShowQuickStart, 900);
+        return false;
+      }
+      return standaloneOpenQuickStart("start", { auto:true });
+    }catch(_){}
+    return false;
   }
 
   function standaloneCloneJson(value, fallback){
@@ -7934,6 +8304,24 @@
         standaloneRefreshProfileUi();
       };
     }
+    const quickStart = document.getElementById("standaloneQuickStartBtn");
+    if(quickStart && !quickStart.__flprStandaloneBound){
+      quickStart.__flprStandaloneBound = true;
+      quickStart.onclick = (event)=>{
+        try{ event.preventDefault(); event.stopPropagation(); }catch(_){}
+        playClick();
+        standaloneOpenQuickStart("start", { auto:false });
+      };
+    }
+    const tableList = document.getElementById("standaloneTableListBtn");
+    if(tableList && !tableList.__flprStandaloneBound){
+      tableList.__flprStandaloneBound = true;
+      tableList.onclick = (event)=>{
+        try{ event.preventDefault(); event.stopPropagation(); }catch(_){}
+        playClick();
+        standaloneOpenQuickStart("tables", { auto:false });
+      };
+    }
     const saveList = document.getElementById("standaloneSeedSaveList");
     if(saveList && !saveList.__flprStandaloneBound){
       saveList.__flprStandaloneBound = true;
@@ -10609,8 +10997,15 @@
   }
   try{ window.flprStandaloneShouldQuietSingleplayerReceivedItem = standaloneShouldQuietSingleplayerReceivedNotification; }catch(_){}
 
-  function standaloneScheduleChecksRestoreAfterReward(){
-    [680, 960, 1320].forEach((delay)=>{
+  function standaloneScheduleChecksRestoreAfterReward(opts){
+    const holdMs = Math.max(0, Number(opts?.holdMs || 3200) || 3200);
+    const delays = [
+      Math.max(720, holdMs + 260),
+      Math.max(980, holdMs + 760),
+      Math.max(1320, holdMs + 1400),
+      Math.max(1800, holdMs + 2200)
+    ];
+    delays.forEach((delay)=>{
       setTimeout(()=>standaloneRestoreChecksViewForReward(), delay);
     });
   }
@@ -13028,7 +13423,7 @@
         locId
       }, cls, holdMs);
       if(checksKeyBeforeModal){
-        standaloneScheduleChecksRestoreAfterReward();
+        standaloneScheduleChecksRestoreAfterReward({ holdMs });
         standaloneScheduleChecksSelectionHold("counter-reward-modal", holdMs + 1400);
       }
       return true;
@@ -16248,7 +16643,7 @@
         showOverviewModal(modalArgs);
         standaloneColorizeSentItemModal(next, cls, holdMs);
         if(restoreChecksAfterSentModal){
-          standaloneScheduleChecksRestoreAfterReward();
+          standaloneScheduleChecksRestoreAfterReward({ holdMs });
           standaloneScheduleChecksSelectionHold("sent-item-modal", holdMs + 1800);
         }
       }else if(typeof toast === "function"){
@@ -17855,6 +18250,12 @@
     standaloneRefreshProfileUi();
     applyControlFontScale();
     setControlTab(current);
+    try{
+      if(!window.__flprStandaloneQuickStartScheduled){
+        window.__flprStandaloneQuickStartScheduled = true;
+        setTimeout(standaloneMaybeShowQuickStart, 1400);
+      }
+    }catch(_){}
     try{
       standaloneRenderModeHud();
       standaloneRenderModeSwitchHud(standaloneCurrentMenuMode());
