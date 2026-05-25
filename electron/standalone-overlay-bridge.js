@@ -2761,54 +2761,74 @@
         background:rgba(0,8,16,.98) !important;
       }
       body.flprStandaloneOriginalClient .recvBody{
+        display:flex !important;
+        flex-direction:column !important;
+        gap:12px !important;
         flex:1 1 auto !important;
         min-height:0 !important;
         overflow-y:scroll !important;
         overflow-x:hidden !important;
-        padding:72px 12px 12px !important;
-        font-size:16px !important;
-        line-height:1.36 !important;
+        padding:12px !important;
+        font-size:15px !important;
+        line-height:1.42 !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow,
       body.flprStandaloneOriginalClient .recvBody .recvText,
       body.flprStandaloneOriginalClient .recvBody .recvTime{
         font-size:inherit !important;
-        line-height:1.36 !important;
+        line-height:1.42 !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvBadge{
-        font-size:13px !important;
-        line-height:1.25 !important;
+        width:max-content !important;
+        max-width:100% !important;
+        display:inline-flex !important;
+        align-items:center !important;
+        min-height:18px !important;
+        padding:1px 6px 0 !important;
+        border:1px solid currentColor !important;
+        border-radius:3px !important;
+        font-size:12px !important;
+        line-height:1.15 !important;
+        vertical-align:baseline !important;
       }
       body.flprStandaloneOriginalClient .standalonePanelSoundBtn{
-        position:absolute !important;
-        top:calc(4px * var(--flprStandaloneControlFontScale)) !important;
-        right:calc(5px * var(--flprStandaloneControlFontScale)) !important;
-        z-index:120 !important;
-        min-width:calc(32px * var(--flprStandaloneControlFontScale)) !important;
-        min-height:calc(18px * var(--flprStandaloneControlFontScale)) !important;
-        padding:0 calc(4px * var(--flprStandaloneControlFontScale)) !important;
-        border:1px solid rgba(0,217,255,.58) !important;
-        border-radius:999px !important;
-        background:linear-gradient(180deg, rgba(0,72,98,.86), rgba(0,18,31,.94)) !important;
-        color:rgba(232,250,255,.94) !important;
-        font-family:var(--flprUiFontFamily) !important;
-        font-size:calc(4px * var(--flprStandaloneControlFontScale)) !important;
-        line-height:1 !important;
-        box-shadow:0 0 calc(8px * var(--flprStandaloneControlFontScale)) rgba(0,217,255,.18) !important;
-        cursor:pointer !important;
-      }
-      body.flprStandaloneOriginalClient .standalonePanelSoundBtn.is-muted{
-        border-color:rgba(255,77,109,.58) !important;
-        color:rgba(255,198,210,.92) !important;
-        background:linear-gradient(180deg, rgba(82,20,36,.86), rgba(0,18,31,.94)) !important;
-      }
-      body.flprStandaloneOriginalClient .recvWrap .standalonePanelSoundBtn{
-        top:calc(6px * var(--flprStandaloneControlFontScale)) !important;
-      }
-      body.flprStandaloneOriginalClient .apConnLogHead .standalonePanelSoundBtn{
         position:relative !important;
         top:auto !important;
         right:auto !important;
+        z-index:120 !important;
+        width:34px !important;
+        min-width:34px !important;
+        height:34px !important;
+        min-height:34px !important;
+        display:grid !important;
+        place-items:center !important;
+        padding:0 !important;
+        border:1px solid rgba(34,255,136,.82) !important;
+        border-radius:999px !important;
+        background:linear-gradient(180deg, rgba(10,76,38,.88), rgba(0,18,31,.94)) !important;
+        color:rgba(34,255,136,.98) !important;
+        font-family:"Segoe UI Symbol","Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",var(--flprUiFontFamily) !important;
+        font-size:21px !important;
+        line-height:1 !important;
+        filter:none !important;
+        text-shadow:0 0 7px rgba(34,255,136,.68) !important;
+        box-shadow:0 0 14px rgba(34,255,136,.26), inset 0 0 0 1px rgba(255,255,255,.06) !important;
+        cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .standalonePanelSoundBtn.is-muted{
+        border-color:rgba(112,126,134,.52) !important;
+        color:rgba(112,126,134,.82) !important;
+        background:linear-gradient(180deg, rgba(42,48,52,.82), rgba(0,10,18,.94)) !important;
+        filter:none !important;
+        text-shadow:none !important;
+        box-shadow:inset 0 0 0 1px rgba(255,255,255,.04) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneSectionTitle .standalonePanelSoundBtn{
+        margin-left:auto !important;
+        transform:translateY(-2px) !important;
+      }
+      body.flprStandaloneOriginalClient .apConnLogHead .standalonePanelSoundBtn{
+        margin-left:auto !important;
       }
       body.flprStandaloneOriginalClient .standaloneItemTabs{
         display:grid !important;
@@ -2834,20 +2854,25 @@
           0 0 0 1px rgba(0,255,213,.18) inset !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow{
+        flex:0 0 auto !important;
+        box-sizing:border-box !important;
         cursor:pointer !important;
         display:grid !important;
-        grid-template-columns:112px minmax(0, 1fr) !important;
+        grid-template-columns:96px minmax(0, 1fr) !important;
         align-items:start !important;
-        gap:12px !important;
-        min-height:84px !important;
-        border:1px solid rgba(0,166,255,.18) !important;
-        border-radius:8px !important;
-        padding:12px 14px 11px !important;
-        margin-bottom:10px !important;
-        background:rgba(0,18,31,.42) !important;
+        gap:8px !important;
+        min-height:116px !important;
+        border:1px solid rgba(199,125,255,.46) !important;
+        border-radius:6px !important;
+        padding:11px 12px 10px !important;
+        margin-bottom:0 !important;
+        background:
+          linear-gradient(180deg, rgba(4,16,25,.94), rgba(2,9,16,.96)),
+          radial-gradient(circle at 0% 0%, rgba(0,217,255,.12), transparent 48%) !important;
         user-select:text !important;
         position:relative !important;
-        overflow:visible !important;
+        overflow:hidden !important;
+        box-shadow:inset 6px 0 0 rgba(199,125,255,.86), inset 0 0 0 1px rgba(255,255,255,.035) !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow:hover{
         border-color:rgba(0,217,255,.48) !important;
@@ -2862,8 +2887,8 @@
           0 0 0 1px rgba(255,247,184,.18) inset !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-progression{
-        border-color:rgba(199,125,255,.46) !important;
-        box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(199,125,255,.78) !important;
+        border-color:rgba(199,125,255,.56) !important;
+        box-shadow:inset 6px 0 0 rgba(199,125,255,.92), inset 0 0 0 1px rgba(255,255,255,.04) !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow.is-new-progression{
         animation:flprStandaloneItemSlotIn 520ms cubic-bezier(.18,.82,.22,1) both !important;
@@ -2898,27 +2923,27 @@
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-useful{
         border-color:rgba(83,183,255,.42) !important;
-        box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(83,183,255,.72) !important;
+        box-shadow:inset 6px 0 0 rgba(83,183,255,.82), inset 0 0 0 1px rgba(255,255,255,.035) !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-trap{
         border-color:rgba(255,77,109,.50) !important;
-        box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(255,77,109,.78) !important;
+        box-shadow:inset 6px 0 0 rgba(255,77,109,.84), inset 0 0 0 1px rgba(255,255,255,.035) !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-filler{
-        border-color:rgba(199,208,216,.26) !important;
-        box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(199,208,216,.42) !important;
+        border-color:rgba(199,208,216,.40) !important;
+        box-shadow:inset 6px 0 0 rgba(151,166,174,.76), inset 0 0 0 1px rgba(255,255,255,.035) !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvTime{
         min-width:0 !important;
         white-space:nowrap !important;
         font-variant-numeric:tabular-nums !important;
+        font-size:15px !important;
+        line-height:1.2 !important;
         color:rgba(135,220,255,.76) !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvText{
         min-width:0 !important;
-        display:flex !important;
-        flex-direction:column !important;
-        gap:4px !important;
+        display:block !important;
         white-space:normal !important;
         overflow-wrap:anywhere !important;
       }
@@ -5698,7 +5723,10 @@
 
         <div class="connectCol connectColLeft standaloneSecondaryStack">
           <section class="standaloneControlSection grow" data-accent="gold">
-            <div class="standaloneSectionTitle" id="receivedHdr">ITEM LOG</div>
+            <div class="standaloneSectionTitle" id="receivedHdr">
+              <span class="standaloneSectionTitleText">ITEM LOG</span>
+              <button class="standalonePanelSoundBtn" id="standaloneItemLogSoundBtn" type="button" title="Toggle item log arrival sound" aria-label="Toggle item log arrival sound">&#128266;&#65038;</button>
+            </div>
             <div class="cRow">
               <button class="cBtn" id="apSyncReceivedBtn" type="button" onclick="return window.flprStandaloneSyncReceived ? window.flprStandaloneSyncReceived(event) : false;">SYNC RECEIVED</button>
               <button class="cBtn danger" id="apClearReceivedBtn" type="button">CLEAR LIST</button>
@@ -5708,7 +5736,6 @@
               <button class="standaloneItemTab" type="button" data-standalone-item-tab="sent">SENT</button>
             </div>
             <div class="recvWrap">
-              <button class="standalonePanelSoundBtn" id="standaloneItemLogSoundBtn" type="button" title="Toggle item log arrival sound">SFX</button>
               <div class="recvBody" id="receivedBody"></div>
             </div>
           </section>
@@ -5725,7 +5752,7 @@
                   <button class="apLogTab" type="button" data-aplog-tab="hints" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('hints', event) : false;">HINTS</button>
                   <button class="apLogTab" type="button" data-aplog-tab="errors" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('errors', event) : false;">ERRORS</button>
                 </div>
-                <button class="standalonePanelSoundBtn" id="standaloneApLogClickSoundBtn" type="button" title="Toggle AP log click sound">SFX</button>
+                <button class="standalonePanelSoundBtn" id="standaloneApLogClickSoundBtn" type="button" title="Toggle AP log click sound" aria-label="Toggle AP log click sound">&#128266;&#65038;</button>
               </div>
               <div class="apConnLogBody" id="apConnLogBody"></div>
               <div class="apClientSayWrap">
@@ -9164,15 +9191,20 @@
   function standaloneUpdatePanelSoundButtons(){
     standaloneLoadPanelSoundPrefs();
     try{
+      const speakerGlyph = (String.fromCodePoint ? String.fromCodePoint(0x1F50A) : "\uD83D\uDD0A") + "\uFE0E";
       document.querySelectorAll("#standaloneItemLogSoundBtn").forEach((btn)=>{
-        btn.textContent = standaloneItemPanel.itemLogSoundMuted ? "SFX OFF" : "SFX ON";
+        btn.textContent = speakerGlyph;
         btn.classList.toggle("is-muted", !!standaloneItemPanel.itemLogSoundMuted);
         btn.title = standaloneItemPanel.itemLogSoundMuted ? "Turn item log arrival sound on" : "Turn item log arrival sound off";
+        btn.setAttribute("aria-label", btn.title || "Toggle item log arrival sound");
+        btn.setAttribute("aria-pressed", standaloneItemPanel.itemLogSoundMuted ? "false" : "true");
       });
       document.querySelectorAll("#standaloneApLogClickSoundBtn").forEach((btn)=>{
-        btn.textContent = standaloneItemPanel.apLogClickSoundMuted ? "CLICK OFF" : "CLICK ON";
+        btn.textContent = speakerGlyph;
         btn.classList.toggle("is-muted", !!standaloneItemPanel.apLogClickSoundMuted);
         btn.title = standaloneItemPanel.apLogClickSoundMuted ? "Turn AP log click sound on" : "Turn AP log click sound off";
+        btn.setAttribute("aria-label", btn.title || "Toggle AP log click sound");
+        btn.setAttribute("aria-pressed", standaloneItemPanel.apLogClickSoundMuted ? "false" : "true");
       });
     }catch(_){}
   }
@@ -13951,26 +13983,26 @@
     parent.appendChild(document.createElement("br"));
     let m = raw.match(/^(CHECK;\s*)(.+)$/i);
     if(m){
-      standaloneAppendItemSpan(parent, m[1], "recvLabel");
+      standaloneAppendItemSpan(parent, "CHECK: ", "recvLabel");
       standaloneAppendItemSpan(parent, m[2], "recvLocation");
       return;
     }
     m = raw.match(/^(ITEM;\s*)(.+)$/i);
     if(m){
-      standaloneAppendItemSpan(parent, m[1], "recvLabel");
+      standaloneAppendItemSpan(parent, "ITEM: ", "recvLabel");
       standaloneAppendItemSpan(parent, m[2], `recvItem apLogItem ${itemCls}`);
       return;
     }
     m = raw.match(/^((?:FROM|TO);\s*)(.+?)(\s+\(.+\))?$/i);
     if(m){
-      standaloneAppendItemSpan(parent, m[1], "recvLabel");
+      standaloneAppendItemSpan(parent, `${String(m[1] || "").replace(";", ":").toUpperCase()}`, "recvLabel");
       standaloneAppendItemSpan(parent, m[2], "recvPlayer");
       if(m[3]) standaloneAppendItemSpan(parent, m[3], "recvMeta");
       return;
     }
     m = raw.match(/^([^;]+;\s*)(.+)$/);
     if(m){
-      standaloneAppendItemSpan(parent, m[1], "recvLabel");
+      standaloneAppendItemSpan(parent, `${String(m[1] || "").replace(";", ":")}`, "recvLabel");
       standaloneAppendItemSpan(parent, m[2], "recvMeta");
       return;
     }
@@ -14026,7 +14058,13 @@
       btn.classList.toggle("active", standaloneItemTabName(btn.dataset.standaloneItemTab) === tab);
     });
     standaloneControlAll("#receivedHdr").forEach((hdr)=>{
-      hdr.textContent = `ITEM LOG (${receivedCount} RECEIVED / ${sentCount} SENT)`;
+      const title = `ITEM LOG (${receivedCount} RECEIVED / ${sentCount} SENT)`;
+      const label = hdr.querySelector(".standaloneSectionTitleText");
+      if(label){
+        label.textContent = title;
+      }else{
+        hdr.textContent = title;
+      }
     });
     const rows = tab === "sent" ? standaloneSentRows() : standaloneMarkNewReceivedRows(standaloneReceivedRows(), opts);
     const emptyText = tab === "sent" ? "No sent items recorded yet." : "No received items yet; click SYNC RECEIVED after connecting.";
