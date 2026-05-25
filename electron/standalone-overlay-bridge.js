@@ -2765,18 +2765,18 @@
         min-height:0 !important;
         overflow-y:scroll !important;
         overflow-x:hidden !important;
-        padding:calc(24px * var(--flprStandaloneControlFontScale)) calc(4px * var(--flprStandaloneControlFontScale)) calc(4px * var(--flprStandaloneControlFontScale)) !important;
-        font-size:calc(5.4px * var(--flprStandaloneControlFontScale)) !important;
-        line-height:1.46 !important;
+        padding:72px 12px 12px !important;
+        font-size:16px !important;
+        line-height:1.36 !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow,
       body.flprStandaloneOriginalClient .recvBody .recvText,
       body.flprStandaloneOriginalClient .recvBody .recvTime{
         font-size:inherit !important;
-        line-height:1.46 !important;
+        line-height:1.36 !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvBadge{
-        font-size:calc(4.8px * var(--flprStandaloneControlFontScale)) !important;
+        font-size:13px !important;
         line-height:1.25 !important;
       }
       body.flprStandaloneOriginalClient .standalonePanelSoundBtn{
@@ -2835,14 +2835,19 @@
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow{
         cursor:pointer !important;
+        display:grid !important;
+        grid-template-columns:112px minmax(0, 1fr) !important;
+        align-items:start !important;
+        gap:12px !important;
+        min-height:84px !important;
         border:1px solid rgba(0,166,255,.18) !important;
         border-radius:8px !important;
-        padding:calc(4px * var(--flprStandaloneControlFontScale)) !important;
-        margin-bottom:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        padding:12px 14px 11px !important;
+        margin-bottom:10px !important;
         background:rgba(0,18,31,.42) !important;
         user-select:text !important;
         position:relative !important;
-        overflow:hidden !important;
+        overflow:visible !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow:hover{
         border-color:rgba(0,217,255,.48) !important;
@@ -2904,7 +2909,18 @@
         box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(199,208,216,.42) !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvTime{
+        min-width:0 !important;
+        white-space:nowrap !important;
+        font-variant-numeric:tabular-nums !important;
         color:rgba(135,220,255,.76) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvText{
+        min-width:0 !important;
+        display:flex !important;
+        flex-direction:column !important;
+        gap:4px !important;
+        white-space:normal !important;
+        overflow-wrap:anywhere !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvLabel{
         color:rgba(188,212,224,.72) !important;
