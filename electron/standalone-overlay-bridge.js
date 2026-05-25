@@ -623,14 +623,41 @@
         height:var(--captureH) !important;
         overflow:hidden !important;
       }
+      html.flprStandaloneWindowClient.flprStandaloneVerticalViewport,
+      html.flprStandaloneWindowClient.flprStandaloneVerticalViewport body{
+        width:1180px !important;
+        height:2098px !important;
+        overflow:hidden !important;
+      }
       body.flprStandaloneOriginalClient{
         position:relative !important;
         background:linear-gradient(180deg,var(--bg1),var(--bg2)) !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport{
+        --captureW:1110px !important;
+        --captureH:1284px !important;
+        --controlsW:1110px !important;
+        --bonusLeaderboardW:0px !important;
+        --gutter:12px !important;
+        --flprStandaloneViewportH:985px !important;
+        --flprStandaloneControlsH:760px !important;
       }
       body.flprStandaloneOriginalClient .stage{
         transform:none !important;
         transform-origin:top left !important;
         transition:filter .24s ease, opacity .24s ease !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .stage{
+        width:1180px !important;
+        height:2098px !important;
+        display:grid !important;
+        grid-template-columns:1fr !important;
+        grid-template-rows:var(--captureH) var(--flprStandaloneControlsH) !important;
+        gap:14px !important;
+        padding:14px 20px 20px !important;
+        align-content:start !important;
+        justify-items:center !important;
+        overflow:hidden !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneNeedsProfile .stage,
       body.flprStandaloneOriginalClient.flprStandaloneModePicking .stage{
@@ -1966,6 +1993,27 @@
         gap:6px !important;
         padding-bottom:8px !important;
       }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .capture{
+        grid-column:1 !important;
+        grid-row:1 !important;
+        justify-self:center !important;
+        align-self:start !important;
+        width:var(--captureW) !important;
+        height:var(--captureH) !important;
+        max-height:var(--captureH) !important;
+        overflow:hidden !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .controls{
+        grid-column:1 !important;
+        grid-row:2 !important;
+        justify-self:center !important;
+        align-self:start !important;
+        width:var(--controlsW) !important;
+        height:var(--flprStandaloneControlsH) !important;
+        max-height:var(--flprStandaloneControlsH) !important;
+        margin:0 !important;
+        flex:0 0 var(--flprStandaloneControlsH) !important;
+      }
       body.flprStandaloneOriginalClient .viewport{
         flex:0 0 var(--flprStandaloneViewportH, calc(var(--captureH) - 75px - 14px - 22px - 198px)) !important;
         height:var(--flprStandaloneViewportH, calc(var(--captureH) - 75px - 14px - 22px - 198px)) !important;
@@ -2222,9 +2270,26 @@
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .connectCompactLayout,
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerLayout{
         grid-template-columns:1fr !important;
-        grid-template-rows:auto auto minmax(240px, .72fr) minmax(200px, .54fr) !important;
+        grid-template-rows:auto auto minmax(180px, .72fr) minmax(160px, .54fr) !important;
         align-content:start !important;
         overflow:auto !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .visualsCompactLayout,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .testingCompactLayout{
+        grid-template-columns:1fr !important;
+        grid-template-rows:auto auto !important;
+        height:auto !important;
+        min-height:100% !important;
+        align-content:start !important;
+        overflow:auto !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .visualsCol,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .testingCol{
+        grid-column:1 !important;
+        grid-row:auto !important;
+        min-height:0 !important;
+        max-height:none !important;
+        overflow:visible !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerSection,
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerToolsSection,
