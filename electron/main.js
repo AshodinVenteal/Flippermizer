@@ -8,6 +8,7 @@ const APP_ID = "net.flippermizer.homeedition";
 const APP_ICON_HOME_IMAGE = path.join(__dirname, "..", "Flippermizer Images", "flippermizericon-Home-Edition-64x64.png");
 const APP_ICON_PACKAGE = path.join(__dirname, "..", "build", process.platform === "win32" ? "home-icon.ico" : "icon.png");
 const OVERLAY_BASE_WIDTH = 910 + 306 + 1280 + 16 + 32;
+const OVERLAY_VERTICAL_BASE_WIDTH = 1180;
 const OVERLAY_BASE_HEIGHT = 1450;
 const DEFAULT_WINDOW_BOUNDS = { width: 1600, height: 960 };
 const MIN_WINDOW_BOUNDS = { width: 900, height: 640 };
@@ -200,11 +201,16 @@ function loadAppIcon(){
   return nativeImage.createFromPath(APP_ICON_PACKAGE);
 }
 
-function notifyOverlayViewport(win){
+function notifyOverlayViewport(win, viewportMode){
   if(!win || win.isDestroyed()) return;
   setTimeout(()=>{
     if(!win || win.isDestroyed()) return;
-    win.webContents.executeJavaScript('window.dispatchEvent(new Event("resize"));').catch(()=>{});
+    const mode = viewportMode && typeof viewportMode === "object" ? viewportMode : {};
+    const isVertical = !!mode.vertical;
+    const width = Math.max(1, Math.round(Number(mode.width || 0) || 0));
+    const height = Math.max(1, Math.round(Number(mode.height || 0) || 0));
+    const script = `(()=>{try{window.__flprElectronViewportMode={vertical:${isVertical ? "true" : "false"},width:${width},height:${height}};if(document.body){document.body.classList.toggle("flprStandaloneVerticalViewport",${isVertical ? "true" : "false"});}}catch(_){}try{window.dispatchEvent(new Event("resize"));}catch(_){}})();`;
+    win.webContents.executeJavaScript(script).catch(()=>{});
   }, 0);
 }
 
@@ -213,12 +219,14 @@ function fitOverlayZoom(win){
   const bounds = win.getContentBounds();
   const width = Math.max(1, bounds.width || OVERLAY_BASE_WIDTH);
   const height = Math.max(1, bounds.height || OVERLAY_BASE_HEIGHT);
-  const zoom = Math.max(0.1, Math.min(2.5, width / OVERLAY_BASE_WIDTH, height / OVERLAY_BASE_HEIGHT));
+  const vertical = height > width * 1.08;
+  const baseWidth = vertical ? OVERLAY_VERTICAL_BASE_WIDTH : OVERLAY_BASE_WIDTH;
+  const zoom = Math.max(0.1, Math.min(2.5, width / baseWidth, height / OVERLAY_BASE_HEIGHT));
   try{
     if(Math.abs(win.webContents.getZoomFactor() - zoom) > 0.001){
       win.webContents.setZoomFactor(zoom);
     }
-    notifyOverlayViewport(win);
+    notifyOverlayViewport(win, { vertical, width, height });
   }catch(err){
     console.error("Failed to fit overlay zoom", err);
   }

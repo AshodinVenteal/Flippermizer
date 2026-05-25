@@ -33,7 +33,7 @@ Home Edition runs now open a first-launch Quick Start inside the app. Open **Sin
 
 ## Table Requirements And VPX Flow
 
-The in-app Table List is the source of truth for expected tables. Flippermizer uses real machine metadata where available, plus a small number of Original VPX entries where the seed expects them. Current compatibility notes are intentionally practical: use VPX builds that run the named tables reliably, keep the table names recognizable, and prefer stable community builds over experimental edits.
+The in-app Table List is the source of truth for expected tables. The Flippermizer Current Catalog of tables are based on real pinball machines plus curated Original VPX entries. It will prefer complete, stable VPX releases along with working scoring and rules.
 
 For repeated Ball 1 attempts, fully restarting a table is often safer than using F3 if that table loses trough state or behaves oddly after script reset. Score capture and screen-reading tools are still future workflow helpers; for now the supported Home Edition flow is manual score entry and check redemption from the Checks page.
 
