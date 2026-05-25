@@ -22244,7 +22244,7 @@ window.__manualDisconnect = false;
   function normalizeSlotDataPayload(slotData){
     const src = (slotData && typeof slotData === "object") ? slotData : (ap?.slotData && typeof ap.slotData === "object" ? ap.slotData : {});
     if(!src || typeof src !== "object") return {};
-    if("base_game_table_set" in src || "metasizer_table_set" in src || "progressive_ball_starts" in src || "start_inventory_from_pool" in src || "generic_checks" in src || "task_shuffle" in src){
+    if("base_game_table_set" in src || "metasizer_table_set" in src || "progressive_ball_starts" in src || "start_inventory_from_pool" in src || "generic_checks" in src || "task_shuffle" in src || "sieges_enabled" in src){
       return src;
     }
     try{
@@ -22990,16 +22990,16 @@ const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
 const FLPR_PATCH_NOTES_ITEMS_HOME = [
   {
-    k: "Quick Start guide",
-    d: "Home Edition now opens a first-launch guide with seeds, worlds, checks, Ball 1 rules, sieges, VPX flow tips, and the expected table list."
+    k: "Larger Getting Started guide",
+    d: "The first-launch guide is larger and includes a Guide tab with Singleplayer and AP-specific UI explanations plus VPS-linked table rows."
   },
   {
-    k: "Vertical display fit",
-    d: "The launcher window now scales against both width and height with a narrower minimum size, so critical controls stay reachable on portrait monitors."
+    k: "Siege options and vertical mode",
+    d: "Home YAML can disable surprise sieges, and portrait Electron windows now switch to a stacked control layout."
   },
   {
-    k: "Checks flow and sieges",
-    d: "Reward popups now return players to Checks after the animation, and siege score targets scale down on early solid-state tables."
+    k: "AP sync authority",
+    d: "Received item state now trusts AP ReceivedItems, prunes unconfirmed local duplicates, and preserves connected-seed starting tables during Clear List / Sync Received."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_STREAM = [
@@ -24004,6 +24004,63 @@ function isSeedRandomStartEnabled(slotData){
   }catch(_){}
   return false;
 }
+const AP_START_BASELINE_LS_KEY = "flpr_ap_start_baseline_v1";
+function getApStartBaselineStorageKey(slotData){
+  try{
+    const src = normalizeSlotDataPayload(slotData || ap?.slotData || {});
+    const seedName = String(ap?.seedName || src?.seed_name || src?.seed || "active").trim() || "active";
+    const server = String(ap?.cfg?.server || "").trim().toLowerCase();
+    const player = String(ap?.cfg?.player || "").trim().toLowerCase();
+    const game = String(ap?.cfg?.game || "").trim().toLowerCase();
+    return [AP_START_BASELINE_LS_KEY, server, player, game, seedName].map((part)=>String(part || "").replace(/[^a-z0-9_.:-]+/gi, "_")).join(":");
+  }catch(_){}
+  return AP_START_BASELINE_LS_KEY + ":active";
+}
+function getTableNameForStartKey(tableKey, worlds){
+  try{
+    const parts = String(tableKey || "").split("|");
+    const worldKey = String(parts[0] || "").trim();
+    const idx = Number(parts[1]);
+    if(!worldKey || !Number.isFinite(idx)) return "";
+    const table = worlds?.[worldKey]?.tables?.[idx];
+    return String(table || "").trim();
+  }catch(_){}
+  return "";
+}
+function getStoredApStartBaseline(slotData){
+  try{
+    const raw = localStorage.getItem(getApStartBaselineStorageKey(slotData));
+    const parsed = raw ? JSON.parse(raw) : null;
+    if(!parsed || typeof parsed !== "object") return null;
+    return parsed;
+  }catch(_){}
+  return null;
+}
+function appendStoredApStartTableKeys(outKeys, slotData, worlds){
+  const stored = getStoredApStartBaseline(slotData);
+  const names = Array.isArray(stored?.tableNames) ? stored.tableNames : [];
+  names.forEach((tableName)=> appendSeedStartTableKeyMatches(outKeys, tableName, worlds));
+  return outKeys;
+}
+function rememberApStartBaselineFromSlotData(slotData, worldsOverride){
+  try{
+    const src = normalizeSlotDataPayload(slotData || ap?.slotData || {});
+    const worlds = (worldsOverride && typeof worldsOverride === "object") ? worldsOverride : (state?.worlds || {});
+    const keys = getSeedStartTableKeysFromSlotData(src, worlds, { noStoredFallback:true });
+    const names = keys.map((key)=>getTableNameForStartKey(key, worlds)).filter(Boolean);
+    if(!keys.length && !isSeedRandomStartEnabled(src)) return false;
+    const payload = {
+      savedAt: Date.now(),
+      seedName: String(ap?.seedName || src?.seed_name || ""),
+      tableKeys: keys,
+      tableNames: [...new Set(names)],
+      randomStart: !!isSeedRandomStartEnabled(src)
+    };
+    localStorage.setItem(getApStartBaselineStorageKey(src), JSON.stringify(payload));
+    return true;
+  }catch(_){}
+  return false;
+}
 function appendSeedStartTableKeyMatches(outKeys, tableName, worlds){
   const wantCode = getRepoCanonicalTableCode(tableName);
   const wantCanonical = getRepoCanonicalTableName(tableName);
@@ -24023,7 +24080,7 @@ function appendSeedStartTableKeyMatches(outKeys, tableName, worlds){
     }
   }
 }
-function getSeedStartTableKeysFromSlotData(slotData, worldsOverride){
+function getSeedStartTableKeysFromSlotData(slotData, worldsOverride, opts){
   const src = normalizeSlotDataPayload(slotData);
   const worlds = (worldsOverride && typeof worldsOverride === "object") ? worldsOverride : (state?.worlds || {});
   const keys = [];
@@ -24054,11 +24111,15 @@ function getSeedStartTableKeysFromSlotData(slotData, worldsOverride){
     const startTables = asArrayish(metasizer?.starting_open_tables);
     startTables.forEach((tableName)=> appendSeedStartTableKeyMatches(keys, tableName, worlds));
   }catch(_){}
+  if(!keys.length && !opts?.noStoredFallback){
+    try{ appendStoredApStartTableKeys(keys, src, worlds); }catch(_){}
+  }
   return [...new Set(keys)];
 }
 function seedApStartBaseline(s, slotData){
   if(!s?.worlds || !s?.balls) return;
   const startKeys = getSeedStartTableKeysFromSlotData(slotData, s.worlds);
+  try{ if(startKeys.length || isSeedRandomStartEnabled(slotData)) rememberApStartBaselineFromSlotData(slotData, s.worlds); }catch(_){}
   if(startKeys.length || isSeedRandomStartEnabled(slotData)){
     for(const [wk, world] of Object.entries(s.worlds || {})){
       if(!world || !Array.isArray(world.tables) || isBossWorldId(wk, s)) continue;
@@ -37188,6 +37249,22 @@ function besiegedScaleTargetScoreForTable(score, tableKey, tableName){
   target = Math.max(floor, target);
   return Math.max(100000, Math.round(target / 10000) * 10000);
 }
+function besiegedEventsEnabled(slotData){
+  try{
+    const src = normalizeSlotDataPayload(slotData || ap?.slotData || {});
+    if(Object.prototype.hasOwnProperty.call(src, "sieges_enabled")){
+      const raw = src.sieges_enabled;
+      if(typeof raw === "boolean") return raw;
+      return !/^(?:0|false|off|no|disabled)$/i.test(String(raw || "").trim());
+    }
+    if(Object.prototype.hasOwnProperty.call(src, "siege_events_enabled")){
+      const raw = src.siege_events_enabled;
+      if(typeof raw === "boolean") return raw;
+      return !/^(?:0|false|off|no|disabled)$/i.test(String(raw || "").trim());
+    }
+  }catch(_){}
+  return true;
+}
 function besiegedResolveTargetScore(tableKey, tableName){
   const fallbackBase = 6400000;
   try{
@@ -37849,6 +37926,7 @@ function besiegedClear(reason){
 }
 function besiegedActivate(opts){
   opts = opts || {};
+  if(!opts.force && !besiegedEventsEnabled(ap?.slotData)) return false;
   if(besiegedIsActive()) return false;
   if(!opts.force && isBossDefeated()) return false;
   const target = opts.target || besiegedChooseTargetTable(opts);
@@ -37894,6 +37972,7 @@ function besiegedActivate(opts){
 function bossMaybeTriggerBesiegedEvent(opts){
   opts = opts || {};
   try{
+    if(!besiegedEventsEnabled(ap?.slotData)) return false;
     if(besiegedIsActive()) return false;
     if(isBossDefeated()) return false;
     if(isTrapCheckLockActive()) return false;
@@ -39077,6 +39156,7 @@ function setGenericCheckPayload(slotData){
     }
   }catch(_){}
   try{ applyConnectedWorldLayoutFromSlotData(ap.slotData, { save:false, render:false }); }catch(_){}
+  try{ rememberApStartBaselineFromSlotData(ap.slotData, state?.worlds || {}); }catch(_){}
   try{
     syncTableBannerCodeMapFromSlots(state);
     hydrateTableBannerSlotsFromCodeMap(state, { overwrite:true });

@@ -669,7 +669,7 @@
         display:flex !important;
         align-items:center !important;
         justify-content:center !important;
-        padding:24px !important;
+        padding:28px !important;
         background:
           radial-gradient(circle at 52% 28%, rgba(0,217,255,.16), transparent 38%),
           linear-gradient(180deg, rgba(0,6,14,.80), rgba(0,2,8,.92)) !important;
@@ -711,14 +711,14 @@
         display:none !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartCard{
-        width:min(1180px, calc(100vw - 48px)) !important;
+        width:min(1560px, calc(100vw - 48px)) !important;
         max-height:calc(100vh - 48px) !important;
         display:grid !important;
         grid-template-rows:auto auto minmax(0, 1fr) auto !important;
-        gap:16px !important;
+        gap:18px !important;
         border:1px solid rgba(0,255,213,.72) !important;
         border-radius:16px !important;
-        padding:24px !important;
+        padding:28px !important;
         background:
           radial-gradient(100% 120% at 50% 0%, rgba(0,217,255,.15), transparent 56%),
           linear-gradient(180deg, rgba(4,24,39,.98), rgba(0,8,18,.98)) !important;
@@ -736,14 +736,14 @@
       }
       body.flprStandaloneOriginalClient .flprQuickStartTitle{
         font-family:var(--flprTitleFontFamily, var(--flprUiFontFamily)) !important;
-        font-size:30px !important;
+        font-size:56px !important;
         line-height:1.05 !important;
         color:rgba(238,255,252,.98) !important;
         text-shadow:0 0 14px rgba(0,217,255,.35) !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartSub{
-        margin-top:8px !important;
-        font-size:12px !important;
+        margin-top:10px !important;
+        font-size:20px !important;
         line-height:1.45 !important;
         color:rgba(190,226,238,.82) !important;
       }
@@ -757,9 +757,10 @@
         border-radius:10px !important;
         background:linear-gradient(180deg, rgba(7,26,44,.94), rgba(3,16,26,.94)) !important;
         color:rgba(232,250,255,.88) !important;
-        padding:9px 12px !important;
+        padding:12px 16px !important;
         font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
-        font-size:9px !important;
+        font-size:16px !important;
+        line-height:1.1 !important;
         cursor:pointer !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartTab.active{
@@ -772,18 +773,18 @@
         overflow:auto !important;
         border:1px solid rgba(0,166,255,.34) !important;
         border-radius:12px !important;
-        padding:16px !important;
+        padding:20px !important;
         background:linear-gradient(180deg, rgba(0,21,36,.72), rgba(0,8,18,.80)) !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartGrid{
         display:grid !important;
         grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
-        gap:12px !important;
+        gap:14px !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartPanel{
         border:1px solid rgba(0,166,255,.38) !important;
         border-radius:10px !important;
-        padding:14px !important;
+        padding:18px !important;
         background:linear-gradient(180deg, rgba(0,34,62,.72), rgba(0,12,24,.84)) !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartPanel.wide{
@@ -793,15 +794,15 @@
       body.flprStandaloneOriginalClient .flprQuickStartListTitle{
         display:block !important;
         color:rgba(34,255,136,.98) !important;
-        font-size:10px !important;
+        font-size:18px !important;
         line-height:1.25 !important;
-        margin-bottom:8px !important;
+        margin-bottom:10px !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartPanel span,
       body.flprStandaloneOriginalClient .flprQuickStartPanel li,
       body.flprStandaloneOriginalClient .flprQuickStartPanel p{
         color:rgba(232,250,255,.82) !important;
-        font-size:10px !important;
+        font-size:17px !important;
         line-height:1.55 !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartPanel ul,
@@ -812,27 +813,88 @@
       body.flprStandaloneOriginalClient .flprQuickStartTableList{
         display:grid !important;
         grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
-        gap:8px !important;
+        gap:10px !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartTableRow{
         display:grid !important;
         grid-template-columns:1fr auto !important;
-        gap:8px !important;
+        gap:12px !important;
         align-items:center !important;
         border:1px solid rgba(0,166,255,.28) !important;
         border-radius:8px !important;
-        padding:8px !important;
+        padding:12px !important;
         background:rgba(0,12,24,.64) !important;
+        color:inherit !important;
+        text-decoration:none !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartTableRow .name{
         color:rgba(232,250,255,.90) !important;
-        font-size:9px !important;
+        font-size:15px !important;
         line-height:1.3 !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartTableRow .meta{
         color:rgba(255,214,122,.88) !important;
-        font-size:8px !important;
+        font-size:13px !important;
         white-space:nowrap !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartTableRow:hover{
+        border-color:rgba(34,255,136,.66) !important;
+        box-shadow:0 0 18px rgba(34,255,136,.12) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickGuideSwitch{
+        display:flex !important;
+        gap:10px !important;
+        flex-wrap:wrap !important;
+        margin-bottom:14px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickGuideSwitch button{
+        border:1px solid rgba(0,166,255,.62) !important;
+        border-radius:10px !important;
+        background:linear-gradient(180deg, rgba(7,26,44,.94), rgba(3,16,26,.94)) !important;
+        color:rgba(232,250,255,.88) !important;
+        padding:12px 16px !important;
+        font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
+        font-size:16px !important;
+        cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickGuideSwitch button.active{
+        border-color:rgba(34,255,136,.92) !important;
+        color:rgba(34,255,136,.98) !important;
+        box-shadow:0 0 18px rgba(34,255,136,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickGuideGrid{
+        display:grid !important;
+        grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+        gap:14px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickGuideItem{
+        border:1px solid rgba(0,166,255,.34) !important;
+        border-radius:10px !important;
+        padding:16px !important;
+        background:linear-gradient(180deg, rgba(0,34,62,.70), rgba(0,10,22,.88)) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickGuideItem .tag{
+        display:inline-flex !important;
+        align-items:center !important;
+        min-height:24px !important;
+        padding:4px 8px !important;
+        border:1px solid rgba(255,214,122,.44) !important;
+        border-radius:999px !important;
+        color:rgba(255,224,146,.96) !important;
+        font-size:13px !important;
+        margin-bottom:10px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickGuideItem strong{
+        display:block !important;
+        color:rgba(34,255,136,.98) !important;
+        font-size:17px !important;
+        line-height:1.25 !important;
+        margin-bottom:8px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickGuideItem span{
+        color:rgba(232,250,255,.82) !important;
+        font-size:15px !important;
+        line-height:1.45 !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartFooter{
         display:flex !important;
@@ -845,7 +907,7 @@
         align-items:center !important;
         gap:8px !important;
         color:rgba(232,250,255,.74) !important;
-        font-size:10px !important;
+        font-size:15px !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartActions{
         display:flex !important;
@@ -855,8 +917,11 @@
       }
       @media (max-width:980px){
         body.flprStandaloneOriginalClient .flprQuickStartCard{ padding:18px !important; }
+        body.flprStandaloneOriginalClient .flprQuickStartTitle{ font-size:38px !important; }
+        body.flprStandaloneOriginalClient .flprQuickStartSub{ font-size:16px !important; }
         body.flprStandaloneOriginalClient .flprQuickStartGrid,
-        body.flprStandaloneOriginalClient .flprQuickStartTableList{ grid-template-columns:1fr !important; }
+        body.flprStandaloneOriginalClient .flprQuickStartTableList,
+        body.flprStandaloneOriginalClient .flprQuickGuideGrid{ grid-template-columns:1fr !important; }
         body.flprStandaloneOriginalClient .flprQuickStartHead,
         body.flprStandaloneOriginalClient .flprQuickStartFooter{ flex-direction:column !important; align-items:stretch !important; }
       }
@@ -2153,6 +2218,46 @@
         grid-template-columns:minmax(360px, .9fr) minmax(340px, 1.1fr) !important;
         grid-template-rows:auto minmax(220px, .82fr) minmax(160px, .55fr) !important;
         gap:10px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .connectCompactLayout,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerLayout{
+        grid-template-columns:1fr !important;
+        grid-template-rows:auto auto minmax(240px, .72fr) minmax(200px, .54fr) !important;
+        align-content:start !important;
+        overflow:auto !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerSection,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerToolsSection,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerSaveStack,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerInfoStack,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneArchipelagoSection,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneConnectionModeShell,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSecondaryStack,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneLogStack{
+        grid-column:1 !important;
+        grid-row:auto !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneConnectionModeTabs,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneArchipelagoButtons,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .connectActionRow{
+        grid-template-columns:1fr !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneArchipelagoSection .apSettingsGrid{
+        grid-template-columns:1fr !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSaveApCfgBtn{
+        align-self:stretch !important;
+        width:100% !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSecondaryStack,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneLogStack,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerSaveStack,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneSingleplayerInfoStack{
+        overflow:visible !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .recvWrap,
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .apConnLogBody{
+        min-height:180px !important;
       }
       body.flprStandaloneOriginalClient .connectCol{
         min-height:0 !important;
@@ -5195,6 +5300,7 @@
           <div class="cRow connectActionRow">
             <button class="cBtn" id="standaloneStartSeedBtn" type="button">START SINGLEPLAYER SEED</button>
             <button class="cBtn gray" id="standaloneQuickStartBtn" type="button">QUICK START</button>
+            <button class="cBtn gray" id="standaloneGuideBtn" type="button">GUIDE</button>
             <button class="cBtn gray" id="standaloneTableListBtn" type="button">TABLE LIST</button>
             <button class="cBtn danger" id="standaloneResetSeedBtn" type="button">RESET LOCAL RUN</button>
           </div>
@@ -5263,6 +5369,7 @@
             <div class="standaloneArchipelagoButtons">
               <button class="cBtn" id="apConnectBtn" type="button">CONNECT</button>
               <button class="cBtn danger" id="apDisconnectBtn" type="button">DISCONNECT</button>
+              <button class="cBtn gray" id="standaloneGuideMpBtn" type="button">GUIDE</button>
             </div>
             <button class="cBtn standaloneSaveApCfgBtn" id="saveApCfgBtn" type="button">SAVE AP CFG</button>
           </div>
@@ -5339,13 +5446,19 @@
           const code = String(table?.code || "").trim();
           const meta = (repo && typeof repo.getTableMeta === "function") ? repo.getTableMeta(code) : null;
           const name = String(meta?.displayName || table?.displayName || table?.name || code).trim();
+          const searchName = String(meta?.name || table?.name || name).replace(/\s*\([^)]*\)\s*$/g, "").trim() || name;
           const manufacturer = String(meta?.manufacturer || table?.manufacturer || "").trim();
           const year = Number.isFinite(Number(meta?.year ?? table?.year)) ? String(Number(meta?.year ?? table?.year)) : "";
-          return { code, name, manufacturer, year };
+          return { code, name, searchName, manufacturer, year };
         })
         .sort((a, b)=>a.name.localeCompare(b.name));
     }catch(_){}
     return [];
+  }
+
+  function standaloneVpsTableSearchUrl(row){
+    const query = String(row?.searchName || row?.name || "").trim();
+    return `https://virtualpinballspreadsheet.github.io/games?search=${encodeURIComponent(query)}`;
   }
 
   function standaloneQuickStartTableListMarkup(){
@@ -5356,14 +5469,74 @@
     return `
       <div class="flprQuickStartPanel wide">
         <strong>EXPECTED TABLE LIST (${rows.length})</strong>
-        <p>Home Edition expects VPX versions of these real-machine or curated original VPX tables. Use stable, complete VPX builds; nFozzy physics are welcome when available, but the app checks goals and scores rather than a specific table script.</p>
+        <p>Each row opens a Virtual Pinball Spreadsheet search for that table. Use the spreadsheet to find current VPX releases, backglass/ROM notes, and update history.</p>
         <div class="flprQuickStartTableList">
           ${rows.map((row)=>`
-            <div class="flprQuickStartTableRow">
+            <a class="flprQuickStartTableRow" href="${standaloneEscapeHtml(standaloneVpsTableSearchUrl(row))}" target="_blank" rel="noopener noreferrer">
               <span class="name">${standaloneEscapeHtml(row.name)}</span>
               <span class="meta">${standaloneEscapeHtml([row.manufacturer, row.year].filter(Boolean).join(" "))}</span>
-            </div>
+            </a>
           `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  function standaloneQuickGuideMode(){
+    try{
+      const overlay = document.getElementById("flprQuickStartOverlay");
+      const mode = String(overlay?.dataset?.quickGuideMode || "").trim().toLowerCase();
+      if(mode === "mp" || mode === "sp") return mode;
+    }catch(_){}
+    try{ return standaloneCurrentMenuMode() === "archipelago" ? "mp" : "sp"; }catch(_){}
+    return "sp";
+  }
+
+  function standaloneQuickGuideItem(tag, title, body){
+    return `
+      <div class="flprQuickGuideItem">
+        <div class="tag">${standaloneEscapeHtml(tag)}</div>
+        <strong>${standaloneEscapeHtml(title)}</strong>
+        <span>${standaloneEscapeHtml(body)}</span>
+      </div>
+    `;
+  }
+
+  function standaloneQuickGuideMarkup(){
+    const mode = standaloneQuickGuideMode();
+    const items = mode === "mp"
+      ? [
+          ["CONNECT", "AP Server Fields", "Server, player, game, and password identify the Archipelago room and the Flippermizer slot you are joining."],
+          ["CONNECT", "Connect / Disconnect", "Connect starts the AP client. Disconnect closes the socket and preserves the current local view until you reconnect."],
+          ["ITEM LOG", "Received And Sent", "Received is the authoritative item inventory from AP. Sent records what your completed checks gave other players."],
+          ["SYNC", "Sync Received", "Requests a fresh ReceivedItems snapshot from the server and rebuilds the world state from that inventory."],
+          ["SYNC", "Clear List", "Clears the local item log, then syncs again from AP. Starting tables are restored from the connected seed data."],
+          ["LOG", "AP Connection Log", "Status, hint, and error tabs show useful AP traffic without letting chat noise take over the play view."],
+          ["CHECKS", "Checks Page", "Redeem completed goals here. Score checks can be entered manually and rewards should return you to this page."],
+          ["HINTS", "Mystery Hints", "AP location data powers focused hint records and boss-key route signals when the server has the information."],
+          ["STATE", "World State", "Tables, balls, boss keys, and boss access are rebuilt from AP slot data plus authoritative ReceivedItems."],
+        ]
+      : [
+          ["PROFILE", "Profile Picker", "Choose or create the local Home Edition profile that owns saves, achievements, and run history."],
+          ["SEED", "Start Singleplayer Seed", "Starts or resumes the local seed and opens the randomizer route for the selected profile."],
+          ["TOOLS", "Quick Start / Table List", "Quick Start explains rules. Table List shows the current catalog with Virtual Pinball Spreadsheet links."],
+          ["CHECKS", "Checks Page", "Use this as your main play loop: pick a table, complete the goal, enter scores, and redeem checks."],
+          ["BALLS", "Ball Buttons", "The numbered ball buttons show which balls are legal for the current table. Default expectation is Ball 1."],
+          ["MAP", "Overview", "The overview summarizes worlds, unlocked tables, boss keys, item counters, and current route pressure."],
+          ["RELICS", "Relics", "Relics are run modifiers and guidance tools. Equip or inspect them from the Relics button when available."],
+          ["EVENT", "Sieges", "Sieges are surprise defense events. They can now be disabled in generated Home Edition YAML options."],
+          ["SCORE", "Manual Score Entry", "Enter a score on the active Checks card and matching score thresholds will redeem in order."],
+        ];
+    return `
+      <div class="flprQuickStartPanel wide">
+        <strong>UI GUIDE</strong>
+        <p>Pick the mode you are using. The guide changes because Singleplayer and Archipelago have different responsibilities.</p>
+        <div class="flprQuickGuideSwitch">
+          <button type="button" data-quick-guide-mode="sp" class="${mode === "sp" ? "active" : ""}">SINGLEPLAYER</button>
+          <button type="button" data-quick-guide-mode="mp" class="${mode === "mp" ? "active" : ""}">MULTIPLAYER / AP</button>
+        </div>
+        <div class="flprQuickGuideGrid">
+          ${items.map((item)=>standaloneQuickGuideItem(item[0], item[1], item[2])).join("")}
         </div>
       </div>
     `;
@@ -5371,15 +5544,16 @@
 
   function standaloneQuickStartTabMarkup(tab){
     const key = String(tab || "start").trim().toLowerCase();
+    if(key === "guide") return standaloneQuickGuideMarkup();
     if(key === "worlds"){
       return `
         <div class="flprQuickStartGrid">
-          <div class="flprQuickStartPanel wide"><strong>WORLDS AND PROGRESSION</strong><span>A world is a five-table route. World 1 starts open. Progression Ball items open more balls or new tables. Boss Keys move you toward the boss table; the boss path unlocks after the required keys are earned.</span></div>
-          <div class="flprQuickStartPanel"><strong>WORLD 1; RAMPS RUMPUS</strong><span>Ramp-friendly early route. Learn how checks, score targets, and table unlocks behave here.</span></div>
-          <div class="flprQuickStartPanel"><strong>WORLD 2; MALT DESNIY WORLD</strong><span>A curated route with stronger table identity and more varied mechanical asks.</span></div>
-          <div class="flprQuickStartPanel"><strong>WORLD 3; VINTAGE TELEVISION</strong><span>TV and pop-culture tables. Expect more table-specific objectives once opened.</span></div>
-          <div class="flprQuickStartPanel"><strong>WORLD 4; SPINNER SPARRING</strong><span>Early solid-state and spinner-heavy pressure. Siege targets are now scaled down here.</span></div>
-          <div class="flprQuickStartPanel"><strong>WORLD 5; FEATURED DESIGNER</strong><span>A designer-focused set. The route teaches the design language through goals.</span></div>
+          <div class="flprQuickStartPanel wide"><strong>SAMPLE WORLDS AND PROGRESSION</strong><span>These are sample worlds used to teach the structure: a world is a five-table route, World 1 starts open, Progression Ball items open more balls or new tables, and Boss Keys move you toward the boss path.</span></div>
+          <div class="flprQuickStartPanel"><strong>SAMPLE WORLD 1; RAMPS RUMPUS</strong><span>Ramp-friendly early route. Learn how checks, score targets, and table unlocks behave here.</span></div>
+          <div class="flprQuickStartPanel"><strong>SAMPLE WORLD 2; MALT DESNIY WORLD</strong><span>A curated route with stronger table identity and more varied mechanical asks.</span></div>
+          <div class="flprQuickStartPanel"><strong>SAMPLE WORLD 3; VINTAGE TELEVISION</strong><span>TV and pop-culture tables. Expect more table-specific objectives once opened.</span></div>
+          <div class="flprQuickStartPanel"><strong>SAMPLE WORLD 4; SPINNER SPARRING</strong><span>Early solid-state and spinner-heavy pressure. Siege targets are scaled down here.</span></div>
+          <div class="flprQuickStartPanel"><strong>SAMPLE WORLD 5; FEATURED DESIGNER</strong><span>A designer-focused set. The route teaches the design language through goals.</span></div>
           <div class="flprQuickStartPanel"><strong>BOSS WORLD</strong><span>Boss access is gated by Boss Keys. Once opened, boss checks and the final objective are separated from regular table progression.</span></div>
         </div>
       `;
@@ -5390,8 +5564,8 @@
           <div class="flprQuickStartPanel"><strong>CHECKS</strong><span>Checks are goals. When you complete one in VPX, mark it in Flippermizer. Score checks can also be redeemed from the SCORE entry field when your entered score meets thresholds.</span></div>
           <div class="flprQuickStartPanel"><strong>BALL 1 RULE</strong><span>Unless the app has unlocked another ball for that table, play from Ball 1 only. Restart the VPX table/run when needed so the attempt stays legitimate.</span></div>
           <div class="flprQuickStartPanel"><strong>AFTER A CHECK</strong><span>The reward animation may briefly show the Overview, then Home Edition returns you to Checks so you can keep working the same route.</span></div>
-          <div class="flprQuickStartPanel"><strong>MANUAL VS AUTO</strong><span>Home Edition is mostly manual: you choose the VPX table, play the objective, enter scores when useful, and mark completed checks. AP-connected runs may receive item data from the server.</span></div>
-          <div class="flprQuickStartPanel wide"><strong>SIEGES</strong><span>A siege is a surprise defense event. Start Defense on the besieged table, play up to three balls, and hit the posted score within five minutes. Targets now scale down for early solid-state tables.</span></div>
+          <div class="flprQuickStartPanel"><strong>MANUAL VS AUTO</strong><span>Home Edition is mostly manual: you choose the VPX table, play the objective, enter scores when useful, and mark completed checks. AP-connected runs receive item data from the server.</span></div>
+          <div class="flprQuickStartPanel wide"><strong>SIEGES</strong><span>A siege is a surprise defense event. Start Defense on the besieged table, play up to three balls, and hit the posted score within five minutes. Players who do not want surprise sieges can disable them in the YAML options builder.</span></div>
         </div>
       `;
     }
@@ -5403,17 +5577,17 @@
         <div class="flprQuickStartGrid">
           <div class="flprQuickStartPanel"><strong>TABLE SWITCHING</strong><span>Use whatever VPX frontend or folder workflow is fastest for you. Flippermizer does not launch VPX tables directly yet.</span></div>
           <div class="flprQuickStartPanel"><strong>RESETTING</strong><span>If F3 causes trough/ball issues on a table, fully restart that VPX table before the next Ball 1 attempt.</span></div>
-          <div class="flprQuickStartPanel"><strong>SCORES</strong><span>Manual score entry is supported on the Checks card. Score-reading/capture tooling is not bundled yet, but this is now called out as a future workflow target.</span></div>
-          <div class="flprQuickStartPanel"><strong>COMPATIBILITY</strong><span>The catalog is based on real pinball machines plus curated original VPX entries. Prefer complete, stable VPX releases with working scoring and rules.</span></div>
+          <div class="flprQuickStartPanel"><strong>SCORES</strong><span>Manual score entry is supported on the Checks card. Score-reading/capture tooling is not bundled yet, but this is a future workflow target.</span></div>
+          <div class="flprQuickStartPanel"><strong>COMPATIBILITY</strong><span>The Flippermizer Current Catalog of tables are based on real pinball machines plus curated Original VPX entries. It will prefer complete, stable VPX releases along with working scoring and rules.</span></div>
         </div>
       `;
     }
     return `
       <div class="flprQuickStartGrid">
-        <div class="flprQuickStartPanel wide"><strong>FAST START</strong><span>Create or choose a profile, start a Singleplayer seed, pick one of the unlocked tables, play only the unlocked ball for that table, then mark checks as you complete them.</span></div>
+        <div class="flprQuickStartPanel wide"><strong>FAST START</strong><span>Create or choose a profile, start a Singleplayer seed or connect to AP, pick one of the unlocked tables, play only the unlocked ball for that table, then mark checks as you complete them.</span></div>
         <div class="flprQuickStartPanel"><strong>WHAT IS A SEED?</strong><span>A seed is a generated route of worlds, tables, checks, item rewards, boss keys, and surprises. Local seeds save to your active profile.</span></div>
         <div class="flprQuickStartPanel"><strong>WHAT AM I TRYING TO DO?</strong><span>Complete checks to earn progression. Progression opens tables/balls, Boss Keys open the boss path, and resources help with longer-term runs.</span></div>
-        <div class="flprQuickStartPanel"><strong>WHAT ARE WORLDS?</strong><span>Worlds are five-table groups. You begin in World 1 and unlock deeper routes through items.</span></div>
+        <div class="flprQuickStartPanel"><strong>WHAT ARE WORLDS?</strong><span>Worlds are five-table groups. The Worlds tab shows sample worlds and explains how unlocking routes works.</span></div>
         <div class="flprQuickStartPanel"><strong>WHAT DO I DO AFTER A CHECK?</strong><span>Mark it in Checks or enter your score. The app grants the reward, then returns you to Checks so you can continue from there.</span></div>
       </div>
     `;
@@ -5422,7 +5596,7 @@
   function standaloneSetQuickStartTab(tab){
     const overlay = document.getElementById("flprQuickStartOverlay");
     if(!overlay) return false;
-    const key = ["start","checks","worlds","tables","vpx"].includes(String(tab || "").trim().toLowerCase())
+    const key = ["start","guide","checks","worlds","tables","vpx"].includes(String(tab || "").trim().toLowerCase())
       ? String(tab || "").trim().toLowerCase()
       : "start";
     overlay.dataset.quickStartTab = key;
@@ -5447,12 +5621,13 @@
         <div class="flprQuickStartHead">
           <div>
             <div class="flprQuickStartTitle" id="flprQuickStartTitle">Getting Started</div>
-            <div class="flprQuickStartSub">A quick rules briefing for Home Edition: seeds, worlds, checks, Ball 1, sieges, VPX workflow, and the table catalog.</div>
+            <div class="flprQuickStartSub">A readable guide for Home Edition: seeds, worlds, checks, Ball 1, UI parts, sieges, VPX workflow, and the table catalog.</div>
           </div>
           <button class="cBtn" id="flprQuickStartCloseTop" type="button">GOT IT</button>
         </div>
         <div class="flprQuickStartTabs" role="tablist">
           <button class="flprQuickStartTab active" type="button" data-quick-start-tab="start">START</button>
+          <button class="flprQuickStartTab" type="button" data-quick-start-tab="guide">GUIDE</button>
           <button class="flprQuickStartTab" type="button" data-quick-start-tab="checks">CHECKS</button>
           <button class="flprQuickStartTab" type="button" data-quick-start-tab="worlds">WORLDS</button>
           <button class="flprQuickStartTab" type="button" data-quick-start-tab="tables">TABLES</button>
@@ -5477,6 +5652,12 @@
       if(tabBtn && overlay.contains(tabBtn)){
         playClick();
         standaloneSetQuickStartTab(tabBtn.dataset.quickStartTab || "start");
+      }
+      const guideBtn = event.target.closest?.("[data-quick-guide-mode]");
+      if(guideBtn && overlay.contains(guideBtn)){
+        playClick();
+        overlay.dataset.quickGuideMode = String(guideBtn.dataset.quickGuideMode || "sp");
+        standaloneSetQuickStartTab("guide");
       }
     });
     overlay.querySelector("#flprQuickStartClose")?.addEventListener("click", ()=>standaloneCloseQuickStart({ markSeen:true }));
@@ -8311,6 +8492,28 @@
         try{ event.preventDefault(); event.stopPropagation(); }catch(_){}
         playClick();
         standaloneOpenQuickStart("start", { auto:false });
+      };
+    }
+    const guideBtn = document.getElementById("standaloneGuideBtn");
+    if(guideBtn && !guideBtn.__flprStandaloneBound){
+      guideBtn.__flprStandaloneBound = true;
+      guideBtn.onclick = (event)=>{
+        try{ event.preventDefault(); event.stopPropagation(); }catch(_){}
+        playClick();
+        const overlay = standaloneEnsureQuickStartOverlay();
+        overlay.dataset.quickGuideMode = "sp";
+        standaloneOpenQuickStart("guide", { auto:false });
+      };
+    }
+    const guideMpBtn = document.getElementById("standaloneGuideMpBtn");
+    if(guideMpBtn && !guideMpBtn.__flprStandaloneBound){
+      guideMpBtn.__flprStandaloneBound = true;
+      guideMpBtn.onclick = (event)=>{
+        try{ event.preventDefault(); event.stopPropagation(); }catch(_){}
+        playClick();
+        const overlay = standaloneEnsureQuickStartOverlay();
+        overlay.dataset.quickGuideMode = "mp";
+        standaloneOpenQuickStart("guide", { auto:false });
       };
     }
     const tableList = document.getElementById("standaloneTableListBtn");
@@ -11668,6 +11871,14 @@
       let quietSingleplayerNotice = false;
       try{
         receivedName = standaloneReceivedItemName(it);
+        if(receivedName && standaloneProgressiveBallTarget(receivedName) && ap?.connected && !opts?.isSnapshot && !opts?.isFlush && !standaloneAuthoritativeReceivedMatches(itemIndex, it, locId)){
+          const sourceId = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? 0) || 0;
+          if(sourceId && sourceId === standaloneSelfSlotId()){
+            try{ if(typeof apLog === "function") apLog(`Ignoring unconfirmed local received item until AP ReceivedItems confirms it: ${receivedName}`, { tab:"status" }); }catch(_){}
+            try{ standalonePruneUnauthoritativeReceivedRows(); }catch(_){}
+            return false;
+          }
+        }
         if(standaloneIsBallHintRewardName(receivedName)){
           standaloneZeroBallHintState();
           try{ if(typeof hintLog === "function") hintLog("[AP] Ball-location hint item suppressed; use AP !hint for Progressive Balls."); }catch(_){}
@@ -12145,6 +12356,7 @@
     try{ changed = standaloneRepairSentItemsFromReceiverPackages() || changed; }catch(_){}
     try{ changed = standaloneRepairTextLogsFromSentItems() || changed; }catch(_){}
     try{ changed = standaloneRepairFalseOwnProgressiveReceipts() || changed; }catch(_){}
+    try{ changed = standalonePruneUnauthoritativeReceivedRows() || changed; }catch(_){}
     if(changed){
       try{ standaloneScheduleTextRender("repair-state"); }catch(_){}
       try{ standaloneRenderItemPanel(); }catch(_){}
@@ -16498,6 +16710,11 @@
       try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:false, reason:"outgoing-location", resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
       return false;
     }
+    if(!standaloneAuthoritativeMetaExists(next)){
+      try{ if(typeof apLog === "function") apLog(`Awaiting AP ReceivedItems confirmation before applying local item log: ${next.itemName}`, { tab:"status" }); }catch(_){}
+      try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:false, reason:"awaiting-authoritative-receiveditems", resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
+      return false;
+    }
     const key = `self-progressive|${itemId}|${Number.isFinite(locId) ? locId : ""}|${Number(next.senderId || 0) || self}|${standaloneNormalizeLoose(next.itemName)}`;
     if(standaloneItemPanel.selfProgressiveSeen.has(key)){
       try{ window.__flprStandaloneLastSelfProgressiveApply = { ok:true, duplicate:true, key, resolved:{ ...(next || {}) }, ts:Date.now() }; }catch(_){}
@@ -17499,8 +17716,116 @@
 
   const standaloneApPacketBridge = {
     installed: false,
-    nativeWebSocket: null
+    nativeWebSocket: null,
+    authoritativeReceived: new Map()
   };
+
+  function standaloneReceivedAuthorityKey(itemIndex){
+    const idx = Number(itemIndex);
+    return Number.isFinite(idx) && idx >= 0 ? `idx:${Math.round(idx)}` : "";
+  }
+
+  function standaloneRememberAuthoritativeReceivedItemsPacket(pkt){
+    try{
+      if(String(pkt?.cmd || "") !== "ReceivedItems") return false;
+      const items = Array.isArray(pkt.items) ? pkt.items : [];
+      const baseIndex = Number.isFinite(Number(pkt.index)) ? Math.max(0, Math.round(Number(pkt.index))) : Math.max(0, Math.round(Number(ap?.lastReceivedIndex || 0)) || 0);
+      if(baseIndex === 0) standaloneApPacketBridge.authoritativeReceived.clear();
+      items.forEach((it, i)=>{
+        const itemIndex = baseIndex + i;
+        const key = standaloneReceivedAuthorityKey(itemIndex);
+        if(!key) return;
+        standaloneApPacketBridge.authoritativeReceived.set(key, {
+          item:Number.isFinite(Number(it?.item)) ? Math.round(Number(it.item)) : null,
+          location:standaloneReceivedPacketLocation(it),
+          player:Number.isFinite(Number(it?.player)) ? Math.round(Number(it.player)) : null,
+          flags:Number.isFinite(Number(it?.flags)) ? Math.round(Number(it.flags)) : 0,
+          ts:Date.now()
+        });
+      });
+      if(standaloneApPacketBridge.authoritativeReceived.size > 1200){
+        const entries = Array.from(standaloneApPacketBridge.authoritativeReceived.entries()).slice(-800);
+        standaloneApPacketBridge.authoritativeReceived = new Map(entries);
+      }
+      return true;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneAuthoritativeReceivedMatches(itemIndex, it, locId){
+    try{
+      const key = standaloneReceivedAuthorityKey(itemIndex);
+      if(!key) return false;
+      const rec = standaloneApPacketBridge.authoritativeReceived.get(key);
+      if(!rec) return false;
+      const itemId = Number(it?.item);
+      if(Number.isFinite(itemId) && rec.item != null && Number(rec.item) !== Math.round(itemId)) return false;
+      const loc = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc);
+      if(Number.isFinite(loc) && rec.location != null && Number(rec.location) !== Math.round(loc)) return false;
+      const player = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender);
+      if(Number.isFinite(player) && rec.player != null && Number(rec.player) !== Math.round(player)) return false;
+      return true;
+    }catch(_){}
+    return false;
+  }
+
+  function standaloneAuthoritativeMetaExists(meta){
+    try{
+      if(!meta || !standaloneApPacketBridge.authoritativeReceived.size) return false;
+      const itemId = Number(meta.itemId);
+      const locId = Number(meta.locId);
+      const playerId = Number(meta.senderId || standaloneSelfSlotId() || 0) || 0;
+      for(const rec of standaloneApPacketBridge.authoritativeReceived.values()){
+        if(Number.isFinite(itemId) && rec.item != null && Number(rec.item) !== Math.round(itemId)) continue;
+        if(Number.isFinite(locId) && locId > 0 && rec.location != null && Number(rec.location) !== Math.round(locId)) continue;
+        if(playerId && rec.player != null && Number(rec.player) !== playerId) continue;
+        return true;
+      }
+    }catch(_){}
+    return false;
+  }
+
+  function standalonePruneUnauthoritativeReceivedRows(){
+    try{
+      if(!standaloneApPacketBridge.authoritativeReceived.size) return false;
+      const self = standaloneSelfSlotId();
+      let list = Array.isArray(ap?.receivedAll) ? ap.receivedAll : (typeof loadReceivedList === "function" ? loadReceivedList() : []);
+      if(!Array.isArray(list) || !list.length) return false;
+      const seen = new Set();
+      let changed = false;
+      const next = [];
+      for(const row of list){
+        const itemName = String(row?.itemName || row?.baseItemName || "").trim();
+        const isProgressive = !!standaloneProgressiveBallTarget(itemName);
+        const sourceId = Number(row?.sourcePlayerId ?? row?.player ?? 0) || 0;
+        const idx = Number(row?.recvIndex);
+        const itemId = Number(row?.itemId ?? row?.item);
+        const locId = Number(row?.locId ?? row?.location);
+        const rowKey = [Number.isFinite(itemId) ? Math.round(itemId) : itemName, Number.isFinite(locId) ? Math.round(locId) : "", sourceId || self || ""].join("|");
+        const authoritative = standaloneAuthoritativeReceivedMatches(idx, { item:itemId, player:sourceId || self }, locId);
+        if(isProgressive && self && sourceId === self && !authoritative){
+          changed = true;
+          continue;
+        }
+        if(isProgressive && authoritative){
+          if(seen.has(rowKey)){
+            changed = true;
+            continue;
+          }
+          seen.add(rowKey);
+        }
+        next.push(row);
+      }
+      if(!changed) return false;
+      ap.receivedAll = next;
+      standaloneRebuildReceivedKeySet();
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(next); }catch(_){}
+      try{ if(typeof renderReceivedList === "function") renderReceivedList(next); }catch(_){}
+      try{ if(typeof apLog === "function") apLog("Removed unconfirmed local received item(s); AP ReceivedItems remains authoritative.", { tab:"status" }); }catch(_){}
+      return true;
+    }catch(_){}
+    return false;
+  }
 
   function standaloneDeferredItemHasName(it){
     const itemIdNum = Number(it?.item);
@@ -17750,6 +18075,7 @@
         try{ arr = JSON.parse(event.data); }catch(_){ return; }
         if(!Array.isArray(arr)) arr = [arr];
         try{
+          arr.forEach((pkt)=>{ if(String(pkt?.cmd || "") === "ReceivedItems") standaloneRememberAuthoritativeReceivedItemsPacket(pkt); });
           if(arr.length && arr.every((pkt)=>String(pkt?.cmd || "") === "ReceivedItems")){
             let suppressAll = true;
             for(const pkt of arr){
@@ -18047,6 +18373,7 @@
         standaloneRenderItemPanel();
         return;
       }
+      try{ if(typeof rememberApStartBaselineFromSlotData === "function") rememberApStartBaselineFromSlotData(ap?.slotData, state?.worlds || {}); }catch(_){}
       try{
         if(typeof ap !== "undefined"){
           ap.receivedAll = [];
@@ -18057,10 +18384,19 @@
           ap.lastReceivedIndex = 0;
         }
       }catch(_){}
+      try{ standaloneApPacketBridge.authoritativeReceived.clear(); }catch(_){}
       try{ localStorage.setItem("flpr_ap_last_received_index", "0"); }catch(_){}
       try{ if(typeof saveReceivedList === "function") saveReceivedList([]); }catch(_){}
+      try{
+        if(typeof seedApStartBaseline === "function"){
+          seedApStartBaseline(state, ap?.slotData || {});
+          if(typeof saveState === "function") saveState();
+        }
+      }catch(_){}
+      try{ if(typeof apReconcileWorldStateFromReceived === "function") standaloneWithCounterDrawerFxSuppressed(()=>apReconcileWorldStateFromReceived()); }catch(_){}
       try{ if(typeof renderReceivedList === "function") renderReceivedList([]); }catch(_){}
       try{ standaloneRenderItemPanel(); }catch(_){}
+      try{ if(typeof renderAll === "function") renderAll(); }catch(_){}
       try{ if(typeof updateCountCheckUI === "function") updateCountCheckUI(); }catch(_){}
       try{ if(typeof forceReceivedSync === "function") forceReceivedSync(true); }catch(_){}
     };

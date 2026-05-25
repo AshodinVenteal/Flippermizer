@@ -387,6 +387,11 @@
         </div>
 
         <div class="row">
+          <div class="col"><div class="label">Sieges Enabled</div><div class="small">Surprise defense events can appear during the run. Turn this off for a no-siege seed.</div></div>
+          <input id="siegesEnabled" type="checkbox" class="toggle" checked />
+        </div>
+
+        <div class="row">
           <div class="col"><div class="label">Filter Mode Trap Enabled</div><div class="small">Home Edition default is off. Leave unchecked for trapless seeds.</div></div>
           <input id="filterTrapEnabled" type="checkbox" class="toggle" />
         </div>
@@ -632,6 +637,7 @@
     progression_balancing: 50,
     accessibility: "items",
     boss_keys_required_for_boss_table_open: 3,
+    sieges_enabled: true,
     filter_mode_trap_enabled: false,
     task_shuffle_enabled: false,
     score_adjustment_mode: "normal",
@@ -963,6 +969,10 @@
       renderYaml();
     });
 
+    q("siegesEnabled").addEventListener("change", () => {
+      state.sieges_enabled = q("siegesEnabled").checked;
+      renderYaml();
+    });
     q("filterTrapEnabled").addEventListener("change", () => {
       state.filter_mode_trap_enabled = q("filterTrapEnabled").checked;
       renderYaml();
@@ -1056,6 +1066,7 @@
       state.name = BASE_GAME_META.defaultName;
       state.description = BASE_GAME_META.description;
       state.boss_keys_required_for_boss_table_open = 3;
+      state.sieges_enabled = true;
       state.filter_mode_trap_enabled = false;
       state.task_shuffle_enabled = false;
       state.score_adjustment_mode = "normal";
@@ -1078,6 +1089,7 @@
       q("worldVariant").value = "base";
       q("playerName").value = state.name;
       q("bossKeysRequired").value = "3";
+      q("siegesEnabled").checked = true;
       q("filterTrapEnabled").checked = false;
       q("taskShuffleEnabled").checked = false;
       q("scoreAdjustmentMode").value = "normal";
@@ -1132,6 +1144,7 @@
 
     // World options
     lines.push(`  boss_keys_required_for_boss_table_open: ${state.boss_keys_required_for_boss_table_open}`);
+    lines.push(`  sieges_enabled: ${state.sieges_enabled ? "true" : "false"}`);
     lines.push(`  filter_mode_trap_enabled: ${state.filter_mode_trap_enabled ? "true" : "false"}`);
     lines.push(`  task_shuffle_enabled: ${state.task_shuffle_enabled ? "true" : "false"}`);
     lines.push(`  random_start_tables_open: ${state.worldVariant === "base" ? "false" : (state.random_start_tables_open ? "true" : "false")}`);
@@ -1175,6 +1188,7 @@
   q("scoreAdjustmentMode").value = state.score_adjustment_mode;
   q("worldVariant").value = "base";
   q("playerName").value = state.name;
+  q("siegesEnabled").checked = state.sieges_enabled;
   q("filterTrapEnabled").checked = state.filter_mode_trap_enabled;
   q("trapMode").value = state.trapMode;
   q("trapCustom").value = String(state.trapCustom);
