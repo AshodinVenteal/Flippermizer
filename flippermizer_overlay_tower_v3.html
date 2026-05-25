@@ -22990,16 +22990,16 @@ const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
 const FLPR_PATCH_NOTES_ITEMS_HOME = [
   {
-    k: "Visuals Dev Tools hotfix",
-    d: "The current-run Siege suppression toggle now lives in Visuals / Music under Dev Tools, where it is easier to find before a run."
+    k: "Vertical layout hotfix",
+    d: "Portrait Electron windows keep the tower at its normal size, push the header down, and fill the extra space with a Checks-style background."
   },
   {
-    k: "Larger Getting Started guide",
-    d: "The first-launch guide is larger and includes a Guide tab with Singleplayer and AP-specific UI explanations plus VPS-linked table rows."
+    k: "AP item log polish",
+    d: "Remote progression receipts are de-duplicated, newest progression cards slot in from the top, and Item Log / Connection Log sound toggles were added."
   },
   {
-    k: "Siege options and vertical mode",
-    d: "Home YAML can disable surprise sieges, and portrait Electron windows now switch to a stacked control layout."
+    k: "Visuals tools cleanup",
+    d: "Visuals / Music now keeps advanced Dev Tools collapsed and gives the Renderer panel its own Hide control."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_STREAM = [
@@ -40034,15 +40034,76 @@ function bindApSayControls(){
 
 const AP_RECEIVED_LS = "flpr_ap_received_v1";
 function loadReceivedList(){
-  try{ return JSON.parse(localStorage.getItem(AP_RECEIVED_LS)||"[]") || []; }catch(_){ return []; }
+  try{ return dedupeReceivedList(JSON.parse(localStorage.getItem(AP_RECEIVED_LS)||"[]") || []); }catch(_){ return []; }
 }
 function saveReceivedList(list){
-  try{ localStorage.setItem(AP_RECEIVED_LS, JSON.stringify(list||[])); }catch(_){}
+  try{ localStorage.setItem(AP_RECEIVED_LS, JSON.stringify(dedupeReceivedList(list||[]))); }catch(_){}
+}
+function receivedNormalizeKeyText(value){
+  return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+function receivedIndexKey(row){
+  const idx = Number(row?.recvIndex);
+  return Number.isFinite(idx) && idx >= 0 ? `idx:${Math.round(idx)}` : "";
+}
+function receivedSemanticKey(row){
+  try{
+    const itemId = Number(row?.itemId ?? row?.item);
+    const itemName = receivedNormalizeKeyText(row?.itemName || row?.baseItemName || "");
+    const itemKey = Number.isFinite(itemId) ? `item:${Math.round(itemId)}` : (itemName ? `item-name:${itemName}` : "");
+    const locId = Number(row?.locId ?? row?.location);
+    const locName = receivedNormalizeKeyText(row?.locationName || row?.checkName || "");
+    const locKey = Number.isFinite(locId) && locId > 0 ? `loc:${Math.round(locId)}` : (locName ? `loc-name:${locName}` : "");
+    if(!itemKey || !locKey) return "";
+    const sourceId = Number(row?.sourcePlayerId ?? row?.player ?? row?.player_id ?? row?.source_player ?? row?.sender);
+    const sourceName = receivedNormalizeKeyText(row?.sourcePlayerName || "");
+    const sourceGame = receivedNormalizeKeyText(row?.sourceGame || "");
+    const sourceKey = Number.isFinite(sourceId) && sourceId > 0
+      ? `src:${Math.round(sourceId)}`
+      : `src-name:${sourceName}|game:${sourceGame}`;
+    return `${itemKey}|${locKey}|${sourceKey}`;
+  }catch(_){
+    return "";
+  }
+}
+function mergeReceivedRows(existing, incoming){
+  const next = { ...(existing || {}), ...(incoming || {}) };
+  if(existing && incoming){
+    if(existing.itemId != null && incoming.itemId == null) next.itemId = existing.itemId;
+    if(existing.locId != null && incoming.locId == null) next.locId = existing.locId;
+    if(existing.recvIndex != null && incoming.recvIndex == null) next.recvIndex = existing.recvIndex;
+    if(existing.sourcePlayerId != null && incoming.sourcePlayerId == null) next.sourcePlayerId = existing.sourcePlayerId;
+    if(existing.bossPct != null && incoming.bossPct == null) next.bossPct = existing.bossPct;
+  }
+  return next;
+}
+function dedupeReceivedList(list){
+  const source = Array.isArray(list) ? list : [];
+  const out = [];
+  const byIndex = new Map();
+  const bySemantic = new Map();
+  source.forEach((row)=>{
+    if(!row || typeof row !== "object") return;
+    const indexKey = receivedIndexKey(row);
+    const semanticKey = receivedSemanticKey(row);
+    let existingIndex = -1;
+    if(indexKey && byIndex.has(indexKey)) existingIndex = byIndex.get(indexKey);
+    else if(semanticKey && bySemantic.has(semanticKey)) existingIndex = bySemantic.get(semanticKey);
+    if(existingIndex >= 0){
+      out[existingIndex] = mergeReceivedRows(out[existingIndex], row);
+    }else{
+      existingIndex = out.push(row) - 1;
+    }
+    if(indexKey) byIndex.set(indexKey, existingIndex);
+    if(semanticKey) bySemantic.set(semanticKey, existingIndex);
+  });
+  return out;
 }
 function clearReceivedFeedHistory(opts){
   opts = opts || {};
   try{ ap.receivedAll = []; }catch(_){}
   try{ ap.receivedKeySet = new Set(); }catch(_){}
+  try{ ap.receivedSemanticKeySet = new Set(); }catch(_){}
   try{ ap.receivedByIndex = new Map(); }catch(_){}
   saveReceivedList([]);
   if(opts.render !== false){
@@ -40053,7 +40114,8 @@ function clearReceivedFeedHistory(opts){
 function renderReceivedList(){
   const body = document.getElementById("receivedBody");
   const hdr = document.getElementById("receivedHdr");
-  const list = ap.receivedAll || loadReceivedList();
+  const rawList = ap.receivedAll || loadReceivedList();
+  const list = dedupeReceivedList(rawList);
   ap.receivedAll = list;
   if(hdr) hdr.textContent = `RECEIVED ITEMS (${list.length})`;
   if(!body) return;
@@ -40089,7 +40151,7 @@ function renderReceivedList(){
 
 function addReceivedToList(itemName, locationName, checkName, recvIndex, flags, locId, baseItemName, meta) {
   meta = meta || {};
-  ap.receivedAll = ap.receivedAll || loadReceivedList();
+  ap.receivedAll = dedupeReceivedList(ap.receivedAll || loadReceivedList());
 
   // Build a keyset once (supports legacy entries without recvIndex).
   ap.receivedKeySet = ap.receivedKeySet || new Set(ap.receivedAll.map(r => {
@@ -40098,24 +40160,10 @@ function addReceivedToList(itemName, locationName, checkName, recvIndex, flags, 
     const nm  = (r.itemName||"");
     return idx ? idx : (nm + "|" + loc);
   }));
+  ap.receivedSemanticKeySet = new Set(ap.receivedAll.map(receivedSemanticKey).filter(Boolean));
 
   const k = (recvIndex != null) ? (`idx:${recvIndex}`) : ((itemName||"") + "|" + (locationName||""));
-  if(ap.receivedKeySet.has(k)){
-    try{
-      const existing = (ap.receivedAll || []).find((r)=>(((r?.recvIndex != null) ? `idx:${r.recvIndex}` : ((r?.itemName||"") + "|" + (r?.locationName||""))) === k));
-      const bossPct = Number(meta?.bossPct);
-      if(existing && Number.isFinite(bossPct) && bossPct > 0 && !Number.isFinite(Number(existing.bossPct))){
-        existing.bossPct = bossPct;
-        saveReceivedList(ap.receivedAll);
-      }
-    }catch(_){}
-    return;
-  }
-  ap.receivedKeySet.add(k);
-
-  ap.receivedAll.push({
-    time: fmtTime(),
-    ts: Date.now(),
+  const incomingRow = {
     itemName: itemName||"",
     baseItemName: baseItemName||itemName||"",
     locationName: locationName||"",
@@ -40125,12 +40173,42 @@ function addReceivedToList(itemName, locationName, checkName, recvIndex, flags, 
     sourceGame: String(meta?.sourceGame || ""),
     recvIndex: (recvIndex != null ? recvIndex : null),
     locId: (locId != null ? Number(locId) : null),
+    itemId: (Number.isFinite(Number(meta?.itemId)) ? Number(meta.itemId) : null),
     flags: (flags ?? 0),
     bossPct: (Number.isFinite(Number(meta?.bossPct)) && Number(meta.bossPct) > 0) ? Number(meta.bossPct) : null
+  };
+  const semanticKey = receivedSemanticKey(incomingRow);
+  if(ap.receivedKeySet.has(k) || (semanticKey && ap.receivedSemanticKeySet.has(semanticKey))){
+    try{
+      const existing = (ap.receivedAll || []).find((r)=>(
+        (((r?.recvIndex != null) ? `idx:${r.recvIndex}` : ((r?.itemName||"") + "|" + (r?.locationName||""))) === k) ||
+        (semanticKey && receivedSemanticKey(r) === semanticKey)
+      ));
+      const bossPct = Number(meta?.bossPct);
+      if(existing && Number.isFinite(bossPct) && bossPct > 0 && !Number.isFinite(Number(existing.bossPct))){
+        existing.bossPct = bossPct;
+        saveReceivedList(ap.receivedAll);
+      }
+      if(existing){
+        Object.assign(existing, mergeReceivedRows(existing, incomingRow));
+        ap.receivedAll = dedupeReceivedList(ap.receivedAll);
+        saveReceivedList(ap.receivedAll);
+      }
+    }catch(_){}
+    return;
+  }
+  ap.receivedKeySet.add(k);
+  if(semanticKey) ap.receivedSemanticKeySet.add(semanticKey);
+
+  ap.receivedAll.push({
+    time: fmtTime(),
+    ts: Date.now(),
+    ...incomingRow
   });
 
   // cap storage
   if(ap.receivedAll.length > 500) ap.receivedAll.splice(0, ap.receivedAll.length-500);
+  ap.receivedAll = dedupeReceivedList(ap.receivedAll);
   saveReceivedList(ap.receivedAll);
   renderReceivedList();
   updateCountCheckUI();
@@ -40263,6 +40341,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
   const locNm = getDisplayedLocationName((paired?.locationName) || sourceLocName || (locId != null ? (ap.locNameById.get(locId) || ("Location #" + locId)) : ""));
   addReceivedToList(effectiveName, locNm, (paired?.checkName || paired?.locationName || locNm), itemIndex, (it.flags ?? 0), locId, name, {
     bossPct: resolvedBossPct,
+    itemId: itemIdNum,
     sourcePlayerId: receiptSource.sourcePlayerId,
     sourcePlayerName: receiptSource.player,
     sourceGame: receiptSource.game
@@ -54427,6 +54506,10 @@ function makeControlsPanelSection(parent, title, nodes, opts){
     const key = getControlLayoutKeyForNode(sec);
     let collapsed = controlLayoutState.collapsed?.[key];
     if(typeof collapsed !== "boolean") collapsed = sec.dataset.defaultCollapsed === "1";
+    if(opts?.forceCollapsed){
+      collapsed = true;
+      if(key) controlLayoutState.collapsed[key] = true;
+    }
     setControlPanelCollapsed(sec, !!collapsed, { persist:false });
   }catch(_){}
   return sec;
@@ -54687,7 +54770,7 @@ function ensureFlprLauncherRendererInVisuals(panelVisuals){
   const existingSection = dock.closest(".connectPanelSection");
   if(existingSection && panelVisuals.contains(existingSection)) return dock;
   const leftCol = panelVisuals.querySelector(".visualsColLeft") || panelVisuals.querySelector(".visualsCol") || panelVisuals.querySelector(".tabSectionStack") || panelVisuals;
-  makeControlsPanelSection(leftCol, "Electron Renderer", [dock], { accent:"gold", mini:"vulkan / relaunch" });
+  makeControlsPanelSection(leftCol, "Electron Renderer", [dock], { accent:"gold", mini:"vulkan / relaunch", panelKey:"electron-renderer" });
   return dock;
 }
 function buildMusicScenarioGroup(scenarios, noteText){
@@ -54777,8 +54860,8 @@ function compactVisualsControlsLayout(panelVisuals){
   stack.appendChild(layout);
 
   makeControlsPanelSection(leftCol, "Display Controls", [topRow, fontDock, checksBgTitle, checksBgNote, checksBgRow, swapRow], { accent:"green", mini:"font / chroma / checks bg / auto swap" });
-  makeControlsPanelSection(leftCol, "Electron Renderer", [rendererDock], { accent:"gold", mini:"vulkan / relaunch" });
-  makeControlsPanelSection(leftCol, "Dev Tools", [buildControlsNote("Current-run override for players who want to continue this seed without surprise Siege events."), siegeSuppressionControl], { accent:"red", mini:"siege override / no free EB" });
+  makeControlsPanelSection(leftCol, "Electron Renderer", [rendererDock], { accent:"gold", mini:"vulkan / relaunch", panelKey:"electron-renderer" });
+  makeControlsPanelSection(leftCol, "Dev Tools", [buildControlsNote("Current-run override for players who want to continue this seed without surprise Siege events."), siegeSuppressionControl], { accent:"red", mini:"siege override / no free EB", panelKey:"visual-dev-tools", defaultCollapsed:true, forceCollapsed:true });
   makeControlsPanelSection(leftCol, "Boss Card + Audio", [hpTestCard, soundTitle, soundRow], { accent:"blue", mini:"boss card / overlay sound" });
   makeControlsPanelSection(leftCol, "Boss Battle Music", [bossMusicGroup], { accent:"red", mini:"phase 1 / phase 2 handoff" });
   makeControlsPanelSection(rightCol, "Run Music", [runMusicGroup], { accent:"gold", mini:"bonus / opening / victory / stats" });

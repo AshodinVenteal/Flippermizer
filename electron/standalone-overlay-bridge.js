@@ -18,6 +18,8 @@
   const SETTINGS_KEY = "flpr_standalone_original_controls_v1";
   const STANDALONE_AP_LOG_KEY = "flpr_standalone_ap_text_log_v1";
   const STANDALONE_SENT_ITEMS_KEY = "flpr_standalone_ap_sent_items_v1";
+  const STANDALONE_ITEM_LOG_SOUND_KEY = "flpr_standalone_item_log_sound_muted_v1";
+  const STANDALONE_AP_LOG_CLICK_SOUND_KEY = "flpr_standalone_ap_log_click_sound_muted_v1";
   const STANDALONE_AP_REWARD_STATE_KEY = "flpr_standalone_ap_reward_state_v1";
   const STANDALONE_BOSS_INCOMING_SEEN_KEY = "flpr_standalone_boss_incoming_seen_v1";
   const STANDALONE_BOSS_VICTORY_AUTO_CHECKS_KEY = "flpr_standalone_boss_victory_auto_checks_v1";
@@ -634,13 +636,13 @@
         background:linear-gradient(180deg,var(--bg1),var(--bg2)) !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport{
-        --captureW:1110px !important;
-        --captureH:1284px !important;
+        --captureW:910px !important;
+        --captureH:1450px !important;
         --controlsW:1110px !important;
         --bonusLeaderboardW:0px !important;
         --gutter:12px !important;
-        --flprStandaloneViewportH:985px !important;
-        --flprStandaloneControlsH:760px !important;
+        --flprStandaloneViewportH:1138px !important;
+        --flprStandaloneControlsH:560px !important;
       }
       body.flprStandaloneOriginalClient .stage{
         transform:none !important;
@@ -652,12 +654,18 @@
         height:2098px !important;
         display:grid !important;
         grid-template-columns:1fr !important;
-        grid-template-rows:var(--captureH) var(--flprStandaloneControlsH) !important;
+        grid-template-rows:var(--captureH) minmax(0, var(--flprStandaloneControlsH)) !important;
         gap:14px !important;
-        padding:14px 20px 20px !important;
+        padding:52px 35px 20px !important;
         align-content:start !important;
         justify-items:center !important;
         overflow:hidden !important;
+        background:
+          radial-gradient(96% 50% at 50% 12%, rgba(0,217,255,.16), transparent 60%),
+          repeating-linear-gradient(45deg, rgba(0,255,213,.10) 0 2px, transparent 2px 28px),
+          repeating-linear-gradient(-45deg, rgba(255,86,214,.08) 0 2px, transparent 2px 34px),
+          linear-gradient(180deg, rgba(0,18,31,.96), rgba(0,6,16,.98)) !important;
+        background-size:100% 100%, 112px 112px, 136px 136px, 100% 100% !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneNeedsProfile .stage,
       body.flprStandaloneOriginalClient.flprStandaloneModePicking .stage{
@@ -2561,6 +2569,31 @@
         font-size:calc(5px * var(--flprStandaloneControlFontScale)) !important;
         color:rgba(188,220,236,.66) !important;
       }
+      body.flprStandaloneOriginalClient .standaloneDockTitleText{
+        min-width:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneDockCollapseBtn{
+        flex:0 0 auto !important;
+        min-height:calc(12px * var(--flprStandaloneControlFontScale)) !important;
+        padding:0 calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(160,214,255,.30) !important;
+        border-radius:8px !important;
+        background:rgba(0,18,31,.72) !important;
+        color:rgba(230,248,255,.88) !important;
+        font-family:var(--flprUiFontFamily) !important;
+        font-size:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        line-height:1 !important;
+        cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneDockCollapseBtn:hover{
+        filter:brightness(1.12) !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneControlSection.is-standalone-collapsed{
+        flex:0 0 auto !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneControlSection.is-standalone-collapsed > :not(.standaloneSectionTitle){
+        display:none !important;
+      }
       body.flprStandaloneOriginalClient .cLabel,
       body.flprStandaloneOriginalClient .cNote,
       body.flprStandaloneOriginalClient .apHint,
@@ -2677,7 +2710,7 @@
         min-height:0 !important;
         overflow-y:scroll !important;
         overflow-x:hidden !important;
-        padding:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        padding:calc(24px * var(--flprStandaloneControlFontScale)) calc(4px * var(--flprStandaloneControlFontScale)) calc(4px * var(--flprStandaloneControlFontScale)) !important;
         font-size:calc(5.4px * var(--flprStandaloneControlFontScale)) !important;
         line-height:1.46 !important;
       }
@@ -2690,6 +2723,37 @@
       body.flprStandaloneOriginalClient .recvBody .recvBadge{
         font-size:calc(4.8px * var(--flprStandaloneControlFontScale)) !important;
         line-height:1.25 !important;
+      }
+      body.flprStandaloneOriginalClient .standalonePanelSoundBtn{
+        position:absolute !important;
+        top:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        right:calc(5px * var(--flprStandaloneControlFontScale)) !important;
+        z-index:120 !important;
+        min-width:calc(32px * var(--flprStandaloneControlFontScale)) !important;
+        min-height:calc(18px * var(--flprStandaloneControlFontScale)) !important;
+        padding:0 calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        border:1px solid rgba(0,217,255,.58) !important;
+        border-radius:999px !important;
+        background:linear-gradient(180deg, rgba(0,72,98,.86), rgba(0,18,31,.94)) !important;
+        color:rgba(232,250,255,.94) !important;
+        font-family:var(--flprUiFontFamily) !important;
+        font-size:calc(4px * var(--flprStandaloneControlFontScale)) !important;
+        line-height:1 !important;
+        box-shadow:0 0 calc(8px * var(--flprStandaloneControlFontScale)) rgba(0,217,255,.18) !important;
+        cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .standalonePanelSoundBtn.is-muted{
+        border-color:rgba(255,77,109,.58) !important;
+        color:rgba(255,198,210,.92) !important;
+        background:linear-gradient(180deg, rgba(82,20,36,.86), rgba(0,18,31,.94)) !important;
+      }
+      body.flprStandaloneOriginalClient .recvWrap .standalonePanelSoundBtn{
+        top:calc(6px * var(--flprStandaloneControlFontScale)) !important;
+      }
+      body.flprStandaloneOriginalClient .apConnLogHead .standalonePanelSoundBtn{
+        position:relative !important;
+        top:auto !important;
+        right:auto !important;
       }
       body.flprStandaloneOriginalClient .standaloneItemTabs{
         display:grid !important;
@@ -2722,6 +2786,8 @@
         margin-bottom:calc(4px * var(--flprStandaloneControlFontScale)) !important;
         background:rgba(0,18,31,.42) !important;
         user-select:text !important;
+        position:relative !important;
+        overflow:hidden !important;
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow:hover{
         border-color:rgba(0,217,255,.48) !important;
@@ -2738,6 +2804,37 @@
       body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-progression{
         border-color:rgba(199,125,255,.46) !important;
         box-shadow:inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(199,125,255,.78) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow.is-new-progression{
+        animation:flprStandaloneItemSlotIn 520ms cubic-bezier(.18,.82,.22,1) both !important;
+        border-color:rgba(255,224,122,.96) !important;
+        box-shadow:
+          inset calc(3px * var(--flprStandaloneControlFontScale)) 0 0 rgba(255,154,24,.94),
+          0 0 calc(22px * var(--flprStandaloneControlFontScale)) rgba(255,224,122,.34),
+          0 0 calc(42px * var(--flprStandaloneControlFontScale)) rgba(199,125,255,.22) !important;
+      }
+      body.flprStandaloneOriginalClient .recvBody .recvRow.is-new-progression::after{
+        content:"" !important;
+        position:absolute !important;
+        inset:calc(-7px * var(--flprStandaloneControlFontScale)) !important;
+        border-radius:inherit !important;
+        pointer-events:none !important;
+        background:
+          radial-gradient(circle at 20% 50%, rgba(255,224,122,.34), transparent 46%),
+          radial-gradient(circle at 78% 22%, rgba(199,125,255,.30), transparent 42%),
+          linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent) !important;
+        mix-blend-mode:screen !important;
+        animation:flprStandaloneItemHalo 2600ms ease-out both !important;
+      }
+      @keyframes flprStandaloneItemSlotIn{
+        0%{ opacity:0; transform:translateY(calc(-22px * var(--flprStandaloneControlFontScale))) scale(.985); }
+        58%{ opacity:1; transform:translateY(calc(3px * var(--flprStandaloneControlFontScale))) scale(1.004); }
+        100%{ opacity:1; transform:translateY(0) scale(1); }
+      }
+      @keyframes flprStandaloneItemHalo{
+        0%{ opacity:.92; transform:scale(.92); }
+        42%{ opacity:.70; transform:scale(1.02); }
+        100%{ opacity:0; transform:scale(1.22); }
       }
       body.flprStandaloneOriginalClient .recvBody .recvRow.apItem-useful{
         border-color:rgba(83,183,255,.42) !important;
@@ -2897,6 +2994,7 @@
         display:block !important;
         padding:calc(1px * var(--flprStandaloneControlFontScale)) 0 !important;
         color:rgba(235,248,255,.94) !important;
+        cursor:pointer !important;
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogLine + .apLogLine{
         border-top:1px solid rgba(0,217,255,.08) !important;
@@ -3001,6 +3099,7 @@
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogPlayer{
         color:rgba(0,217,255,.98) !important;
+        cursor:pointer !important;
       }
       body.flprStandaloneOriginalClient #apConnLogBody .apLogItem{
         color:rgba(255,177,66,.98) !important;
@@ -4157,6 +4256,16 @@
     const captureH = readRootPx("--captureH", 1450);
     const gutter = readRootPx("--gutter", 16);
     const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
+    const isVerticalViewport = root.classList.contains("flprStandaloneVerticalViewport") || document.body?.classList?.contains("flprStandaloneVerticalViewport");
+    if(isVerticalViewport){
+      root.style.setProperty("--controlsW", "1110px");
+      root.style.setProperty("--flprStandaloneControlsH", "560px");
+      root.style.setProperty("--flprStandaloneViewportH", "1138px");
+      root.style.removeProperty("--flprStandaloneBaseW");
+      root.style.removeProperty("--flprStandaloneWindowScale");
+      try{ standaloneRenderModeHud(); }catch(_){}
+      return;
+    }
     const minControlsW = 880;
     const targetW = Math.max(captureW + minControlsW + gutter + 32, viewportW);
     const controlsW = Math.max(minControlsW, Math.round(targetW - captureW - gutter - 32));
@@ -5504,6 +5613,7 @@
               <button class="standaloneItemTab" type="button" data-standalone-item-tab="sent">SENT</button>
             </div>
             <div class="recvWrap">
+              <button class="standalonePanelSoundBtn" id="standaloneItemLogSoundBtn" type="button" title="Toggle item log arrival sound">SFX</button>
               <div class="recvBody" id="receivedBody"></div>
             </div>
           </section>
@@ -5520,6 +5630,7 @@
                   <button class="apLogTab" type="button" data-aplog-tab="hints" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('hints', event) : false;">HINTS</button>
                   <button class="apLogTab" type="button" data-aplog-tab="errors" onclick="return window.flprStandaloneTextClientSetTab ? window.flprStandaloneTextClientSetTab('errors', event) : false;">ERRORS</button>
                 </div>
+                <button class="standalonePanelSoundBtn" id="standaloneApLogClickSoundBtn" type="button" title="Toggle AP log click sound">SFX</button>
               </div>
               <div class="apConnLogBody" id="apConnLogBody"></div>
               <div class="apClientSayWrap">
@@ -8105,7 +8216,10 @@
     dock.className = "standaloneLogoDock standaloneControlSection";
     dock.dataset.accent = "gold";
     dock.innerHTML = `
-      <div class="standaloneSectionTitle">DEV TOOLS <span class="mini">advanced layout</span></div>
+      <div class="standaloneSectionTitle">
+        <span class="standaloneDockTitleText">DEV TOOLS <span class="mini">advanced layout</span></span>
+        <button class="standaloneDockCollapseBtn" id="standaloneLogoDockCollapseBtn" type="button">SHOW</button>
+      </div>
       <button class="cBtn" id="standaloneLogoDevToggle" type="button">LOGO POSITION</button>
       <div class="standaloneLogoDevPanel" id="standaloneLogoDevPanel" hidden>
         <div class="standaloneLogoActions">
@@ -8127,7 +8241,10 @@
     dock.className = "standaloneRendererDock standaloneControlSection";
     dock.dataset.accent = "gold";
     dock.innerHTML = `
-      <div class="standaloneSectionTitle">RENDERER <span class="mini">restart required</span></div>
+      <div class="standaloneSectionTitle">
+        <span class="standaloneDockTitleText">RENDERER <span class="mini">restart required</span></span>
+        <button class="standaloneDockCollapseBtn" id="standaloneRendererDockCollapseBtn" type="button">HIDE</button>
+      </div>
       <div class="standaloneRendererGrid">
         <label class="standaloneRendererRow">
           <input id="standaloneHardwareAccelToggle" type="checkbox" checked>
@@ -8148,6 +8265,49 @@
       </div>
     `;
     return dock;
+  }
+
+  function standaloneDockCollapseStorageKey(dock){
+    const id = String(dock?.id || "").trim();
+    return id ? `flpr_standalone_${id}_collapsed_v1` : "";
+  }
+
+  function standaloneSetDockCollapsed(dock, collapsed, opts){
+    if(!dock) return;
+    const next = !!collapsed;
+    dock.classList.toggle("is-standalone-collapsed", next);
+    dock.setAttribute("aria-expanded", next ? "false" : "true");
+    const btn = dock.querySelector(":scope > .standaloneSectionTitle .standaloneDockCollapseBtn");
+    if(btn){
+      btn.textContent = next ? "SHOW" : "HIDE";
+      btn.title = next ? "Show this panel" : "Hide this panel";
+      btn.setAttribute("aria-pressed", next ? "true" : "false");
+    }
+    const key = standaloneDockCollapseStorageKey(dock);
+    if(key && (!opts || opts.persist !== false)){
+      try{ localStorage.setItem(key, next ? "1" : "0"); }catch(_){}
+    }
+  }
+
+  function standaloneBindDockCollapse(dock, defaultCollapsed){
+    if(!dock) return;
+    const key = standaloneDockCollapseStorageKey(dock);
+    let collapsed = !!defaultCollapsed;
+    try{
+      const saved = key ? localStorage.getItem(key) : null;
+      if(saved === "1" || saved === "0") collapsed = saved === "1";
+    }catch(_){}
+    standaloneSetDockCollapsed(dock, collapsed, { persist:false });
+    const btn = dock.querySelector(":scope > .standaloneSectionTitle .standaloneDockCollapseBtn");
+    if(btn && !btn.__flprStandaloneDockCollapseBound){
+      btn.__flprStandaloneDockCollapseBound = true;
+      btn.addEventListener("click", (event)=>{
+        event.preventDefault();
+        event.stopPropagation();
+        try{ playClick(); }catch(_){}
+        standaloneSetDockCollapsed(dock, !dock.classList.contains("is-standalone-collapsed"));
+      });
+    }
   }
 
   function ensureStandaloneTextSizeSlider(panel){
@@ -8188,6 +8348,7 @@
       const stack = panel.querySelector(":scope > .tabSectionStack") || panel;
       if(dock.parentElement !== stack) stack.appendChild(dock);
       else stack.insertBefore(dock, stack.firstChild || null);
+      standaloneBindDockCollapse(dock, false);
     }catch(_){}
   }
 
@@ -8207,6 +8368,7 @@
       const stack = panel.querySelector(":scope > .tabSectionStack") || panel;
       if(dock.parentElement !== stack) stack.appendChild(dock);
       else stack.insertBefore(dock, stack.firstChild || null);
+      standaloneBindDockCollapse(dock, true);
       standaloneSyncLogoControls();
     }catch(_){}
   }
@@ -8813,7 +8975,14 @@
     selfProgressiveSeen: new Set(),
     progressiveReceiveSeen: new Set(),
     bossKeyReceiveSeen: new Set(),
-    counterRewardModalSeen: new Set()
+    counterRewardModalSeen: new Set(),
+    itemLogSoundMuted: false,
+    apLogClickSoundMuted: false,
+    knownReceivedKeys: new Set(),
+    newReceivedKeys: new Set(),
+    newestReceivedKey: "",
+    soundPrefsLoaded: false,
+    lastItemLogSoundAt: 0
   };
 
   const standaloneReceivedRefreshState = {
@@ -8847,6 +9016,83 @@
 
   function standaloneWriteJson(key, value){
     try{ localStorage.setItem(key, JSON.stringify(value)); }catch(_){}
+  }
+
+  function standaloneLoadPanelSoundPrefs(){
+    if(standaloneItemPanel.soundPrefsLoaded) return;
+    standaloneItemPanel.soundPrefsLoaded = true;
+    try{ standaloneItemPanel.itemLogSoundMuted = localStorage.getItem(STANDALONE_ITEM_LOG_SOUND_KEY) === "1"; }catch(_){}
+    try{ standaloneItemPanel.apLogClickSoundMuted = localStorage.getItem(STANDALONE_AP_LOG_CLICK_SOUND_KEY) === "1"; }catch(_){}
+  }
+
+  function standalonePersistPanelSoundPref(key, muted){
+    try{ localStorage.setItem(key, muted ? "1" : "0"); }catch(_){}
+  }
+
+  function standalonePlayItemLogChink(){
+    standaloneLoadPanelSoundPrefs();
+    if(standaloneItemPanel.itemLogSoundMuted) return;
+    const now = Date.now();
+    if(now - Number(standaloneItemPanel.lastItemLogSoundAt || 0) < 180) return;
+    standaloneItemPanel.lastItemLogSoundAt = now;
+    try{
+      if(typeof playTone === "function"){
+        playTone({ freq:760, dur:0.045, type:"triangle", gain:0.06, sweepTo:1080, sweepDur:0.04 });
+        setTimeout(()=>playTone({ freq:1460, dur:0.075, type:"sine", gain:0.055, sweepTo:1760, sweepDur:0.06 }), 38);
+      }else if(typeof playSfx === "function"){
+        playSfx("receive");
+      }
+    }catch(_){}
+  }
+
+  function standalonePlayApLogClick(){
+    standaloneLoadPanelSoundPrefs();
+    if(standaloneItemPanel.apLogClickSoundMuted) return;
+    try{ playClick(); }catch(_){}
+  }
+
+  function standaloneUpdatePanelSoundButtons(){
+    standaloneLoadPanelSoundPrefs();
+    try{
+      document.querySelectorAll("#standaloneItemLogSoundBtn").forEach((btn)=>{
+        btn.textContent = standaloneItemPanel.itemLogSoundMuted ? "SFX OFF" : "SFX ON";
+        btn.classList.toggle("is-muted", !!standaloneItemPanel.itemLogSoundMuted);
+        btn.title = standaloneItemPanel.itemLogSoundMuted ? "Turn item log arrival sound on" : "Turn item log arrival sound off";
+      });
+      document.querySelectorAll("#standaloneApLogClickSoundBtn").forEach((btn)=>{
+        btn.textContent = standaloneItemPanel.apLogClickSoundMuted ? "CLICK OFF" : "CLICK ON";
+        btn.classList.toggle("is-muted", !!standaloneItemPanel.apLogClickSoundMuted);
+        btn.title = standaloneItemPanel.apLogClickSoundMuted ? "Turn AP log click sound on" : "Turn AP log click sound off";
+      });
+    }catch(_){}
+  }
+
+  function standaloneToggleItemLogSound(event){
+    if(event){
+      event.preventDefault();
+      event.stopPropagation();
+      try{ event.stopImmediatePropagation(); }catch(_){}
+    }
+    standaloneLoadPanelSoundPrefs();
+    standaloneItemPanel.itemLogSoundMuted = !standaloneItemPanel.itemLogSoundMuted;
+    standalonePersistPanelSoundPref(STANDALONE_ITEM_LOG_SOUND_KEY, standaloneItemPanel.itemLogSoundMuted);
+    try{ if(!standaloneItemPanel.itemLogSoundMuted) standalonePlayItemLogChink(); }catch(_){}
+    standaloneUpdatePanelSoundButtons();
+    return false;
+  }
+
+  function standaloneToggleApLogClickSound(event){
+    if(event){
+      event.preventDefault();
+      event.stopPropagation();
+      try{ event.stopImmediatePropagation(); }catch(_){}
+    }
+    standaloneLoadPanelSoundPrefs();
+    standaloneItemPanel.apLogClickSoundMuted = !standaloneItemPanel.apLogClickSoundMuted;
+    standalonePersistPanelSoundPref(STANDALONE_AP_LOG_CLICK_SOUND_KEY, standaloneItemPanel.apLogClickSoundMuted);
+    try{ if(!standaloneItemPanel.apLogClickSoundMuted) playClick(); }catch(_){}
+    standaloneUpdatePanelSoundButtons();
+    return false;
   }
 
   function standaloneBossIncomingSeedKey(){
@@ -11969,7 +12215,12 @@
         row.itemName = resolved;
         row.baseItemName = resolved;
       }
-      try{ if(typeof saveReceivedList === "function") saveReceivedList(list); }catch(_){}
+      try{
+        const next = standaloneDedupeReceivedRowsList(list);
+        if(ap && Array.isArray(next)) ap.receivedAll = next;
+        standaloneRebuildReceivedKeySet();
+        if(typeof saveReceivedList === "function") saveReceivedList(next);
+      }catch(_){}
     }catch(_){}
   }
 
@@ -12454,6 +12705,7 @@
   function standaloneRebuildReceivedKeySet(){
     try{
       ap.receivedKeySet = new Set((ap.receivedAll || []).map((row)=>standaloneReceivedKeyForRow(row)));
+      ap.receivedSemanticKeySet = new Set((ap.receivedAll || []).map((row)=>standaloneReceivedSemanticKey(row)).filter(Boolean));
     }catch(_){}
   }
 
@@ -13297,6 +13549,7 @@
   function standaloneTextRender(){
     const bodies = standaloneControlAll("#apConnLogBody");
     if(!bodies.length) return;
+    standaloneUpdatePanelSoundButtons();
     const tab = standaloneTextNormalizeTab(standaloneTextClient.activeTab);
     standaloneControlAll("#apLogTabs .apLogTab").forEach((btn)=>{
       btn.classList.toggle("active", standaloneTextNormalizeTab(btn.dataset.aplogTab || "") === tab);
@@ -13353,7 +13606,7 @@
       standalonePruneOwnProgressiveSentItems();
       return standaloneItemPanel.sent.length;
     }
-    try{ return Array.isArray(ap?.receivedAll) ? ap.receivedAll.length : 0; }catch(_){ return 0; }
+    try{ return standaloneApplyReceivedDedupe().length; }catch(_){ return 0; }
   }
 
   function standaloneItemClass(flags, itemName){
@@ -13363,12 +13616,129 @@
     return { key:"normal", label:"ITEM", title:"ITEM" };
   }
 
-  function standaloneReceivedRows(){
+  function standaloneReceivedRowIsProgression(row){
+    try{
+      const cls = standaloneItemClass(row?.flags ?? 0, row?.itemName || "");
+      if(String(cls?.key || "") === "progression") return true;
+      const name = String(row?.itemName || "");
+      return !!standaloneProgressiveBallTarget(name) || /boss\s*key|progressive\s*ball/i.test(name);
+    }catch(_){
+      return false;
+    }
+  }
+
+  function standaloneMarkNewReceivedRows(rows, opts){
+    const list = Array.isArray(rows) ? rows : [];
+    if(!list.length) return list;
+    const keys = new Set(list.map((row)=>String(row?.key || "")).filter(Boolean));
+    if(!standaloneItemPanel.knownReceivedKeys.size){
+      standaloneItemPanel.knownReceivedKeys = keys;
+      return list;
+    }
+    const incoming = list.filter((row)=>{
+      const key = String(row?.key || "");
+      return key && !standaloneItemPanel.knownReceivedKeys.has(key) && standaloneReceivedRowIsProgression(row);
+    });
+    standaloneItemPanel.knownReceivedKeys = new Set([].concat(Array.from(standaloneItemPanel.knownReceivedKeys), Array.from(keys)).slice(-700));
+    if(incoming.length){
+      standaloneItemPanel.newReceivedKeys = new Set(incoming.map((row)=>String(row.key || "")).filter(Boolean));
+      standaloneItemPanel.newestReceivedKey = String(incoming[0]?.key || "");
+      if(!opts?.silent) standalonePlayItemLogChink();
+      try{
+        setTimeout(()=>{
+          try{
+            incoming.forEach((row)=>standaloneItemPanel.newReceivedKeys.delete(String(row?.key || "")));
+            if(incoming.some((row)=>String(row?.key || "") === standaloneItemPanel.newestReceivedKey)) standaloneItemPanel.newestReceivedKey = "";
+          }catch(_){}
+        }, 3200);
+      }catch(_){}
+    }
+    list.forEach((row)=>{
+      const key = String(row?.key || "");
+      row.isNewProgression = key && standaloneItemPanel.newReceivedKeys.has(key);
+      row.isNewestProgression = key && key === standaloneItemPanel.newestReceivedKey;
+    });
+    return list;
+  }
+
+  function standaloneReceivedIndexKey(row){
+    const idx = Number(row?.recvIndex);
+    return Number.isFinite(idx) && idx >= 0 ? `idx:${Math.round(idx)}` : "";
+  }
+
+  function standaloneReceivedSemanticKey(row){
+    try{
+      const itemId = Number(row?.itemId ?? row?.item);
+      const itemName = standaloneNormalizeLoose(row?.itemName || row?.baseItemName || "");
+      const itemKey = Number.isFinite(itemId) ? `item:${Math.round(itemId)}` : (itemName ? `item-name:${itemName}` : "");
+      const locId = Number(row?.locId ?? row?.location);
+      const locName = standaloneNormalizeLoose(row?.locationName || row?.checkName || "");
+      const locKey = Number.isFinite(locId) && locId > 0 ? `loc:${Math.round(locId)}` : (locName ? `loc-name:${locName}` : "");
+      if(!itemKey || !locKey) return "";
+      const sourceId = Number(row?.sourcePlayerId ?? row?.player ?? row?.player_id ?? row?.source_player ?? row?.sender);
+      const sourceName = standaloneNormalizeLoose(row?.sourcePlayerName || "");
+      const sourceGame = standaloneNormalizeLoose(row?.sourceGame || "");
+      const sourceKey = Number.isFinite(sourceId) && sourceId > 0
+        ? `src:${Math.round(sourceId)}`
+        : `src-name:${sourceName}|game:${sourceGame}`;
+      return `${itemKey}|${locKey}|${sourceKey}`;
+    }catch(_){
+      return "";
+    }
+  }
+
+  function standaloneMergeReceivedRows(existing, incoming){
+    const next = { ...(existing || {}), ...(incoming || {}) };
+    if(existing && incoming){
+      if(existing.itemId != null && incoming.itemId == null) next.itemId = existing.itemId;
+      if(existing.locId != null && incoming.locId == null) next.locId = existing.locId;
+      if(existing.recvIndex != null && incoming.recvIndex == null) next.recvIndex = existing.recvIndex;
+      if(existing.sourcePlayerId != null && incoming.sourcePlayerId == null) next.sourcePlayerId = existing.sourcePlayerId;
+      if(existing.bossPct != null && incoming.bossPct == null) next.bossPct = existing.bossPct;
+    }
+    return next;
+  }
+
+  function standaloneDedupeReceivedRowsList(list){
+    const source = Array.isArray(list) ? list : [];
+    const out = [];
+    const byIndex = new Map();
+    const bySemantic = new Map();
+    source.forEach((row)=>{
+      if(!row || typeof row !== "object") return;
+      const indexKey = standaloneReceivedIndexKey(row);
+      const semanticKey = standaloneReceivedSemanticKey(row);
+      let existingIndex = -1;
+      if(indexKey && byIndex.has(indexKey)) existingIndex = byIndex.get(indexKey);
+      else if(semanticKey && bySemantic.has(semanticKey)) existingIndex = bySemantic.get(semanticKey);
+      if(existingIndex >= 0){
+        out[existingIndex] = standaloneMergeReceivedRows(out[existingIndex], row);
+      }else{
+        existingIndex = out.push(row) - 1;
+      }
+      if(indexKey) byIndex.set(indexKey, existingIndex);
+      if(semanticKey) bySemantic.set(semanticKey, existingIndex);
+    });
+    return out;
+  }
+
+  function standaloneApplyReceivedDedupe(){
     let list = [];
     try{ list = Array.isArray(ap?.receivedAll) ? ap.receivedAll : []; }catch(_){}
     if(!list.length){
       try{ if(typeof loadReceivedList === "function") list = loadReceivedList() || []; }catch(_){}
     }
+    const next = standaloneDedupeReceivedRowsList(list);
+    try{ if(ap && Array.isArray(next)) ap.receivedAll = next; }catch(_){}
+    if(Array.isArray(list) && next.length !== list.length){
+      try{ standaloneRebuildReceivedKeySet(); }catch(_){}
+      try{ if(typeof saveReceivedList === "function") saveReceivedList(next); }catch(_){}
+    }
+    return next;
+  }
+
+  function standaloneReceivedRows(){
+    const list = standaloneApplyReceivedDedupe();
     return (Array.isArray(list) ? list : []).slice(-120).reverse().map((r, index)=>{
       const itemId = r?.itemId ?? r?.item ?? null;
       const itemName = standaloneReceivedRowItemName(r);
@@ -13379,8 +13749,10 @@
       const checkName = standaloneLocationDisplayName(locName, r?.locId);
       const check = locName ? `CHECK; ${checkName}` : "CHECK; -";
       const text = [String(r?.time || ""), check, `ITEM; ${itemName}`, source].filter(Boolean).join("\n");
+      const semanticKey = standaloneReceivedSemanticKey(r);
       return {
-        key: `received|${r?.recvIndex ?? index}|${itemName}|${locName}`,
+        key: semanticKey ? `received|${semanticKey}` : `received|${r?.recvIndex ?? index}|${itemName}|${locName}`,
+        semanticKey,
         time: String(r?.time || ""),
         flags: standaloneFlagsForItem(r?.flags ?? 0, itemName),
         itemName,
@@ -13504,6 +13876,8 @@
     row.dataset.standaloneItemKey = rowData.key;
     row.dataset.copyText = rowData.text;
     if(rowData.key === standaloneItemPanel.selectedKey) row.classList.add("is-selected");
+    if(rowData.isNewProgression) row.classList.add("is-new-progression");
+    if(rowData.isNewestProgression) row.classList.add("is-newest-progression");
 
     const time = document.createElement("div");
     time.className = "recvTime";
@@ -13531,6 +13905,7 @@
 
   function standaloneRenderItemPanel(opts){
     opts = opts || {};
+    standaloneUpdatePanelSoundButtons();
     standaloneLoadSentItems();
     const bodies = standaloneItemPanelBodies();
     if(!bodies.length) return;
@@ -13543,7 +13918,7 @@
     standaloneControlAll("#receivedHdr").forEach((hdr)=>{
       hdr.textContent = `ITEM LOG (${receivedCount} RECEIVED / ${sentCount} SENT)`;
     });
-    const rows = tab === "sent" ? standaloneSentRows() : standaloneReceivedRows();
+    const rows = tab === "sent" ? standaloneSentRows() : standaloneMarkNewReceivedRows(standaloneReceivedRows(), opts);
     const emptyText = tab === "sent" ? "No sent items recorded yet." : "No received items yet; click SYNC RECEIVED after connecting.";
     const renderKey = JSON.stringify({
       tab,
@@ -17960,12 +18335,21 @@
 
   function standalonePruneUnauthoritativeReceivedRows(){
     try{
-      if(!standaloneApPacketBridge.authoritativeReceived.size) return false;
       const self = standaloneSelfSlotId();
       let list = Array.isArray(ap?.receivedAll) ? ap.receivedAll : (typeof loadReceivedList === "function" ? loadReceivedList() : []);
       if(!Array.isArray(list) || !list.length) return false;
+      const deduped = standaloneDedupeReceivedRowsList(list);
+      let changed = deduped.length !== list.length;
+      list = deduped;
+      if(!standaloneApPacketBridge.authoritativeReceived.size){
+        if(!changed) return false;
+        ap.receivedAll = list;
+        standaloneRebuildReceivedKeySet();
+        try{ if(typeof saveReceivedList === "function") saveReceivedList(list); }catch(_){}
+        try{ if(typeof renderReceivedList === "function") renderReceivedList(list); }catch(_){}
+        return true;
+      }
       const seen = new Set();
-      let changed = false;
       const next = [];
       for(const row of list){
         const itemName = String(row?.itemName || row?.baseItemName || "").trim();
@@ -17974,13 +18358,13 @@
         const idx = Number(row?.recvIndex);
         const itemId = Number(row?.itemId ?? row?.item);
         const locId = Number(row?.locId ?? row?.location);
-        const rowKey = [Number.isFinite(itemId) ? Math.round(itemId) : itemName, Number.isFinite(locId) ? Math.round(locId) : "", sourceId || self || ""].join("|");
+        const rowKey = standaloneReceivedSemanticKey(row) || [Number.isFinite(itemId) ? Math.round(itemId) : itemName, Number.isFinite(locId) ? Math.round(locId) : "", sourceId || self || ""].join("|");
         const authoritative = standaloneAuthoritativeReceivedMatches(idx, { item:itemId, player:sourceId || self }, locId);
         if(isProgressive && self && sourceId === self && !authoritative){
           changed = true;
           continue;
         }
-        if(isProgressive && authoritative){
+        if(rowKey){
           if(seen.has(rowKey)){
             changed = true;
             continue;
@@ -18051,7 +18435,7 @@
       const list = Array.isArray(ap?.receivedAll)
         ? ap.receivedAll
         : (typeof loadReceivedList === "function" ? loadReceivedList() : []);
-      return (Array.isArray(list) ? list : []).map((row)=>{
+      return standaloneDedupeReceivedRowsList(Array.isArray(list) ? list : []).map((row)=>{
         const idx = row?.recvIndex ?? "";
         const item = row?.itemId ?? row?.item ?? "";
         const loc = row?.locId ?? row?.location ?? "";
@@ -18425,12 +18809,22 @@
       if(tab) activateStandaloneTextClientTab(tab, event);
     }, true);
     document.addEventListener("click", (event)=>{
+      const itemSound = event.target.closest?.("#standaloneItemLogSoundBtn");
+      if(itemSound){
+        standaloneToggleItemLogSound(event);
+        return;
+      }
       const itemTab = event.target.closest?.(".standaloneItemTab");
       if(itemTab){
         activateStandaloneItemTab(itemTab.dataset.standaloneItemTab, event);
         return;
       }
       if(!isTextClientTarget(event.target)) return;
+      const apLogSound = event.target.closest("#standaloneApLogClickSoundBtn");
+      if(apLogSound){
+        standaloneToggleApLogClickSound(event);
+        return;
+      }
       const send = event.target.closest("#apClientSayBtn");
       if(send){
         submitStandaloneTextClientSay(event);
@@ -18439,6 +18833,11 @@
       const tab = event.target.closest(".apLogTab");
       if(tab){
         activateStandaloneTextClientTab(tab, event);
+        return;
+      }
+      const clickText = event.target.closest(".apLogPlayer, .apLogLine");
+      if(clickText){
+        standalonePlayApLogClick();
       }
     }, true);
     setTimeout(()=>{
@@ -18556,6 +18955,11 @@
           ap.receivedKeySet = new Set();
           ap.lastReceivedIndex = 0;
         }
+      }catch(_){}
+      try{
+        standaloneItemPanel.knownReceivedKeys.clear();
+        standaloneItemPanel.newReceivedKeys.clear();
+        standaloneItemPanel.newestReceivedKey = "";
       }catch(_){}
       try{ standaloneApPacketBridge.authoritativeReceived.clear(); }catch(_){}
       try{ localStorage.setItem("flpr_ap_last_received_index", "0"); }catch(_){}
