@@ -22990,16 +22990,16 @@ const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
 const FLPR_PATCH_NOTES_ITEMS_HOME = [
   {
+    k: "Visuals Dev Tools hotfix",
+    d: "The current-run Siege suppression toggle now lives in Visuals / Music under Dev Tools, where it is easier to find before a run."
+  },
+  {
     k: "Larger Getting Started guide",
     d: "The first-launch guide is larger and includes a Guide tab with Singleplayer and AP-specific UI explanations plus VPS-linked table rows."
   },
   {
     k: "Siege options and vertical mode",
     d: "Home YAML can disable surprise sieges, and portrait Electron windows now switch to a stacked control layout."
-  },
-  {
-    k: "AP sync authority",
-    d: "Received item state now trusts AP ReceivedItems, prunes unconfirmed local duplicates, and preserves connected-seed starting tables during Clear List / Sync Received."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_STREAM = [
@@ -54753,6 +54753,7 @@ function compactVisualsControlsLayout(panelVisuals){
   const tableBannerModal = document.getElementById("tableBannerModal");
   const rendererDock = ensureFlprLauncherRendererDock(staging);
   const fontDock = buildFlprFontControlsDock();
+  const siegeSuppressionControl = buildSiegeSuppressionControl();
   const bossMusicGroup = buildMusicScenarioGroup([
     "boss_battle_beginning",
     "boss_battle_phase2"
@@ -54777,6 +54778,7 @@ function compactVisualsControlsLayout(panelVisuals){
 
   makeControlsPanelSection(leftCol, "Display Controls", [topRow, fontDock, checksBgTitle, checksBgNote, checksBgRow, swapRow], { accent:"green", mini:"font / chroma / checks bg / auto swap" });
   makeControlsPanelSection(leftCol, "Electron Renderer", [rendererDock], { accent:"gold", mini:"vulkan / relaunch" });
+  makeControlsPanelSection(leftCol, "Dev Tools", [buildControlsNote("Current-run override for players who want to continue this seed without surprise Siege events."), siegeSuppressionControl], { accent:"red", mini:"siege override / no free EB" });
   makeControlsPanelSection(leftCol, "Boss Card + Audio", [hpTestCard, soundTitle, soundRow], { accent:"blue", mini:"boss card / overlay sound" });
   makeControlsPanelSection(leftCol, "Boss Battle Music", [bossMusicGroup], { accent:"red", mini:"phase 1 / phase 2 handoff" });
   makeControlsPanelSection(rightCol, "Run Music", [runMusicGroup], { accent:"gold", mini:"bonus / opening / victory / stats" });
@@ -54863,9 +54865,7 @@ function compactTestingControlsLayout(panelTesting){
   layout.appendChild(rightCol);
   stack.appendChild(layout);
 
-  const siegeSuppressionControl = buildSiegeSuppressionControl();
   makeControlsPanelSection(leftCol, "Boss State", [hpTestCard, bossDamageCard], { accent:"blue", mini:"card visibility / direct hp controls" });
-  makeControlsPanelSection(leftCol, "Run Suppression", [buildControlsNote("Current-run override for players who want to continue this seed without surprise Siege events."), siegeSuppressionControl], { accent:"red", mini:"siege override / no free EB" });
   makeControlsPanelSection(leftCol, "Boss Battle Flow", [buildControlsNote("Manual tests for boss hits, segment rolls, key progress, and the victory node."), bossFlowGrid], { accent:"red", mini:"damage / keys / finish state" });
   makeControlsPanelSection(leftCol, "Hints + Run Flow", [buildControlsNote("Shortcut tests for hint payouts, opening flow, and the victory stats handoff."), hintFlowGrid], { accent:"green", mini:"hint routing / opening / ending" });
   makeControlsPanelSection(rightCol, "Trap + Reward Popups", [buildControlsNote("Popup and reward simulations for traps, junk, balls, and achievements."), popupGrid], { accent:"gold", mini:"popups / rewards / trap visuals" });
