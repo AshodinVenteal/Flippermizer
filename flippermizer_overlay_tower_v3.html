@@ -23692,6 +23692,7 @@ const defaultState = {
   },
   besiegedEvent: buildDefaultBesiegedState(),
   besiegedPenaltyLock: buildDefaultBesiegedPenaltyLock(),
+  siegesSuppressedForRun:false,
   extraBallTokens:0,
   extraBallAssignments:{},
   junkRedeems:{ easy:0, medium:0 },
@@ -24323,6 +24324,7 @@ function loadState(){
     s.bossRetaliation = normalizeBossRetaliationState(s.bossRetaliation);
     s.besiegedEvent = normalizeBesiegedState(s.besiegedEvent);
     s.besiegedPenaltyLock = normalizeBesiegedPenaltyLock(s.besiegedPenaltyLock);
+    if(typeof s.siegesSuppressedForRun !== "boolean") s.siegesSuppressedForRun = false;
     if(!Number.isFinite(Number(s.extraBallTokens))) s.extraBallTokens = 0;
     s.extraBallTokens = Math.max(0, Math.round(Number(s.extraBallTokens) || 0));
     if(!s.extraBallAssignments || typeof s.extraBallAssignments !== "object") s.extraBallAssignments = {};
@@ -37249,7 +37251,35 @@ function besiegedScaleTargetScoreForTable(score, tableKey, tableName){
   target = Math.max(floor, target);
   return Math.max(100000, Math.round(target / 10000) * 10000);
 }
+function besiegedCurrentRunSuppressed(){
+  try{ return !!state?.siegesSuppressedForRun; }catch(_){ return false; }
+}
+function setBesiegedSuppressionForRun(on, opts){
+  opts = opts || {};
+  const next = !!on;
+  const changed = !!state?.siegesSuppressedForRun !== next;
+  state.siegesSuppressedForRun = next;
+  if(next){
+    try{ besiegedCancelActiveForSuppression(opts.reason || "dev-tools"); }catch(_){}
+  }
+  if(changed && opts.save !== false){
+    try{ saveState(); }catch(_){}
+  }
+  try{ updateBesiegedSuppressionUi(); }catch(_){}
+  if(changed && opts.toast !== false){
+    try{
+      toast(
+        next ? "warn" : "info",
+        next ? "SIEGES SUPPRESSED" : "SIEGES RESTORED",
+        next ? "Current-run Sieges are off. No spawns and no Siege Extra Balls will be awarded." : "Current-run Siege suppression is off; seed options still apply.",
+        3400
+      );
+    }catch(_){}
+  }
+  return changed;
+}
 function besiegedEventsEnabled(slotData){
+  if(besiegedCurrentRunSuppressed()) return false;
   try{
     const src = normalizeSlotDataPayload(slotData || ap?.slotData || {});
     if(Object.prototype.hasOwnProperty.call(src, "sieges_enabled")){
@@ -37595,6 +37625,7 @@ function besiegedSpendPenaltyResource(){
   return "No banked penalty resource";
 }
 function besiegedAwardDefenseWin(live){
+  if(besiegedCurrentRunSuppressed()) return false;
   try{
     normalizeExtraBallState(state);
     state.extraBallTokens = Math.max(0, Math.round(Number(state.extraBallTokens || 0)) + 1);
@@ -37808,6 +37839,10 @@ function besiegedEnsureDefenseTimer(){
 function besiegedStartDefense(){
   const live = besiegedGetState();
   if(!live.active) return false;
+  if(besiegedCurrentRunSuppressed()){
+    besiegedCancelActiveForSuppression("defense-start-suppressed");
+    return false;
+  }
   if(besiegedIsDefenseRunning(live)) return true;
   const now = Date.now();
   state.besiegedEvent = normalizeBesiegedState({
@@ -37822,6 +37857,35 @@ function besiegedStartDefense(){
   return true;
 }
 let besiegedFailureFinalizeTimer = null;
+function besiegedCancelActiveForSuppression(reason){
+  const live = besiegedGetState();
+  if(!live.active) return false;
+  const tableName = String(live.tableName || "Besieged table").trim();
+  try{
+    if(besiegedFailureFinalizeTimer){
+      clearTimeout(besiegedFailureFinalizeTimer);
+      besiegedFailureFinalizeTimer = null;
+    }
+  }catch(_){}
+  try{ besiegedRemoveCinematicOverlay("flprSiegeStartOverlay", "start"); }catch(_){}
+  try{ besiegedRemoveCinematicOverlay("flprStandaloneSiegeVictoryOverlay", "victory"); }catch(_){}
+  state.besiegedEvent = buildDefaultBesiegedState();
+  try{ besiegedStopBattleAudio(); }catch(_){}
+  try{ besiegedRelockBossIfNeeded(live); }catch(_){}
+  try{ saveState(); }catch(_){}
+  try{ besiegedEnsureDefenseTimer(); }catch(_){}
+  try{ renderAll(); }catch(_){}
+  try{
+    if(activeView === "checks"){
+      renderChecksWorldTabs();
+      renderChecks();
+    }
+  }catch(_){}
+  if(reason !== "startup"){
+    try{ toast("info", "SIEGE CANCELLED", `${tableName} was suppressed for this run. No Extra Ball awarded.`, 3400); }catch(_){}
+  }
+  return true;
+}
 function besiegedFinalizeFailedDefense(failedLive, penaltyText, lock){
   try{
     const live = besiegedGetState();
@@ -37894,7 +37958,9 @@ function besiegedClear(reason){
     besiegedRemoveCinematicOverlay("flprSiegeStartOverlay", "start");
     besiegedRemoveCinematicOverlay("flprStandaloneSiegeVictoryOverlay", "victory");
   }
+  const suppressedClear = besiegedCurrentRunSuppressed() || /suppressed|dev-tools/i.test(String(reason || ""));
   const wonTimedDefense = !!(
+    !suppressedClear &&
     reason !== "test-reset" &&
     besiegedIsDefenseRunning(live) &&
     besiegedDefenseLeftMs(live) > 0
@@ -37906,7 +37972,7 @@ function besiegedClear(reason){
   try{ saveState(); }catch(_){}
   besiegedEnsureDefenseTimer();
   try{ playSfx("redeem"); }catch(_){}
-  try{ toast("good", "SIEGE BROKEN", `${tableName} is free; ${wonTimedDefense ? "Extra Ball awarded." : "the tower unlocks again."}`, 3800); }catch(_){}
+  try{ toast("good", "SIEGE BROKEN", `${tableName} is free; ${wonTimedDefense ? "Extra Ball awarded." : (suppressedClear ? "no Extra Ball awarded." : "the tower unlocks again.")}`, 3800); }catch(_){}
   try{ renderAll(); }catch(_){}
   if(wonTimedDefense){
     try{
@@ -37926,6 +37992,12 @@ function besiegedClear(reason){
 }
 function besiegedActivate(opts){
   opts = opts || {};
+  if(besiegedCurrentRunSuppressed()){
+    if(opts.force){
+      try{ toast("info", "SIEGES SUPPRESSED", "Dev Tools suppression is on for this run; no Siege spawned.", 3000); }catch(_){}
+    }
+    return false;
+  }
   if(!opts.force && !besiegedEventsEnabled(ap?.slotData)) return false;
   if(besiegedIsActive()) return false;
   if(!opts.force && isBossDefeated()) return false;
@@ -37986,7 +38058,10 @@ function bossMaybeTriggerBesiegedEvent(opts){
   }catch(_){}
   return false;
 }
-try{ besiegedEnsureDefenseTimer(); }catch(_){}
+try{
+  if(besiegedCurrentRunSuppressed()) besiegedCancelActiveForSuppression("startup");
+  besiegedEnsureDefenseTimer();
+}catch(_){}
 function bossResetRetaliationState(phase){
   const nextPhase = String(phase || "phase1").toLowerCase() === "phase2" ? "phase2" : "phase1";
   state.bossRetaliation = {
@@ -54364,6 +54439,44 @@ function buildControlsNote(text){
   note.textContent = msg;
   return note;
 }
+function buildSiegeSuppressionControl(){
+  let wrap = document.getElementById("siegeSuppressionControl");
+  if(!wrap){
+    wrap = document.createElement("div");
+    wrap.id = "siegeSuppressionControl";
+    wrap.className = "ctrlCard";
+    wrap.innerHTML = `
+      <label class="cCheck" style="display:flex;align-items:center;gap:10px;margin:0 0 8px;">
+        <input type="checkbox" id="siegeSuppressForRunToggle">
+        <span>FORCE SIEGES OFF FOR CURRENT RUN</span>
+      </label>
+      <div class="cNote" id="siegeSuppressForRunNote"></div>
+    `;
+  }
+  updateBesiegedSuppressionUi(wrap);
+  return wrap;
+}
+function updateBesiegedSuppressionUi(root){
+  const scope = root || document;
+  const toggle = scope.querySelector ? scope.querySelector("#siegeSuppressForRunToggle") : document.getElementById("siegeSuppressForRunToggle");
+  const note = scope.querySelector ? scope.querySelector("#siegeSuppressForRunNote") : document.getElementById("siegeSuppressForRunNote");
+  const on = besiegedCurrentRunSuppressed();
+  if(toggle){
+    toggle.checked = on;
+    if(!toggle.__flprSiegeSuppressionBound){
+      toggle.__flprSiegeSuppressionBound = true;
+      toggle.addEventListener("change", ()=>{
+        try{ playSfx("click"); }catch(_){}
+        setBesiegedSuppressionForRun(toggle.checked, { reason:"dev-tools", toast:true });
+      });
+    }
+  }
+  if(note){
+    note.textContent = on
+      ? "Suppressed for this run. Random and test Siege spawns are blocked, active Sieges are cancelled, and Siege defense Extra Balls will not be awarded."
+      : "Seed Siege options still apply. Turn this on to suppress all Sieges for the current run without granting free Extra Balls.";
+  }
+}
 function buildFlprFontControlsDock(){
   let dock = document.getElementById("flprFontControlsDock");
   if(!dock){
@@ -54750,7 +54863,9 @@ function compactTestingControlsLayout(panelTesting){
   layout.appendChild(rightCol);
   stack.appendChild(layout);
 
+  const siegeSuppressionControl = buildSiegeSuppressionControl();
   makeControlsPanelSection(leftCol, "Boss State", [hpTestCard, bossDamageCard], { accent:"blue", mini:"card visibility / direct hp controls" });
+  makeControlsPanelSection(leftCol, "Run Suppression", [buildControlsNote("Current-run override for players who want to continue this seed without surprise Siege events."), siegeSuppressionControl], { accent:"red", mini:"siege override / no free EB" });
   makeControlsPanelSection(leftCol, "Boss Battle Flow", [buildControlsNote("Manual tests for boss hits, segment rolls, key progress, and the victory node."), bossFlowGrid], { accent:"red", mini:"damage / keys / finish state" });
   makeControlsPanelSection(leftCol, "Hints + Run Flow", [buildControlsNote("Shortcut tests for hint payouts, opening flow, and the victory stats handoff."), hintFlowGrid], { accent:"green", mini:"hint routing / opening / ending" });
   makeControlsPanelSection(rightCol, "Trap + Reward Popups", [buildControlsNote("Popup and reward simulations for traps, junk, balls, and achievements."), popupGrid], { accent:"gold", mini:"popups / rewards / trap visuals" });
