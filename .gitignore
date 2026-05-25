@@ -26,6 +26,15 @@ build/*
 !build/icon.ico
 !build/icon.png
 
+# Local task repository editor/generation artifacts
+flippermizer_task_repository.html
+flippermizer_task_repository_cfg.js
+flippermizer_task_repository_data.js
+task_repository_*.json
+tools/build_task_repository_data.py
+tools/merge_task_repository_suggestions.py
+tools/normalize_task_repository_style.js
+
 # Local AP generation/test output
 ap_multiworld_test/ap_user/basepatch.sfc
 ap_multiworld_test/ap_user/logs/
