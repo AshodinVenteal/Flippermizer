@@ -621,8 +621,8 @@
     style.textContent = `
       html.flprStandaloneWindowClient,
       html.flprStandaloneWindowClient body{
-        width:calc(var(--captureW) + var(--bonusLeaderboardW) + var(--controlsW) + var(--gutter) + 32px) !important;
-        height:var(--captureH) !important;
+        width:max(calc(var(--captureW) + var(--bonusLeaderboardW) + var(--controlsW) + var(--gutter) + 32px), 100vw) !important;
+        height:max(var(--captureH), 100vh) !important;
         overflow:hidden !important;
       }
       html.flprStandaloneWindowClient.flprStandaloneVerticalViewport,
@@ -645,6 +645,12 @@
         --flprStandaloneControlsH:512px !important;
       }
       body.flprStandaloneOriginalClient .stage{
+        width:max(calc(var(--captureW) + var(--bonusLeaderboardW) + var(--controlsW) + var(--gutter) + 32px), 100vw) !important;
+        height:max(var(--captureH), 100vh) !important;
+        min-width:calc(var(--captureW) + var(--bonusLeaderboardW) + var(--controlsW) + var(--gutter) + 32px) !important;
+        min-height:var(--captureH) !important;
+        justify-content:center !important;
+        align-items:flex-start !important;
         transform:none !important;
         transform-origin:top left !important;
         transition:filter .24s ease, opacity .24s ease !important;
@@ -659,6 +665,8 @@
         padding:102px 35px 20px !important;
         align-content:start !important;
         justify-items:center !important;
+        justify-content:initial !important;
+        align-items:initial !important;
         overflow:hidden !important;
         background:
           radial-gradient(96% 50% at 50% 12%, rgba(0,217,255,.16), transparent 60%),
@@ -4296,8 +4304,8 @@
       return;
     }
     const minControlsW = 880;
-    const targetW = Math.max(captureW + minControlsW + gutter + 32, viewportW);
-    const controlsW = Math.max(minControlsW, Math.round(targetW - captureW - gutter - 32));
+    const normalControlsW = 1280;
+    const controlsW = Math.max(minControlsW, normalControlsW);
     root.style.setProperty("--controlsW", `${controlsW}px`);
     root.style.setProperty("--flprStandaloneControlsH", `${Math.max(900, Math.round(captureH - 110))}px`);
     try{
