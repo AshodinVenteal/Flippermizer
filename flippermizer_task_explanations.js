@@ -358,6 +358,30 @@
       "start 3x playfield": "Playfield Multipliers - Hit the bell three times to start 2X playfield scoring, then hit the bell three more times while 2X is running to start 3X playfield for 20 seconds. Any bell hit during 3X resets the timer.",
       "start a multiball and collect a jackpot": "Qualify and start any main multiball, then shoot any lit jackpot shot before the multiball ends. Jam, Album, or Tour Multiball all satisfy the start requirement."
     },
+    "congo": {
+      "lock 1 ball for multiball": "Collect 4 diamonds to light a lock, then lock one ball at the left orbit or the upper-flipper shot under the volcano. Full Multiball requires 3 locked balls or defeating the second Gray Attack.",
+      "start multiball": "Collect 4 diamonds per lock and lock 3 balls at the left orbit or under-volcano shot, or defeat the second Gray Attack to instantly start Multiball."
+    },
+    "baywatch": {
+      "relight laser kick kickback": "Hit the right relight target/lane for Laser Kick until the kickback is active again.",
+      "rescue 1 swimmer": "Start any major shot mode by making the same major shot 3 times, then complete its lit rescue shot until one swimmer is rescued.",
+      "start a major shot mode": "Make the same major shot 3 times. Each of the 5 major shots can start its own mode when enough shots are made.",
+      "complete 3 lit shots in a major mode": "During any major shot mode, complete three of its required lit shots before the mode ends.",
+      "start multiball": "Lock 3 balls to start Baywatch Multiball. Even though only 3 locks are required, the mode begins as a 5-ball multiball.",
+      "start multiball and collect a jackpot": "Lock 3 balls to start Multiball, then shoot any lit Level 1 Guard shot jackpot before it is unlit.",
+      "collect a super jackpot": "Start Multiball, collect the Level 1 Guard shot jackpots to advance to Level 2, then shoot the left scoop for the Shark Super Jackpot."
+    },
+    "bad cats": {
+      "make 1 left ramp shot": "Make the left ramp shot once.",
+      "make 3 left ramp shots": "Repeat the left ramp three times. If the ramp is not lit on Cat's Meow, complete the required drop-target bank first.",
+      "complete either drop target bank birds or milk": "Clear either the Birds or Milk drop-target bank once. This also helps light the center Fishbowl ramp if it is unlit.",
+      "complete a drop target bank birds or milk": "Clear either the Birds or Milk drop-target bank once. This also helps light the center Fishbowl ramp if it is unlit.",
+      "complete both birds and milk banks": "Clear both named drop-target banks once: Birds and Milk.",
+      "complete both birds and milk drop target banks": "Clear both named drop-target banks once: Birds and Milk.",
+      "light jackpot 7 bank completions and collect it at the center ramp": "Complete the BAD CATS letters to light Jackpot, then shoot the center Fishbowl ramp to collect it.",
+      "light jackpot and collect it at the center ramp": "Complete the BAD CATS letters to light Jackpot, then shoot the center Fishbowl ramp to collect it.",
+      "light jackpot and complete center ramp twice": "Complete the BAD CATS letters each time and collect Jackpot at the center Fishbowl ramp two times total."
+    },
     "bride of pinbot": {
       "advance the metamorphosis steps once": "Bride face/metamorphosis - Shoot the left ramp into the Face structure to advance Bride progress. If the space shuttle is lit the ramp may divert to the PinBot board, but a slightly weaker ramp shot can still fall into the Face and advance the Bride."
     },
@@ -493,6 +517,9 @@
   }
 
   const SCORE_STRATEGY_OVERRIDES_BY_TABLE = Object.freeze({
+    [normalizeTableKey("AC/DC")]: "Build score to at least {target} before drain. Focus lit modes, jackpots, and bonus multipliers.",
+    [normalizeTableKey("Bad Cats")]: "Build score to at least {target} before drain. Focus lit modes, jackpots, and bonus multipliers.",
+    [normalizeTableKey("Baywatch")]: "Build score to at least {target} before drain. Focus lit modes, jackpots, and bonus multipliers.",
     [normalizeTableKey("Rolling Stones")]: "Score {target} on Rolling Stones. Best scoring: Collect Bonus - drop the Collect Bonus target, build 20/40/60 with 1-5 targets, then shoot the scoop. Target bank - clear the upper-right drops."
   });
   const SCORE_TARGET_OVERRIDES_BY_TABLE = Object.freeze({
