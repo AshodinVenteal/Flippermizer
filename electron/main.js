@@ -10,6 +10,7 @@ const APP_ICON_PACKAGE = path.join(__dirname, "..", "build", process.platform ==
 const OVERLAY_BASE_WIDTH = 910 + 306 + 1280 + 16 + 32;
 const OVERLAY_VERTICAL_BASE_WIDTH = 1180;
 const OVERLAY_BASE_HEIGHT = 1450;
+const OVERLAY_VERTICAL_BASE_HEIGHT = Math.round(OVERLAY_VERTICAL_BASE_WIDTH * 16 / 9);
 const DEFAULT_WINDOW_BOUNDS = { width: 1600, height: 960 };
 const MIN_WINDOW_BOUNDS = { width: 900, height: 640 };
 const WINDOW_STATE_FILE = "standalone-window-state.json";
@@ -209,7 +210,7 @@ function notifyOverlayViewport(win, viewportMode){
     const isVertical = !!mode.vertical;
     const width = Math.max(1, Math.round(Number(mode.width || 0) || 0));
     const height = Math.max(1, Math.round(Number(mode.height || 0) || 0));
-    const script = `(()=>{try{window.__flprElectronViewportMode={vertical:${isVertical ? "true" : "false"},width:${width},height:${height}};if(document.body){document.body.classList.toggle("flprStandaloneVerticalViewport",${isVertical ? "true" : "false"});}}catch(_){}try{window.dispatchEvent(new Event("resize"));}catch(_){}})();`;
+    const script = `(()=>{try{window.__flprElectronViewportMode={vertical:${isVertical ? "true" : "false"},width:${width},height:${height}};if(document.documentElement){document.documentElement.classList.toggle("flprStandaloneVerticalViewport",${isVertical ? "true" : "false"});}if(document.body){document.body.classList.toggle("flprStandaloneVerticalViewport",${isVertical ? "true" : "false"});}}catch(_){}try{window.dispatchEvent(new Event("resize"));}catch(_){}})();`;
     win.webContents.executeJavaScript(script).catch(()=>{});
   }, 0);
 }
@@ -221,7 +222,8 @@ function fitOverlayZoom(win){
   const height = Math.max(1, bounds.height || OVERLAY_BASE_HEIGHT);
   const vertical = height > width * 1.08;
   const baseWidth = vertical ? OVERLAY_VERTICAL_BASE_WIDTH : OVERLAY_BASE_WIDTH;
-  const zoom = Math.max(0.1, Math.min(2.5, width / baseWidth, height / OVERLAY_BASE_HEIGHT));
+  const baseHeight = vertical ? OVERLAY_VERTICAL_BASE_HEIGHT : OVERLAY_BASE_HEIGHT;
+  const zoom = Math.max(0.1, Math.min(2.5, width / baseWidth, height / baseHeight));
   try{
     if(Math.abs(win.webContents.getZoomFactor() - zoom) > 0.001){
       win.webContents.setZoomFactor(zoom);
