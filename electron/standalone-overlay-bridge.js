@@ -642,7 +642,7 @@
         --bonusLeaderboardW:0px !important;
         --gutter:12px !important;
         --flprStandaloneViewportH:1138px !important;
-        --flprStandaloneControlsH:560px !important;
+        --flprStandaloneControlsH:512px !important;
       }
       body.flprStandaloneOriginalClient .stage{
         transform:none !important;
@@ -656,7 +656,7 @@
         grid-template-columns:1fr !important;
         grid-template-rows:var(--captureH) minmax(0, var(--flprStandaloneControlsH)) !important;
         gap:14px !important;
-        padding:52px 35px 20px !important;
+        padding:102px 35px 20px !important;
         align-content:start !important;
         justify-items:center !important;
         overflow:hidden !important;
@@ -1718,6 +1718,15 @@
         image-rendering:auto !important;
         filter:drop-shadow(0 0 12px rgba(0,217,255,.42)) drop-shadow(0 0 6px rgba(255,86,214,.26)) !important;
       }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeHud{
+        max-width:390px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeHudLogo{
+        width:390px !important;
+        height:86px !important;
+        flex:0 0 390px !important;
+        object-position:left center !important;
+      }
       body.flprStandaloneOriginalClient .standaloneModeSwitchHud{
         position:fixed !important;
         top:10px !important;
@@ -1738,6 +1747,26 @@
       }
       body.flprStandaloneOriginalClient .standaloneModeHudBtn.houseBtn{
         min-width:126px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeSwitchHud{
+        gap:8px !important;
+        padding:5px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeHudBtn{
+        min-width:72px !important;
+        min-height:46px !important;
+        padding:7px 12px !important;
+        font-size:16px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeHudBtn.houseBtn{
+        min-width:108px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneProfileHud{
+        top:60px !important;
+        right:18px !important;
+        gap:10px !important;
+        transform:scale(.88) !important;
+        transform-origin:top right !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeSwitchHud[hidden]{
         display:none !important;
@@ -4256,10 +4285,10 @@
     const captureH = readRootPx("--captureH", 1450);
     const gutter = readRootPx("--gutter", 16);
     const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
-    const isVerticalViewport = root.classList.contains("flprStandaloneVerticalViewport") || document.body?.classList?.contains("flprStandaloneVerticalViewport");
+    const isVerticalViewport = standaloneIsVerticalViewport();
     if(isVerticalViewport){
       root.style.setProperty("--controlsW", "1110px");
-      root.style.setProperty("--flprStandaloneControlsH", "560px");
+      root.style.setProperty("--flprStandaloneControlsH", "512px");
       root.style.setProperty("--flprStandaloneViewportH", "1138px");
       root.style.removeProperty("--flprStandaloneBaseW");
       root.style.removeProperty("--flprStandaloneWindowScale");
@@ -4326,6 +4355,16 @@
   function standaloneCurrentMenuMode(){
     const raw = String(standaloneProfileRuntime.selectedMode || "").trim().toLowerCase();
     return raw === "singleplayer" ? "singleplayer" : "archipelago";
+  }
+
+  function standaloneIsVerticalViewport(){
+    try{
+      if(window.__flprElectronViewportMode?.vertical) return true;
+      return document.documentElement?.classList?.contains("flprStandaloneVerticalViewport")
+        || document.body?.classList?.contains("flprStandaloneVerticalViewport");
+    }catch(_){
+      return false;
+    }
   }
 
   function standalonePrimaryTabForMode(mode){
@@ -6878,6 +6917,9 @@
   }
 
   function standaloneDefaultLogoPosition(){
+    if(standaloneIsVerticalViewport()){
+      return { x:24, y:60 };
+    }
     try{
       const controls = document.querySelector(".controls") || document.querySelector(".controlsHead, .controlsHeadTitle") || document.querySelector(".controlsBody");
       const rect = controls?.getBoundingClientRect?.();
@@ -6916,6 +6958,11 @@
       const savedX = Number(standaloneSettings.logoX);
       const savedY = Number(standaloneSettings.logoY);
       const pos = standaloneDefaultLogoPosition();
+      if(standaloneIsVerticalViewport()){
+        standaloneSetLogoPosition(pos.x, pos.y, { save:false });
+        hud.classList.toggle("logoUnlocked", standaloneSettings.logoLocked === false);
+        return;
+      }
       const savedInMenuLane = hasSavedPosition &&
         Number.isFinite(savedX) &&
         Number.isFinite(savedY) &&
@@ -6937,6 +6984,13 @@
       const profile = document.getElementById("standaloneProfileHud");
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 1280;
       const hudRect = hud.getBoundingClientRect?.();
+      if(standaloneIsVerticalViewport()){
+        hud.style.setProperty("left", "430px", "important");
+        hud.style.setProperty("right", "auto", "important");
+        hud.style.setProperty("top", "60px", "important");
+        hud.style.setProperty("transform", "none", "important");
+        return;
+      }
       const profileRect = profile?.getBoundingClientRect?.();
       const width = Math.max(260, Number(hudRect?.width || 360));
       const profileLeft = Number(profileRect?.left || viewportW);
