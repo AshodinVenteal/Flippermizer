@@ -22988,18 +22988,21 @@ const FLPR_OVERLAY_CHANGELOG = computeOverlayRecentChanges();
 const FLPR_PATCH_NOTES_SEEN_LS_KEY = "flpr_changelog_patch_notes_seen_v1";
 const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1";
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
+const FLPR_PATCH_NOTES_RELEASE_LABEL = "May 25 Shared Hotfix";
+const FLPR_PATCH_NOTES_ITEMS_SHARED = [
+  {
+    k: "May 25 Shared Hotfix",
+    d: "Today's build bundles the latest layout, AP item-log, and Visuals / Music fixes into one shared hotfix note for the release."
+  }
+];
 const FLPR_PATCH_NOTES_ITEMS_HOME = [
   {
-    k: "Vertical layout hotfix",
+    k: "Home portrait layout",
     d: "Portrait Electron windows keep the tower at its normal size, push the header down, and fill the extra space with a Checks-style background."
   },
   {
     k: "AP item log polish",
     d: "Remote progression receipts are de-duplicated, newest progression cards slot in from the top, and Item Log / Connection Log sound toggles were added."
-  },
-  {
-    k: "Visuals tools cleanup",
-    d: "Visuals / Music now keeps advanced Dev Tools collapsed and gives the Renderer panel its own Hide control."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_STREAM = [
@@ -23085,8 +23088,8 @@ function flprEnsurePatchNotesOverlay(){
 }
 function flprPatchNotesItemsForEdition(edition){
   const ed = String(edition || flprPatchNotesEditionLabel() || "").trim();
-  if(ed === "Stream Edition") return FLPR_PATCH_NOTES_ITEMS_STREAM;
-  return FLPR_PATCH_NOTES_ITEMS_HOME;
+  const editionItems = ed === "Stream Edition" ? FLPR_PATCH_NOTES_ITEMS_STREAM : FLPR_PATCH_NOTES_ITEMS_HOME;
+  return FLPR_PATCH_NOTES_ITEMS_SHARED.concat(editionItems).slice(0, 3);
 }
 function flprPatchNotesMarkup(edition){
   const items = Array.isArray(flprPatchNotesItemsForEdition(edition)) ? flprPatchNotesItemsForEdition(edition) : [];
@@ -23106,7 +23109,7 @@ function flprShowPatchNotes(opts){
     const sub = overlay.querySelector("#flprPatchNotesSub");
     const body = overlay.querySelector("#flprPatchNotesBody");
     const dontShow = overlay.querySelector("#flprPatchNotesDontShow");
-    if(sub) sub.textContent = `${edition}; version ${FLPR_PATCH_NOTES_BUILD_ID}`;
+    if(sub) sub.textContent = `${edition}; ${FLPR_PATCH_NOTES_RELEASE_LABEL}; version ${FLPR_PATCH_NOTES_BUILD_ID}`;
     if(body) body.innerHTML = flprPatchNotesMarkup(edition);
     overlay.dataset.patchNotesValue = flprPatchNotesStorageValue(edition);
     if(dontShow) dontShow.checked = false;
