@@ -2858,7 +2858,7 @@
         box-sizing:border-box !important;
         cursor:pointer !important;
         display:grid !important;
-        grid-template-columns:96px minmax(0, 1fr) !important;
+        grid-template-columns:124px minmax(0, 1fr) !important;
         align-items:start !important;
         gap:8px !important;
         min-height:116px !important;
@@ -2935,6 +2935,9 @@
       }
       body.flprStandaloneOriginalClient .recvBody .recvTime{
         min-width:0 !important;
+        max-width:100% !important;
+        overflow:hidden !important;
+        text-overflow:clip !important;
         white-space:nowrap !important;
         font-variant-numeric:tabular-nums !important;
         font-size:15px !important;
