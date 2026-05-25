@@ -649,11 +649,17 @@
         height:max(var(--captureH), 100vh) !important;
         min-width:calc(var(--captureW) + var(--bonusLeaderboardW) + var(--controlsW) + var(--gutter) + 32px) !important;
         min-height:var(--captureH) !important;
-        justify-content:center !important;
+        justify-content:flex-start !important;
         align-items:flex-start !important;
         transform:none !important;
         transform-origin:top left !important;
         transition:filter .24s ease, opacity .24s ease !important;
+      }
+      body.flprStandaloneOriginalClient:not(.flprStandaloneVerticalViewport) .stage{
+        width:max(calc(var(--captureW) + var(--bonusLeaderboardW) + var(--controlsW) + var(--gutter) + 32px), 100vw) !important;
+        height:100vh !important;
+        min-width:0 !important;
+        min-height:0 !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .stage{
         width:1180px !important;
@@ -2090,6 +2096,12 @@
         gap:6px !important;
         padding-bottom:8px !important;
       }
+      body.flprStandaloneOriginalClient:not(.flprStandaloneVerticalViewport) .capture{
+        flex:0 0 var(--captureW) !important;
+        width:var(--captureW) !important;
+        height:var(--captureH) !important;
+        max-height:var(--captureH) !important;
+      }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .capture{
         grid-column:1 !important;
         grid-row:1 !important;
@@ -2116,6 +2128,12 @@
         height:var(--flprStandaloneViewportH, calc(var(--captureH) - 75px - 14px - 22px - 198px)) !important;
         max-height:var(--flprStandaloneViewportH, calc(var(--captureH) - 75px - 14px - 22px - 198px)) !important;
         margin-bottom:0 !important;
+      }
+      body.flprStandaloneOriginalClient:not(.flprStandaloneVerticalViewport) #viewOverview #grid{
+        grid-template-columns:repeat(auto-fit, minmax(158px, 1fr)) !important;
+        grid-template-rows:none !important;
+        grid-auto-rows:minmax(150px, 1fr) !important;
+        align-content:stretch !important;
       }
       body.flprStandaloneOriginalClient .randomizerIntro{
         top:81px !important;
@@ -4289,12 +4307,13 @@
     const root = document.documentElement;
     root.classList.add("flprStandaloneWindowClient");
     root.style.setProperty("--bonusLeaderboardW", "0px");
-    const captureW = readRootPx("--captureW", 910);
-    const captureH = readRootPx("--captureH", 1450);
     const gutter = readRootPx("--gutter", 16);
     const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
+    const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
     const isVerticalViewport = standaloneIsVerticalViewport();
     if(isVerticalViewport){
+      root.style.setProperty("--captureW", "910px");
+      root.style.setProperty("--captureH", "1450px");
       root.style.setProperty("--controlsW", "1110px");
       root.style.setProperty("--flprStandaloneControlsH", "512px");
       root.style.setProperty("--flprStandaloneViewportH", "1138px");
@@ -4303,11 +4322,24 @@
       try{ standaloneRenderModeHud(); }catch(_){}
       return;
     }
-    const minControlsW = 880;
-    const normalControlsW = 1280;
-    const controlsW = Math.max(minControlsW, normalControlsW);
+    const stagePadX = 32;
+    const stagePadY = 32;
+    const minCaptureW = 910;
+    const maxCaptureW = 1180;
+    const minControlsW = 1280;
+    const minCaptureH = 1180;
+    const minLayoutW = minCaptureW + minControlsW + gutter + stagePadX;
+    const layoutW = Math.max(minLayoutW, Math.round(viewportW || minLayoutW));
+    const contentW = Math.max(minCaptureW + minControlsW + gutter, layoutW - stagePadX);
+    const extraW = Math.max(0, contentW - (minCaptureW + minControlsW + gutter));
+    const captureW = Math.min(maxCaptureW, minCaptureW + Math.round(extraW * 0.38));
+    const controlsW = Math.max(minControlsW, Math.round(contentW - captureW - gutter));
+    const layoutH = Math.max(minCaptureH + stagePadY, Math.round(viewportH || (1450 + stagePadY)));
+    const captureH = Math.max(minCaptureH, layoutH - stagePadY);
+    root.style.setProperty("--captureW", `${captureW}px`);
+    root.style.setProperty("--captureH", `${captureH}px`);
     root.style.setProperty("--controlsW", `${controlsW}px`);
-    root.style.setProperty("--flprStandaloneControlsH", `${Math.max(900, Math.round(captureH - 110))}px`);
+    root.style.setProperty("--flprStandaloneControlsH", `${Math.max(900, Math.round(captureH - 84))}px`);
     try{
       const header = document.querySelector(".capture > .header");
       const bossDock = document.getElementById("bossDock");
