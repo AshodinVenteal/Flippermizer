@@ -760,6 +760,52 @@
         justify-content:space-between !important;
         align-items:flex-start !important;
         gap:18px !important;
+        position:relative !important;
+        z-index:3 !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartHeadActions{
+        display:flex !important;
+        align-items:flex-start !important;
+        justify-content:flex-end !important;
+        gap:10px !important;
+        flex-wrap:wrap !important;
+        min-width:340px !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartModeSwitch{
+        display:flex !important;
+        gap:8px !important;
+        flex-wrap:wrap !important;
+        justify-content:flex-end !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartModeBtn{
+        border:1px solid rgba(0,166,255,.62) !important;
+        border-radius:10px !important;
+        background:linear-gradient(180deg, rgba(7,26,44,.94), rgba(3,16,26,.94)) !important;
+        color:rgba(232,250,255,.88) !important;
+        padding:12px 14px !important;
+        min-height:42px !important;
+        font-family:var(--flprUiFontFamily, var(--mono, monospace)) !important;
+        font-size:14px !important;
+        line-height:1.1 !important;
+        cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartModeBtn.active{
+        border-color:rgba(34,255,136,.92) !important;
+        color:rgba(34,255,136,.98) !important;
+        box-shadow:0 0 18px rgba(34,255,136,.18) !important;
+      }
+      body.flprStandaloneOriginalClient .flprQuickStartCloseX{
+        width:58px !important;
+        min-width:58px !important;
+        height:58px !important;
+        padding:0 !important;
+        border-radius:14px !important;
+        display:inline-flex !important;
+        align-items:center !important;
+        justify-content:center !important;
+        font-family:var(--flprTitleFontFamily, var(--flprUiFontFamily)) !important;
+        font-size:28px !important;
+        line-height:1 !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartTitle{
         font-family:var(--flprTitleFontFamily, var(--flprUiFontFamily)) !important;
@@ -778,6 +824,8 @@
         display:flex !important;
         flex-wrap:wrap !important;
         gap:8px !important;
+        position:relative !important;
+        z-index:3 !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartTab{
         border:1px solid rgba(0,166,255,.62) !important;
@@ -802,6 +850,8 @@
         border-radius:12px !important;
         padding:20px !important;
         background:linear-gradient(180deg, rgba(0,21,36,.72), rgba(0,8,18,.80)) !important;
+        position:relative !important;
+        z-index:1 !important;
       }
       body.flprStandaloneOriginalClient .flprQuickStartGrid{
         display:grid !important;
@@ -951,6 +1001,8 @@
         body.flprStandaloneOriginalClient .flprQuickGuideGrid{ grid-template-columns:1fr !important; }
         body.flprStandaloneOriginalClient .flprQuickStartHead,
         body.flprStandaloneOriginalClient .flprQuickStartFooter{ flex-direction:column !important; align-items:stretch !important; }
+        body.flprStandaloneOriginalClient .flprQuickStartHeadActions{ min-width:0 !important; justify-content:flex-start !important; }
+        body.flprStandaloneOriginalClient .flprQuickStartModeSwitch{ justify-content:flex-start !important; }
       }
       body.flprStandaloneOriginalClient .standaloneModeCard{
         width:min(1160px, calc(100vw - 48px)) !important;
@@ -5595,16 +5647,66 @@
     return `
       <div class="flprQuickStartPanel wide">
         <strong>UI GUIDE</strong>
-        <p>Pick the mode you are using. The guide changes because Singleplayer and Archipelago have different responsibilities.</p>
-        <div class="flprQuickGuideSwitch">
-          <button type="button" data-quick-guide-mode="sp" class="${mode === "sp" ? "active" : ""}">SINGLEPLAYER</button>
-          <button type="button" data-quick-guide-mode="mp" class="${mode === "mp" ? "active" : ""}">MULTIPLAYER / AP</button>
-        </div>
+        <p>Use the Singleplayer / Multiplayer buttons in the top-right of this window to switch which UI responsibilities are explained here.</p>
         <div class="flprQuickGuideGrid">
           ${items.map((item)=>standaloneQuickGuideItem(item[0], item[1], item[2])).join("")}
         </div>
       </div>
     `;
+  }
+
+  function standaloneSyncQuickStartModeButtons(overlay){
+    const root = overlay || document.getElementById("flprQuickStartOverlay");
+    if(!root) return;
+    const mode = standaloneQuickGuideMode();
+    root.querySelectorAll("[data-quick-guide-mode]").forEach((btn)=>{
+      btn.classList.toggle("active", String(btn.dataset.quickGuideMode || "") === mode);
+    });
+  }
+
+  function standaloneBindQuickStartControls(overlay){
+    if(!overlay) return;
+    overlay.querySelectorAll("[data-quick-start-tab]").forEach((btn)=>{
+      if(btn.__flprQuickStartBound) return;
+      btn.__flprQuickStartBound = true;
+      btn.addEventListener("click", (event)=>{
+        event.preventDefault();
+        event.stopPropagation();
+        playClick();
+        standaloneSetQuickStartTab(btn.dataset.quickStartTab || "start");
+      }, true);
+    });
+    overlay.querySelectorAll("[data-quick-guide-mode]").forEach((btn)=>{
+      if(btn.__flprQuickGuideModeBound) return;
+      btn.__flprQuickGuideModeBound = true;
+      btn.addEventListener("click", (event)=>{
+        event.preventDefault();
+        event.stopPropagation();
+        playClick();
+        overlay.dataset.quickGuideMode = String(btn.dataset.quickGuideMode || "sp");
+        standaloneSetQuickStartTab("guide");
+      }, true);
+    });
+    overlay.querySelectorAll("[data-quick-start-close]").forEach((btn)=>{
+      if(btn.__flprQuickCloseBound) return;
+      btn.__flprQuickCloseBound = true;
+      btn.addEventListener("click", (event)=>{
+        event.preventDefault();
+        event.stopPropagation();
+        standaloneCloseQuickStart({ markSeen:true });
+      }, true);
+    });
+    const tableBtn = overlay.querySelector("#flprQuickStartTablesBtn");
+    if(tableBtn && !tableBtn.__flprQuickTablesBound){
+      tableBtn.__flprQuickTablesBound = true;
+      tableBtn.addEventListener("click", (event)=>{
+        event.preventDefault();
+        event.stopPropagation();
+        playClick();
+        standaloneSetQuickStartTab("tables");
+      }, true);
+    }
+    standaloneSyncQuickStartModeButtons(overlay);
   }
 
   function standaloneQuickStartTabMarkup(tab){
@@ -5670,12 +5772,16 @@
     });
     const body = overlay.querySelector("#flprQuickStartBody");
     if(body) body.innerHTML = standaloneQuickStartTabMarkup(key);
+    standaloneBindQuickStartControls(overlay);
     return true;
   }
 
   function standaloneEnsureQuickStartOverlay(){
     let overlay = document.getElementById("flprQuickStartOverlay");
-    if(overlay) return overlay;
+    if(overlay){
+      standaloneBindQuickStartControls(overlay);
+      return overlay;
+    }
     overlay = document.createElement("div");
     overlay.id = "flprQuickStartOverlay";
     overlay.className = "flprQuickStartOverlay";
@@ -5688,7 +5794,13 @@
             <div class="flprQuickStartTitle" id="flprQuickStartTitle">Getting Started</div>
             <div class="flprQuickStartSub">A readable guide for Home Edition: seeds, worlds, checks, Ball 1, UI parts, sieges, VPX workflow, and the table catalog.</div>
           </div>
-          <button class="cBtn" id="flprQuickStartCloseTop" type="button">GOT IT</button>
+          <div class="flprQuickStartHeadActions">
+            <div class="flprQuickStartModeSwitch" aria-label="Guide mode">
+              <button class="flprQuickStartModeBtn" type="button" data-quick-guide-mode="sp">SINGLEPLAYER</button>
+              <button class="flprQuickStartModeBtn" type="button" data-quick-guide-mode="mp">MULTIPLAYER</button>
+            </div>
+            <button class="cBtn flprQuickStartCloseX" id="flprQuickStartCloseTop" type="button" data-quick-start-close aria-label="Close Getting Started">X</button>
+          </div>
         </div>
         <div class="flprQuickStartTabs" role="tablist">
           <button class="flprQuickStartTab active" type="button" data-quick-start-tab="start">START</button>
@@ -5706,7 +5818,7 @@
           </label>
           <div class="flprQuickStartActions">
             <button class="cBtn gray" id="flprQuickStartTablesBtn" type="button">TABLE LIST</button>
-            <button class="cBtn" id="flprQuickStartClose" type="button">GOT IT</button>
+            <button class="cBtn" id="flprQuickStartClose" type="button" data-quick-start-close>CLOSE</button>
           </div>
         </div>
       </div>
@@ -5725,13 +5837,8 @@
         standaloneSetQuickStartTab("guide");
       }
     });
-    overlay.querySelector("#flprQuickStartClose")?.addEventListener("click", ()=>standaloneCloseQuickStart({ markSeen:true }));
-    overlay.querySelector("#flprQuickStartCloseTop")?.addEventListener("click", ()=>standaloneCloseQuickStart({ markSeen:true }));
-    overlay.querySelector("#flprQuickStartTablesBtn")?.addEventListener("click", ()=>{
-      playClick();
-      standaloneSetQuickStartTab("tables");
-    });
     document.body.appendChild(overlay);
+    standaloneBindQuickStartControls(overlay);
     standaloneSetQuickStartTab("start");
     return overlay;
   }
@@ -5739,6 +5846,7 @@
   function standaloneOpenQuickStart(tab, opts){
     opts = opts || {};
     const overlay = standaloneEnsureQuickStartOverlay();
+    standaloneBindQuickStartControls(overlay);
     standaloneSetQuickStartTab(tab || "start");
     const dontShow = overlay.querySelector("#flprQuickStartDontShow");
     if(dontShow) dontShow.checked = !!opts.auto;
