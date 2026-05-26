@@ -310,7 +310,7 @@ function fitOverlayZoom(win){
   const vertical = height > width * 1.08;
   const baseWidth = vertical ? OVERLAY_VERTICAL_BASE_WIDTH : OVERLAY_BASE_WIDTH;
   const baseHeight = vertical ? OVERLAY_VERTICAL_BASE_HEIGHT : OVERLAY_BASE_HEIGHT;
-  const zoom = Math.max(0.1, Math.min(2.5, width / baseWidth, height / baseHeight));
+  const zoom = vertical ? 1 : Math.max(0.1, Math.min(2.5, width / baseWidth, height / baseHeight));
   try{
     if(Math.abs(win.webContents.getZoomFactor() - zoom) > 0.001){
       win.webContents.setZoomFactor(zoom);

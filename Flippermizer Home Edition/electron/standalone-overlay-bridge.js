@@ -4409,33 +4409,67 @@
     const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
     const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
     const isVerticalViewport = standaloneIsVerticalViewport();
+    const setLayoutVar = (name, value)=>{
+      root.style.setProperty(name, value);
+      try{ document.body?.style?.setProperty(name, value, "important"); }catch(_){}
+    };
+    const clearBodyLayoutVars = ()=>{
+      try{
+        [
+          "--captureW",
+          "--captureH",
+          "--controlsW",
+          "--gutter",
+          "--flprStandaloneControlsH",
+          "--flprStandaloneViewportH",
+          "--flprStandalonePortraitPadX",
+          "--flprStandalonePortraitPadTop",
+          "--flprStandalonePortraitPadBottom"
+        ].forEach((name)=>document.body?.style?.removeProperty(name));
+      }catch(_){}
+    };
     if(isVerticalViewport){
-      const portraitPadX = clamp(Math.round((viewportW || 1080) * 0.022), 18, 32);
-      const portraitPadTop = clamp(Math.round((viewportH || 1920) * 0.058), 94, 118);
-      const portraitPadBottom = clamp(Math.round((viewportH || 1920) * 0.01), 14, 24);
-      const portraitGap = clamp(Math.round((viewportH || 1920) * 0.007), 10, 16);
-      const availableW = Math.max(320, Math.round((viewportW || 1080) - (portraitPadX * 2)));
+      const electronViewport = window.__flprElectronViewportMode && typeof window.__flprElectronViewportMode === "object"
+        ? window.__flprElectronViewportMode
+        : null;
+      const layoutW = Math.max(360, Math.round(Number(electronViewport?.width || 0) || viewportW || 1080));
+      const layoutH = Math.max(640, Math.round(Number(electronViewport?.height || 0) || viewportH || 1920));
+      const portraitPadX = clamp(Math.round(layoutW * 0.022), 14, 28);
+      const portraitPadTop = clamp(Math.round(layoutH * 0.058), 74, 112);
+      const portraitPadBottom = clamp(Math.round(layoutH * 0.01), 10, 22);
+      const portraitGap = clamp(Math.round(layoutH * 0.007), 8, 14);
+      const availableW = Math.max(300, Math.round(layoutW - (portraitPadX * 2)));
       const controlsW = Math.min(1110, availableW);
       const captureW = Math.min(910, controlsW);
-      const controlsH = clamp(Math.round((viewportH || 1920) * 0.27), 430, 540);
-      const captureH = Math.max(720, Math.min(1450, Math.round((viewportH || 1920) - portraitPadTop - portraitPadBottom - portraitGap - controlsH)));
+      const availableH = Math.max(360, Math.round(layoutH - portraitPadTop - portraitPadBottom - portraitGap));
+      const controlsMinH = layoutH < 900 ? 220 : (layoutH < 1500 ? 320 : 430);
+      const controlsMaxH = layoutH < 1500 ? 450 : 540;
+      let controlsH = clamp(Math.round(availableH * 0.31), controlsMinH, controlsMaxH);
+      const minCaptureH = clamp(Math.round(availableH * 0.52), 300, 720);
+      let captureH = Math.round(availableH - controlsH);
+      if(captureH < minCaptureH){
+        controlsH = Math.max(220, Math.round(availableH - minCaptureH));
+        captureH = Math.round(availableH - controlsH);
+      }
+      captureH = Math.max(240, Math.min(1700, captureH));
       const headerH = 75;
-      const bossH = 170;
-      const viewportReserve = 48;
-      root.style.setProperty("--captureW", `${captureW}px`);
-      root.style.setProperty("--captureH", `${captureH}px`);
-      root.style.setProperty("--controlsW", `${controlsW}px`);
-      root.style.setProperty("--gutter", `${portraitGap}px`);
-      root.style.setProperty("--flprStandaloneControlsH", `${controlsH}px`);
-      root.style.setProperty("--flprStandaloneViewportH", `${Math.max(520, Math.round(captureH - headerH - bossH - viewportReserve))}px`);
-      root.style.setProperty("--flprStandalonePortraitPadX", `${portraitPadX}px`);
-      root.style.setProperty("--flprStandalonePortraitPadTop", `${portraitPadTop}px`);
-      root.style.setProperty("--flprStandalonePortraitPadBottom", `${portraitPadBottom}px`);
+      const bossH = layoutH < 1050 ? 140 : 170;
+      const viewportReserve = layoutH < 1200 ? 32 : 48;
+      setLayoutVar("--captureW", `${captureW}px`);
+      setLayoutVar("--captureH", `${captureH}px`);
+      setLayoutVar("--controlsW", `${controlsW}px`);
+      setLayoutVar("--gutter", `${portraitGap}px`);
+      setLayoutVar("--flprStandaloneControlsH", `${controlsH}px`);
+      setLayoutVar("--flprStandaloneViewportH", `${Math.max(220, Math.round(captureH - headerH - bossH - viewportReserve))}px`);
+      setLayoutVar("--flprStandalonePortraitPadX", `${portraitPadX}px`);
+      setLayoutVar("--flprStandalonePortraitPadTop", `${portraitPadTop}px`);
+      setLayoutVar("--flprStandalonePortraitPadBottom", `${portraitPadBottom}px`);
       root.style.removeProperty("--flprStandaloneBaseW");
       root.style.removeProperty("--flprStandaloneWindowScale");
       try{ standaloneRenderModeHud(); }catch(_){}
       return;
     }
+    clearBodyLayoutVars();
     gutter = 16;
     root.style.setProperty("--gutter", "16px");
     root.style.removeProperty("--flprStandalonePortraitPadX");
