@@ -1,0 +1,12 @@
+{
+  "kind": "flippermizer_task_repository_manifest",
+  "version": "2026.05.26.1",
+  "updatedAt": "2026-05-26T19:30:00Z",
+  "channel": "stable",
+  "cfgUrl": "flippermizer-task-repository-cfg.json",
+  "sha256": "b8b435c8c5a987f61a5c07cb968e0962790607b5e49b3bd7c77608184bdc78ab",
+  "pollSeconds": 1800,
+  "minHomeVersion": "1.1.0",
+  "minStreamVersion": "1.1.0",
+  "notes": "Stable task repository override pack. Clients merge this after bundled defaults and before local editor overrides."
+}
