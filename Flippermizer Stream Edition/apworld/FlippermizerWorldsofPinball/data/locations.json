@@ -1,0 +1,5922 @@
+[
+    {
+        "name": "Medieval Madness - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:1|"
+    },
+    {
+        "name": "Medieval Madness - Easy Score (2,540,285+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:1|"
+    },
+    {
+        "name": "Medieval Madness - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:2|"
+    },
+    {
+        "name": "Medieval Madness - Medium Score (7,249,268+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:2|"
+    },
+    {
+        "name": "Medieval Madness - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:3|"
+    },
+    {
+        "name": "Medieval Madness - Hard Score (16,228,435+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MedievalMadness",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Medieval Madness:3|"
+    },
+    {
+        "name": "Attack from Mars - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:1|"
+    },
+    {
+        "name": "Attack from Mars - Easy Score (371,293,964+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:1|"
+    },
+    {
+        "name": "Attack from Mars - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:2|"
+    },
+    {
+        "name": "Attack from Mars - Medium Score (896,531,739+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:2|"
+    },
+    {
+        "name": "Attack from Mars - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:3|"
+    },
+    {
+        "name": "Attack from Mars - Hard Score (1,794,034,514+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "AttackfromMars",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Attack from Mars:3|"
+    },
+    {
+        "name": "World Cup Soccer - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:1|"
+    },
+    {
+        "name": "World Cup Soccer - Easy Score (121,428,642+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:1|"
+    },
+    {
+        "name": "World Cup Soccer - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:2|"
+    },
+    {
+        "name": "World Cup Soccer - Medium Score (267,003,082+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:2|"
+    },
+    {
+        "name": "World Cup Soccer - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:3|"
+    },
+    {
+        "name": "World Cup Soccer - Hard Score (482,642,542+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldCupSoccer",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Cup Soccer:3|"
+    },
+    {
+        "name": "The Getaway - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Getaway:1|"
+    },
+    {
+        "name": "The Getaway - Easy Score (12,853,713+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Getaway:1|"
+    },
+    {
+        "name": "The Getaway - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Getaway:2|"
+    },
+    {
+        "name": "The Getaway - Medium Score (29,933,214+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Getaway:2|"
+    },
+    {
+        "name": "The Getaway - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Getaway:3|"
+    },
+    {
+        "name": "The Getaway - Hard Score (60,918,207+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheGetaway",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Getaway:3|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:1|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Easy Score (5,412,495+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:1|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:2|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Medium Score (15,312,567+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:2|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:3|"
+    },
+    {
+        "name": "Star Trek Stern 2013 - Hard Score (36,085,237+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StarTrekStern2013",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Star Trek Stern 2013:3|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:1|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Easy Score (992,834+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:1|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:2|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Medium Score (2,872,762+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:2|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:3|"
+    },
+    {
+        "name": "Tales of the Arabian Nights - Hard Score (6,432,610+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TalesoftheArabianNights",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Tales of the Arabian Nights:3|"
+    },
+    {
+        "name": "Fathom - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Fathom:1|"
+    },
+    {
+        "name": "Fathom - Easy Score (93,187+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Fathom:1|"
+    },
+    {
+        "name": "Fathom - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Fathom:2|"
+    },
+    {
+        "name": "Fathom - Medium Score (293,655+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Fathom:2|"
+    },
+    {
+        "name": "Fathom - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Fathom:3|"
+    },
+    {
+        "name": "Fathom - Hard Score (718,507+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Fathom",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Fathom:3|"
+    },
+    {
+        "name": "Hook - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hook:1|"
+    },
+    {
+        "name": "Hook - Easy Score (6,859,062+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hook:1|"
+    },
+    {
+        "name": "Hook - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hook:2|"
+    },
+    {
+        "name": "Hook - Medium Score (19,549,049+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hook:2|"
+    },
+    {
+        "name": "Hook - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hook:3|"
+    },
+    {
+        "name": "Hook - Hard Score (46,641,687+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Hook",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hook:3|"
+    },
+    {
+        "name": "Congo - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Congo:1|"
+    },
+    {
+        "name": "Congo - Easy Score (99,810,138+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Congo:1|"
+    },
+    {
+        "name": "Congo - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Congo:2|"
+    },
+    {
+        "name": "Congo - Medium Score (246,246,985+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Congo:2|"
+    },
+    {
+        "name": "Congo - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Congo:3|"
+    },
+    {
+        "name": "Congo - Hard Score (488,713,718+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Congo",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Congo:3|"
+    },
+    {
+        "name": "Mystery Castle - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:1|"
+    },
+    {
+        "name": "Mystery Castle - Easy Score (38,358,887+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:1|"
+    },
+    {
+        "name": "Mystery Castle - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:2|"
+    },
+    {
+        "name": "Mystery Castle - Medium Score (110,619,814+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:2|"
+    },
+    {
+        "name": "Mystery Castle - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:3|"
+    },
+    {
+        "name": "Mystery Castle - Hard Score (256,373,930+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MysteryCastle",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Mystery Castle:3|"
+    },
+    {
+        "name": "The A-Team - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The A-Team:1|"
+    },
+    {
+        "name": "The A-Team - Easy Score (12,500,000+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The A-Team:1|"
+    },
+    {
+        "name": "The A-Team - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The A-Team:2|"
+    },
+    {
+        "name": "The A-Team - Medium Score (54,687,500+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The A-Team:2|"
+    },
+    {
+        "name": "The A-Team - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The A-Team:3|"
+    },
+    {
+        "name": "The A-Team - Hard Score (96,875,000+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheATeam",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The A-Team:3|"
+    },
+    {
+        "name": "Batman 66 - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Batman66",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Batman 66:1|"
+    },
+    {
+        "name": "Batman 66 - Easy Score (13,407,251+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Batman66",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Batman 66:1|"
+    },
+    {
+        "name": "Batman 66 - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Batman66",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Batman 66:2|"
+    },
+    {
+        "name": "Batman 66 - Medium Score (38,053,082+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Batman66",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Batman 66:2|"
+    },
+    {
+        "name": "Batman 66 - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Batman66",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Batman 66:3|"
+    },
+    {
+        "name": "Batman 66 - Hard Score (101,591,506+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Batman66",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Batman 66:3|"
+    },
+    {
+        "name": "Hollywood Heat - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:1|"
+    },
+    {
+        "name": "Hollywood Heat - Easy Score (228,948+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:1|"
+    },
+    {
+        "name": "Hollywood Heat - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:2|"
+    },
+    {
+        "name": "Hollywood Heat - Medium Score (483,326+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:2|"
+    },
+    {
+        "name": "Hollywood Heat - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:3|"
+    },
+    {
+        "name": "Hollywood Heat - Hard Score (909,866+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HollywoodHeat",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hollywood Heat:3|"
+    },
+    {
+        "name": "Baywatch - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Baywatch:1|"
+    },
+    {
+        "name": "Baywatch - Easy Score (108,775,626+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Baywatch:1|"
+    },
+    {
+        "name": "Baywatch - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Baywatch:2|"
+    },
+    {
+        "name": "Baywatch - Medium Score (245,826,701+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Baywatch:2|"
+    },
+    {
+        "name": "Baywatch - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Baywatch:3|"
+    },
+    {
+        "name": "Baywatch - Hard Score (449,568,189+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Baywatch",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Baywatch:3|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:1|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Easy Score (5,527,270+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:1|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:2|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Medium Score (13,577,993+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:2|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:3|"
+    },
+    {
+        "name": "Star Trek: The Next Generation - Hard Score (28,988,100+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Startreknextgen",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Star Trek The Next Generation:3|"
+    },
+    {
+        "name": "Meteor - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Meteor:1|"
+    },
+    {
+        "name": "Meteor - Easy Score (35,253+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Meteor:1|"
+    },
+    {
+        "name": "Meteor - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Meteor:2|"
+    },
+    {
+        "name": "Meteor - Medium Score (83,498+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Meteor:2|"
+    },
+    {
+        "name": "Meteor - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Meteor:3|"
+    },
+    {
+        "name": "Meteor - Hard Score (152,603+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Meteor",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Meteor:3|"
+    },
+    {
+        "name": "Harlem Globetrotters - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:1|"
+    },
+    {
+        "name": "Harlem Globetrotters - Easy Score (44,890+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:1|"
+    },
+    {
+        "name": "Harlem Globetrotters - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:2|"
+    },
+    {
+        "name": "Harlem Globetrotters - Medium Score (121,215+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:2|"
+    },
+    {
+        "name": "Harlem Globetrotters - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:3|"
+    },
+    {
+        "name": "Harlem Globetrotters - Hard Score (262,375+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HarlemGlobetrotters",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Harlem Globetrotters:3|"
+    },
+    {
+        "name": "Dolly Parton - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:1|"
+    },
+    {
+        "name": "Dolly Parton - Easy Score (38,194+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:1|"
+    },
+    {
+        "name": "Dolly Parton - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:2|"
+    },
+    {
+        "name": "Dolly Parton - Medium Score (93,866+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:2|"
+    },
+    {
+        "name": "Dolly Parton - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:3|"
+    },
+    {
+        "name": "Dolly Parton - Hard Score (187,577+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DollyParton",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dolly Parton:3|"
+    },
+    {
+        "name": "Paragon - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Paragon:1|"
+    },
+    {
+        "name": "Paragon - Easy Score (29,714+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Paragon:1|"
+    },
+    {
+        "name": "Paragon - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Paragon:2|"
+    },
+    {
+        "name": "Paragon - Medium Score (69,411+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Paragon:2|"
+    },
+    {
+        "name": "Paragon - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Paragon:3|"
+    },
+    {
+        "name": "Paragon - Hard Score (138,838+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Paragon",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Paragon:3|"
+    },
+    {
+        "name": "Robocop - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Robocop:1|"
+    },
+    {
+        "name": "Robocop - Easy Score (528,270+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Robocop:1|"
+    },
+    {
+        "name": "Robocop - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Robocop:2|"
+    },
+    {
+        "name": "Robocop - Medium Score (1,091,399+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Robocop:2|"
+    },
+    {
+        "name": "Robocop - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Robocop:3|"
+    },
+    {
+        "name": "Robocop - Hard Score (1,961,971+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Robocop",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Robocop:3|"
+    },
+    {
+        "name": "Grand Lizard - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:1|"
+    },
+    {
+        "name": "Grand Lizard - Easy Score (91,852+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:1|"
+    },
+    {
+        "name": "Grand Lizard - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:2|"
+    },
+    {
+        "name": "Grand Lizard - Medium Score (280,887+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:2|"
+    },
+    {
+        "name": "Grand Lizard - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:3|"
+    },
+    {
+        "name": "Grand Lizard - Hard Score (635,636+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GrandLizard",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Grand Lizard:3|"
+    },
+    {
+        "name": "Jokerz - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Jokerz:1|"
+    },
+    {
+        "name": "Jokerz - Easy Score (416,915+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Jokerz:1|"
+    },
+    {
+        "name": "Jokerz - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Jokerz:2|"
+    },
+    {
+        "name": "Jokerz - Medium Score (897,162+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Jokerz:2|"
+    },
+    {
+        "name": "Jokerz - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Jokerz:3|"
+    },
+    {
+        "name": "Jokerz - Hard Score (1,723,182+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Jokerz",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Jokerz:3|"
+    },
+    {
+        "name": "Bad Cats - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:1|"
+    },
+    {
+        "name": "Bad Cats - Easy Score (564,642+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:1|"
+    },
+    {
+        "name": "Bad Cats - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:2|"
+    },
+    {
+        "name": "Bad Cats - Medium Score (1,178,710+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:2|"
+    },
+    {
+        "name": "Bad Cats - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:3|"
+    },
+    {
+        "name": "Bad Cats - Hard Score (2,163,757+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BadCats",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bad Cats:3|"
+    },
+    {
+        "name": "Taxi - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Taxi:1|"
+    },
+    {
+        "name": "Taxi - Easy Score (375,039+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Taxi:1|"
+    },
+    {
+        "name": "Taxi - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Taxi:2|"
+    },
+    {
+        "name": "Taxi - Medium Score (738,638+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Taxi:2|"
+    },
+    {
+        "name": "Taxi - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Taxi:3|"
+    },
+    {
+        "name": "Taxi - Hard Score (1,270,148+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Taxi",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Taxi:3|"
+    },
+    {
+        "name": "Bride of Pinbot - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:1|"
+    },
+    {
+        "name": "Bride of Pinbot - Easy Score (1,036,158+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:1|"
+    },
+    {
+        "name": "Bride of Pinbot - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:2|"
+    },
+    {
+        "name": "Bride of Pinbot - Medium Score (2,293,558+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:2|"
+    },
+    {
+        "name": "Bride of Pinbot - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:3|"
+    },
+    {
+        "name": "Bride of Pinbot - Hard Score (4,712,887+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BrideofPinbot",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bride of Pinbot:3|"
+    },
+    {
+        "name": "White Water - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WhiteWater",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - White Water:1|"
+    },
+    {
+        "name": "White Water - Easy Score (12,224,907+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WhiteWater",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - White Water:1|"
+    },
+    {
+        "name": "White Water - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WhiteWater",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - White Water:2|"
+    },
+    {
+        "name": "White Water - Medium Score (42,512,150+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WhiteWater",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - White Water:2|"
+    },
+    {
+        "name": "White Water - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WhiteWater",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - White Water:3|"
+    },
+    {
+        "name": "White Water - Hard Score (111,495,674+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WhiteWater",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - White Water:3|"
+    },
+    {
+        "name": "Hurricane - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Hurricane",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Hurricane:1|"
+    },
+    {
+        "name": "Hurricane - Easy Score (1,035,108+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Hurricane",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hurricane:1|"
+    },
+    {
+        "name": "Hurricane - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Hurricane",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Hurricane:2|"
+    },
+    {
+        "name": "Hurricane - Medium Score (3,410,513+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Hurricane",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hurricane:2|"
+    },
+    {
+        "name": "Hurricane - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Hurricane",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Hurricane:3|"
+    },
+    {
+        "name": "Hurricane - Hard Score (8,491,997+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Hurricane",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Hurricane:3|"
+    },
+    {
+        "name": "Comet - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Comet",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Comet:1|"
+    },
+    {
+        "name": "Comet - Easy Score (124,319+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Comet",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Comet:1|"
+    },
+    {
+        "name": "Comet - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Comet",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Comet:2|"
+    },
+    {
+        "name": "Comet - Medium Score (293,659+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Comet",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Comet:2|"
+    },
+    {
+        "name": "Comet - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Comet",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Comet:3|"
+    },
+    {
+        "name": "Comet - Hard Score (594,118+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Comet",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Comet:3|"
+    },
+    {
+        "name": "Cyclone - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Cyclone",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Cyclone:1|"
+    },
+    {
+        "name": "Cyclone - Easy Score (309,702+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Cyclone",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Cyclone:1|"
+    },
+    {
+        "name": "Cyclone - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Cyclone",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Cyclone:2|"
+    },
+    {
+        "name": "Cyclone - Medium Score (695,017+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Cyclone",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Cyclone:2|"
+    },
+    {
+        "name": "Cyclone - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Cyclone",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Cyclone:3|"
+    },
+    {
+        "name": "Cyclone - Hard Score (1,313,973+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Cyclone",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Cyclone:3|"
+    },
+    {
+        "name": "Whirlwind - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Whirlwind",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Whirlwind:1|"
+    },
+    {
+        "name": "Whirlwind - Easy Score (916,434+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Whirlwind",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Whirlwind:1|"
+    },
+    {
+        "name": "Whirlwind - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Whirlwind",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Whirlwind:2|"
+    },
+    {
+        "name": "Whirlwind - Medium Score (2,000,907+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Whirlwind",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Whirlwind:2|"
+    },
+    {
+        "name": "Whirlwind - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Whirlwind",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Whirlwind:3|"
+    },
+    {
+        "name": "Whirlwind - Hard Score (3,751,448+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Whirlwind",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Whirlwind:3|"
+    },
+    {
+        "name": "High Speed - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HighSpeed",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - High Speed:1|"
+    },
+    {
+        "name": "High Speed - Easy Score (205,891+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HighSpeed",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Speed:1|"
+    },
+    {
+        "name": "High Speed - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HighSpeed",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - High Speed:2|"
+    },
+    {
+        "name": "High Speed - Medium Score (518,370+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HighSpeed",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Speed:2|"
+    },
+    {
+        "name": "High Speed - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HighSpeed",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - High Speed:3|"
+    },
+    {
+        "name": "High Speed - Hard Score (1,086,784+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HighSpeed",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Speed:3|"
+    },
+    {
+        "name": "No Fear: Dangerous Sports - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "NoFearDangerousSports",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - No Fear Dangerous Sports:1|"
+    },
+    {
+        "name": "No Fear: Dangerous Sports - Easy Score (156,236,681+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "NoFearDangerousSports",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - No Fear Dangerous Sports:1|"
+    },
+    {
+        "name": "No Fear: Dangerous Sports - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "NoFearDangerousSports",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - No Fear Dangerous Sports:2|"
+    },
+    {
+        "name": "No Fear: Dangerous Sports - Medium Score (337,236,330+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "NoFearDangerousSports",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - No Fear Dangerous Sports:2|"
+    },
+    {
+        "name": "No Fear: Dangerous Sports - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "NoFearDangerousSports",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - No Fear Dangerous Sports:3|"
+    },
+    {
+        "name": "No Fear: Dangerous Sports - Hard Score (598,795,637+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "NoFearDangerousSports",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - No Fear Dangerous Sports:3|"
+    },
+    {
+        "name": "Spider-Man Vault Edition - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "SpiderManVaultEdition",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Spider-Man Vault Edition:1|"
+    },
+    {
+        "name": "Spider-Man Vault Edition - Easy Score (6,495,772+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "SpiderManVaultEdition",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Spider-Man Vault Edition:1|"
+    },
+    {
+        "name": "Spider-Man Vault Edition - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "SpiderManVaultEdition",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Spider-Man Vault Edition:2|"
+    },
+    {
+        "name": "Spider-Man Vault Edition - Medium Score (18,345,536+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "SpiderManVaultEdition",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Spider-Man Vault Edition:2|"
+    },
+    {
+        "name": "Spider-Man Vault Edition - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "SpiderManVaultEdition",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Spider-Man Vault Edition:3|"
+    },
+    {
+        "name": "Spider-Man Vault Edition - Hard Score (43,651,561+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "SpiderManVaultEdition",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Spider-Man Vault Edition:3|"
+    },
+    {
+        "name": "Iron Man Vault Edition - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "IronManVaultEdition",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Iron Man Vault Edition:1|"
+    },
+    {
+        "name": "Iron Man Vault Edition - Easy Score (2,640,935+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "IronManVaultEdition",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Iron Man Vault Edition:1|"
+    },
+    {
+        "name": "Iron Man Vault Edition - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "IronManVaultEdition",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Iron Man Vault Edition:2|"
+    },
+    {
+        "name": "Iron Man Vault Edition - Medium Score (5,596,989+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "IronManVaultEdition",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Iron Man Vault Edition:2|"
+    },
+    {
+        "name": "Iron Man Vault Edition - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "IronManVaultEdition",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Iron Man Vault Edition:3|"
+    },
+    {
+        "name": "Iron Man Vault Edition - Hard Score (10,890,920+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "IronManVaultEdition",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Iron Man Vault Edition:3|"
+    },
+    {
+        "name": "AC/DC - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "ACDC",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - AC/DC:1|"
+    },
+    {
+        "name": "AC/DC - Easy Score (5,385,147+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "ACDC",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - AC/DC:1|"
+    },
+    {
+        "name": "AC/DC - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "ACDC",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - AC/DC:2|"
+    },
+    {
+        "name": "AC/DC - Medium Score (11,459,187+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "ACDC",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - AC/DC:2|"
+    },
+    {
+        "name": "AC/DC - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "ACDC",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - AC/DC:3|"
+    },
+    {
+        "name": "AC/DC - Hard Score (24,310,316+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "ACDC",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - AC/DC:3|"
+    },
+    {
+        "name": "Party Animal - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "PartyAnimal",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Party Animal:1|"
+    },
+    {
+        "name": "Party Animal - Easy Score (285,432+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "PartyAnimal",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Party Animal:1|"
+    },
+    {
+        "name": "Party Animal - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "PartyAnimal",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Party Animal:2|"
+    },
+    {
+        "name": "Party Animal - Medium Score (564,459+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "PartyAnimal",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Party Animal:2|"
+    },
+    {
+        "name": "Party Animal - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "PartyAnimal",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Party Animal:3|"
+    },
+    {
+        "name": "Party Animal - Hard Score (1,019,262+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "PartyAnimal",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Party Animal:3|"
+    },
+    {
+        "name": "Elvira and the Party Monsters - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "ElviraandthePartyMonsters",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Elvira and the Party Monsters:1|"
+    },
+    {
+        "name": "Elvira and the Party Monsters - Easy Score (416,064+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "ElviraandthePartyMonsters",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Elvira and the Party Monsters:1|"
+    },
+    {
+        "name": "Elvira and the Party Monsters - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "ElviraandthePartyMonsters",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Elvira and the Party Monsters:2|"
+    },
+    {
+        "name": "Elvira and the Party Monsters - Medium Score (965,074+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "ElviraandthePartyMonsters",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Elvira and the Party Monsters:2|"
+    },
+    {
+        "name": "Elvira and the Party Monsters - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "ElviraandthePartyMonsters",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Elvira and the Party Monsters:3|"
+    },
+    {
+        "name": "Elvira and the Party Monsters - Hard Score (1,984,770+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "ElviraandthePartyMonsters",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Elvira and the Party Monsters:3|"
+    },
+    {
+        "name": "Dr. Dude - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DrDude",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Dr. Dude:1|"
+    },
+    {
+        "name": "Dr. Dude - Easy Score (667,025+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DrDude",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dr. Dude:1|"
+    },
+    {
+        "name": "Dr. Dude - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DrDude",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Dr. Dude:2|"
+    },
+    {
+        "name": "Dr. Dude - Medium Score (1,395,152+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DrDude",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dr. Dude:2|"
+    },
+    {
+        "name": "Dr. Dude - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DrDude",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Dr. Dude:3|"
+    },
+    {
+        "name": "Dr. Dude - Hard Score (2,715,702+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DrDude",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dr. Dude:3|"
+    },
+    {
+        "name": "Party Zone - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "PartyZone",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Party Zone:1|"
+    },
+    {
+        "name": "Party Zone - Easy Score (1,821,001+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "PartyZone",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Party Zone:1|"
+    },
+    {
+        "name": "Party Zone - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "PartyZone",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Party Zone:2|"
+    },
+    {
+        "name": "Party Zone - Medium Score (6,209,748+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "PartyZone",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Party Zone:2|"
+    },
+    {
+        "name": "Party Zone - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "PartyZone",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Party Zone:3|"
+    },
+    {
+        "name": "Party Zone - Hard Score (15,562,382+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "PartyZone",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Party Zone:3|"
+    },
+    {
+        "name": "Scared Stiff - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "ScaredStiff",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Scared Stiff:1|"
+    },
+    {
+        "name": "Scared Stiff - Easy Score (1,150,918+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "ScaredStiff",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Scared Stiff:1|"
+    },
+    {
+        "name": "Scared Stiff - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "ScaredStiff",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Scared Stiff:2|"
+    },
+    {
+        "name": "Scared Stiff - Medium Score (3,037,440+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "ScaredStiff",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Scared Stiff:2|"
+    },
+    {
+        "name": "Scared Stiff - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "ScaredStiff",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Scared Stiff:3|"
+    },
+    {
+        "name": "Scared Stiff - Hard Score (6,335,998+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "ScaredStiff",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Scared Stiff:3|"
+    },
+    {
+        "name": "Bram Stoker's Dracula - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BramStokersDracula",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Bram Stoker's Dracula:1|"
+    },
+    {
+        "name": "Bram Stoker's Dracula - Easy Score (8,994,465+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BramStokersDracula",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bram Stoker's Dracula:1|"
+    },
+    {
+        "name": "Bram Stoker's Dracula - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BramStokersDracula",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Bram Stoker's Dracula:2|"
+    },
+    {
+        "name": "Bram Stoker's Dracula - Medium Score (33,244,574+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BramStokersDracula",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bram Stoker's Dracula:2|"
+    },
+    {
+        "name": "Bram Stoker's Dracula - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BramStokersDracula",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Bram Stoker's Dracula:3|"
+    },
+    {
+        "name": "Bram Stoker's Dracula - Hard Score (96,405,423+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BramStokersDracula",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Bram Stoker's Dracula:3|"
+    },
+    {
+        "name": "Creature from the Black Lagoon - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "CreaturefromtheBlackLagoon",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Creature from the Black Lagoon:1|"
+    },
+    {
+        "name": "Creature from the Black Lagoon - Easy Score (16,586,729+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "CreaturefromtheBlackLagoon",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Creature from the Black Lagoon:1|"
+    },
+    {
+        "name": "Creature from the Black Lagoon - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "CreaturefromtheBlackLagoon",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Creature from the Black Lagoon:2|"
+    },
+    {
+        "name": "Creature from the Black Lagoon - Medium Score (38,828,192+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "CreaturefromtheBlackLagoon",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Creature from the Black Lagoon:2|"
+    },
+    {
+        "name": "Creature from the Black Lagoon - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "CreaturefromtheBlackLagoon",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Creature from the Black Lagoon:3|"
+    },
+    {
+        "name": "Creature from the Black Lagoon - Hard Score (76,917,394+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "CreaturefromtheBlackLagoon",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Creature from the Black Lagoon:3|"
+    },
+    {
+        "name": "Police Force - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "PoliceForce",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Police Force:1|"
+    },
+    {
+        "name": "Police Force - Easy Score (518,104+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "PoliceForce",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Police Force:1|"
+    },
+    {
+        "name": "Police Force - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "PoliceForce",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Police Force:2|"
+    },
+    {
+        "name": "Police Force - Medium Score (975,287+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "PoliceForce",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Police Force:2|"
+    },
+    {
+        "name": "Police Force - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "PoliceForce",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Police Force:3|"
+    },
+    {
+        "name": "Police Force - Hard Score (1,625,137+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "PoliceForce",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Police Force:3|"
+    },
+    {
+        "name": "Cirqus Voltaire - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "CirqusVoltaire",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Cirqus Voltaire:1|"
+    },
+    {
+        "name": "Cirqus Voltaire - Easy Score (4,288,742+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "CirqusVoltaire",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Cirqus Voltaire:1|"
+    },
+    {
+        "name": "Cirqus Voltaire - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "CirqusVoltaire",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Cirqus Voltaire:2|"
+    },
+    {
+        "name": "Cirqus Voltaire - Medium Score (7,785,021+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "CirqusVoltaire",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Cirqus Voltaire:2|"
+    },
+    {
+        "name": "Cirqus Voltaire - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "CirqusVoltaire",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Cirqus Voltaire:3|"
+    },
+    {
+        "name": "Cirqus Voltaire - Hard Score (14,921,006+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "CirqusVoltaire",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Cirqus Voltaire:3|"
+    },
+    {
+        "name": "Al's Garage Band Goes on a World Tour - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "AlsGarageBandGoesonaWorldTour",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Al's Garage Band Goes on a World Tour:1|"
+    },
+    {
+        "name": "Al's Garage Band Goes on a World Tour - Easy Score (30,012,753+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "AlsGarageBandGoesonaWorldTour",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Al's Garage Band Goes on a World Tour:1|"
+    },
+    {
+        "name": "Al's Garage Band Goes on a World Tour - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "AlsGarageBandGoesonaWorldTour",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Al's Garage Band Goes on a World Tour:2|"
+    },
+    {
+        "name": "Al's Garage Band Goes on a World Tour - Medium Score (44,363,942+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "AlsGarageBandGoesonaWorldTour",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Al's Garage Band Goes on a World Tour:2|"
+    },
+    {
+        "name": "Al's Garage Band Goes on a World Tour - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "AlsGarageBandGoesonaWorldTour",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Al's Garage Band Goes on a World Tour:3|"
+    },
+    {
+        "name": "Al's Garage Band Goes on a World Tour - Hard Score (68,417,917+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "AlsGarageBandGoesonaWorldTour",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Al's Garage Band Goes on a World Tour:3|"
+    },
+    {
+        "name": "Circus - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Circus",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Circus:1|"
+    },
+    {
+        "name": "Circus - Easy Score (72,992+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Circus",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Circus:1|"
+    },
+    {
+        "name": "Circus - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Circus",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Circus:2|"
+    },
+    {
+        "name": "Circus - Medium Score (124,926+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Circus",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Circus:2|"
+    },
+    {
+        "name": "Circus - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Circus",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Circus:3|"
+    },
+    {
+        "name": "Circus - Hard Score (216,977+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Circus",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Circus:3|"
+    },
+    {
+        "name": "Phantom of the Opera - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "PhantomoftheOpera",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Phantom of the Opera:1|"
+    },
+    {
+        "name": "Phantom of the Opera - Easy Score (696,096+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "PhantomoftheOpera",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Phantom of the Opera:1|"
+    },
+    {
+        "name": "Phantom of the Opera - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "PhantomoftheOpera",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Phantom of the Opera:2|"
+    },
+    {
+        "name": "Phantom of the Opera - Medium Score (1,429,958+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "PhantomoftheOpera",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Phantom of the Opera:2|"
+    },
+    {
+        "name": "Phantom of the Opera - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "PhantomoftheOpera",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Phantom of the Opera:3|"
+    },
+    {
+        "name": "Phantom of the Opera - Hard Score (2,990,256+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "PhantomoftheOpera",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Phantom of the Opera:3|"
+    },
+    {
+        "name": "Theatre of Magic - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheatreofMagic",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Theatre of Magic:1|"
+    },
+    {
+        "name": "Theatre of Magic - Easy Score (134,284,404+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheatreofMagic",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Theatre of Magic:1|"
+    },
+    {
+        "name": "Theatre of Magic - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheatreofMagic",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Theatre of Magic:2|"
+    },
+    {
+        "name": "Theatre of Magic - Medium Score (292,172,172+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheatreofMagic",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Theatre of Magic:2|"
+    },
+    {
+        "name": "Theatre of Magic - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheatreofMagic",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Theatre of Magic:3|"
+    },
+    {
+        "name": "Theatre of Magic - Hard Score (602,533,665+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheatreofMagic",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Theatre of Magic:3|"
+    },
+    {
+        "name": "Genesis - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Genesis:1|"
+    },
+    {
+        "name": "Genesis - Easy Score (158,301+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Genesis:1|"
+    },
+    {
+        "name": "Genesis - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Genesis:2|"
+    },
+    {
+        "name": "Genesis - Medium Score (517,370+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Genesis:2|"
+    },
+    {
+        "name": "Genesis - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Genesis:3|"
+    },
+    {
+        "name": "Genesis - Hard Score (1,386,426+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Genesis",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Genesis:3|"
+    },
+    {
+        "name": "Haunted House - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Haunted House:1|"
+    },
+    {
+        "name": "Haunted House - Easy Score (59,682+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Haunted House:1|"
+    },
+    {
+        "name": "Haunted House - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Haunted House:2|"
+    },
+    {
+        "name": "Haunted House - Medium Score (145,453+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Haunted House:2|"
+    },
+    {
+        "name": "Haunted House - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Haunted House:3|"
+    },
+    {
+        "name": "Haunted House - Hard Score (270,164+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HauntedHouse",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Haunted House:3|"
+    },
+    {
+        "name": "The Incredible Hulk - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:1|"
+    },
+    {
+        "name": "The Incredible Hulk - Easy Score (59,354+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:1|"
+    },
+    {
+        "name": "The Incredible Hulk - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:2|"
+    },
+    {
+        "name": "The Incredible Hulk - Medium Score (128,060+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:2|"
+    },
+    {
+        "name": "The Incredible Hulk - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:3|"
+    },
+    {
+        "name": "The Incredible Hulk - Hard Score (207,860+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheIncredibleHulk",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Incredible Hulk:3|"
+    },
+    {
+        "name": "Batman Forever - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BatmanForever",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Batman Forever:1|"
+    },
+    {
+        "name": "Batman Forever - Easy Score (219,486,617+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "BatmanForever",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Batman Forever:1|"
+    },
+    {
+        "name": "Batman Forever - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BatmanForever",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Batman Forever:2|"
+    },
+    {
+        "name": "Batman Forever - Medium Score (439,947,963+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "BatmanForever",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Batman Forever:2|"
+    },
+    {
+        "name": "Batman Forever - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BatmanForever",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Batman Forever:3|"
+    },
+    {
+        "name": "Batman Forever - Hard Score (771,018,273+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "BatmanForever",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Batman Forever:3|"
+    },
+    {
+        "name": "Demolition Man - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DemolitionMan",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Demolition Man:1|"
+    },
+    {
+        "name": "Demolition Man - Easy Score (74,316,196+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DemolitionMan",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Demolition Man:1|"
+    },
+    {
+        "name": "Demolition Man - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DemolitionMan",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Demolition Man:2|"
+    },
+    {
+        "name": "Demolition Man - Medium Score (212,437,154+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DemolitionMan",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Demolition Man:2|"
+    },
+    {
+        "name": "Demolition Man - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DemolitionMan",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Demolition Man:3|"
+    },
+    {
+        "name": "Demolition Man - Hard Score (438,851,700+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DemolitionMan",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Demolition Man:3|"
+    },
+    {
+        "name": "GoldenEye - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GoldenEye",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - GoldenEye:1|"
+    },
+    {
+        "name": "GoldenEye - Easy Score (182,216,844+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GoldenEye",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - GoldenEye:1|"
+    },
+    {
+        "name": "GoldenEye - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GoldenEye",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - GoldenEye:2|"
+    },
+    {
+        "name": "GoldenEye - Medium Score (377,112,859+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GoldenEye",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - GoldenEye:2|"
+    },
+    {
+        "name": "GoldenEye - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GoldenEye",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - GoldenEye:3|"
+    },
+    {
+        "name": "GoldenEye - Hard Score (758,635,943+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GoldenEye",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - GoldenEye:3|"
+    },
+    {
+        "name": "Jurassic Park - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "JurassicPark",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Jurassic Park:1|"
+    },
+    {
+        "name": "Jurassic Park - Easy Score (25,978,091+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "JurassicPark",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Jurassic Park:1|"
+    },
+    {
+        "name": "Jurassic Park - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "JurassicPark",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Jurassic Park:2|"
+    },
+    {
+        "name": "Jurassic Park - Medium Score (60,820,996+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "JurassicPark",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Jurassic Park:2|"
+    },
+    {
+        "name": "Jurassic Park - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "JurassicPark",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Jurassic Park:3|"
+    },
+    {
+        "name": "Jurassic Park - Hard Score (112,960,501+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "JurassicPark",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Jurassic Park:3|"
+    },
+    {
+        "name": "Last Action Hero - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "LastActionHero",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Last Action Hero:1|"
+    },
+    {
+        "name": "Last Action Hero - Easy Score (30,296,861+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "LastActionHero",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Last Action Hero:1|"
+    },
+    {
+        "name": "Last Action Hero - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "LastActionHero",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Last Action Hero:2|"
+    },
+    {
+        "name": "Last Action Hero - Medium Score (74,551,301+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "LastActionHero",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Last Action Hero:2|"
+    },
+    {
+        "name": "Last Action Hero - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "LastActionHero",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Last Action Hero:3|"
+    },
+    {
+        "name": "Last Action Hero - Hard Score (140,883,573+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "LastActionHero",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Last Action Hero:3|"
+    },
+    {
+        "name": "Stargate - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Stargate",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Stargate:1|"
+    },
+    {
+        "name": "Stargate - Easy Score (58,354,060+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Stargate",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Stargate:1|"
+    },
+    {
+        "name": "Stargate - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Stargate",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Stargate:2|"
+    },
+    {
+        "name": "Stargate - Medium Score (121,038,286+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Stargate",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Stargate:2|"
+    },
+    {
+        "name": "Stargate - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Stargate",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Stargate:3|"
+    },
+    {
+        "name": "Stargate - Hard Score (211,525,310+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Stargate",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Stargate:3|"
+    },
+    {
+        "name": "Starship Troopers - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StarshipTroopers",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Starship Troopers:1|"
+    },
+    {
+        "name": "Starship Troopers - Easy Score (8,925,352+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StarshipTroopers",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Starship Troopers:1|"
+    },
+    {
+        "name": "Starship Troopers - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StarshipTroopers",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Starship Troopers:2|"
+    },
+    {
+        "name": "Starship Troopers - Medium Score (20,674,406+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StarshipTroopers",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Starship Troopers:2|"
+    },
+    {
+        "name": "Starship Troopers - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StarshipTroopers",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Starship Troopers:3|"
+    },
+    {
+        "name": "Starship Troopers - Hard Score (40,718,801+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StarshipTroopers",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Starship Troopers:3|"
+    },
+    {
+        "name": "Independence Day - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "IndependenceDay",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Independence Day:1|"
+    },
+    {
+        "name": "Independence Day - Easy Score (183,728,171+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "IndependenceDay",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Independence Day:1|"
+    },
+    {
+        "name": "Independence Day - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "IndependenceDay",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Independence Day:2|"
+    },
+    {
+        "name": "Independence Day - Medium Score (374,272,908+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "IndependenceDay",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Independence Day:2|"
+    },
+    {
+        "name": "Independence Day - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "IndependenceDay",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Independence Day:3|"
+    },
+    {
+        "name": "Independence Day - Hard Score (641,986,558+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "IndependenceDay",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Independence Day:3|"
+    },
+    {
+        "name": "The X-Files - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheXFiles",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The X-Files:1|"
+    },
+    {
+        "name": "The X-Files - Easy Score (2,115,562+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheXFiles",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The X-Files:1|"
+    },
+    {
+        "name": "The X-Files - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheXFiles",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The X-Files:2|"
+    },
+    {
+        "name": "The X-Files - Medium Score (3,667,873+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheXFiles",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The X-Files:2|"
+    },
+    {
+        "name": "The X-Files - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheXFiles",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The X-Files:3|"
+    },
+    {
+        "name": "The X-Files - Hard Score (5,813,894+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheXFiles",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The X-Files:3|"
+    },
+    {
+        "name": "Aerosmith - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Aerosmith",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Aerosmith:1|"
+    },
+    {
+        "name": "Aerosmith - Easy Score (3,488,440+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Aerosmith",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Aerosmith:1|"
+    },
+    {
+        "name": "Aerosmith - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Aerosmith",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Aerosmith:2|"
+    },
+    {
+        "name": "Aerosmith - Medium Score (12,715,431+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Aerosmith",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Aerosmith:2|"
+    },
+    {
+        "name": "Aerosmith - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Aerosmith",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Aerosmith:3|"
+    },
+    {
+        "name": "Aerosmith - Hard Score (44,494,490+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Aerosmith",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Aerosmith:3|"
+    },
+    {
+        "name": "The Beatles - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheBeatles",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Beatles:1|"
+    },
+    {
+        "name": "The Beatles - Easy Score (439,970+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheBeatles",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Beatles:1|"
+    },
+    {
+        "name": "The Beatles - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheBeatles",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Beatles:2|"
+    },
+    {
+        "name": "The Beatles - Medium Score (1,014,388+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheBeatles",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Beatles:2|"
+    },
+    {
+        "name": "The Beatles - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheBeatles",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Beatles:3|"
+    },
+    {
+        "name": "The Beatles - Hard Score (1,845,745+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheBeatles",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Beatles:3|"
+    },
+    {
+        "name": "Elvis - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Elvis",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Elvis:1|"
+    },
+    {
+        "name": "Elvis - Easy Score (2,709,038+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Elvis",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Elvis:1|"
+    },
+    {
+        "name": "Elvis - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Elvis",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Elvis:2|"
+    },
+    {
+        "name": "Elvis - Medium Score (8,686,801+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Elvis",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Elvis:2|"
+    },
+    {
+        "name": "Elvis - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Elvis",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Elvis:3|"
+    },
+    {
+        "name": "Elvis - Hard Score (26,458,536+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Elvis",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Elvis:3|"
+    },
+    {
+        "name": "Rolling Stones - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "RollingStones",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Rolling Stones:1|"
+    },
+    {
+        "name": "Rolling Stones - Easy Score (37,687+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "RollingStones",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Rolling Stones:1|"
+    },
+    {
+        "name": "Rolling Stones - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "RollingStones",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Rolling Stones:2|"
+    },
+    {
+        "name": "Rolling Stones - Medium Score (104,843+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "RollingStones",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Rolling Stones:2|"
+    },
+    {
+        "name": "Rolling Stones - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "RollingStones",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Rolling Stones:3|"
+    },
+    {
+        "name": "Rolling Stones - Hard Score (237,815+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "RollingStones",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Rolling Stones:3|"
+    },
+    {
+        "name": "Freddy: A Nightmare on Elm Street - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "FreddyANightmareonElmStreet",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Freddy: A Nightmare on Elm Street:1|"
+    },
+    {
+        "name": "Freddy: A Nightmare on Elm Street - Easy Score (20,469,605+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "FreddyANightmareonElmStreet",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Freddy: A Nightmare on Elm Street:1|"
+    },
+    {
+        "name": "Freddy: A Nightmare on Elm Street - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "FreddyANightmareonElmStreet",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Freddy: A Nightmare on Elm Street:2|"
+    },
+    {
+        "name": "Freddy: A Nightmare on Elm Street - Medium Score (50,298,526+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "FreddyANightmareonElmStreet",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Freddy: A Nightmare on Elm Street:2|"
+    },
+    {
+        "name": "Freddy: A Nightmare on Elm Street - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "FreddyANightmareonElmStreet",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Freddy: A Nightmare on Elm Street:3|"
+    },
+    {
+        "name": "Freddy: A Nightmare on Elm Street - Hard Score (98,757,065+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "FreddyANightmareonElmStreet",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Freddy: A Nightmare on Elm Street:3|"
+    },
+    {
+        "name": "Monster Bash - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MonsterBash",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Monster Bash:1|"
+    },
+    {
+        "name": "Monster Bash - Easy Score (3,619,531+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MonsterBash",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monster Bash:1|"
+    },
+    {
+        "name": "Monster Bash - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MonsterBash",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Monster Bash:2|"
+    },
+    {
+        "name": "Monster Bash - Medium Score (11,229,239+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MonsterBash",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monster Bash:2|"
+    },
+    {
+        "name": "Monster Bash - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MonsterBash",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Monster Bash:3|"
+    },
+    {
+        "name": "Monster Bash - Hard Score (27,917,930+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MonsterBash",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monster Bash:3|"
+    },
+    {
+        "name": "Tales from the Crypt - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TalesfromtheCrypt",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Tales from the Crypt:1|"
+    },
+    {
+        "name": "Tales from the Crypt - Easy Score (28,835,588+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TalesfromtheCrypt",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Tales from the Crypt:1|"
+    },
+    {
+        "name": "Tales from the Crypt - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TalesfromtheCrypt",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Tales from the Crypt:2|"
+    },
+    {
+        "name": "Tales from the Crypt - Medium Score (76,018,862+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TalesfromtheCrypt",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Tales from the Crypt:2|"
+    },
+    {
+        "name": "Tales from the Crypt - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TalesfromtheCrypt",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Tales from the Crypt:3|"
+    },
+    {
+        "name": "Tales from the Crypt - Hard Score (150,749,194+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TalesfromtheCrypt",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Tales from the Crypt:3|"
+    },
+    {
+        "name": "Game of Thrones - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GameofThrones",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Game of Thrones:1|"
+    },
+    {
+        "name": "Game of Thrones - Easy Score (7,995,768+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GameofThrones",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Game of Thrones:1|"
+    },
+    {
+        "name": "Game of Thrones - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GameofThrones",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Game of Thrones:2|"
+    },
+    {
+        "name": "Game of Thrones - Medium Score (63,785,484+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GameofThrones",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Game of Thrones:2|"
+    },
+    {
+        "name": "Game of Thrones - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GameofThrones",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Game of Thrones:3|"
+    },
+    {
+        "name": "Game of Thrones - Hard Score (252,489,052+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GameofThrones",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Game of Thrones:3|"
+    },
+    {
+        "name": "Lord of the Rings - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "LordoftheRings",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Lord of the Rings:1|"
+    },
+    {
+        "name": "Lord of the Rings - Easy Score (2,829,013+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "LordoftheRings",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Lord of the Rings:1|"
+    },
+    {
+        "name": "Lord of the Rings - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "LordoftheRings",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Lord of the Rings:2|"
+    },
+    {
+        "name": "Lord of the Rings - Medium Score (7,433,128+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "LordoftheRings",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Lord of the Rings:2|"
+    },
+    {
+        "name": "Lord of the Rings - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "LordoftheRings",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Lord of the Rings:3|"
+    },
+    {
+        "name": "Lord of the Rings - Hard Score (23,151,100+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "LordoftheRings",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Lord of the Rings:3|"
+    },
+    {
+        "name": "The Walking Dead - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheWalkingDead",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Walking Dead:1|"
+    },
+    {
+        "name": "The Walking Dead - Easy Score (5,758,992+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheWalkingDead",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Walking Dead:1|"
+    },
+    {
+        "name": "The Walking Dead - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheWalkingDead",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Walking Dead:2|"
+    },
+    {
+        "name": "The Walking Dead - Medium Score (16,253,305+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheWalkingDead",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Walking Dead:2|"
+    },
+    {
+        "name": "The Walking Dead - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheWalkingDead",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Walking Dead:3|"
+    },
+    {
+        "name": "The Walking Dead - Hard Score (38,601,898+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheWalkingDead",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Walking Dead:3|"
+    },
+    {
+        "name": "Corvette - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Corvette",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Corvette:1|"
+    },
+    {
+        "name": "Corvette - Easy Score (55,946,756+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Corvette",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Corvette:1|"
+    },
+    {
+        "name": "Corvette - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Corvette",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Corvette:2|"
+    },
+    {
+        "name": "Corvette - Medium Score (209,034,282+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Corvette",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Corvette:2|"
+    },
+    {
+        "name": "Corvette - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Corvette",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Corvette:3|"
+    },
+    {
+        "name": "Corvette - Hard Score (496,621,812+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Corvette",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Corvette:3|"
+    },
+    {
+        "name": "Dirty Harry - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DirtyHarry",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Dirty Harry:1|"
+    },
+    {
+        "name": "Dirty Harry - Easy Score (94,828,500+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DirtyHarry",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dirty Harry:1|"
+    },
+    {
+        "name": "Dirty Harry - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DirtyHarry",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Dirty Harry:2|"
+    },
+    {
+        "name": "Dirty Harry - Medium Score (212,435,777+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DirtyHarry",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dirty Harry:2|"
+    },
+    {
+        "name": "Dirty Harry - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DirtyHarry",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Dirty Harry:3|"
+    },
+    {
+        "name": "Dirty Harry - Hard Score (388,891,976+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DirtyHarry",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dirty Harry:3|"
+    },
+    {
+        "name": "Judge Dredd - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "JudgeDredd",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Judge Dredd:1|"
+    },
+    {
+        "name": "Judge Dredd - Easy Score (25,392,014+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "JudgeDredd",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Judge Dredd:1|"
+    },
+    {
+        "name": "Judge Dredd - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "JudgeDredd",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Judge Dredd:2|"
+    },
+    {
+        "name": "Judge Dredd - Medium Score (62,243,908+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "JudgeDredd",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Judge Dredd:2|"
+    },
+    {
+        "name": "Judge Dredd - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "JudgeDredd",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Judge Dredd:3|"
+    },
+    {
+        "name": "Judge Dredd - Hard Score (126,448,232+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "JudgeDredd",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Judge Dredd:3|"
+    },
+    {
+        "name": "Deadpool - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Deadpool",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Deadpool:1|"
+    },
+    {
+        "name": "Deadpool - Easy Score (10,154,552+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Deadpool",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Deadpool:1|"
+    },
+    {
+        "name": "Deadpool - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Deadpool",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Deadpool:2|"
+    },
+    {
+        "name": "Deadpool - Medium Score (35,141,589+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Deadpool",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Deadpool:2|"
+    },
+    {
+        "name": "Deadpool - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Deadpool",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Deadpool:3|"
+    },
+    {
+        "name": "Deadpool - Hard Score (95,248,992+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Deadpool",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Deadpool:3|"
+    },
+    {
+        "name": "Ghostbusters - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Ghostbusters",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Ghostbusters:1|"
+    },
+    {
+        "name": "Ghostbusters - Easy Score (7,010,332+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Ghostbusters",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Ghostbusters:1|"
+    },
+    {
+        "name": "Ghostbusters - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Ghostbusters",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Ghostbusters:2|"
+    },
+    {
+        "name": "Ghostbusters - Medium Score (28,349,139+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Ghostbusters",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Ghostbusters:2|"
+    },
+    {
+        "name": "Ghostbusters - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Ghostbusters",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Ghostbusters:3|"
+    },
+    {
+        "name": "Ghostbusters - Hard Score (82,950,216+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Ghostbusters",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Ghostbusters:3|"
+    },
+    {
+        "name": "The Adventures of Rocky and Bullwinkle and Friends - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheAdventuresofRockyandBullwinkleandFriends",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - The Adventures of Rocky and Bullwinkle and Friends:1|"
+    },
+    {
+        "name": "The Adventures of Rocky and Bullwinkle and Friends - Easy Score (22,786,119+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "TheAdventuresofRockyandBullwinkleandFriends",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Adventures of Rocky and Bullwinkle and Friends:1|"
+    },
+    {
+        "name": "The Adventures of Rocky and Bullwinkle and Friends - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheAdventuresofRockyandBullwinkleandFriends",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - The Adventures of Rocky and Bullwinkle and Friends:2|"
+    },
+    {
+        "name": "The Adventures of Rocky and Bullwinkle and Friends - Medium Score (54,553,138+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "TheAdventuresofRockyandBullwinkleandFriends",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Adventures of Rocky and Bullwinkle and Friends:2|"
+    },
+    {
+        "name": "The Adventures of Rocky and Bullwinkle and Friends - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheAdventuresofRockyandBullwinkleandFriends",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - The Adventures of Rocky and Bullwinkle and Friends:3|"
+    },
+    {
+        "name": "The Adventures of Rocky and Bullwinkle and Friends - Hard Score (103,049,648+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "TheAdventuresofRockyandBullwinkleandFriends",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - The Adventures of Rocky and Bullwinkle and Friends:3|"
+    },
+    {
+        "name": "Boss Victory",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Victory"
+        ],
+        "requires": "",
+        "victory": true
+    },
+    {
+        "name": "Boss Table - Rip a Spinner",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Make a 2-Shot Combo",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Make a 3-Shot Combo",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Shoot Left Orbit/Loop/Lane",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Shoot Right Orbit/Loop/Lane",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Shoot Any Ramp",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Hit Any Scoop or Saucer",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Complete Top Lanes",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Complete a Target Bank",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Start Any Multiball",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Task"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 100,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 250,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 500,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 1,000,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 2,500,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 5,000,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 10,000,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 25,000,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 50,000,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Boss Table - Obtain a score of 100,000,000+",
+        "region": "Boss Sphere",
+        "category": [
+            "Boss",
+            "Score"
+        ],
+        "requires": "",
+        "place_item": [
+            "Boss Damage 16%"
+        ]
+    },
+    {
+        "name": "Skateball - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Skateball",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Skateball:1|"
+    },
+    {
+        "name": "Skateball - Easy Score (145,877+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Skateball",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Skateball:1|"
+    },
+    {
+        "name": "Skateball - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Skateball",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Skateball:2|"
+    },
+    {
+        "name": "Skateball - Medium Score (295,853+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Skateball",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Skateball:2|"
+    },
+    {
+        "name": "Skateball - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Skateball",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Skateball:3|"
+    },
+    {
+        "name": "Skateball - Hard Score (623,773+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Skateball",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Skateball:3|"
+    },
+    {
+        "name": "Vector - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Vector",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Vector:1|"
+    },
+    {
+        "name": "Vector - Easy Score (173,289+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Vector",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Vector:1|"
+    },
+    {
+        "name": "Vector - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Vector",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Vector:2|"
+    },
+    {
+        "name": "Vector - Medium Score (321,367+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Vector",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Vector:2|"
+    },
+    {
+        "name": "Vector - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Vector",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Vector:3|"
+    },
+    {
+        "name": "Vector - Hard Score (605,190+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Vector",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Vector:3|"
+    },
+    {
+        "name": "Gold Ball - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GoldBall",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Gold Ball:1|"
+    },
+    {
+        "name": "Gold Ball - Easy Score (115,324+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "GoldBall",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Gold Ball:1|"
+    },
+    {
+        "name": "Gold Ball - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GoldBall",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Gold Ball:2|"
+    },
+    {
+        "name": "Gold Ball - Medium Score (231,251+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "GoldBall",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Gold Ball:2|"
+    },
+    {
+        "name": "Gold Ball - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GoldBall",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Gold Ball:3|"
+    },
+    {
+        "name": "Gold Ball - Hard Score (501,364+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "GoldBall",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Gold Ball:3|"
+    },
+    {
+        "name": "City Slicker - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "CitySlicker",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - City Slicker:1|"
+    },
+    {
+        "name": "City Slicker - Easy Score (278,639+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "CitySlicker",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - City Slicker:1|"
+    },
+    {
+        "name": "City Slicker - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "CitySlicker",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - City Slicker:2|"
+    },
+    {
+        "name": "City Slicker - Medium Score (573,334+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "CitySlicker",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - City Slicker:2|"
+    },
+    {
+        "name": "City Slicker - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "CitySlicker",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - City Slicker:3|"
+    },
+    {
+        "name": "City Slicker - Hard Score (1,275,769+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "CitySlicker",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - City Slicker:3|"
+    },
+    {
+        "name": "Super Mario Bros. - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "SuperMarioBros",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Super Mario Bros.:1|"
+    },
+    {
+        "name": "Super Mario Bros. - Easy Score (8,714,604+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "SuperMarioBros",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Super Mario Bros.:1|"
+    },
+    {
+        "name": "Super Mario Bros. - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "SuperMarioBros",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Super Mario Bros.:2|"
+    },
+    {
+        "name": "Super Mario Bros. - Medium Score (24,925,689+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "SuperMarioBros",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Super Mario Bros.:2|"
+    },
+    {
+        "name": "Super Mario Bros. - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "SuperMarioBros",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Super Mario Bros.:3|"
+    },
+    {
+        "name": "Super Mario Bros. - Hard Score (69,593,091+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "SuperMarioBros",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Super Mario Bros.:3|"
+    },
+    {
+        "name": "Street Fighter II - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StreetFighterII",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Street Fighter II:1|"
+    },
+    {
+        "name": "Street Fighter II - Easy Score (25,105,590+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "StreetFighterII",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Street Fighter II:1|"
+    },
+    {
+        "name": "Street Fighter II - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StreetFighterII",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Street Fighter II:2|"
+    },
+    {
+        "name": "Street Fighter II - Medium Score (53,637,398+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "StreetFighterII",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Street Fighter II:2|"
+    },
+    {
+        "name": "Street Fighter II - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StreetFighterII",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Street Fighter II:3|"
+    },
+    {
+        "name": "Street Fighter II - Hard Score (111,065,152+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "StreetFighterII",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Street Fighter II:3|"
+    },
+    {
+        "name": "Q*bert's Quest - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "QbertsQuest",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Q*bert's Quest:1|"
+    },
+    {
+        "name": "Q*bert's Quest - Easy Score (231,844+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "QbertsQuest",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Q*bert's Quest:1|"
+    },
+    {
+        "name": "Q*bert's Quest - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "QbertsQuest",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Q*bert's Quest:2|"
+    },
+    {
+        "name": "Q*bert's Quest - Medium Score (414,555+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "QbertsQuest",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Q*bert's Quest:2|"
+    },
+    {
+        "name": "Q*bert's Quest - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "QbertsQuest",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Q*bert's Quest:3|"
+    },
+    {
+        "name": "Q*bert's Quest - Hard Score (731,471+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "QbertsQuest",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Q*bert's Quest:3|"
+    },
+    {
+        "name": "Mr. & Mrs. Pac-Man - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MrMrsPacMan",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Mr. & Mrs. Pac-Man:1|"
+    },
+    {
+        "name": "Mr. & Mrs. Pac-Man - Easy Score (275,395+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "MrMrsPacMan",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Mr. & Mrs. Pac-Man:1|"
+    },
+    {
+        "name": "Mr. & Mrs. Pac-Man - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MrMrsPacMan",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Mr. & Mrs. Pac-Man:2|"
+    },
+    {
+        "name": "Mr. & Mrs. Pac-Man - Medium Score (412,475+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "MrMrsPacMan",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Mr. & Mrs. Pac-Man:2|"
+    },
+    {
+        "name": "Mr. & Mrs. Pac-Man - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MrMrsPacMan",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Mr. & Mrs. Pac-Man:3|"
+    },
+    {
+        "name": "Mr. & Mrs. Pac-Man - Hard Score (636,135+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "MrMrsPacMan",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Mr. & Mrs. Pac-Man:3|"
+    },
+    {
+        "name": "Space Invaders - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "SpaceInvaders",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Space Invaders:1|"
+    },
+    {
+        "name": "Space Invaders - Easy Score (58,445+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "SpaceInvaders",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Space Invaders:1|"
+    },
+    {
+        "name": "Space Invaders - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "SpaceInvaders",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Space Invaders:2|"
+    },
+    {
+        "name": "Space Invaders - Medium Score (127,825+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "SpaceInvaders",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Space Invaders:2|"
+    },
+    {
+        "name": "Space Invaders - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "SpaceInvaders",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Space Invaders:3|"
+    },
+    {
+        "name": "Space Invaders - Hard Score (299,175+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "SpaceInvaders",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Space Invaders:3|"
+    },
+    {
+        "name": "Monopoly - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Monopoly:1|"
+    },
+    {
+        "name": "Monopoly - Easy Score (1,542,261+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monopoly:1|"
+    },
+    {
+        "name": "Monopoly - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Monopoly:2|"
+    },
+    {
+        "name": "Monopoly - Medium Score (4,990,600+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monopoly:2|"
+    },
+    {
+        "name": "Monopoly - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Monopoly:3|"
+    },
+    {
+        "name": "Monopoly - Hard Score (9,938,959+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "Monopoly",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Monopoly:3|"
+    },
+    {
+        "name": "Dungeons & Dragons - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:1|"
+    },
+    {
+        "name": "Dungeons & Dragons - Easy Score (166,352+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:1|"
+    },
+    {
+        "name": "Dungeons & Dragons - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:2|"
+    },
+    {
+        "name": "Dungeons & Dragons - Medium Score (550,594+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:2|"
+    },
+    {
+        "name": "Dungeons & Dragons - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:3|"
+    },
+    {
+        "name": "Dungeons & Dragons - Hard Score (1,241,783+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "DungeonsDragons",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Dungeons & Dragons:3|"
+    },
+    {
+        "name": "World Poker Tour - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:1|"
+    },
+    {
+        "name": "World Poker Tour - Easy Score (4,094,586+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:1|"
+    },
+    {
+        "name": "World Poker Tour - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:2|"
+    },
+    {
+        "name": "World Poker Tour - Medium Score (12,170,908+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:2|"
+    },
+    {
+        "name": "World Poker Tour - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:3|"
+    },
+    {
+        "name": "World Poker Tour - Hard Score (25,203,476+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WorldPokerTour",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - World Poker Tour:3|"
+    },
+    {
+        "name": "High Roller Casino - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:1|"
+    },
+    {
+        "name": "High Roller Casino - Easy Score (29,591,534+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:1|"
+    },
+    {
+        "name": "High Roller Casino - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:2|"
+    },
+    {
+        "name": "High Roller Casino - Medium Score (84,398,263+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:2|"
+    },
+    {
+        "name": "High Roller Casino - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:3|"
+    },
+    {
+        "name": "High Roller Casino - Hard Score (166,071,626+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "HighRollerCasino",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - High Roller Casino:3|"
+    },
+    {
+        "name": "Who Dunnit - Easy Task",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Easy"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:1|"
+    },
+    {
+        "name": "Who Dunnit - Easy Score (167,032,972+)",
+        "region": "Ball 1 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Easy",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:1|"
+    },
+    {
+        "name": "Who Dunnit - Medium Task",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Medium"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:2|"
+    },
+    {
+        "name": "Who Dunnit - Medium Score (525,587,710+)",
+        "region": "Ball 2 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Medium",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:2|"
+    },
+    {
+        "name": "Who Dunnit - Hard Task",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Hard"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:3|"
+    },
+    {
+        "name": "Who Dunnit - Hard Score (1,218,046,696+)",
+        "region": "Ball 3 Sphere",
+        "category": [
+            "WhoDunnit",
+            "Generic",
+            "Hard",
+            "Score"
+        ],
+        "requires": "|Progressive Ball - Who Dunnit:3|"
+    }
+]
