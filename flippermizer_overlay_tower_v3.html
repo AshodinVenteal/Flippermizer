@@ -23099,21 +23099,21 @@ const FLPR_OVERLAY_CHANGELOG = computeOverlayRecentChanges();
 const FLPR_PATCH_NOTES_SEEN_LS_KEY = "flpr_changelog_patch_notes_seen_v1";
 const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1";
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
-const FLPR_PATCH_NOTES_RELEASE_LABEL = "May 25 Shared Hotfix";
+const FLPR_PATCH_NOTES_RELEASE_LABEL = "May 26 Home Edition Hotfix";
 const FLPR_PATCH_NOTES_ITEMS_SHARED = [
   {
-    k: "May 25 Shared Hotfix",
-    d: "Today's build bundles the latest layout, AP item-log, and Visuals / Music fixes into one shared hotfix note for the release."
+    k: "May 26 Hotfix",
+    d: "Fresh Home Edition build with AP Progressive Ball safeguards, seed rebuild cleanup, and packaged layout defaults."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_HOME = [
   {
-    k: "Home portrait layout",
-    d: "Portrait Electron windows keep the tower at its normal size, push the header down, and fill the extra space with a Checks-style background."
+    k: "Progressive Ball routing",
+    d: "Remote Progressive Balls now verify against the active Overview tables, reroute off-seed or 4th balls to eligible tables, and stay stable on Sync Received."
   },
   {
-    k: "AP item log polish",
-    d: "Remote progression receipts are de-duplicated, newest progression cards slot in from the top, and Item Log / Connection Log sound toggles were added."
+    k: "Packaged layout defaults",
+    d: "The release now bakes in the current logo position, keeps Overview rows at five tables, and restores original starting tables when rebuilding AP state."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_STREAM = [
