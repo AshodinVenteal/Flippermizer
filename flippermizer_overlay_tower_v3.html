@@ -40666,12 +40666,9 @@ function processReceivedItem(it, itemIndex, locId, opts){
     progressiveRedirect = resolveProgressiveBallDisplayTarget(progressiveTarget, receiptKey);
     const resolvedTarget = String(progressiveRedirect?.tableName || "").trim();
     if(progressiveRedirect?.suppressed || !resolvedTarget || !isActiveSeedTableName(resolvedTarget)){
-      apLog(`Suppressing Progressive Ball target ${progressiveTarget}; ${progressiveRedirect?.reason || "no valid seed table"}`);
       return;
     }
     if(!progressiveBallTargetsSame(resolvedTarget, progressiveTarget)){
-      const reason = progressiveRedirect?.reason || "reroute";
-      apLog(`Progressive Ball target remapped; ${progressiveTarget} -> ${resolvedTarget} (${reason})`);
       effectiveName = `Progressive Ball - ${resolvedTarget}`;
       progressiveTarget = resolvedTarget;
     }
@@ -41124,17 +41121,10 @@ function processReceivedItem(it, itemIndex, locId, opts){
     const redirect = progressiveRedirect || resolveProgressiveBallDisplayTarget(progressiveTarget, receiptKey);
     const table = String(redirect?.tableName || progressiveTarget || "").trim();
     if(redirect?.suppressed || !table || !isActiveSeedTableName(table)){
-      try{ apLog(`Progressive Ball suppressed; ${redirect?.originalTarget || progressiveTarget || "unknown"} (${redirect?.reason || "no valid seed table"})`); }catch(_){}
       updateCounterBars();
       return;
     }
     try{ flprStatsRecordBallEarned(table); }catch(_){}
-    if(redirect?.swapped){
-      try{
-        const why = redirect.reason === "queued" ? "queued make-good" : (redirect.reason || "reroute");
-        apLog(`Progressive Ball rerouted; ${redirect.originalTarget} -> ${table} (${why})`);
-      }catch(_){}
-    }
     const fromLiveCheck = (!opts.isSnapshot) && (!opts.isFlush) && (Number(locId) > 0 || !!paired);
     if(opts.noPopup && !fromLiveCheck){
       apReconcileWorldStateFromReceived();
@@ -42151,7 +42141,6 @@ function hintQueueBossKeyProgressiveRedirect(target, source){
     queue.unshift(tableName);
     state.progressiveBallSwapQueue = queue.filter(Boolean);
     try{ saveState(); }catch(_){}
-    try{ apLog(`Boss Key hint reroute queued; next Progressive Ball -> ${tableName}${source ? `; ${source}` : ""}`); }catch(_){}
     return true;
   }catch(_){}
   return false;
@@ -42608,7 +42597,6 @@ function reconcileWorldStateFromReceivedInventory(reason) {
         const redirect = resolveProgressiveBallDisplayTarget(tableName, receiptKey, { balls: state.balls });
         const appliedTable = String(redirect?.tableName || "").trim();
         if(!appliedTable || redirect?.suppressed || !isActiveSeedTableName(appliedTable)){
-          try{ apLog(`Ignoring Progressive Ball inventory target: ${tableName} (${redirect?.reason || "no valid seed table"})`); }catch(_){}
         }else{
           const key = getTableKeyForName(appliedTable);
           if (key) {
@@ -42845,11 +42833,7 @@ for(const r of (received || [])){
       const redirect = resolveProgressiveBallDisplayTarget(originalTarget, receiptKey, { balls:base.balls });
       const table = String(redirect?.tableName || "").trim();
       if(!table || redirect?.suppressed || !isActiveSeedTableName(table)){
-        try{ apLog(`Ignoring Progressive Ball inventory target: ${originalTarget} (${redirect?.reason || "no valid seed table"})`); }catch(_){}
         continue;
-      }
-      if(!progressiveBallTargetsSame(table, originalTarget)){
-        try{ apLog(`Progressive Ball inventory remapped; ${originalTarget} -> ${table} (${redirect?.reason || "reroute"})`); }catch(_){}
       }
       const baseKey = getTableKeyForName(table);
       if(!baseKey) continue;
