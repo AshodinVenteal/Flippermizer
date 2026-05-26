@@ -33,6 +33,14 @@ Online, you can build a trapless Home Edition YAML in the hosted player options 
 
 https://ashodinventeal.github.io/Flippermizer/player-options.html
 
+## Hosted Task Updates
+
+Home Edition and Stream Edition can check GitHub Pages for a stable task repository override pack when an online Archipelago run connects. The hosted manifest lives at:
+
+https://ashodinventeal.github.io/Flippermizer/tasks/manifest.json
+
+Clients merge the hosted pack after bundled defaults and before any local Task Repository Editor overrides. If the hosted files are unavailable or fail validation, the app keeps using its bundled task data.
+
 ## Quick Start
 
 Home Edition runs now open a first-launch Quick Start inside the app. Open **Singleplayer -> Quick Start** any time to revisit it, or **Singleplayer -> Table List** for the expected table set.

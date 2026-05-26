@@ -39288,6 +39288,10 @@ function getTaskShuffleEntryForLocationName(locationName){
 }
 
 const FLPR_TASK_REPOSITORY_STORAGE_KEY = "flpr_task_repository_cfg_v1";
+const FLPR_TASK_REPOSITORY_REMOTE_STORAGE_KEY = "flpr_task_repository_remote_cfg_v1";
+const FLPR_TASK_REPOSITORY_REMOTE_META_KEY = "flpr_task_repository_remote_meta_v1";
+const FLPR_TASK_REPOSITORY_REMOTE_MANIFEST_URL = "https://ashodinventeal.github.io/Flippermizer/tasks/manifest.json";
+const FLPR_TASK_REPOSITORY_REMOTE_POLL_MS = 30 * 60 * 1000;
 
 function normalizeTaskRepositoryTaskKey(value){
   try{
@@ -39328,6 +39332,11 @@ function mergeTaskRepositoryCfg(base, overlay){
 }
 
 let flprTaskRepositoryRuntimeCfgCache = null;
+const flprTaskRepositoryRemotePollState = {
+  active: false,
+  lastAttempt: 0,
+  timer: null
+};
 const TASK_REPOSITORY_MUTABLE_ENTRY_FIELDS = Object.freeze([
   "objective",
   "display_name",
@@ -39342,6 +39351,10 @@ const TASK_REPOSITORY_MUTABLE_ENTRY_FIELDS = Object.freeze([
 function getTaskRepositoryRuntimeCfg(){
   if(flprTaskRepositoryRuntimeCfgCache) return flprTaskRepositoryRuntimeCfgCache;
   let cfg = normalizeTaskRepositoryCfg(window.FLPR_TASK_REPOSITORY_DEFAULT_CFG || {});
+  try{
+    const remoteRaw = localStorage.getItem(FLPR_TASK_REPOSITORY_REMOTE_STORAGE_KEY);
+    if(remoteRaw) cfg = mergeTaskRepositoryCfg(cfg, JSON.parse(remoteRaw));
+  }catch(_){}
   try{
     const raw = localStorage.getItem(FLPR_TASK_REPOSITORY_STORAGE_KEY);
     if(raw) cfg = mergeTaskRepositoryCfg(cfg, JSON.parse(raw));
@@ -39426,6 +39439,134 @@ function setTaskRepositoryRuntimeCfg(cfg, opts){
   }catch(_){
     try{ renderAll(); }catch(__){}
   }
+}
+
+function taskRepositoryLogUpdate(message, opts){
+  const text = String(message || "").trim();
+  if(!text) return;
+  try{
+    if(typeof apLog === "function") apLog("TASK REPOSITORY; " + text, { tab:"status" });
+    else console.info("TASK REPOSITORY; " + text);
+  }catch(_){}
+  if(opts?.toast){
+    try{ toast(opts.kind || "good", opts.title || "TASKS UPDATED", text, opts.ms || 2400); }catch(_){}
+  }
+}
+
+function taskRepositoryStoredRemoteMeta(){
+  try{
+    const raw = localStorage.getItem(FLPR_TASK_REPOSITORY_REMOTE_META_KEY);
+    return raw ? JSON.parse(raw) : null;
+  }catch(_){}
+  return null;
+}
+
+function taskRepositoryRemoteUrlFromManifest(manifest){
+  try{
+    const rel = String(manifest?.cfgUrl || manifest?.url || "flippermizer-task-repository-cfg.json").trim();
+    return new URL(rel, FLPR_TASK_REPOSITORY_REMOTE_MANIFEST_URL).toString();
+  }catch(_){}
+  return "https://ashodinventeal.github.io/Flippermizer/tasks/flippermizer-task-repository-cfg.json";
+}
+
+async function taskRepositorySha256Hex(text){
+  if(!window.crypto || !window.crypto.subtle || typeof TextEncoder === "undefined") return "";
+  const data = new TextEncoder().encode(String(text || ""));
+  const hash = await window.crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash)).map((b)=>b.toString(16).padStart(2, "0")).join("");
+}
+
+function setTaskRepositoryRemoteCfg(cfg, meta){
+  const normalized = normalizeTaskRepositoryCfg(cfg || {});
+  normalized.source = Object.assign({}, normalized.source || {}, {
+    remote: true,
+    manifestUrl: FLPR_TASK_REPOSITORY_REMOTE_MANIFEST_URL,
+    channel: String(meta?.channel || normalized.source?.channel || "stable"),
+    manifestVersion: String(meta?.version || ""),
+    sha256: String(meta?.sha256 || "")
+  });
+  try{ localStorage.setItem(FLPR_TASK_REPOSITORY_REMOTE_STORAGE_KEY, JSON.stringify(normalized)); }catch(_){}
+  try{ localStorage.setItem(FLPR_TASK_REPOSITORY_REMOTE_META_KEY, JSON.stringify(meta || {})); }catch(_){}
+  flprTaskRepositoryRuntimeCfgCache = null;
+  try{ getTaskRepositoryRuntimeCfg(); }catch(_){}
+  try{ refreshTaskRepositoryCheckSurfaces(); }catch(_){}
+}
+
+function normalizeTaskRepositoryManifest(value){
+  const raw = value && typeof value === "object" ? value : {};
+  return {
+    kind: String(raw.kind || ""),
+    version: String(raw.version || ""),
+    updatedAt: String(raw.updatedAt || ""),
+    channel: String(raw.channel || "stable"),
+    cfgUrl: String(raw.cfgUrl || raw.url || ""),
+    sha256: String(raw.sha256 || "").trim().toLowerCase(),
+    pollSeconds: Number(raw.pollSeconds || 0) || 0,
+    notes: String(raw.notes || "")
+  };
+}
+
+async function pollHostedTaskRepositoryCfg(reason, opts){
+  opts = opts || {};
+  if(typeof fetch !== "function") return { ok:false, skipped:true, reason:"fetch-unavailable" };
+  const now = Date.now();
+  const minGap = Math.max(60 * 1000, Number(opts.minGapMs || 0) || FLPR_TASK_REPOSITORY_REMOTE_POLL_MS);
+  if(flprTaskRepositoryRemotePollState.active) return { ok:false, skipped:true, reason:"already-active" };
+  if(!opts.force && flprTaskRepositoryRemotePollState.lastAttempt && (now - flprTaskRepositoryRemotePollState.lastAttempt) < minGap){
+    return { ok:false, skipped:true, reason:"throttled" };
+  }
+  flprTaskRepositoryRemotePollState.active = true;
+  flprTaskRepositoryRemotePollState.lastAttempt = now;
+  try{
+    const manifestResponse = await fetch(FLPR_TASK_REPOSITORY_REMOTE_MANIFEST_URL, { cache:"no-store" });
+    if(!manifestResponse || !manifestResponse.ok) throw new Error("manifest HTTP " + (manifestResponse ? manifestResponse.status : "0"));
+    const manifest = normalizeTaskRepositoryManifest(await manifestResponse.json());
+    if(manifest.kind && manifest.kind !== "flippermizer_task_repository_manifest") throw new Error("manifest kind mismatch");
+    const cfgUrl = taskRepositoryRemoteUrlFromManifest(manifest);
+    const storedMeta = taskRepositoryStoredRemoteMeta();
+    if(storedMeta && manifest.sha256 && String(storedMeta.sha256 || "").toLowerCase() === manifest.sha256){
+      return { ok:true, skipped:true, reason:"current", manifest };
+    }
+    const cfgResponse = await fetch(cfgUrl, { cache:"no-store" });
+    if(!cfgResponse || !cfgResponse.ok) throw new Error("task cfg HTTP " + (cfgResponse ? cfgResponse.status : "0"));
+    const cfgText = await cfgResponse.text();
+    if(manifest.sha256){
+      const actualHash = await taskRepositorySha256Hex(cfgText);
+      if(actualHash && actualHash !== manifest.sha256) throw new Error("task cfg checksum mismatch");
+    }
+    const cfg = normalizeTaskRepositoryCfg(JSON.parse(cfgText));
+    if(cfg.kind !== "flippermizer_task_repository_cfg") throw new Error("task cfg kind mismatch");
+    const meta = {
+      kind: "flippermizer_task_repository_remote_meta",
+      version: manifest.version || cfg.version || "",
+      updatedAt: manifest.updatedAt || cfg.updatedAt || "",
+      channel: manifest.channel || "stable",
+      manifestUrl: FLPR_TASK_REPOSITORY_REMOTE_MANIFEST_URL,
+      cfgUrl,
+      sha256: manifest.sha256 || "",
+      fetchedAt: new Date().toISOString()
+    };
+    setTaskRepositoryRemoteCfg(cfg, meta);
+    taskRepositoryLogUpdate("loaded hosted task pack " + (meta.version || "latest"), {
+      toast: reason === "ap-connected",
+      title: "TASKS UPDATED",
+      kind: "good"
+    });
+    return { ok:true, updated:true, manifest, cfg };
+  }catch(err){
+    taskRepositoryLogUpdate("hosted task check skipped; " + (err?.message || err), { toast:false });
+    return { ok:false, error:String(err?.message || err || "") };
+  }finally{
+    flprTaskRepositoryRemotePollState.active = false;
+  }
+}
+
+function scheduleHostedTaskRepositoryCfgPoll(reason, opts){
+  try{ pollHostedTaskRepositoryCfg(reason || "startup", opts || {}); }catch(_){}
+  if(flprTaskRepositoryRemotePollState.timer) return;
+  flprTaskRepositoryRemotePollState.timer = setInterval(()=>{
+    try{ pollHostedTaskRepositoryCfg("interval", { minGapMs: FLPR_TASK_REPOSITORY_REMOTE_POLL_MS }); }catch(_){}
+  }, FLPR_TASK_REPOSITORY_REMOTE_POLL_MS);
 }
 
 function taskRepositoryMatchEdit(tableName, difficulty, kind, objective){
@@ -41767,6 +41908,7 @@ function apConnect(){
       if(pkt.cmd === "Connected"){
         handled = true;
         ap.connected = true; apLog("connected"); startApPolling();
+        try{ scheduleHostedTaskRepositoryCfgPoll("ap-connected", { force:true }); }catch(_){}
         ap.slot = Number(pkt.slot ?? pkt.slot_id ?? ap.slot ?? 0) || ap.slot || 0;
         ap.team = Number(pkt.team ?? ap.team ?? 0) || 0;
         try{ apStorePlayers(pkt.players || []); }catch(_){}
@@ -57135,6 +57277,7 @@ flprSafeBoot("renderAchievementsControlsPanel", ()=> renderAchievementsControlsP
 flprSafeBoot("achRenderControlsNoticeOverlay", ()=> achRenderControlsNoticeOverlay());
 flprSafeBoot("renderHeaderTitleBadge", ()=> renderHeaderTitleBadge());
 flprSafeBoot("flprMaybeShowPatchNotes", ()=> flprMaybeShowPatchNotes({ delayMs:900 }));
+flprSafeBoot("scheduleHostedTaskRepositoryCfgPoll", ()=> scheduleHostedTaskRepositoryCfgPoll("startup", { minGapMs: 5 * 60 * 1000 }));
 scheduleOverlayStartupRecoveryCheck("boot-early", 120);
 scheduleOverlayStartupRecoveryCheck("boot-late", 900);
 flprSafeBoot("wireOpeningRandomizerIntro", ()=> wireOpeningRandomizerIntro());

@@ -1,0 +1,15 @@
+{
+  "kind": "flippermizer_task_repository_cfg",
+  "version": "2026.05.26.1",
+  "updatedAt": "2026-05-26T19:30:00Z",
+  "source": {
+    "name": "Flippermizer hosted task repository",
+    "channel": "stable"
+  },
+  "edits": {},
+  "flags": {},
+  "codexSuggestions": {},
+  "accepted": {},
+  "templateTables": {},
+  "history": {}
+}
