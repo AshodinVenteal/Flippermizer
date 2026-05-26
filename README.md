@@ -24,7 +24,8 @@ Release asset:
 ### Home Edition 1.1 Hotfix - 2026-05-26
 
 - Fixed vertical 1080x1920 orientation so the top HUD, Overview, and controls stack within the Electron window without right-edge overhang.
-- Updated the portrait scaling baseline to 1080x1920 for cleaner Home Edition capture and portable launcher behavior.
+- Updated the portrait layout to use the actual Electron viewport, including smaller saved vertical windows such as 968x1356.
+- Refreshed the portable EXE and win-unpacked ZIP so both release downloads include the vertical viewport fix.
 
 ## Home Edition Player Options
 
