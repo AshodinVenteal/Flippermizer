@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flippermizer Launcher</title>
+  <link rel="stylesheet" href="launcher.css">
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div class="heroBrand">
+        <img id="heroLogo" class="heroLogo" alt="Flippermizer logo" />
+        <div class="heroText">
+          <h1>Desktop Launcher</h1>
+          <p class="lede">Open the Overlay, Bestiary, and Archipelago Options from one launcher, with the Base Game APWorld bundled alongside the app for easier setup on a fresh machine.</p>
+          <div class="heroSubhead">What is Flippermizer?</div>
+          <p class="heroChangelog">Flippermizer is a pinball randomizer and Archipelago setup that turns curated VPX table worlds into a connected progression run with checks, traps, boss fights, hints, and end-of-run stats.</p>
+          <div class="heroSubhead">Changelog / Recent Updates</div>
+          <p class="heroChangelog">Latest launcher builds include the Base Game flow, synced Electron assets, guided tours for each page, and smoother packaged rendering behavior.</p>
+        </div>
+      </div>
+      <div class="heroBadges">
+        <div class="heroBadge">
+          <span class="badgeK">Guided Tour</span>
+          <span class="badgeV">Open any page in Tutorial Mode to spotlight the main regions and explain what each area does.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="panel">
+        <span class="kicker">Main Overlay</span>
+        <span class="ttl">Flippermizer Overlay</span>
+        <span class="meta">Tower / Overview / Checks / Boss Flow</span>
+        <span class="panelDesc">Live randomizer HUD for Tower, Overview, Checks, boss encounters, and operator controls.</span>
+        <div class="panelActions">
+          <button class="panelBtn primary" data-page="overlay">Open Overlay</button>
+          <button class="panelBtn secondary" data-guide="overlay">Guided Tour</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <span class="kicker">Reference Library</span>
+        <span class="ttl">Flippermizer Bestiary</span>
+        <span class="meta">Flyers / Designers / Progress Records</span>
+        <span class="panelDesc">Browse table flyers, designer profiles, world groupings, and persistent progress data.</span>
+        <div class="panelActions">
+          <button class="panelBtn primary" data-page="bestiary">Open Bestiary</button>
+          <button class="panelBtn secondary" data-guide="bestiary">Guided Tour</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <span class="kicker">Archipelago Setup</span>
+        <span class="ttl">Base Game Options</span>
+        <span class="meta">World Selection / Starts / Boss Keys / Score Display</span>
+        <span class="panelDesc">Build the player YAML for the Base Game randomizer, including curated worlds, random world generation, opening tables, and display difficulty settings.</span>
+        <div class="panelActions">
+          <button class="panelBtn primary" data-page="options">Open Options</button>
+          <button class="panelBtn secondary" data-guide="options">Guided Tour</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="utilityRow">
+      <button class="utilityBtn" id="showApworldBtn">Show Base Game APWorld</button>
+      <button class="utilityBtn" id="openApworldFolderBtn">Open APWorld Folder</button>
+      <button class="utilityBtn" id="openAppFolderBtn">Open Launcher Folder</button>
+    </div>
+
+    <div class="infoGrid">
+      <section class="infoCard tutorialCard">
+        <div class="infoHd">Tutorial Mode</div>
+        <div class="infoBody">Guided Tour opens the Overlay, Bestiary, or Options page with spotlight highlights and short explanations so new players can learn the layout faster.</div>
+      </section>
+      <section class="infoCard">
+        <div class="infoHd">Renderer Mode</div>
+        <div class="infoBody">Switch the Electron backend here or from the Stream controls panel. Vulkan is the default renderer for the launcher.</div>
+        <div class="graphicsControls">
+          <select id="graphicsModeSelect" class="graphicsSelect"></select>
+          <button class="panelBtn primary graphicsApplyBtn" id="applyGraphicsModeBtn">Apply Renderer Mode</button>
+        </div>
+      </section>
+      <section class="infoCard twitchCard">
+        <div class="infoHd">Twitch / FLPR-Bot</div>
+        <div class="infoBody">Start the local Twitch bot from its install folder.</div>
+        <div class="botControls">
+          <button class="panelBtn primary botRunBtn" id="runFlprBotBtn" type="button">Start FLPR-Bot</button>
+          <div class="botPath" id="flprBotStatus">Checking bot path...</div>
+        </div>
+      </section>
+      <section class="infoCard">
+        <div class="infoHd">Archipelago Setup</div>
+        <div class="infoBody">Use the Options page to set world selection mode, active table count, starting opens, Boss Key scaling, and score display difficulty. Then copy the bundled <code>.apworld</code> into Archipelago <code>custom_worlds</code> and generate from your player YAML.</div>
+      </section>
+      <section class="infoCard">
+        <div class="infoHd">Launcher Build</div>
+        <div class="infoBody" id="buildMode">Reading launcher version...</div>
+      </section>
+    </div>
+  </div>
+  <script src="launcher.js"></script>
+</body>
+</html>

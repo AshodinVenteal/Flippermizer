@@ -14,6 +14,7 @@ Thumbs.db
 *.md
 !README.md
 !MOBILE_CONTINUATION.md
+!Flippermizer Stream Edition/apworld/**/*.md
 *.sfc
 __pycache__/
 *.pyc
