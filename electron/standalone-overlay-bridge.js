@@ -44,6 +44,7 @@
     "Flippermizer",
     "FlippermizerBaseGame"
   ]);
+  const STANDALONE_PACKAGED_LOGO_POSITION = Object.freeze({ x: 1057, y: 11 });
   const STANDALONE_KNOWN_AP_ITEM_NAMES = Object.freeze({
     "370001": "Ethereal Crossbow",
     "heretic|370001": "Ethereal Crossbow"
@@ -74,8 +75,8 @@
   ]);
   const DEFAULT_SETTINGS = {
     controlsOffset: 0,
-    logoX: null,
-    logoY: null,
+    logoX: STANDALONE_PACKAGED_LOGO_POSITION.x,
+    logoY: STANDALONE_PACKAGED_LOGO_POSITION.y,
     logoLocked: true
   };
 
@@ -2130,8 +2131,8 @@
         margin-bottom:0 !important;
       }
       body.flprStandaloneOriginalClient:not(.flprStandaloneVerticalViewport) #viewOverview #grid{
-        grid-template-columns:repeat(auto-fit, minmax(158px, 1fr)) !important;
-        grid-template-rows:none !important;
+        grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
+        grid-template-rows:repeat(5, minmax(0, 1fr)) !important;
         grid-auto-rows:minmax(150px, 1fr) !important;
         align-content:stretch !important;
       }
@@ -4246,13 +4247,28 @@
       body.flprStandaloneOriginalClient .standaloneLogoDock{
         flex:0 0 auto !important;
         gap:10px !important;
-        margin:10px 2px 0 !important;
+        margin:0 0 12px !important;
         padding:10px !important;
         border-radius:14px !important;
         background:
           linear-gradient(180deg, rgba(5,18,32,.98), rgba(3,10,18,.98)),
           radial-gradient(circle at 0% 0%, rgba(255,224,122,.12), transparent 46%) !important;
         box-shadow:0 0 0 1px rgba(255,224,122,.14) inset !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneLogoCardTitle{
+        display:flex !important;
+        align-items:center !important;
+        justify-content:space-between !important;
+        gap:8px !important;
+        margin-bottom:8px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneLogoCardTitle .cSectionTitle{
+        margin:0 !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneLogoCardTitle .mini{
+        color:rgba(188,220,236,.72) !important;
+        font-size:7px !important;
+        line-height:1.2 !important;
       }
       body.flprStandaloneOriginalClient .standaloneLogoActions{
         display:grid !important;
@@ -4933,6 +4949,10 @@
 
   function standaloneTaskStrategyGuide(tableName, taskName, entry, node){
     const targetTable = standaloneSourceTableForTask(tableName, entry, node);
+    try{
+      const repoTooltip = window.flprTaskRepositoryTooltipForTask?.(targetTable || tableName, taskName, entry, node);
+      if(String(repoTooltip || "").trim()) return String(repoTooltip || "").trim();
+    }catch(_){}
     const exact = standaloneExactStrategyGuide(targetTable, taskName) || standaloneExactStrategyGuide(tableName, taskName);
     if(exact) return exact;
     const pixelScore = standalonePixelScoreStrategyGuide(targetTable || tableName, taskName);
@@ -7007,6 +7027,13 @@
       return { x:24, y:60 };
     }
     try{
+      const viewportW = window.innerWidth || document.documentElement.clientWidth || 1280;
+      return {
+        x: clamp(STANDALONE_PACKAGED_LOGO_POSITION.x, 8, Math.max(8, viewportW - 220)),
+        y: Math.max(8, STANDALONE_PACKAGED_LOGO_POSITION.y)
+      };
+    }catch(_){}
+    try{
       const controls = document.querySelector(".controls") || document.querySelector(".controlsHead, .controlsHeadTitle") || document.querySelector(".controlsBody");
       const rect = controls?.getBoundingClientRect?.();
       if(rect && Number.isFinite(rect.left) && rect.left > 0){
@@ -7087,6 +7114,7 @@
       const right = clamp(profileOffset, 18, maxRight);
       hud.style.setProperty("left", "auto", "important");
       hud.style.setProperty("right", `${right}px`, "important");
+      hud.style.setProperty("top", "10px", "important");
       hud.style.setProperty("transform", "none", "important");
     }catch(_){}
   }
@@ -8353,12 +8381,12 @@
   function buildStandaloneLogoDock(){
     const dock = document.createElement("section");
     dock.id = "standaloneLogoDock";
-    dock.className = "standaloneLogoDock standaloneControlSection";
+    dock.className = "standaloneLogoDock ctrlCard";
     dock.dataset.accent = "gold";
     dock.innerHTML = `
-      <div class="standaloneSectionTitle">
-        <span class="standaloneDockTitleText">DEV TOOLS <span class="mini">advanced layout</span></span>
-        <button class="standaloneDockCollapseBtn" id="standaloneLogoDockCollapseBtn" type="button">SHOW</button>
+      <div class="standaloneLogoCardTitle">
+        <div class="cSectionTitle">ADVANCED LAYOUT</div>
+        <span class="mini">logo position</span>
       </div>
       <button class="cBtn" id="standaloneLogoDevToggle" type="button">LOGO POSITION</button>
       <div class="standaloneLogoDevPanel" id="standaloneLogoDevPanel" hidden>
@@ -8505,10 +8533,11 @@
         else node.remove();
       });
       if(!dock) dock = buildStandaloneLogoDock();
-      const stack = panel.querySelector(":scope > .tabSectionStack") || panel;
+      const devTools = panel.querySelector('.connectPanelSection[data-panel-key="visual-dev-tools"]');
+      const stack = devTools || panel.querySelector(":scope > .tabSectionStack") || panel;
       if(dock.parentElement !== stack) stack.appendChild(dock);
-      else stack.insertBefore(dock, stack.firstChild || null);
-      standaloneBindDockCollapse(dock, true);
+      else stack.appendChild(dock);
+      if(devTools && typeof ensureDevToolsPasswordGate === "function") ensureDevToolsPasswordGate(devTools);
       standaloneSyncLogoControls();
     }catch(_){}
   }
@@ -10880,6 +10909,18 @@
     return "";
   }
 
+  function standaloneSameProgressiveTarget(a, b){
+    const at = String(a || "").trim();
+    const bt = String(b || "").trim();
+    if(!at || !bt) return false;
+    try{
+      const ac = standaloneTableCode(at);
+      const bc = standaloneTableCode(bt);
+      if(ac && bc) return ac === bc;
+    }catch(_){}
+    return standaloneNormalizeLoose(at) === standaloneNormalizeLoose(bt);
+  }
+
   function standaloneTableNameKeys(value){
     const keys = new Set();
     const add = (v)=>{
@@ -12357,8 +12398,14 @@
       if(Number.isFinite(loc)) row.locId = loc;
       const resolved = standaloneReceivedRowItemName(row);
       if(resolved && !standaloneLooksUnresolvedItemName(resolved, row.itemId)){
-        row.itemName = resolved;
-        row.baseItemName = resolved;
+        const currentProgressiveTarget = standaloneProgressiveBallTarget(row.itemName || "");
+        const resolvedProgressiveTarget = standaloneProgressiveBallTarget(resolved || "");
+        if(currentProgressiveTarget && resolvedProgressiveTarget && !standaloneSameProgressiveTarget(currentProgressiveTarget, resolvedProgressiveTarget)){
+          row.baseItemName = resolved;
+        }else{
+          row.itemName = resolved;
+          row.baseItemName = resolved;
+        }
       }
       try{
         const next = standaloneDedupeReceivedRowsList(list);
