@@ -24745,11 +24745,13 @@ function setTableHighScoreValue(tableKey, tableName, value){
 }
 function getScoreTargetMetaForTask(taskName){
   const raw = String(taskName || "").trim();
-  if(!raw || !/\bscore\b/i.test(raw)) return null;
-  const paren = raw.match(/\(([^)]*\d[^)]*)\)/);
-  const direct = raw.match(/score(?:\s+target)?(?:\s+of)?\s+([0-9][0-9,\s]*\+?)/i);
-  const matches = raw.match(/([0-9][0-9,\s]*\+?)/g);
-  const labelRaw = String((paren && paren[1]) || (direct && direct[1]) || (matches && matches[matches.length - 1]) || "").trim();
+  if(!raw) return null;
+  const difficultyScore = /\b(?:easy|medium|hard)\s+score\b/i.test(raw);
+  const scoreTarget = /\bscore\s+target\b/i.test(raw);
+  const direct = raw.match(/^\s*score(?:\s+target)?(?:\s+of)?\s+([0-9][0-9,\s]*\+?)(?=\s*(?:$|on\b|before\b))/i);
+  if(!difficultyScore && !scoreTarget && !direct) return null;
+  const paren = difficultyScore ? raw.match(/\(([^)]*\d[^)]*)\)/) : null;
+  const labelRaw = String((paren && paren[1]) || (direct && direct[1]) || "").trim();
   const value = parseManualScoreValue(labelRaw);
   if(value == null || value <= 0) return null;
   return { value, label: labelRaw || formatManualScoreValue(value) };

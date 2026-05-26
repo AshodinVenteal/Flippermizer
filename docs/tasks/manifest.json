@@ -1,10 +1,10 @@
 {
   "kind": "flippermizer_task_repository_manifest",
-  "version": "2026.05.26.1",
-  "updatedAt": "2026-05-26T19:30:00Z",
+  "version": "2026.05.26.2",
+  "updatedAt": "2026-05-26T20:22:15Z",
   "channel": "stable",
   "cfgUrl": "flippermizer-task-repository-cfg.json",
-  "sha256": "b8b435c8c5a987f61a5c07cb968e0962790607b5e49b3bd7c77608184bdc78ab",
+  "sha256": "531051ed78da488a6bb3b81bf645bd0e691dea9b512a66023ebff2b4c42ccdf4",
   "pollSeconds": 1800,
   "minHomeVersion": "1.1.0",
   "minStreamVersion": "1.1.0",

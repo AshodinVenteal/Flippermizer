@@ -1,12 +1,23 @@
 {
   "kind": "flippermizer_task_repository_cfg",
-  "version": "2026.05.26.1",
-  "updatedAt": "2026-05-26T19:30:00Z",
+  "version": "2026.05.26.2",
+  "updatedAt": "2026-05-26T20:22:15Z",
   "source": {
     "name": "Flippermizer hosted task repository",
     "channel": "stable"
   },
-  "edits": {},
+  "edits": {
+    "gold ball|medium|4|score the 100 000 1 2 3 award": {
+      "title": "Collect the 100,000 1-2-3 Award",
+      "type": "task",
+      "updatedAt": "2026-05-26T20:22:15Z"
+    },
+    "gold ball|hard|4|score two 100 000 1 2 3 awards in one game": {
+      "title": "Collect Two 100,000 1-2-3 Awards in One Game",
+      "type": "task",
+      "updatedAt": "2026-05-26T20:22:15Z"
+    }
+  },
   "flags": {},
   "codexSuggestions": {},
   "accepted": {},
