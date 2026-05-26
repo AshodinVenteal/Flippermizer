@@ -14,6 +14,7 @@ Thumbs.db
 *.md
 !README.md
 !MOBILE_CONTINUATION.md
+!Flippermizer Stream Edition/apworld/**/*.md
 *.sfc
 __pycache__/
 *.pyc
@@ -26,10 +27,7 @@ build/*
 !build/icon.ico
 !build/icon.png
 
-# Local task repository editor/generation artifacts
-flippermizer_task_repository.html
-flippermizer_task_repository_cfg.js
-flippermizer_task_repository_data.js
+# Local task repository generation artifacts
 task_repository_*.json
 tools/build_task_repository_data.py
 tools/merge_task_repository_suggestions.py
