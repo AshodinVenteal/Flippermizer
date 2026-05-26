@@ -2,7 +2,14 @@
 
 Flippermizer! Pinball Randomized! is a pinball randomizer client for Archipelago and singleplayer Home Edition runs.
 
-This repository is intentionally kept to the runnable Home Edition Electron launcher source plus the basic HTML overlay entrypoint. Experimental AP world files, YAML generators, task repository editors, reports, and generated release bundles are kept out of the tracked repo.
+This repository keeps the Home Edition source, Stream Edition source, and viewable APWorld source folders together so the code can be browsed directly on GitHub. Generated release bundles, dependency folders, and packaged APWorld archives stay out of Git.
+
+## Repository Layout
+
+- `Flippermizer Home Edition/` - Home Edition Electron launcher, basic HTML overlay, hosted player options page, and Home assets.
+- `Flippermizer Stream Edition/` - Stream Edition launcher source and stream overlay assets.
+- `apworld/manual_flippermizerworldsofpinball_base_game/` - extracted Manual APWorld source package.
+- `apworld/FlippermizerWorldsofPinball/` - extracted FlippermizerWorldsofPinball APWorld source package.
 
 ## Release
 
@@ -42,16 +49,18 @@ The in-app Table List is the source of truth for expected tables. The Flippermiz
 
 For repeated Ball 1 attempts, fully restarting a table is often safer than using F3 if that table loses trough state or behaves oddly after script reset. Score capture and screen-reading tools are still future workflow helpers; for now the supported Home Edition flow is manual score entry and check redemption from the Checks page.
 
-## Run From Source
+## Run Home Edition From Source
 
 ```powershell
+cd "Flippermizer Home Edition"
 npm install
 npm start
 ```
 
-## Build The Launcher
+## Build The Home Edition Launcher
 
 ```powershell
+cd "Flippermizer Home Edition"
 npm install
 npm run check
 npm run dist:portable
@@ -59,9 +68,17 @@ npm run dist:portable
 
 The unpacked app and portable launcher are written to `dist/`. Build output is intentionally ignored by git; publish launcher binaries through GitHub Releases.
 
+## Run Stream Edition From Source
+
+```powershell
+cd "Flippermizer Stream Edition"
+npm install
+npm start
+```
+
 ## Basic HTML Version
 
-Open `flippermizer_overlay_tower_v3.html` directly for the basic HTML overlay version. Keep these runtime assets beside it:
+Open `Flippermizer Home Edition/flippermizer_overlay_tower_v3.html` directly for the basic HTML overlay version. Keep these runtime assets beside it:
 
 - `flippermizer_table_repository.js`
 - `flippermizer_task_explanations.js`
