@@ -9,7 +9,7 @@ const APP_ID = "net.flippermizer.homeedition";
 const APP_ICON_HOME_IMAGE = path.join(__dirname, "..", "Flippermizer Images", "flippermizericon-Home-Edition-64x64.png");
 const APP_ICON_PACKAGE = path.join(__dirname, "..", "build", process.platform === "win32" ? "home-icon.ico" : "icon.png");
 const OVERLAY_BASE_WIDTH = 910 + 306 + 1280 + 16 + 32;
-const OVERLAY_VERTICAL_BASE_WIDTH = 1180;
+const OVERLAY_VERTICAL_BASE_WIDTH = 1080;
 const OVERLAY_BASE_HEIGHT = 1450;
 const OVERLAY_VERTICAL_BASE_HEIGHT = Math.round(OVERLAY_VERTICAL_BASE_WIDTH * 16 / 9);
 const DEFAULT_WINDOW_BOUNDS = { width: 1600, height: 960 };

@@ -628,8 +628,11 @@
       }
       html.flprStandaloneWindowClient.flprStandaloneVerticalViewport,
       html.flprStandaloneWindowClient.flprStandaloneVerticalViewport body{
-        width:1180px !important;
-        height:2098px !important;
+        width:100vw !important;
+        max-width:100vw !important;
+        height:100vh !important;
+        min-width:0 !important;
+        min-height:0 !important;
         overflow:hidden !important;
       }
       body.flprStandaloneOriginalClient{
@@ -638,12 +641,15 @@
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport{
         --captureW:910px !important;
-        --captureH:1450px !important;
-        --controlsW:1110px !important;
+        --captureH:1258px !important;
+        --controlsW:1032px !important;
         --bonusLeaderboardW:0px !important;
-        --gutter:12px !important;
-        --flprStandaloneViewportH:1138px !important;
-        --flprStandaloneControlsH:512px !important;
+        --gutter:13px !important;
+        --flprStandaloneViewportH:948px !important;
+        --flprStandaloneControlsH:518px !important;
+        --flprStandalonePortraitPadX:24px !important;
+        --flprStandalonePortraitPadTop:111px !important;
+        --flprStandalonePortraitPadBottom:20px !important;
       }
       body.flprStandaloneOriginalClient .stage{
         width:max(calc(var(--captureW) + var(--bonusLeaderboardW) + var(--controlsW) + var(--gutter) + 32px), 100vw) !important;
@@ -663,13 +669,16 @@
         min-height:0 !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .stage{
-        width:1180px !important;
-        height:2098px !important;
+        width:100vw !important;
+        max-width:100vw !important;
+        height:100vh !important;
+        min-width:0 !important;
+        min-height:0 !important;
         display:grid !important;
         grid-template-columns:1fr !important;
-        grid-template-rows:var(--captureH) minmax(0, var(--flprStandaloneControlsH)) !important;
-        gap:14px !important;
-        padding:102px 35px 20px !important;
+        grid-template-rows:minmax(0, var(--captureH)) minmax(0, var(--flprStandaloneControlsH)) !important;
+        gap:var(--gutter) !important;
+        padding:var(--flprStandalonePortraitPadTop) var(--flprStandalonePortraitPadX) var(--flprStandalonePortraitPadBottom) !important;
         align-content:start !important;
         justify-items:center !important;
         justify-content:initial !important;
@@ -1734,12 +1743,14 @@
         filter:drop-shadow(0 0 12px rgba(0,217,255,.42)) drop-shadow(0 0 6px rgba(255,86,214,.26)) !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeHud{
-        max-width:390px !important;
+        left:var(--flprStandalonePortraitPadX, 24px) !important;
+        top:18px !important;
+        max-width:clamp(260px, 31vw, 330px) !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeHudLogo{
-        width:390px !important;
-        height:86px !important;
-        flex:0 0 390px !important;
+        width:clamp(250px, 30vw, 330px) !important;
+        height:72px !important;
+        flex:0 0 clamp(250px, 30vw, 330px) !important;
         object-position:left center !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeSwitchHud{
@@ -1764,24 +1775,47 @@
         min-width:126px !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeSwitchHud{
-        gap:8px !important;
-        padding:5px !important;
+        left:50% !important;
+        right:auto !important;
+        top:22px !important;
+        transform:translateX(-50%) !important;
+        gap:6px !important;
+        padding:4px !important;
+        max-width:calc(100vw - var(--flprStandalonePortraitPadX, 24px) - var(--flprStandalonePortraitPadX, 24px)) !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeHudBtn{
-        min-width:72px !important;
-        min-height:46px !important;
-        padding:7px 12px !important;
-        font-size:16px !important;
+        min-width:58px !important;
+        min-height:38px !important;
+        padding:6px 10px !important;
+        font-size:13px !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneModeHudBtn.houseBtn{
-        min-width:108px !important;
+        min-width:86px !important;
       }
       body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneProfileHud{
-        top:60px !important;
-        right:18px !important;
-        gap:10px !important;
-        transform:scale(.88) !important;
+        top:17px !important;
+        right:var(--flprStandalonePortraitPadX, 24px) !important;
+        gap:8px !important;
+        transform:none !important;
         transform-origin:top right !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneProfilePoints{
+        padding:7px 12px !important;
+        font-size:13px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneProfileHudBtn{
+        min-height:42px !important;
+        gap:8px !important;
+        padding:6px 12px 6px 6px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneProfileHudBtn .standaloneProfileAvatar{
+        width:32px !important;
+        height:32px !important;
+        font-size:20px !important;
+      }
+      body.flprStandaloneOriginalClient.flprStandaloneVerticalViewport .standaloneProfileHudBtn .standaloneProfileName{
+        max-width:96px !important;
+        font-size:13px !important;
       }
       body.flprStandaloneOriginalClient .standaloneModeSwitchHud[hidden]{
         display:none !important;
@@ -2108,7 +2142,9 @@
         grid-row:1 !important;
         justify-self:center !important;
         align-self:start !important;
-        width:var(--captureW) !important;
+        width:min(var(--captureW), calc(100vw - var(--flprStandalonePortraitPadX, 24px) - var(--flprStandalonePortraitPadX, 24px))) !important;
+        max-width:calc(100vw - var(--flprStandalonePortraitPadX, 24px) - var(--flprStandalonePortraitPadX, 24px)) !important;
+        min-width:0 !important;
         height:var(--captureH) !important;
         max-height:var(--captureH) !important;
         overflow:hidden !important;
@@ -2118,7 +2154,9 @@
         grid-row:2 !important;
         justify-self:center !important;
         align-self:start !important;
-        width:var(--controlsW) !important;
+        width:min(var(--controlsW), calc(100vw - var(--flprStandalonePortraitPadX, 24px) - var(--flprStandalonePortraitPadX, 24px))) !important;
+        max-width:calc(100vw - var(--flprStandalonePortraitPadX, 24px) - var(--flprStandalonePortraitPadX, 24px)) !important;
+        min-width:0 !important;
         height:var(--flprStandaloneControlsH) !important;
         max-height:var(--flprStandaloneControlsH) !important;
         margin:0 !important;
@@ -4367,21 +4405,42 @@
     const root = document.documentElement;
     root.classList.add("flprStandaloneWindowClient");
     root.style.setProperty("--bonusLeaderboardW", "0px");
-    const gutter = readRootPx("--gutter", 16);
+    let gutter = readRootPx("--gutter", 16);
     const viewportW = window.innerWidth || document.documentElement.clientWidth || 0;
     const viewportH = window.innerHeight || document.documentElement.clientHeight || 0;
     const isVerticalViewport = standaloneIsVerticalViewport();
     if(isVerticalViewport){
-      root.style.setProperty("--captureW", "910px");
-      root.style.setProperty("--captureH", "1450px");
-      root.style.setProperty("--controlsW", "1110px");
-      root.style.setProperty("--flprStandaloneControlsH", "512px");
-      root.style.setProperty("--flprStandaloneViewportH", "1138px");
+      const portraitPadX = clamp(Math.round((viewportW || 1080) * 0.022), 18, 32);
+      const portraitPadTop = clamp(Math.round((viewportH || 1920) * 0.058), 94, 118);
+      const portraitPadBottom = clamp(Math.round((viewportH || 1920) * 0.01), 14, 24);
+      const portraitGap = clamp(Math.round((viewportH || 1920) * 0.007), 10, 16);
+      const availableW = Math.max(320, Math.round((viewportW || 1080) - (portraitPadX * 2)));
+      const controlsW = Math.min(1110, availableW);
+      const captureW = Math.min(910, controlsW);
+      const controlsH = clamp(Math.round((viewportH || 1920) * 0.27), 430, 540);
+      const captureH = Math.max(720, Math.min(1450, Math.round((viewportH || 1920) - portraitPadTop - portraitPadBottom - portraitGap - controlsH)));
+      const headerH = 75;
+      const bossH = 170;
+      const viewportReserve = 48;
+      root.style.setProperty("--captureW", `${captureW}px`);
+      root.style.setProperty("--captureH", `${captureH}px`);
+      root.style.setProperty("--controlsW", `${controlsW}px`);
+      root.style.setProperty("--gutter", `${portraitGap}px`);
+      root.style.setProperty("--flprStandaloneControlsH", `${controlsH}px`);
+      root.style.setProperty("--flprStandaloneViewportH", `${Math.max(520, Math.round(captureH - headerH - bossH - viewportReserve))}px`);
+      root.style.setProperty("--flprStandalonePortraitPadX", `${portraitPadX}px`);
+      root.style.setProperty("--flprStandalonePortraitPadTop", `${portraitPadTop}px`);
+      root.style.setProperty("--flprStandalonePortraitPadBottom", `${portraitPadBottom}px`);
       root.style.removeProperty("--flprStandaloneBaseW");
       root.style.removeProperty("--flprStandaloneWindowScale");
       try{ standaloneRenderModeHud(); }catch(_){}
       return;
     }
+    gutter = 16;
+    root.style.setProperty("--gutter", "16px");
+    root.style.removeProperty("--flprStandalonePortraitPadX");
+    root.style.removeProperty("--flprStandalonePortraitPadTop");
+    root.style.removeProperty("--flprStandalonePortraitPadBottom");
     const stagePadX = 32;
     const stagePadY = 32;
     const minCaptureW = 910;
@@ -7024,7 +7083,7 @@
 
   function standaloneDefaultLogoPosition(){
     if(standaloneIsVerticalViewport()){
-      return { x:24, y:60 };
+      return { x:Math.round(readRootPx("--flprStandalonePortraitPadX", 24)), y:18 };
     }
     try{
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 1280;
@@ -7098,10 +7157,10 @@
       const viewportW = window.innerWidth || document.documentElement.clientWidth || 1280;
       const hudRect = hud.getBoundingClientRect?.();
       if(standaloneIsVerticalViewport()){
-        hud.style.setProperty("left", "430px", "important");
+        hud.style.setProperty("left", "50%", "important");
         hud.style.setProperty("right", "auto", "important");
-        hud.style.setProperty("top", "60px", "important");
-        hud.style.setProperty("transform", "none", "important");
+        hud.style.setProperty("top", "22px", "important");
+        hud.style.setProperty("transform", "translateX(-50%)", "important");
         return;
       }
       const profileRect = profile?.getBoundingClientRect?.();

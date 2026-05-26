@@ -1,0 +1,1198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Flippermizer Home Edition YAML Options Builder</title>
+<style>
+  @font-face{
+    font-family:'Press Start 2P';
+    src:url('vendor/fonts/PressStart2P-Regular.ttf') format('truetype'),
+        url('../vendor/fonts/PressStart2P-Regular.ttf') format('truetype'),
+        url('../Flippermizer Home Edition/vendor/fonts/PressStart2P-Regular.ttf') format('truetype');
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:'Jersey 15';
+    src:url('vendor/fonts/Jersey15-Regular.ttf') format('truetype'),
+        url('../vendor/fonts/Jersey15-Regular.ttf') format('truetype'),
+        url('../Flippermizer Home Edition/vendor/fonts/Jersey15-Regular.ttf') format('truetype');
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:'Hubot Sans';
+    src:url('vendor/fonts/HubotSans-Regular.woff2') format('woff2'),
+        url('../vendor/fonts/HubotSans-Regular.woff2') format('woff2'),
+        url('../Flippermizer Home Edition/vendor/fonts/HubotSans-Regular.woff2') format('woff2');
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+  @font-face{
+    font-family:'Hubot Sans';
+    src:url('vendor/fonts/HubotSans-Bold.woff2') format('woff2'),
+        url('../vendor/fonts/HubotSans-Bold.woff2') format('woff2'),
+        url('../Flippermizer Home Edition/vendor/fonts/HubotSans-Bold.woff2') format('woff2');
+    font-weight:700;
+    font-style:normal;
+    font-display:swap;
+  }
+  :root{
+    --bg1:#04121f;
+    --bg2:#02070d;
+    --panel:#07121f;
+    --panel2:#06101b;
+    --panel3:#0a1a2a;
+    --cyan:#00d9ff;
+    --cyan2:#00a6ff;
+    --green:#22ff88;
+    --gold:#ffd67a;
+    --violet:#a078ff;
+    --danger:#ff4d6d;
+    --text:#e8faff;
+    --muted:rgba(232,250,255,.68);
+    --faint:rgba(232,250,255,.46);
+    --line:rgba(0,166,255,.48);
+    --lineSoft:rgba(0,217,255,.20);
+    --shadow:rgba(0,0,0,.48);
+    --fontPixel:'Press Start 2P', monospace;
+    --fontArcade:'Jersey 15', 'Press Start 2P', monospace;
+    --fontUi:'Hubot Sans', 'Segoe UI', system-ui, sans-serif;
+    --fontMono:'Cascadia Mono', Consolas, Menlo, Monaco, monospace;
+  }
+  *{ box-sizing:border-box; }
+  html{ min-height:100%; background:var(--bg2); }
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      linear-gradient(180deg, rgba(4,18,31,.98), rgba(2,7,13,1)),
+      repeating-linear-gradient(90deg, rgba(0,217,255,.11) 0 1px, transparent 1px 82px),
+      repeating-linear-gradient(0deg, rgba(34,255,136,.08) 0 1px, transparent 1px 68px);
+    color:var(--text);
+    font-family:var(--fontUi);
+    letter-spacing:.01em;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    opacity:.34;
+    background:
+      linear-gradient(90deg, transparent 0 7%, rgba(0,217,255,.18) 7% calc(7% + 2px), transparent calc(7% + 2px) 29%, rgba(255,214,122,.14) 29% calc(29% + 1px), transparent calc(29% + 1px)),
+      linear-gradient(0deg, transparent 0 18%, rgba(0,166,255,.16) 18% calc(18% + 2px), transparent calc(18% + 2px) 56%, rgba(34,255,136,.14) 56% calc(56% + 1px), transparent calc(56% + 1px)),
+      repeating-linear-gradient(135deg, transparent 0 34px, rgba(0,217,255,.06) 34px 36px, transparent 36px 92px);
+    mix-blend-mode:screen;
+  }
+  .wrap{ max-width:1280px; margin:0 auto; padding:18px; position:relative; z-index:1; }
+  header{
+    margin-bottom:14px;
+    padding:18px 20px 16px;
+    border:2px solid rgba(0,217,255,.78);
+    border-radius:8px;
+    background:
+      linear-gradient(90deg, rgba(0,217,255,.20), transparent 42%, rgba(34,255,136,.13)),
+      linear-gradient(180deg, rgba(7,26,44,.94), rgba(3,16,26,.92));
+    box-shadow:
+      0 0 0 1px rgba(34,255,136,.16) inset,
+      0 0 28px rgba(0,217,255,.18),
+      0 16px 30px var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  header::before{
+    content:"HOME EDITION";
+    display:block;
+    width:max-content;
+    margin:0 0 8px;
+    padding:4px 8px 3px;
+    border:1px solid rgba(255,214,122,.72);
+    border-radius:999px;
+    background:rgba(255,214,122,.10);
+    color:var(--gold);
+    font:10px/1 var(--fontPixel);
+    text-shadow:0 0 10px rgba(255,214,122,.34);
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:3px;
+    background:linear-gradient(90deg, var(--cyan2), var(--green), var(--gold));
+    box-shadow:0 0 14px rgba(0,217,255,.5);
+  }
+  h1{
+    margin:0;
+    font:400 42px/.82 var(--fontArcade);
+    letter-spacing:.02em;
+    color:var(--text);
+    text-shadow:0 0 14px rgba(0,217,255,.42), 0 0 22px rgba(34,255,136,.18);
+  }
+  .sub{ margin-top:10px; color:var(--muted); font-size:14px; line-height:1.45; max-width:900px; }
+  .pill{
+    display:inline-block;
+    padding:4px 9px 3px;
+    border-radius:999px;
+    border:1px solid rgba(34,255,136,.72);
+    background:rgba(3,23,17,.88);
+    color:var(--green);
+    font:11px/1.3 var(--fontPixel);
+    box-shadow:0 0 12px rgba(34,255,136,.16) inset, 0 0 14px rgba(34,255,136,.10);
+    vertical-align:middle;
+  }
+  .grid{ display:grid; grid-template-columns:1fr; gap:12px; }
+  @media (min-width:1060px){ .grid{ grid-template-columns:1fr 1fr; } }
+
+  .card{
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:
+      linear-gradient(180deg, rgba(7,18,31,.95), rgba(6,16,27,.95)),
+      repeating-linear-gradient(90deg, rgba(0,217,255,.08) 0 1px, transparent 1px 48px);
+    padding:14px;
+    box-shadow:0 0 0 1px rgba(0,217,255,.08) inset, 0 12px 24px rgba(0,0,0,.28);
+  }
+  .card h2{
+    margin:0;
+    color:var(--cyan);
+    font:400 30px/.85 var(--fontArcade);
+    text-transform:uppercase;
+    text-shadow:0 0 12px rgba(0,217,255,.34);
+  }
+  .card .desc{ margin-top:8px; color:var(--muted); font-size:13px; line-height:1.4; }
+
+  .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:10px; }
+  .col{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .label{
+    color:var(--text);
+    font:700 13px/1.2 var(--fontUi);
+  }
+  .small{ color:var(--muted); font-size:11px; line-height:1.35; }
+  code{
+    color:var(--gold);
+    font-family:var(--fontMono);
+    font-size:.95em;
+  }
+
+  input[type="number"], input[type="text"], select, textarea{
+    width:100%;
+    border:1px solid rgba(0,166,255,.62);
+    border-radius:8px;
+    background:linear-gradient(180deg, rgba(2,17,29,.96), rgba(1,12,21,.96));
+    color:var(--text);
+    padding:9px 10px;
+    font:600 13px/1.35 var(--fontUi);
+    outline:none;
+    box-shadow:0 0 0 1px rgba(0,217,255,.08) inset;
+    transition:border-color .16s ease, box-shadow .16s ease, background .16s ease;
+  }
+  input[type="number"]:focus, input[type="text"]:focus, select:focus, textarea:focus{
+    border-color:var(--green);
+    box-shadow:0 0 0 1px rgba(34,255,136,.22) inset, 0 0 16px rgba(34,255,136,.16);
+  }
+  input[type="number"]:disabled, input[type="text"]:disabled, select:disabled{
+    color:rgba(232,250,255,.56);
+    border-color:rgba(0,166,255,.24);
+    opacity:.78;
+  }
+  select{ cursor:pointer; }
+  input[type="range"]{ width:100%; accent-color:var(--green); }
+
+  .toggle{
+    appearance:none;
+    width:54px; height:30px;
+    border-radius:999px;
+    border:1px solid rgba(0,166,255,.68);
+    background:linear-gradient(180deg, rgba(4,25,42,.96), rgba(2,13,22,.96));
+    position:relative;
+    cursor:pointer;
+    box-shadow:0 0 10px rgba(0,217,255,.10) inset;
+  }
+  .toggle::after{
+    content:"";
+    position:absolute;
+    top:3px; left:3px;
+    width:22px; height:22px;
+    border-radius:999px;
+    background:rgba(232,250,255,.86);
+    box-shadow:0 0 10px rgba(232,250,255,.24);
+    transition:left .16s ease;
+  }
+  .toggle:checked{ background:linear-gradient(180deg, rgba(34,255,136,.30), rgba(0,166,255,.16)); border-color:rgba(34,255,136,.82); }
+  .toggle:checked::after{ left:27px; background:var(--green); box-shadow:0 0 14px rgba(34,255,136,.56); }
+
+  .tables{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    margin-top:10px;
+  }
+  @media (min-width:1200px){ .tables{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  .tableItem{
+    border:1px solid rgba(0,166,255,.36);
+    border-radius:8px;
+    background:linear-gradient(180deg, rgba(8,28,45,.92), rgba(3,18,30,.92));
+    padding:8px;
+    display:grid;
+    grid-template-columns:1fr 72px;
+    gap:8px;
+    align-items:center;
+    min-height:48px;
+  }
+  .tableItem:hover{ border-color:rgba(34,255,136,.62); box-shadow:0 0 14px rgba(34,255,136,.10); }
+  .tName{ font-size:12px; line-height:1.2; color:rgba(232,250,255,.88); }
+
+  .actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  button{
+    border:2px solid rgba(0,166,255,.70);
+    border-radius:8px;
+    background:linear-gradient(180deg, rgba(7,26,44,.98), rgba(3,16,26,.98));
+    color:var(--text);
+    font:400 10px/1.2 var(--fontPixel);
+    padding:10px 12px;
+    cursor:pointer;
+    text-transform:uppercase;
+    box-shadow:0 0 0 1px rgba(0,217,255,.08) inset, 0 8px 14px rgba(0,0,0,.22);
+    transition:border-color .16s ease, color .16s ease, transform .16s ease, box-shadow .16s ease, filter .16s ease;
+  }
+  button:hover{ border-color:var(--green); color:var(--green); transform:translateY(-1px); filter:brightness(1.08); box-shadow:0 0 16px rgba(34,255,136,.16), 0 8px 14px rgba(0,0,0,.26); }
+  button.alt{ border-color:rgba(255,214,122,.70); background:linear-gradient(180deg, rgba(69,40,10,.96), rgba(24,17,8,.96)); color:var(--gold); }
+  button.alt:hover{ border-color:var(--gold); color:#fff0b5; box-shadow:0 0 16px rgba(255,214,122,.18), 0 8px 14px rgba(0,0,0,.26); }
+  button.gray{ border-color:rgba(160,120,255,.55); background:linear-gradient(180deg, rgba(31,23,54,.94), rgba(13,11,24,.96)); color:rgba(232,250,255,.86); }
+
+  .yaml{ margin-top:12px; }
+  textarea{
+    min-height:290px;
+    font-family:var(--fontMono);
+    font-weight:500;
+    line-height:1.42;
+    resize:vertical;
+  }
+  #yamlOut{
+    border-color:rgba(34,255,136,.42);
+    background:
+      linear-gradient(180deg, rgba(1,15,23,.98), rgba(1,9,15,.98)),
+      repeating-linear-gradient(0deg, transparent 0 27px, rgba(34,255,136,.05) 27px 28px);
+    color:#d8fff0;
+  }
+  .foot{ margin-top:8px; color:var(--muted); font-size:12px; }
+  .hidden{ display:none; }
+  .inlineInfo{
+    margin-top:8px;
+    padding:8px 10px;
+    border:1px solid rgba(255,214,122,.42);
+    border-radius:8px;
+    background:linear-gradient(180deg, rgba(37,27,9,.72), rgba(8,20,30,.78));
+    color:var(--text);
+    font-size:12px;
+    line-height:1.35;
+    box-shadow:0 0 12px rgba(255,214,122,.08) inset;
+  }
+  @media (max-width:900px){
+    body{ padding:0; }
+    .wrap{ padding:12px; }
+    header{ padding:14px; }
+    h1{ font-size:34px; }
+    .row{
+      flex-direction:column;
+      align-items:stretch;
+    }
+    .row > div[style*="width:"]{
+      width:100% !important;
+    }
+    .tables{
+      grid-template-columns:1fr;
+    }
+    textarea{
+      min-height:220px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Flippermizer Home Edition YAML Options Builder</h1>
+      <div class="sub">Build a trapless YAML for the Home Edition AP world. Game key: <span class="pill" id="gameKeyPill">FlippermizerWorldsofPinball</span></div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Core AP Options</h2>
+        <div class="desc">These are standard Archipelago options on your player block.</div>
+
+        <div class="row">
+          <div class="col" style="flex:1;">
+            <div class="label">Home Edition World</div>
+            <div class="small">This builder targets the trapless Home Edition AP world.</div>
+          </div>
+          <div style="width:260px;">
+            <select id="worldVariant" disabled>
+              <option value="base">Home Edition</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col" style="flex:1;">
+            <div class="label">Player Name</div>
+            <div class="small">Must be unique across all YAML files in the same generation.</div>
+          </div>
+          <div style="width:260px;"><input id="playerName" type="text" value="FlippermizerWorldsofPinball" /></div>
+        </div>
+
+        <div class="row">
+          <div class="col" style="flex:1;">
+            <div class="label">Progression Balancing</div>
+            <div class="small">0-99, default 50</div>
+          </div>
+          <div style="width:90px;"><input id="progression" type="number" min="0" max="99" step="1" value="50" /></div>
+        </div>
+        <div class="row" style="margin-top:6px;">
+          <input id="progressionRange" type="range" min="0" max="99" step="1" value="50" />
+        </div>
+
+        <div class="row">
+          <div class="col" style="flex:1;">
+            <div class="label">Accessibility</div>
+            <div class="small">Recommended: items</div>
+          </div>
+          <div style="width:190px;">
+            <select id="accessibility">
+              <option value="items">items</option>
+              <option value="locations">locations</option>
+              <option value="minimal">minimal</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>World Options</h2>
+        <div class="desc">Options found in your current installed AP world package.</div>
+
+        <div class="row">
+          <div class="col" style="flex:1;">
+            <div class="label">Boss Keys Required</div>
+            <div class="small">Keys required to unlock the boss table (1-10, default 3).</div>
+          </div>
+          <div style="width:90px;"><input id="bossKeysRequired" type="number" min="1" max="10" step="1" value="3" /></div>
+        </div>
+
+        <div class="row">
+          <div class="col"><div class="label">Filter Mode Trap Enabled</div><div class="small">Home Edition default is off. Leave unchecked for trapless seeds.</div></div>
+          <input id="filterTrapEnabled" type="checkbox" class="toggle" />
+        </div>
+
+        <div class="row">
+          <div class="col"><div class="label">Task Shuffle Enabled</div><div class="small">Shuffle Task objectives between Task checks of the same difficulty. Score and Boss checks stay fixed.</div></div>
+          <input id="taskShuffleEnabled" type="checkbox" class="toggle" />
+        </div>
+
+        <div class="row">
+          <div class="col" style="flex:1;">
+            <div class="label">Trap Density</div>
+            <div class="small">Home Edition default: None (0). Exports to <code>filler_traps</code>.</div>
+          </div>
+          <div style="width:190px;">
+            <select id="trapMode">
+              <option value="none" selected>None (0)</option>
+              <option value="recommended">Recommended (16)</option>
+              <option value="light">Light (10)</option>
+              <option value="spicy">Spicy (35)</option>
+              <option value="nightmare">Nightmare (50)</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="trapCustomWrap" class="row hidden">
+          <div class="col" style="flex:1;">
+            <div class="label">Trap Density Custom</div>
+            <div class="small">0-100</div>
+          </div>
+          <div style="width:90px;"><input id="trapCustom" type="number" min="0" max="100" step="1" value="0" /></div>
+        </div>
+
+        <div class="row">
+          <div class="col"><div class="label">Random Start Tables Open</div><div class="small">Use the player file's generated five-table random Ball 1 start instead of a fixed opening spread.</div></div>
+          <input id="randomStartTables" type="checkbox" class="toggle" />
+        </div>
+        <div id="metasizerStartInfo" class="inlineInfo hidden">
+          Base Game seeds derive starting-open tables from the selected world groups and the Base Game Starting Open Table Count. Manual Progressive Ball start overrides are not exported for this world.
+        </div>
+        <div id="randomStartWrap" class="hidden">
+          <div class="actions" style="margin-top:8px;">
+            <button id="btnRerollRandomStart" type="button">Reroll Random 5</button>
+          </div>
+          <div id="randomStartInfo" class="inlineInfo"></div>
+        </div>
+
+        <div id="metasizerOptionsWrap" class="hidden">
+          <div class="inlineInfo">
+            Base Game builds a 25-table episode from curated or random five-table world groups. Curated group keys use the same values the AP world reads from YAML.
+          </div>
+
+          <div class="row">
+            <div class="col"><div class="label">Base Game Payload Enabled</div><div class="small">Emit the active world-layout payload in slot data for the overlay.</div></div>
+            <input id="metasizerEnabled" type="checkbox" class="toggle" checked />
+          </div>
+
+          <div class="row">
+            <div class="col" style="flex:1;">
+              <div class="label">Score Adjustment Mode</div>
+              <div class="small">Overlay-only score display multiplier for the selected difficulty target.</div>
+            </div>
+            <div style="width:190px;">
+              <select id="scoreAdjustmentMode">
+                <option value="easy">Easy (0.5x)</option>
+                <option value="normal">Normal (1.0x)</option>
+                <option value="hard">Hard (1.5x)</option>
+                <option value="maddening">Maddening (2.0x)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col" style="flex:1;">
+              <div class="label">Active Table Count</div>
+              <div class="small">Current episode contract uses 25 tables, assembled as 5 worlds of 5.</div>
+            </div>
+            <div style="width:90px;"><input id="metasizerActiveTableCount" type="number" min="5" max="25" step="5" value="25" /></div>
+          </div>
+
+          <div class="row">
+            <div class="col" style="flex:1;">
+              <div class="label">Selection Mode</div>
+              <div class="small">Randomize worlds, fully curate them, or curate a partial list and let the AP world fill the rest.</div>
+            </div>
+            <div style="width:260px;">
+              <select id="metasizerSelectionMode">
+                <option value="random_catalog_pool">Random Catalog Pool</option>
+                <option value="curated_catalog_groups">Curated Catalog Groups</option>
+                <option value="hybrid_curated_random_fill">Hybrid Curated + Random Fill</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col"><div class="label">Random: One Featured Designer Max</div><div class="small">When enabled, random world selection includes at most one Featured Designer world. Curated picks are left alone; hybrid random fill also respects the cap.</div></div>
+            <input id="metasizerOneFeaturedDesignerOnly" type="checkbox" class="toggle" />
+          </div>
+
+          <div class="row">
+            <div class="col" style="flex:1;">
+              <div class="label">Starting Open Table Count</div>
+              <div class="small">How many tables the seed-time payload marks open at the start.</div>
+            </div>
+            <div style="width:90px;"><input id="metasizerStartingOpenTableCount" type="number" min="1" max="10" step="1" value="5" /></div>
+          </div>
+
+          <div class="row">
+            <div class="col" style="flex:1;">
+              <div class="label">Curated World Groups</div>
+              <div class="small">Comma-separated group keys, labels, codes, or table names. Used by Curated and Hybrid modes.</div>
+            </div>
+          </div>
+          <div class="row" style="margin-top:6px;">
+            <textarea id="metasizerCuratedGroups" style="min-height:88px;" spellcheck="false"></textarea>
+          </div>
+          <div class="actions" style="margin-top:8px;">
+            <button id="btnCuratedTonight" type="button">Preset: New Worlds</button>
+            <button id="btnCuratedExpansion" class="gray" type="button">Preset: Expansion Worlds</button>
+            <button id="btnCuratedClassicFive" class="gray" type="button">Preset: Original 5 Worlds</button>
+            <button id="btnCuratedAllReady" class="gray" type="button">Preset: All Ready Worlds</button>
+            <button id="btnCuratedAuto" class="alt" type="button">Set Curated: auto</button>
+          </div>
+          <div id="metasizerCuratedInfo" class="inlineInfo"></div>
+        </div>
+
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:12px;">
+      <h2>Table and Inventory Overrides</h2>
+      <div class="desc">These generate <code>start_inventory_from_pool</code> so you can toggle table state / progression starts per item.</div>
+
+      <div class="grid" style="grid-template-columns:1fr; gap:10px;">
+        <div class="tables" id="majorItems"></div>
+        <div class="actions">
+          <button id="btnClearStart" class="gray" type="button">Clear Start Inventory</button>
+          <button id="btnOpenOriginalFive" type="button">Preset: Original 5 Tables (B1)</button>
+          <button id="btnOpenAllB1" type="button">Preset: All Tables B1</button>
+          <button id="btnOpenAllB3" class="alt" type="button">Preset: All Tables B3</button>
+        </div>
+
+        <div class="tables" id="tableItems"></div>
+      </div>
+    </section>
+
+    <section class="card yaml">
+      <div class="row">
+        <h2 style="margin:0;">Generated YAML</h2>
+        <div class="actions" style="margin:0;">
+          <button id="btnCopy" type="button">Copy YAML</button>
+          <button id="btnDownload" class="gray" type="button">Download YAML</button>
+          <button id="btnResetAll" class="alt" type="button">Reset All</button>
+        </div>
+      </div>
+      <textarea id="yamlOut" spellcheck="false"></textarea>
+      <div class="foot">This file format is compatible with <code id="gameKeyFoot">Flippermizer</code>.</div>
+    </section>
+  </div>
+
+<script>
+(() => {
+  const BASE_GAME_META = {
+    gameKey: "FlippermizerWorldsofPinball",
+    fileName: "FlippermizerWorldsofPinball.yaml",
+    description: "Flippermizer Home Edition trapless AP world.",
+    defaultName: "FlippermizerWorldsofPinball"
+  };
+  function getVariantMeta(){
+    return BASE_GAME_META;
+  }
+
+  const BASE_TABLES = [
+    "Attack from Mars","Bad Cats","Baywatch","Bride of Pinbot","Congo","Dolly Parton","Fathom","Grand Lizard",
+    "Harlem Globetrotters","Hollywood Heat","Hook","Jokerz","Batman 66","Medieval Madness","Meteor",
+    "Mystery Castle","Paragon","Robocop","Star Trek Stern 2013","Star Trek The Next Generation",
+    "Tales of the Arabian Nights","Taxi","The A-Team","The Getaway","World Cup Soccer"
+  ];
+  const METASIZER_TABLES = [
+    "Attack from Mars","Bad Cats","Baywatch","Bride of Pinbot","Congo","Dolly Parton","Fathom","Grand Lizard",
+    "Harlem Globetrotters","Hollywood Heat","Hook","Jokerz","Batman 66","Medieval Madness","Meteor",
+    "Mystery Castle","Paragon","Robocop","Star Trek Stern 2013","Star Trek The Next Generation",
+    "Tales of the Arabian Nights","Taxi","The A-Team","The Getaway","World Cup Soccer",
+    "Cirqus Voltaire","Al's Garage Band Goes on a World Tour","Circus","Phantom of the Opera","Theatre of Magic",
+    "White Water","Hurricane","Comet","Cyclone","Whirlwind",
+    "High Speed","No Fear Dangerous Sports","Spider-Man Vault Edition","Iron Man Vault Edition","AC/DC",
+    "Party Animal","Elvira and the Party Monsters","Dr. Dude","Party Zone","Scared Stiff",
+    "Batman Forever","Demolition Man","GoldenEye","Jurassic Park","Last Action Hero",
+    "Stargate","Starship Troopers","Independence Day","The X-Files",
+    "Aerosmith","The Beatles","Elvis","Rolling Stones",
+    "Creature from the Black Lagoon","Freddy: A Nightmare on Elm Street","Monster Bash","Tales from the Crypt",
+    "Game of Thrones","Stranger Things","The Mandalorian","The Walking Dead",
+    "Corvette","Dirty Harry","Judge Dredd",
+    "Deadpool","Ghostbusters","The Adventures of Rocky and Bullwinkle and Friends"
+  ];
+  const METASIZER_WORLD_GROUP_PRESETS = {
+    tonight_new_worlds: [
+      "storm_chasers",
+      "steve_ritchie_showcase",
+      "dennis_nordman_party_monsters"
+    ],
+    original_five_worlds: [
+      "ramps_rumpus",
+      "malt_desniy_world",
+      "vintage_television",
+      "spinner_sparring",
+      "python_anghelo_showcase"
+    ],
+    all_generation_ready_worlds: [
+      "ramps_rumpus",
+      "malt_desniy_world",
+      "vintage_television",
+      "spinner_sparring",
+      "python_anghelo_showcase",
+      "the_show_must_go_on",
+      "storm_chasers",
+      "steve_ritchie_showcase",
+      "dennis_nordman_party_monsters"
+    ],
+    selected_expansion_worlds: [
+      "nineties_movie_mayhem",
+      "sci_fi_signal",
+      "rock_legends",
+      "monster_bash_deluxe",
+      "modern_stern_spotlight",
+      "badges_and_chases",
+      "comic_book_collision"
+    ]
+  };
+
+  const MAJOR_ITEMS = [
+    { key:"Boss Key", max:10 },
+    { key:"Hint: Ball Location", max:10 },
+    { key:"Hint: Boss Key", max:6 },
+    { key:"Boss Damage Segment", max:20 }
+  ];
+
+  const state = {
+    worldVariant: "base",
+    name: "FlippermizerWorldsofPinball",
+    description: BASE_GAME_META.description,
+    progression_balancing: 50,
+    accessibility: "items",
+    boss_keys_required_for_boss_table_open: 3,
+    filter_mode_trap_enabled: false,
+    task_shuffle_enabled: false,
+    score_adjustment_mode: "normal",
+    trapMode: "none",
+    trapCustom: 0,
+    random_start_tables_open: false,
+    random_start_tables_selection: [],
+    random_start_revealed: false,
+    base_game_enabled: true,
+    base_game_active_table_count: 25,
+    base_game_selection_mode: "random_catalog_pool",
+    base_game_curated_world_groups: "auto",
+    base_game_random_one_featured_designer_only: false,
+    base_game_starting_open_table_count: 5,
+    start_inventory_from_pool: {}
+  };
+
+  function q(id){ return document.getElementById(id); }
+  function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+  function asInt(v,fallback=0){ const n = Number(v); return Number.isFinite(n) ? Math.trunc(n) : fallback; }
+  function quoteYaml(s){ return '"' + String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"') + '"'; }
+  function syncVariantUi(){
+    const meta = getVariantMeta();
+    const pill = q("gameKeyPill");
+    const foot = q("gameKeyFoot");
+    if(pill) pill.textContent = meta.gameKey;
+    if(foot) foot.textContent = meta.gameKey;
+    const baseGame = state.worldVariant === "base";
+    q("metasizerOptionsWrap")?.classList.toggle("hidden", !baseGame);
+    q("metasizerStartInfo")?.classList.toggle("hidden", !baseGame);
+    q("randomStartTables").disabled = baseGame;
+    if(baseGame){
+      state.random_start_tables_open = false;
+      state.random_start_tables_selection = [];
+      state.random_start_revealed = false;
+      q("randomStartTables").checked = false;
+      clearProgressiveStartsOnly();
+      syncStartEditors();
+      updateRandomStartInfo();
+    }
+    updateMetasizerCuratedInfo();
+  }
+  function currentTableList(){
+    return METASIZER_TABLES;
+  }
+  function filterStartInventoryForCurrentVariant(){
+    const allowedKeys = new Set(currentTableList().map(t => `Progressive Ball - ${t}`));
+    for(const key of Object.keys(state.start_inventory_from_pool)){
+      if(String(key).startsWith("Progressive Ball - ") && !allowedKeys.has(key)){
+        delete state.start_inventory_from_pool[key];
+      }
+    }
+    if(Array.isArray(state.random_start_tables_selection)){
+      state.random_start_tables_selection = state.random_start_tables_selection.filter(t => currentTableList().includes(t));
+    }
+  }
+  function setCuratedGroupPreset(keys){
+    state.base_game_curated_world_groups = keys.join(", ");
+    q("metasizerCuratedGroups").value = state.base_game_curated_world_groups;
+    updateMetasizerCuratedInfo();
+    renderYaml();
+  }
+  function updateMetasizerCuratedInfo(){
+    const info = q("metasizerCuratedInfo");
+    if(!info) return;
+    if(state.worldVariant !== "base"){
+      info.textContent = "";
+      return;
+    }
+    const mode = state.base_game_selection_mode;
+    const groups = String(state.base_game_curated_world_groups || "")
+      .split(",")
+      .map(part => part.trim())
+      .filter(Boolean);
+    const activeCount = clamp(asInt(state.base_game_active_table_count, 25), 5, 25);
+    const expectedWorlds = Math.max(1, Math.ceil(activeCount / 5));
+    const prefix = `Expected world slots: ${expectedWorlds}.`;
+    const featuredCapNote = state.base_game_random_one_featured_designer_only ? " Random cap: one Featured Designer world." : "";
+    if(mode === "random_catalog_pool"){
+      info.textContent = `${prefix} Selection mode is random, so curated entries are ignored unless you switch to Curated or Hybrid.${featuredCapNote}`;
+      return;
+    }
+    if(!groups.length || (groups.length === 1 && groups[0].toLowerCase() === "auto")){
+      info.textContent = `${prefix} Curated world groups are currently set to auto.${featuredCapNote}`;
+      return;
+    }
+    info.textContent = `${prefix} Curated groups loaded: ${groups.join(" | ")}.${featuredCapNote}`;
+  }
+
+  function trapDensityValue(){
+    if(state.trapMode === "custom") return clamp(asInt(state.trapCustom,0),0,100);
+    const named = { none:0, light:10, recommended:16, spicy:35, nightmare:50 };
+    return named[state.trapMode] ?? 0;
+  }
+
+  function setStartItem(name, count){
+    const c = Math.max(0, asInt(count,0));
+    if(c <= 0) delete state.start_inventory_from_pool[name];
+    else state.start_inventory_from_pool[name] = c;
+  }
+  function pickRandomTables(count){
+    const pool = currentTableList().slice();
+    for(let i = pool.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = pool[i];
+      pool[i] = pool[j];
+      pool[j] = t;
+    }
+    return pool.slice(0, Math.max(0, Math.min(pool.length, asInt(count, 5))));
+  }
+  function clearProgressiveStartsOnly(){
+    for(const k of Object.keys(state.start_inventory_from_pool)){
+      if(String(k).startsWith("Progressive Ball - ")) delete state.start_inventory_from_pool[k];
+    }
+  }
+  function ensureRandomStartSelection(force){
+    const needNew = !!force || !Array.isArray(state.random_start_tables_selection) || state.random_start_tables_selection.length !== 5;
+    if(needNew){
+      state.random_start_tables_selection = pickRandomTables(5);
+    }
+  }
+  function applyRandomStartToInventory(force){
+    ensureRandomStartSelection(force);
+    state.random_start_revealed = false;
+    clearProgressiveStartsOnly();
+    for(const t of state.random_start_tables_selection){
+      setStartItem(`Progressive Ball - ${t}`, 1);
+    }
+    syncStartEditors();
+  }
+  function updateRandomStartInfo(){
+    const wrap = q("randomStartWrap");
+    const info = q("randomStartInfo");
+    if(!wrap || !info) return;
+    wrap.classList.toggle("hidden", !state.random_start_tables_open);
+    if(!state.random_start_tables_open){
+      info.textContent = "";
+      return;
+    }
+    if(!state.random_start_revealed){
+      info.textContent = "Random start tables locked in. Hidden until YAML export.";
+      return;
+    }
+    const list = (state.random_start_tables_selection || []).map((n, i) => `${i+1}. ${n}`).join(" | ");
+    info.textContent = list || "No random tables selected yet.";
+  }
+  function updateProgressiveInputsLock(){
+    const locked = !!state.random_start_tables_open || state.worldVariant === "base";
+    document.querySelectorAll('#tableItems input[data-start-key], button[id^=\"btnOpen\"]').forEach(el => {
+      el.disabled = locked;
+      if(state.worldVariant === "base"){
+        el.setAttribute("title", "Base Game seeds derive Progressive Ball starts from the selected world layout.");
+      }else if(locked){
+        el.setAttribute("title", "Disable Random Start Tables Open to edit manual table starts.");
+      }
+      else el.removeAttribute("title");
+    });
+  }
+
+  function buildStartEditors(){
+    const majorWrap = q("majorItems");
+    majorWrap.innerHTML = "";
+    MAJOR_ITEMS.forEach(it => {
+      const row = document.createElement("div");
+      row.className = "tableItem";
+      row.innerHTML = `<div class="tName">${it.key}</div><input type="number" min="0" max="${it.max}" step="1" value="0" data-start-key="${it.key}" />`;
+      majorWrap.appendChild(row);
+    });
+
+    const tableWrap = q("tableItems");
+    tableWrap.innerHTML = "";
+    currentTableList().forEach(t => {
+      const itemName = `Progressive Ball - ${t}`;
+      const row = document.createElement("div");
+      row.className = "tableItem";
+      row.innerHTML = `<div class="tName">${t}</div><input type="number" min="0" max="3" step="1" value="0" data-start-key="${itemName}" />`;
+      tableWrap.appendChild(row);
+    });
+
+    tableWrap.querySelectorAll("input[data-start-key]").forEach(inp => {
+      inp.addEventListener("input", () => {
+        const key = inp.getAttribute("data-start-key");
+        const max = asInt(inp.getAttribute("max"), 3);
+        const v = clamp(asInt(inp.value,0), 0, max);
+        inp.value = String(v);
+        setStartItem(key, v);
+        renderYaml();
+      });
+    });
+    majorWrap.querySelectorAll("input[data-start-key]").forEach(inp => {
+      inp.addEventListener("input", () => {
+        const key = inp.getAttribute("data-start-key");
+        const max = asInt(inp.getAttribute("max"), 20);
+        const v = clamp(asInt(inp.value,0), 0, max);
+        inp.value = String(v);
+        setStartItem(key, v);
+        renderYaml();
+      });
+    });
+  }
+
+  function syncStartEditors(){
+    document.querySelectorAll("input[data-start-key]").forEach(inp => {
+      const key = inp.getAttribute("data-start-key");
+      const hideRandomPick = !!state.random_start_tables_open
+        && !state.random_start_revealed
+        && String(key).startsWith("Progressive Ball - ");
+      if(hideRandomPick){
+        inp.value = "";
+        inp.setAttribute("placeholder", "?");
+        inp.setAttribute("title", "Hidden random pick. Revealed on YAML export.");
+        return;
+      }
+      const val = state.start_inventory_from_pool[key] ?? 0;
+      inp.value = String(val);
+      inp.removeAttribute("placeholder");
+      inp.removeAttribute("title");
+    });
+  }
+
+  function prepareYamlForExport(){
+    if(state.random_start_tables_open && !state.random_start_revealed){
+      state.random_start_revealed = true;
+      syncStartEditors();
+      updateRandomStartInfo();
+      renderYaml();
+    }
+  }
+
+  function clearStart(){
+    state.start_inventory_from_pool = {};
+    if(state.random_start_tables_open){
+      applyRandomStartToInventory(false);
+    }
+    syncStartEditors();
+    renderYaml();
+  }
+
+  function presetOriginalFive(){
+    state.random_start_tables_open = false;
+    q("randomStartTables").checked = false;
+    updateRandomStartInfo();
+    updateProgressiveInputsLock();
+    clearStart();
+    [
+      "Progressive Ball - Medieval Madness",
+      "Progressive Ball - Attack from Mars",
+      "Progressive Ball - World Cup Soccer",
+      "Progressive Ball - The Getaway",
+      "Progressive Ball - Star Trek Stern 2013"
+    ].forEach(k => setStartItem(k, 1));
+    syncStartEditors();
+    renderYaml();
+  }
+
+  function presetAllB1(){
+    state.random_start_tables_open = false;
+    q("randomStartTables").checked = false;
+    updateRandomStartInfo();
+    updateProgressiveInputsLock();
+    clearStart();
+    currentTableList().forEach(t => setStartItem(`Progressive Ball - ${t}`, 1));
+    syncStartEditors();
+    renderYaml();
+  }
+
+  function presetAllB3(){
+    state.random_start_tables_open = false;
+    q("randomStartTables").checked = false;
+    updateRandomStartInfo();
+    updateProgressiveInputsLock();
+    clearStart();
+    currentTableList().forEach(t => setStartItem(`Progressive Ball - ${t}`, 3));
+    setStartItem("Boss Key", 3);
+    syncStartEditors();
+    renderYaml();
+  }
+
+  function bindCore(){
+    q("progression").addEventListener("input", () => {
+      state.progression_balancing = clamp(asInt(q("progression").value,50), 0, 99);
+      q("progression").value = String(state.progression_balancing);
+      q("progressionRange").value = String(state.progression_balancing);
+      renderYaml();
+    });
+    q("progressionRange").addEventListener("input", () => {
+      state.progression_balancing = clamp(asInt(q("progressionRange").value,50), 0, 99);
+      q("progression").value = String(state.progression_balancing);
+      renderYaml();
+    });
+
+    q("accessibility").addEventListener("change", () => { state.accessibility = q("accessibility").value; renderYaml(); });
+    q("worldVariant").addEventListener("change", () => {
+      state.worldVariant = q("worldVariant").value;
+      const meta = getVariantMeta();
+      state.description = meta.description;
+      state.name = meta.defaultName;
+      q("playerName").value = state.name;
+      filterStartInventoryForCurrentVariant();
+      buildStartEditors();
+      if(state.random_start_tables_open){
+        applyRandomStartToInventory(true);
+      }
+      syncStartEditors();
+      syncVariantUi();
+      updateRandomStartInfo();
+      updateProgressiveInputsLock();
+      renderYaml();
+    });
+    q("playerName").addEventListener("input", () => {
+      state.name = String(q("playerName").value || "").trim() || getVariantMeta().defaultName;
+      q("playerName").value = state.name;
+      renderYaml();
+    });
+    q("bossKeysRequired").addEventListener("input", () => {
+      state.boss_keys_required_for_boss_table_open = clamp(asInt(q("bossKeysRequired").value,3), 1, 10);
+      q("bossKeysRequired").value = String(state.boss_keys_required_for_boss_table_open);
+      renderYaml();
+    });
+
+    q("trapMode").addEventListener("change", () => {
+      state.trapMode = q("trapMode").value;
+      q("trapCustomWrap").classList.toggle("hidden", state.trapMode !== "custom");
+      renderYaml();
+    });
+    q("trapCustom").addEventListener("input", () => {
+      state.trapCustom = clamp(asInt(q("trapCustom").value,0),0,100);
+      q("trapCustom").value = String(state.trapCustom);
+      renderYaml();
+    });
+
+    q("filterTrapEnabled").addEventListener("change", () => {
+      state.filter_mode_trap_enabled = q("filterTrapEnabled").checked;
+      renderYaml();
+    });
+    q("taskShuffleEnabled").addEventListener("change", () => {
+      state.task_shuffle_enabled = q("taskShuffleEnabled").checked;
+      renderYaml();
+    });
+    q("scoreAdjustmentMode").addEventListener("change", () => {
+      state.score_adjustment_mode = q("scoreAdjustmentMode").value;
+      renderYaml();
+    });
+    q("metasizerEnabled").addEventListener("change", () => {
+      state.base_game_enabled = q("metasizerEnabled").checked;
+      renderYaml();
+    });
+    q("metasizerActiveTableCount").addEventListener("input", () => {
+      state.base_game_active_table_count = clamp(asInt(q("metasizerActiveTableCount").value, 25), 5, 25);
+      q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
+      updateMetasizerCuratedInfo();
+      renderYaml();
+    });
+    q("metasizerSelectionMode").addEventListener("change", () => {
+      state.base_game_selection_mode = q("metasizerSelectionMode").value;
+      updateMetasizerCuratedInfo();
+      renderYaml();
+    });
+    q("metasizerOneFeaturedDesignerOnly").addEventListener("change", () => {
+      state.base_game_random_one_featured_designer_only = q("metasizerOneFeaturedDesignerOnly").checked;
+      updateMetasizerCuratedInfo();
+      renderYaml();
+    });
+    q("metasizerStartingOpenTableCount").addEventListener("input", () => {
+      state.base_game_starting_open_table_count = clamp(asInt(q("metasizerStartingOpenTableCount").value, 5), 1, 10);
+      q("metasizerStartingOpenTableCount").value = String(state.base_game_starting_open_table_count);
+      renderYaml();
+    });
+    q("metasizerCuratedGroups").addEventListener("input", () => {
+      state.base_game_curated_world_groups = String(q("metasizerCuratedGroups").value || "").trim() || "auto";
+      q("metasizerCuratedGroups").value = state.base_game_curated_world_groups;
+      updateMetasizerCuratedInfo();
+      renderYaml();
+    });
+    q("btnCuratedTonight").addEventListener("click", () => setCuratedGroupPreset(METASIZER_WORLD_GROUP_PRESETS.tonight_new_worlds));
+    q("btnCuratedExpansion").addEventListener("click", () => setCuratedGroupPreset(METASIZER_WORLD_GROUP_PRESETS.selected_expansion_worlds));
+    q("btnCuratedClassicFive").addEventListener("click", () => setCuratedGroupPreset(METASIZER_WORLD_GROUP_PRESETS.original_five_worlds));
+    q("btnCuratedAllReady").addEventListener("click", () => setCuratedGroupPreset(METASIZER_WORLD_GROUP_PRESETS.all_generation_ready_worlds));
+    q("btnCuratedAuto").addEventListener("click", () => {
+      state.base_game_curated_world_groups = "auto";
+      q("metasizerCuratedGroups").value = "auto";
+      updateMetasizerCuratedInfo();
+      renderYaml();
+    });
+    q("randomStartTables").addEventListener("change", () => {
+      if(state.worldVariant === "base"){
+        state.random_start_tables_open = false;
+        q("randomStartTables").checked = false;
+        updateRandomStartInfo();
+        updateProgressiveInputsLock();
+        renderYaml();
+        return;
+      }
+      state.random_start_tables_open = q("randomStartTables").checked;
+      if(state.random_start_tables_open){
+        applyRandomStartToInventory(false);
+      } else {
+        state.random_start_revealed = false;
+      }
+      updateRandomStartInfo();
+      updateProgressiveInputsLock();
+      renderYaml();
+    });
+    q("btnRerollRandomStart").addEventListener("click", () => {
+      if(state.worldVariant === "base") return;
+      state.random_start_tables_open = true;
+      q("randomStartTables").checked = true;
+      applyRandomStartToInventory(true);
+      updateRandomStartInfo();
+      updateProgressiveInputsLock();
+      renderYaml();
+    });
+    q("btnClearStart").addEventListener("click", clearStart);
+    q("btnOpenOriginalFive").addEventListener("click", presetOriginalFive);
+    q("btnOpenAllB1").addEventListener("click", presetAllB1);
+    q("btnOpenAllB3").addEventListener("click", presetAllB3);
+
+    q("btnResetAll").addEventListener("click", () => {
+      state.worldVariant = "base";
+      state.progression_balancing = 50;
+      state.accessibility = "items";
+      state.name = BASE_GAME_META.defaultName;
+      state.description = BASE_GAME_META.description;
+      state.boss_keys_required_for_boss_table_open = 3;
+      state.filter_mode_trap_enabled = false;
+      state.task_shuffle_enabled = false;
+      state.score_adjustment_mode = "normal";
+      state.trapMode = "none";
+      state.trapCustom = 0;
+      state.random_start_tables_open = false;
+      state.random_start_tables_selection = [];
+      state.random_start_revealed = false;
+      state.base_game_enabled = true;
+      state.base_game_active_table_count = 25;
+      state.base_game_selection_mode = "random_catalog_pool";
+      state.base_game_curated_world_groups = "auto";
+      state.base_game_random_one_featured_designer_only = false;
+      state.base_game_starting_open_table_count = 5;
+      state.start_inventory_from_pool = {};
+
+      q("progression").value = "50";
+      q("progressionRange").value = "50";
+      q("accessibility").value = "items";
+      q("worldVariant").value = "base";
+      q("playerName").value = state.name;
+      q("bossKeysRequired").value = "3";
+      q("filterTrapEnabled").checked = false;
+      q("taskShuffleEnabled").checked = false;
+      q("scoreAdjustmentMode").value = "normal";
+      q("trapMode").value = "none";
+      q("trapCustom").value = "0";
+      q("trapCustomWrap").classList.add("hidden");
+      q("randomStartTables").checked = false;
+      q("metasizerEnabled").checked = true;
+      q("metasizerActiveTableCount").value = "25";
+      q("metasizerSelectionMode").value = "random_catalog_pool";
+      q("metasizerCuratedGroups").value = "auto";
+      q("metasizerOneFeaturedDesignerOnly").checked = false;
+      q("metasizerStartingOpenTableCount").value = "5";
+      buildStartEditors();
+      syncVariantUi();
+      updateRandomStartInfo();
+      updateProgressiveInputsLock();
+      syncStartEditors();
+      renderYaml();
+    });
+
+    q("btnCopy").addEventListener("click", async () => {
+      prepareYamlForExport();
+      const text = q("yamlOut").value;
+      try { await navigator.clipboard.writeText(text); }
+      catch(_){ q("yamlOut").select(); document.execCommand("copy"); }
+    });
+
+    q("btnDownload").addEventListener("click", () => {
+      prepareYamlForExport();
+      const blob = new Blob([q("yamlOut").value], {type:"text/plain;charset=utf-8"});
+      const u = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = u;
+      a.download = getVariantMeta().fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(u);
+    });
+  }
+
+  function renderYaml(){
+    const lines = [];
+    lines.push(`name: ${state.name}`);
+    lines.push(`description: ${quoteYaml(state.description)}`);
+    lines.push(`game: ${getVariantMeta().gameKey}`);
+    lines.push("");
+    lines.push(`${getVariantMeta().gameKey}:`);
+    lines.push(`  progression_balancing: ${state.progression_balancing}`);
+    lines.push(`  accessibility: ${state.accessibility}`);
+
+    // World options
+    lines.push(`  boss_keys_required_for_boss_table_open: ${state.boss_keys_required_for_boss_table_open}`);
+    lines.push(`  filter_mode_trap_enabled: ${state.filter_mode_trap_enabled ? "true" : "false"}`);
+    lines.push(`  task_shuffle_enabled: ${state.task_shuffle_enabled ? "true" : "false"}`);
+    lines.push(`  random_start_tables_open: ${state.worldVariant === "base" ? "false" : (state.random_start_tables_open ? "true" : "false")}`);
+    lines.push(`  filler_traps: ${trapDensityValue()}`);
+    if(state.worldVariant === "base"){
+      lines.push(`  score_adjustment_mode: ${state.score_adjustment_mode}`);
+      lines.push(`  base_game_active_table_count: ${state.base_game_active_table_count}`);
+      lines.push(`  base_game_selection_mode: ${state.base_game_selection_mode}`);
+      lines.push(`  base_game_curated_world_groups: ${quoteYaml(state.base_game_curated_world_groups)}`);
+      lines.push(`  base_game_random_one_featured_designer_only: ${state.base_game_random_one_featured_designer_only ? "true" : "false"}`);
+      lines.push(`  base_game_starting_open_table_count: ${state.base_game_starting_open_table_count}`);
+      lines.push(`  base_game_enabled: ${state.base_game_enabled ? "true" : "false"}`);
+    }
+
+    const entries = Object.entries(state.start_inventory_from_pool)
+      .filter(([,v]) => Number(v) > 0)
+      .filter(([k]) => !(state.worldVariant === "base" && String(k).startsWith("Progressive Ball - ")))
+      .sort((a,b) => a[0].localeCompare(b[0]));
+
+    const hideRandomStartSelection = state.worldVariant !== "base" && state.random_start_tables_open && !state.random_start_revealed;
+    const hiddenRandomKeys = new Set((state.random_start_tables_selection || []).map(t => `Progressive Ball - ${t}`));
+    const visibleEntries = hideRandomStartSelection ? entries.filter(([k]) => !hiddenRandomKeys.has(k)) : entries;
+    const hiddenRandomCount = hideRandomStartSelection
+      ? entries.filter(([k]) => hiddenRandomKeys.has(k)).length
+      : 0;
+
+    if(visibleEntries.length || hiddenRandomCount > 0){
+      lines.push(`  start_inventory_from_pool:`);
+      for(const [k,v] of visibleEntries){
+        lines.push(`    ${quoteYaml(k)}: ${asInt(v,0)}`);
+      }
+      if(hiddenRandomCount > 0){
+        lines.push(`    # ${hiddenRandomCount} random table unlock(s) hidden until Copy/Download YAML.`);
+      }
+    }
+
+    q("yamlOut").value = lines.join("\n") + "\n";
+  }
+
+  q("taskShuffleEnabled").checked = state.task_shuffle_enabled;
+  q("scoreAdjustmentMode").value = state.score_adjustment_mode;
+  q("worldVariant").value = "base";
+  q("playerName").value = state.name;
+  q("filterTrapEnabled").checked = state.filter_mode_trap_enabled;
+  q("trapMode").value = state.trapMode;
+  q("trapCustom").value = String(state.trapCustom);
+  q("trapCustomWrap").classList.toggle("hidden", state.trapMode !== "custom");
+  q("metasizerEnabled").checked = state.base_game_enabled;
+  q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
+  q("metasizerSelectionMode").value = state.base_game_selection_mode;
+  q("metasizerCuratedGroups").value = state.base_game_curated_world_groups;
+  q("metasizerOneFeaturedDesignerOnly").checked = state.base_game_random_one_featured_designer_only;
+  q("metasizerStartingOpenTableCount").value = String(state.base_game_starting_open_table_count);
+  buildStartEditors();
+  bindCore();
+  syncVariantUi();
+  updateRandomStartInfo();
+  updateProgressiveInputsLock();
+  renderYaml();
+})();
+</script>
+</body>
+</html>
+

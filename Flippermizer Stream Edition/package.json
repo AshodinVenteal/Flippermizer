@@ -1,0 +1,65 @@
+{
+  "name": "flippermizer-launcher",
+  "version": "1.1.0",
+  "description": "Desktop launcher for the Flippermizer Overlay, Bestiary, and Base Game AP setup",
+  "author": "OpenAI Codex",
+  "main": "main.js",
+  "type": "commonjs",
+  "scripts": {
+    "sync:assets": "powershell -ExecutionPolicy Bypass -File tools/sync_launcher_assets.ps1",
+    "start": "npm run sync:assets && electron .",
+    "stamp:icon": "node tools/stamp_windows_icon.mjs",
+    "dist:portable": "npm run sync:assets && electron-builder --win portable && node tools/stamp_windows_icon.mjs \"dist/win-unpacked/Flippermizer Launcher.exe\" \"dist/Flippermizer-Launcher-Portable.exe\"",
+    "dist:dir": "npm run sync:assets && electron-builder --win dir && node tools/stamp_windows_icon.mjs \"dist/win-unpacked/Flippermizer Launcher.exe\""
+  },
+  "build": {
+    "appId": "com.flippermizer.launcher",
+    "productName": "Flippermizer Launcher",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "launcher.html",
+      "launcher.css",
+      "launcher.js",
+      "build/icon.ico"
+    ],
+    "extraResources": [
+      {
+        "from": "build/icon.ico",
+        "to": "icon.ico"
+      },
+      {
+        "from": "app-assets",
+        "to": "app-assets",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "apworld",
+        "to": "apworld",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        "dir"
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "Flippermizer-Launcher-Portable.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8",
+    "rcedit": "^5.0.2"
+  }
+}
