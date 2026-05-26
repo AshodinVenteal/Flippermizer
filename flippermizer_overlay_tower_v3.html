@@ -3261,8 +3261,8 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 .grid{
   width:100%; height:100%;
   display:grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -13219,6 +13219,13 @@ body.chromaBlue .bossKeyCard::before{
 #viewOverview{
   display:flex;
   flex-direction:column;
+  border-radius:16px;
+  background:
+    linear-gradient(180deg, rgba(0, 14, 30, 0.80), rgba(0, 6, 18, 0.94)),
+    repeating-linear-gradient(90deg, rgba(0,217,255,0.08) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(255,44,88,0.05) 0 1px, transparent 1px 72px);
+  background-color:rgba(2, 8, 18, 0.94);
+  box-shadow:inset 0 0 0 1px rgba(0,217,255,0.10);
 }
 #viewOverview #grid{
   flex: 1 1 auto;
@@ -16945,6 +16952,73 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 body.flprStandaloneOriginalClient #flprLauncherRendererDock{
   display:none !important;
 }
+.taskRepositoryLauncherDock{
+  display:grid;
+  gap:8px;
+}
+.taskRepositoryLauncherStatus{
+  color:rgba(188,220,236,.76);
+}
+.taskRepositoryLauncherActions{
+  display:grid;
+  grid-template-columns:minmax(0, 1fr);
+  gap:8px;
+}
+.taskRepositoryOverlay{
+  position:fixed;
+  inset:18px;
+  z-index:2147483647;
+  display:none;
+  grid-template-rows:auto minmax(0, 1fr);
+  border:2px solid rgba(0,255,213,.82);
+  border-radius:12px;
+  background:linear-gradient(180deg, rgba(0,18,31,.98), rgba(0,8,16,.99));
+  box-shadow:0 0 0 9999px rgba(0,0,0,.62), 0 22px 80px rgba(0,0,0,.64), 0 0 34px rgba(0,217,255,.24);
+  overflow:hidden;
+}
+.taskRepositoryOverlay.show{
+  display:grid;
+}
+.taskRepositoryOverlayHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:46px;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(0,217,255,.28);
+  background:linear-gradient(90deg, rgba(0,40,62,.94), rgba(0,14,26,.96));
+}
+.taskRepositoryOverlayTitle{
+  min-width:0;
+  color:rgba(232,250,255,.98);
+  font-family:var(--flprUiFontFamily);
+  font-size:14px;
+  line-height:1.35;
+}
+.taskRepositoryOverlayTitle span{
+  display:block;
+  margin-top:3px;
+  color:rgba(188,220,236,.78);
+  font-size:8px;
+}
+.taskRepositoryOverlayClose{
+  flex:0 0 auto;
+  min-width:38px;
+  min-height:34px;
+  border:1px solid rgba(255,101,124,.76);
+  border-radius:8px;
+  background:rgba(50,8,18,.92);
+  color:rgba(255,222,230,.98);
+  font-family:var(--flprUiFontFamily);
+  cursor:pointer;
+}
+.taskRepositoryOverlayFrame{
+  width:100%;
+  height:100%;
+  border:0;
+  background:#05111c;
+}
 .controlsTabPanel[data-ctrl-panel="connect"] .connectCompactLayout{
   height: 100%;
   min-height: 0;
@@ -17324,6 +17398,42 @@ body.controlsLayoutEdit .connectPanelSectionTitle:active{
 }
 .controlsTabPanel .connectPanelSection.is-collapsed > :not(.connectPanelSectionTitle){
   display:none !important;
+}
+.controlsTabPanel .connectPanelSection[data-panel-key="visual-dev-tools"].devToolsLocked > :not(.connectPanelSectionTitle):not(.devToolsPasswordGate):not(.flprControlResizeEdge){
+  display:none !important;
+}
+.controlsTabPanel .connectPanelSection[data-panel-key="visual-dev-tools"].devToolsUnlocked > .devToolsPasswordGate{
+  display:none !important;
+}
+.devToolsPasswordGate{
+  display:grid;
+  gap:10px;
+  margin:0 0 12px;
+  padding:12px;
+  border:1px solid rgba(255,224,122,.36);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255,224,122,.12), transparent 48%),
+    linear-gradient(180deg, rgba(14,18,26,.92), rgba(4,10,18,.88));
+  box-shadow:0 0 16px rgba(255,224,122,.10) inset;
+}
+.devToolsPasswordGateTitle{
+  color:rgba(255,246,196,.98);
+  font-size:9px;
+  line-height:1.25;
+}
+.devToolsPasswordGateRow{
+  display:grid;
+  grid-template-columns:minmax(0, 1fr) auto;
+  gap:8px;
+  align-items:center;
+}
+.devToolsPasswordGateStatus{
+  min-height:14px;
+  color:rgba(188,220,236,.76);
+}
+.devToolsPasswordGateStatus.warn{
+  color:rgba(255,147,171,.96);
 }
 .controlsTabPanel .connectPanelSection.is-collapsed[data-panel-key="bonus-pinball"] > .bonusPinballControlPanel{
   display:flex !important;
@@ -22154,6 +22264,7 @@ body.flprShopSparksSlime .spark{
 <script src="./vendor/jszip.min.js"></script>
 <script src="./flippermizer_table_repository.js"></script>
 <script src="./flippermizer_task_explanations.js"></script>
+<script src="./flippermizer_task_repository_cfg.js"></script>
 <script>
 
 
@@ -23706,6 +23817,7 @@ const defaultState = {
   progressiveBallSwapSeed:"",
   progressiveBallSwapQueue:[],
   progressiveBallReceiptRedirects:{},
+  progressiveBallReceiptSuppressions:{},
   balls:{},
   tableBanners:{}, // key: world|tableIndex
   tableBannersByCode:{}, // key: repository table code
@@ -24364,6 +24476,7 @@ function loadState(){
     if(typeof s.progressiveBallSwapSeed !== "string") s.progressiveBallSwapSeed = "";
     if(!Array.isArray(s.progressiveBallSwapQueue)) s.progressiveBallSwapQueue = [];
     if(!s.progressiveBallReceiptRedirects || typeof s.progressiveBallReceiptRedirects !== "object") s.progressiveBallReceiptRedirects = {};
+    if(!s.progressiveBallReceiptSuppressions || typeof s.progressiveBallReceiptSuppressions !== "object") s.progressiveBallReceiptSuppressions = {};
     if(!s.balls) s.balls = {};
 
     if(!s.tableBanners) s.tableBanners = {};
@@ -39173,6 +39286,219 @@ function getTaskShuffleEntryForLocationName(locationName){
   }catch(_){}
   return null;
 }
+
+const FLPR_TASK_REPOSITORY_STORAGE_KEY = "flpr_task_repository_cfg_v1";
+
+function normalizeTaskRepositoryTaskKey(value){
+  try{
+    const exp = window.FLPR_TASK_EXPLANATIONS;
+    if(exp && typeof exp.normalizeTaskKey === "function") return exp.normalizeTaskKey(value);
+  }catch(_){}
+  return String(value || "").toLowerCase().replace(/[^a-z0-9%+ ]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function normalizeTaskRepositoryCfg(value){
+  const raw = value && typeof value === "object" ? value : {};
+  return {
+    kind: "flippermizer_task_repository_cfg",
+    version: String(raw.version || "1.0.0"),
+    updatedAt: String(raw.updatedAt || raw.savedAt || ""),
+    source: raw.source && typeof raw.source === "object" ? raw.source : {},
+    edits: raw.edits && typeof raw.edits === "object" ? raw.edits : {},
+    flags: raw.flags && typeof raw.flags === "object" ? raw.flags : {},
+    codexSuggestions: raw.codexSuggestions && typeof raw.codexSuggestions === "object" ? raw.codexSuggestions : {},
+    accepted: raw.accepted && typeof raw.accepted === "object" ? raw.accepted : {},
+    templateTables: raw.templateTables && typeof raw.templateTables === "object" ? raw.templateTables : {},
+    history: raw.history && typeof raw.history === "object" ? raw.history : {}
+  };
+}
+
+function mergeTaskRepositoryCfg(base, overlay){
+  const out = normalizeTaskRepositoryCfg(base);
+  const next = normalizeTaskRepositoryCfg(overlay);
+  out.updatedAt = next.updatedAt || out.updatedAt;
+  out.source = Object.assign({}, out.source || {}, next.source || {});
+  out.edits = Object.assign({}, out.edits || {}, next.edits || {});
+  out.flags = Object.assign({}, out.flags || {}, next.flags || {});
+  out.codexSuggestions = Object.assign({}, out.codexSuggestions || {}, next.codexSuggestions || {});
+  out.accepted = Object.assign({}, out.accepted || {}, next.accepted || {});
+  out.templateTables = Object.assign({}, out.templateTables || {}, next.templateTables || {});
+  out.history = Object.assign({}, out.history || {}, next.history || {});
+  return out;
+}
+
+let flprTaskRepositoryRuntimeCfgCache = null;
+const TASK_REPOSITORY_MUTABLE_ENTRY_FIELDS = Object.freeze([
+  "objective",
+  "display_name",
+  "displayName",
+  "title",
+  "explanation",
+  "type",
+  "kind",
+  "task_type"
+]);
+
+function getTaskRepositoryRuntimeCfg(){
+  if(flprTaskRepositoryRuntimeCfgCache) return flprTaskRepositoryRuntimeCfgCache;
+  let cfg = normalizeTaskRepositoryCfg(window.FLPR_TASK_REPOSITORY_DEFAULT_CFG || {});
+  try{
+    const raw = localStorage.getItem(FLPR_TASK_REPOSITORY_STORAGE_KEY);
+    if(raw) cfg = mergeTaskRepositoryCfg(cfg, JSON.parse(raw));
+  }catch(_){}
+  flprTaskRepositoryRuntimeCfgCache = cfg;
+  return cfg;
+}
+
+function taskRepositoryEntryOriginalObjective(entry){
+  try{
+    const fields = entry?.__flprTaskRepositoryOriginalFields;
+    const readField = (field)=>{
+      const meta = fields && fields[field];
+      if(meta && meta.exists) return String(meta.value || "").trim();
+      return String(entry?.[field] || "").trim();
+    };
+    return readField("objective") || readField("display_name") || readField("displayName") || readField("title");
+  }catch(_){}
+  return "";
+}
+
+function taskRepositoryCaptureOriginalEntryFields(entry){
+  if(!entry || typeof entry !== "object") return;
+  try{
+    if(!entry.__flprTaskRepositoryOriginalFields){
+      const fields = {};
+      TASK_REPOSITORY_MUTABLE_ENTRY_FIELDS.forEach((field)=>{
+        fields[field] = {
+          exists: Object.prototype.hasOwnProperty.call(entry, field),
+          value: entry[field]
+        };
+      });
+      entry.__flprTaskRepositoryOriginalFields = fields;
+    }
+    if(!entry.__flprTaskRepositoryOriginalObjective){
+      entry.__flprTaskRepositoryOriginalObjective = taskRepositoryEntryOriginalObjective(entry);
+    }
+  }catch(_){}
+}
+
+function taskRepositoryResetEntryFields(entry){
+  if(!entry || typeof entry !== "object") return;
+  try{
+    const fields = entry.__flprTaskRepositoryOriginalFields;
+    if(!fields) return;
+    TASK_REPOSITORY_MUTABLE_ENTRY_FIELDS.forEach((field)=>{
+      const meta = fields[field];
+      if(meta && meta.exists) entry[field] = meta.value;
+      else {
+        try{ delete entry[field]; }catch(_){}
+      }
+    });
+  }catch(_){}
+}
+
+function taskRepositoryPrepareEntryForCfg(entry){
+  if(!entry || typeof entry !== "object") return;
+  taskRepositoryCaptureOriginalEntryFields(entry);
+  taskRepositoryResetEntryFields(entry);
+  taskRepositoryCaptureOriginalEntryFields(entry);
+}
+
+function refreshTaskRepositoryCheckSurfaces(){
+  try{ applyGenericCheckPayloadToLocations(); }catch(_){}
+  try{ hideCheckTaskHoverCard(); }catch(_){}
+  try{ renderChecksWorldTabs(); }catch(_){}
+  try{ renderChecks(); }catch(_){}
+  try{ renderOverviewGrid(); }catch(_){}
+  try{ renderSelected(); }catch(_){}
+  try{ updateCountCheckUI(); }catch(_){}
+}
+
+function setTaskRepositoryRuntimeCfg(cfg, opts){
+  const normalized = normalizeTaskRepositoryCfg(cfg || {});
+  flprTaskRepositoryRuntimeCfgCache = normalized;
+  try{ window.FLPR_TASK_REPOSITORY_DEFAULT_CFG = normalized; }catch(_){}
+  if(opts?.persist !== false){
+    try{ localStorage.setItem(FLPR_TASK_REPOSITORY_STORAGE_KEY, JSON.stringify(normalized)); }catch(_){}
+  }
+  try{
+    refreshTaskRepositoryCheckSurfaces();
+  }catch(_){
+    try{ renderAll(); }catch(__){}
+  }
+}
+
+function taskRepositoryMatchEdit(tableName, difficulty, kind, objective){
+  const cfg = getTaskRepositoryRuntimeCfg();
+  const edits = cfg && cfg.edits && typeof cfg.edits === "object" ? cfg.edits : {};
+  const tableKey = canonicalTableMapKey(tableName);
+  const difficultyKey = String(difficulty || "").trim().toLowerCase();
+  const kindKey = String(kind || "").trim().toLowerCase();
+  const taskKey = normalizeTaskRepositoryTaskKey(objective);
+  if(!tableKey || !taskKey) return null;
+  const matches = [];
+  Object.entries(edits).forEach(([id, edit])=>{
+    if(!edit || typeof edit !== "object") return;
+    const parts = String(id || "").split("|");
+    if(parts.length < 4) return;
+    const idTable = canonicalTableMapKey(parts[0]);
+    const idDifficulty = String(parts[1] || "").trim().toLowerCase();
+    const idTask = normalizeTaskRepositoryTaskKey(parts.slice(3).join("|"));
+    if(idTable !== tableKey) return;
+    if(difficultyKey && idDifficulty && idDifficulty !== difficultyKey) return;
+    if(idTask !== taskKey) return;
+    matches.push({ id, edit });
+  });
+  if(!matches.length && kindKey.includes("score") && difficultyKey){
+    const scoreNeedle = `${difficultyKey} score`;
+    Object.entries(edits).forEach(([id, edit])=>{
+      if(!edit || typeof edit !== "object") return;
+      const parts = String(id || "").split("|");
+      if(parts.length < 4) return;
+      const idTable = canonicalTableMapKey(parts[0]);
+      const idDifficulty = String(parts[1] || "").trim().toLowerCase();
+      const idTask = normalizeTaskRepositoryTaskKey(parts.slice(3).join("|"));
+      if(idTable === tableKey && idDifficulty === difficultyKey && idTask.includes(scoreNeedle)){
+        matches.push({ id, edit });
+      }
+    });
+  }
+  return matches[0] || null;
+}
+
+function getTaskRepositoryEditForGeneric(entry, locationName){
+  try{
+    const locMeta = extractGenericSlotMeta(locationName);
+    const split = splitLocName(locationName);
+    const tableName = String(entry?.target_table || entry?.table || locMeta?.table || split.table || "").trim();
+    const difficulty = String(entry?.difficulty || locMeta?.difficulty || "").trim().toLowerCase();
+    const kind = String(entry?.kind || entry?.task_type || entry?.type || locMeta?.kind || "").trim().toLowerCase();
+    const objective = String(
+      entry?.__flprTaskRepositoryOriginalObjective ||
+      taskRepositoryEntryOriginalObjective(entry) ||
+      entry?.objective ||
+      entry?.display_name ||
+      entry?.displayName ||
+      entry?.title ||
+      split.rest ||
+      ""
+    ).trim();
+    const match = taskRepositoryMatchEdit(tableName, difficulty, kind, objective);
+    if(match && match.edit) return match.edit;
+  }catch(_){}
+  return null;
+}
+
+function flprTaskRepositoryTooltipForTask(tableName, taskName, entry, node){
+  try{
+    const locationName = String(node?.full || node?.locationName || node?.source_location || entry?.source_location || entry?.location || (tableName && taskName ? `${tableName} - ${taskName}` : taskName) || "").trim();
+    const edit = getTaskRepositoryEditForGeneric(entry || { table:tableName, objective:taskName }, locationName);
+    return String(edit?.tooltip || "").trim();
+  }catch(_){}
+  return "";
+}
+try{ window.flprTaskRepositoryTooltipForTask = flprTaskRepositoryTooltipForTask; }catch(_){}
+
 function getDisplayedLocationName(locationName){
   const raw = String(locationName || "").trim();
   if(!raw) return "";
@@ -39186,8 +39512,9 @@ function getDisplayedLocationName(locationName){
     return table && display ? `${table} - ${display}` : raw;
   }
   const activeEntry = taskEntry || genericEntry;
+  const repoEdit = getTaskRepositoryEditForGeneric(activeEntry, raw);
   const table = String(activeEntry?.target_table || activeEntry?.table || splitLocName(raw).table || "").trim();
-  const display = remapGenericObjectiveLabel(getPreferredGenericObjective(taskEntry, genericEntry));
+  const display = remapGenericObjectiveLabel(String(repoEdit?.title || "").trim() || getPreferredGenericObjective(taskEntry, genericEntry));
   return table && display ? `${table} - ${display}` : (display || raw);
 }
 function applyGenericCheckEntryToNode(node){
@@ -39198,9 +39525,12 @@ function applyGenericCheckEntryToNode(node){
   node.genericEntry = null;
   node.genericDifficulty = "";
   node.genericTaskType = "";
+  node.taskRepositoryTooltip = "";
+  node.taskRepositoryEditId = "";
 
   const taskEntry = getTaskShuffleEntryForLocationName(node.full || node.baseShort || node.short || "");
   if(taskEntry){
+    taskRepositoryPrepareEntryForCfg(taskEntry);
     node.taskShuffleEntry = taskEntry;
     node.genericDifficulty = String(taskEntry.difficulty || "").trim();
     node.genericTaskType = "task_shuffle";
@@ -39208,18 +39538,71 @@ function applyGenericCheckEntryToNode(node){
 
   const entry = getGenericCheckEntryForLocationName(node.full || node.baseShort || node.short || "");
   if(entry){
+    taskRepositoryPrepareEntryForCfg(entry);
     node.genericEntry = entry;
     if(!node.genericDifficulty) node.genericDifficulty = String(entry.difficulty || "").trim();
     if(!node.genericTaskType) node.genericTaskType = String(entry.kind || entry.task_type || entry.type || "").trim();
   }
   const displayName = remapGenericObjectiveLabel(getPreferredGenericObjective(taskEntry, entry));
-  if(displayName) node.short = displayName;
+  const repoEdit = getTaskRepositoryEditForGeneric(taskEntry || entry, node.full || node.baseShort || node.short || "");
+  if(repoEdit){
+    try{
+      const cleanTitle = String(repoEdit.title || "").trim();
+      const cleanTooltip = String(repoEdit.tooltip || "").trim();
+      const cleanType = String(repoEdit.type || "").trim();
+      if(cleanTitle){
+        if(taskEntry){
+          if(!taskEntry.__flprTaskRepositoryOriginalObjective){
+            taskEntry.__flprTaskRepositoryOriginalObjective = String(taskEntry.objective || taskEntry.display_name || taskEntry.title || "").trim();
+          }
+          taskEntry.objective = cleanTitle;
+          taskEntry.display_name = cleanTitle;
+          taskEntry.title = cleanTitle;
+        }
+        if(entry){
+          if(!entry.__flprTaskRepositoryOriginalObjective){
+            entry.__flprTaskRepositoryOriginalObjective = String(entry.objective || entry.display_name || entry.title || "").trim();
+          }
+          entry.objective = cleanTitle;
+          entry.display_name = cleanTitle;
+          entry.title = cleanTitle;
+        }
+      }
+      if(cleanTooltip){
+        if(taskEntry) taskEntry.explanation = cleanTooltip;
+        if(entry) entry.explanation = cleanTooltip;
+        node.taskRepositoryTooltip = cleanTooltip;
+      }
+      if(cleanType){
+        if(taskEntry){ taskEntry.type = cleanType; taskEntry.kind = cleanType; taskEntry.task_type = cleanType; }
+        if(entry){ entry.type = cleanType; entry.kind = cleanType; entry.task_type = cleanType; }
+      }
+      node.taskRepositoryEditId = String(repoEdit.id || "");
+    }catch(_){}
+  }
+  const repoDisplayName = remapGenericObjectiveLabel(String(repoEdit?.title || "").trim());
+  if(repoDisplayName || displayName) node.short = repoDisplayName || displayName;
   return node;
 }
 function applyGenericCheckPayloadToLocations(){
   try{
-    if(!(ap?.locById instanceof Map)) return;
-    for(const node of ap.locById.values()) applyGenericCheckEntryToNode(node);
+    const seen = new Set();
+    const applyNode = (node)=>{
+      if(!node) return;
+      const id = Number(node.id);
+      const key = Number.isFinite(id) && id > 0 ? `id:${id}` : `${String(node.full || "")}|${String(node.short || "")}`;
+      if(key && seen.has(key)) return;
+      if(key) seen.add(key);
+      applyGenericCheckEntryToNode(node);
+    };
+    if(ap?.locById instanceof Map){
+      for(const node of ap.locById.values()) applyNode(node);
+    }
+    if(ap?.locsByTableKey instanceof Map){
+      for(const list of ap.locsByTableKey.values()){
+        (Array.isArray(list) ? list : []).forEach(applyNode);
+      }
+    }
   }catch(_){}
 }
 function setGenericCheckPayload(slotData){
@@ -39686,6 +40069,8 @@ function getTaskCounterProgressVerb(taskName, counterMeta){
   return fallback ? fallback.charAt(0).toUpperCase() + fallback.slice(1) : "Tracked";
 }
 function getTaskExplanationForNode(node){
+  const repoTooltip = String(node?.taskRepositoryTooltip || "").trim();
+  if(repoTooltip) return repoTooltip;
   const taskName = getTaskNameFromLocationNode(node);
   if(!taskName) return "";
   const shuffledExplanation = String(node?.taskShuffleEntry?.explanation || "").trim();
@@ -40252,13 +40637,14 @@ function processReceivedItem(it, itemIndex, locId, opts){
     || (Number.isFinite(itemIdNum) ? (apDataPackageForGame(ap.cfg?.game)?.itemNameById?.get?.(itemIdNum) || "") : "")
     || "";
   // Preserve raw item name; do not randomly bucket plain "Junk".
-  const effectiveName = String(name || "");
+  let effectiveName = String(name || "");
   const itemFlags = Number(it?.flags ?? 0);
   const trapByFlag = !!(itemFlags & 0b100);
   const isHintRewardItem = isHintRewardItemName(effectiveName);
   const isTrapReward = trapByFlag || isTrapItem(effectiveName);
-  const progressiveTarget = parseProgressiveBallTarget(effectiveName);
+  let progressiveTarget = parseProgressiveBallTarget(effectiveName);
   const isProgressiveBallItem = !!progressiveTarget;
+  let progressiveRedirect = null;
   const junkTier = classifyJunkItemTier(effectiveName);
   const isPinballFragment = isPinballFragmentItem(effectiveName);
   const streamCounterRewardDisplayOnly = counterRewardRedemptionsDisabled() && !!(junkTier || isPinballFragment);
@@ -40275,9 +40661,20 @@ function processReceivedItem(it, itemIndex, locId, opts){
     apLog(`Ignoring off-seed receipt from ${paired.tableName}: ${effectiveName}`);
     return;
   }
-  if(isProgressiveBallItem && progressiveTarget && !isActiveSeedTableName(progressiveTarget)){
-    apLog(`Ignoring off-seed Progressive Ball target: ${progressiveTarget}`);
-    return;
+  if(isProgressiveBallItem && progressiveTarget){
+    const receiptKey = progressiveBallReceiptKey(itemIndex, locId, effectiveName, paired);
+    progressiveRedirect = resolveProgressiveBallDisplayTarget(progressiveTarget, receiptKey);
+    const resolvedTarget = String(progressiveRedirect?.tableName || "").trim();
+    if(progressiveRedirect?.suppressed || !resolvedTarget || !isActiveSeedTableName(resolvedTarget)){
+      apLog(`Suppressing Progressive Ball target ${progressiveTarget}; ${progressiveRedirect?.reason || "no valid seed table"}`);
+      return;
+    }
+    if(!progressiveBallTargetsSame(resolvedTarget, progressiveTarget)){
+      const reason = progressiveRedirect?.reason || "reroute";
+      apLog(`Progressive Ball target remapped; ${progressiveTarget} -> ${resolvedTarget} (${reason})`);
+      effectiveName = `Progressive Ball - ${resolvedTarget}`;
+      progressiveTarget = resolvedTarget;
+    }
   }
   
   // Boss segment flow: do not show standard Overview reward popup; roll weighted damage into the raid bar.
@@ -40724,12 +41121,17 @@ function processReceivedItem(it, itemIndex, locId, opts){
   // Progressive Balls
   if(isProgressiveBallItem){
     const receiptKey = progressiveBallReceiptKey(itemIndex, locId, effectiveName, paired);
-    const redirect = resolveProgressiveBallDisplayTarget(progressiveTarget, receiptKey);
+    const redirect = progressiveRedirect || resolveProgressiveBallDisplayTarget(progressiveTarget, receiptKey);
     const table = String(redirect?.tableName || progressiveTarget || "").trim();
+    if(redirect?.suppressed || !table || !isActiveSeedTableName(table)){
+      try{ apLog(`Progressive Ball suppressed; ${redirect?.originalTarget || progressiveTarget || "unknown"} (${redirect?.reason || "no valid seed table"})`); }catch(_){}
+      updateCounterBars();
+      return;
+    }
     try{ flprStatsRecordBallEarned(table); }catch(_){}
     if(redirect?.swapped){
       try{
-        const why = redirect.reason === "queued" ? "queued make-good" : "boss-key priority";
+        const why = redirect.reason === "queued" ? "queued make-good" : (redirect.reason || "reroute");
         apLog(`Progressive Ball rerouted; ${redirect.originalTarget} -> ${table} (${why})`);
       }catch(_){}
     }
@@ -41313,6 +41715,7 @@ function apConnect(){
               state.progressiveBallSwapSeed = "";
               state.progressiveBallSwapQueue = [];
               state.progressiveBallReceiptRedirects = {};
+              state.progressiveBallReceiptSuppressions = {};
               try{
                 localStorage.removeItem(BOSS_HP_LIVE_LS_V2);
                 localStorage.removeItem(BOSS_HP_LIVE_LS_V1);
@@ -41696,6 +42099,7 @@ function ensureProgressiveBallSwapState(){
     state.progressiveBallSwapSeed = sig;
     state.progressiveBallSwapQueue = [];
     state.progressiveBallReceiptRedirects = {};
+    state.progressiveBallReceiptSuppressions = {};
     try{ saveState(); }catch(_){}
   }catch(_){}
 }
@@ -41752,30 +42156,205 @@ function hintQueueBossKeyProgressiveRedirect(target, source){
   }catch(_){}
   return false;
 }
-function resolveProgressiveBallDisplayTarget(originalTarget, receiptKey){
+
+function progressiveBallTargetLookupKey(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  try{
+    const code = String(getRepoCanonicalTableCode(raw) || "").trim();
+    if(code) return `code:${code}`;
+  }catch(_){}
+  try{
+    const canonical = String(getRepoCanonicalTableName(raw) || raw).trim();
+    const norm = normTableName(canonical || raw);
+    if(norm) return `name:${norm}`;
+  }catch(_){}
+  const fallback = normTableName(raw);
+  return fallback ? `name:${fallback}` : "";
+}
+function progressiveBallTargetsSame(a, b){
+  const ak = progressiveBallTargetLookupKey(a);
+  const bk = progressiveBallTargetLookupKey(b);
+  return !!ak && !!bk && ak === bk;
+}
+function progressiveBallLevelForTableKey(tableKey, ballsOverride){
+  try{
+    const tk = String(tableKey || "").trim();
+    if(!tk) return 0;
+    const balls = (ballsOverride && typeof ballsOverride === "object") ? ballsOverride : (state?.balls || {});
+    return balls?.[`${tk}|3`] ? 3 : (balls?.[`${tk}|2`] ? 2 : (balls?.[`${tk}|1`] ? 1 : 0));
+  }catch(_){}
+  return 0;
+}
+function activeProgressiveBallTableCandidates(opts){
+  opts = opts || {};
+  const out = [];
+  const seen = new Set();
+  try{
+    const order = (typeof getOverviewWorldOrder === "function" ? getOverviewWorldOrder() : Object.keys(state?.worlds || {}));
+    for(const wk of order){
+      if(isBossWorldId(wk, state)) continue;
+      const tables = Array.isArray(state?.worlds?.[wk]?.tables) ? state.worlds[wk].tables : [];
+      tables.forEach((tableName, idx)=>{
+        const name = String(tableName || "").trim();
+        if(!name || /^\(boss table\)$/i.test(name)) return;
+        const tableKey = `${wk}|${idx}`;
+        const lookupKey = progressiveBallTargetLookupKey(name) || tableKey;
+        if(seen.has(lookupKey)) return;
+        seen.add(lookupKey);
+        out.push({
+          tableName: name,
+          tableKey,
+          lookupKey,
+          level: progressiveBallLevelForTableKey(tableKey, opts.balls)
+        });
+      });
+    }
+  }catch(_){}
+  return out;
+}
+function progressiveBallStablePickIndex(seed, count){
+  const n = Math.max(0, Math.round(Number(count) || 0));
+  if(n <= 1) return 0;
+  const text = String(seed || "");
+  if(!text){
+    try{ return Math.floor(Math.random() * n); }catch(_){ return 0; }
+  }
+  let hash = 2166136261;
+  for(let i = 0; i < text.length; i++){
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return Math.abs(hash >>> 0) % n;
+}
+function pickLeastProgressiveBallTarget(opts){
+  opts = opts || {};
+  const excluded = new Set((Array.isArray(opts.excludeKeys) ? opts.excludeKeys : []).filter(Boolean));
+  let candidates = activeProgressiveBallTableCandidates({ balls:opts.balls })
+    .filter((entry)=> entry && entry.tableName && entry.tableKey && Number(entry.level || 0) < 3)
+    .filter((entry)=> !excluded.has(entry.tableKey) && !excluded.has(entry.lookupKey));
+  if(!candidates.length && excluded.size){
+    candidates = activeProgressiveBallTableCandidates({ balls:opts.balls })
+      .filter((entry)=> entry && entry.tableName && entry.tableKey && Number(entry.level || 0) < 3);
+  }
+  if(!candidates.length) return null;
+  const minLevel = Math.min(...candidates.map((entry)=>Math.max(0, Number(entry.level || 0))));
+  const least = candidates.filter((entry)=>Math.max(0, Number(entry.level || 0)) === minLevel);
+  const idx = progressiveBallStablePickIndex(opts.seed || "", least.length);
+  return least[idx] || least[0] || null;
+}
+function normalizeProgressiveBallTargetChoice(tableName, opts){
+  opts = opts || {};
+  const raw = String(tableName || "").trim();
+  if(!raw || !isActiveSeedTableName(raw)) return null;
+  const tableKey = getTableKeyForName(raw);
+  if(!tableKey) return null;
+  return {
+    tableName: String(getTableNameForStartKey(tableKey, state?.worlds || {}) || getRepoCanonicalTableName(raw) || raw).trim() || raw,
+    tableKey,
+    lookupKey: progressiveBallTargetLookupKey(raw) || tableKey,
+    level: progressiveBallLevelForTableKey(tableKey, opts.balls)
+  };
+}
+function resolveProgressiveBallDisplayTarget(originalTarget, receiptKey, opts){
+  opts = opts || {};
   ensureProgressiveBallSwapState();
   const original = String(originalTarget || "").trim();
-  if(!original) return { tableName: original, originalTarget: original, swapped:false, fromQueue:false, reason:"none" };
+  if(!original) return { tableName: original, originalTarget: original, swapped:false, fromQueue:false, reason:"none", suppressed:false };
+  const redirects = state?.progressiveBallReceiptRedirects || {};
+  const suppressions = state?.progressiveBallReceiptSuppressions || {};
+  if(receiptKey && String(suppressions?.[receiptKey] || "")){
+    return { tableName:"", originalTarget: original, swapped:false, fromQueue:false, reason:String(suppressions[receiptKey]), suppressed:true };
+  }
+  if(receiptKey && String(redirects?.[receiptKey] || "").trim()){
+    const stored = String(redirects[receiptKey] || "").trim();
+    return {
+      tableName: stored,
+      originalTarget: original,
+      swapped: !progressiveBallTargetsSame(stored, original),
+      fromQueue:false,
+      reason: progressiveBallTargetsSame(stored, original) ? "stored" : "stored-reroute",
+      suppressed:false
+    };
+  }
   const queue = Array.isArray(state?.progressiveBallSwapQueue) ? state.progressiveBallSwapQueue : [];
   let tableName = original;
   let swapped = false;
   let fromQueue = false;
   let reason = "none";
-  if(queue.length){
-    tableName = String(queue.shift() || "").trim() || original;
-    fromQueue = hintNormalizeName(tableName) !== hintNormalizeName(original);
-    swapped = fromQueue;
-    reason = fromQueue ? "queued" : "none";
-    if(original && hintNormalizeName(original) !== hintNormalizeName(tableName)){
-      queue.push(original);
+  const originalChoice = normalizeProgressiveBallTargetChoice(original, { balls:opts.balls });
+  if(!originalChoice){
+    const replacement = pickLeastProgressiveBallTarget({ balls:opts.balls, seed:`${receiptKey}|off-seed|${original}` });
+    if(replacement){
+      tableName = replacement.tableName;
+      swapped = true;
+      reason = "off-seed";
+    }else{
+      state.progressiveBallReceiptSuppressions = state.progressiveBallReceiptSuppressions || {};
+      if(receiptKey) state.progressiveBallReceiptSuppressions[receiptKey] = "no-active-table-capacity";
+      state.progressiveBallSwapQueue = queue.filter(Boolean);
+      try{ saveState(); }catch(_){}
+      return { tableName:"", originalTarget: original, swapped:false, fromQueue:false, reason:"no-active-table-capacity", suppressed:true };
     }
-  }else{
+  }else if(Number(originalChoice.level || 0) >= 3){
+    const replacement = pickLeastProgressiveBallTarget({
+      balls:opts.balls,
+      excludeKeys:[originalChoice.tableKey, originalChoice.lookupKey],
+      seed:`${receiptKey}|overflow|${original}`
+    });
+    if(replacement){
+      tableName = replacement.tableName;
+      swapped = true;
+      reason = "overflow";
+    }else{
+      state.progressiveBallReceiptSuppressions = state.progressiveBallReceiptSuppressions || {};
+      if(receiptKey) state.progressiveBallReceiptSuppressions[receiptKey] = "all-tables-full";
+      state.progressiveBallSwapQueue = queue.filter(Boolean);
+      try{ saveState(); }catch(_){}
+      return { tableName:"", originalTarget: original, swapped:false, fromQueue:false, reason:"all-tables-full", suppressed:true };
+    }
+  }else if(queue.length){
+    while(queue.length){
+      const queuedName = String(queue.shift() || "").trim();
+      const queuedChoice = normalizeProgressiveBallTargetChoice(queuedName, { balls:opts.balls });
+      if(!queuedChoice || Number(queuedChoice.level || 0) >= 3) continue;
+      tableName = queuedChoice.tableName;
+      fromQueue = !progressiveBallTargetsSame(tableName, original);
+      swapped = fromQueue;
+      reason = fromQueue ? "queued" : "none";
+      if(fromQueue && originalChoice && Number(originalChoice.level || 0) < 3){
+        queue.push(original);
+      }
+      break;
+    }
+  }
+  if(!swapped && progressiveBallTargetsSame(tableName, original)){
     const priority = hintGetBossKeyPriorityTargets().find((entry)=> hintNormalizeName(entry.tableName) !== hintNormalizeName(original));
-    if(priority){
-      tableName = String(priority.tableName || "").trim() || original;
-      swapped = hintNormalizeName(tableName) !== hintNormalizeName(original);
+    const priorityChoice = priority ? normalizeProgressiveBallTargetChoice(priority.tableName, { balls:opts.balls }) : null;
+    if(priorityChoice && Number(priorityChoice.level || 0) < 3){
+      tableName = String(priorityChoice.tableName || "").trim() || original;
+      swapped = !progressiveBallTargetsSame(tableName, original);
       reason = swapped ? "boss-key-priority" : "none";
       if(swapped && original) queue.push(original);
+    }
+  }
+  const finalChoice = normalizeProgressiveBallTargetChoice(tableName, { balls:opts.balls });
+  if(!finalChoice || Number(finalChoice.level || 0) >= 3){
+    const replacement = pickLeastProgressiveBallTarget({
+      balls:opts.balls,
+      excludeKeys: finalChoice ? [finalChoice.tableKey, finalChoice.lookupKey] : [],
+      seed:`${receiptKey}|final|${original}|${tableName}`
+    });
+    if(replacement){
+      tableName = replacement.tableName;
+      swapped = !progressiveBallTargetsSame(tableName, original);
+      reason = finalChoice ? "overflow" : "off-seed";
+    }else{
+      state.progressiveBallReceiptSuppressions = state.progressiveBallReceiptSuppressions || {};
+      if(receiptKey) state.progressiveBallReceiptSuppressions[receiptKey] = finalChoice ? "all-tables-full" : "no-active-table-capacity";
+      state.progressiveBallSwapQueue = queue.filter(Boolean);
+      try{ saveState(); }catch(_){}
+      return { tableName:"", originalTarget: original, swapped:false, fromQueue:false, reason: finalChoice ? "all-tables-full" : "no-active-table-capacity", suppressed:true };
     }
   }
   state.progressiveBallSwapQueue = queue.filter(Boolean);
@@ -41784,7 +42363,7 @@ function resolveProgressiveBallDisplayTarget(originalTarget, receiptKey){
     state.progressiveBallReceiptRedirects[receiptKey] = tableName || original;
   }
   try{ saveState(); }catch(_){}
-  return { tableName: tableName || original, originalTarget: original, swapped, fromQueue, reason };
+  return { tableName: tableName || original, originalTarget: original, swapped, fromQueue, reason, suppressed:false };
 }
 function getProgressiveBallAwardedTarget(itemIndex, locId, itemName, paired){
   const original = String(parseProgressiveBallTarget(itemName) || "").trim();
@@ -41792,6 +42371,8 @@ function getProgressiveBallAwardedTarget(itemIndex, locId, itemName, paired){
   ensureProgressiveBallSwapState();
   const receiptKey = progressiveBallReceiptKey(itemIndex, locId, itemName, paired);
   const redirects = state?.progressiveBallReceiptRedirects || {};
+  const suppressions = state?.progressiveBallReceiptSuppressions || {};
+  if(String(suppressions?.[receiptKey] || "")) return "";
   const redirected = String(redirects?.[receiptKey] || "").trim();
   return redirected || original;
 }
@@ -42005,6 +42586,7 @@ function reconcileWorldStateFromReceivedInventory(reason) {
         for (let b = 1; b <= 3; b++) state.balls[`${wid}|${ti}|${b}`] = false;
       }
     }
+    seedApStartBaseline(state, ap?.slotData || {});
 
     // Recompute progressive balls and counters
     const prog = new Map(); // key: world|ti -> count
@@ -42016,12 +42598,26 @@ function reconcileWorldStateFromReceivedInventory(reason) {
       const nm = (r.itemName || r.baseItemName || "").trim();
 
       // Progressive balls
-      const tableName = parseProgressiveBallTarget(nm);
+      const rawProgressiveName = String(r.baseItemName || nm || "");
+      const tableName = parseProgressiveBallTarget(rawProgressiveName) || parseProgressiveBallTarget(nm);
       if (tableName) {
-        if (tableName) {
-          const key = getTableKeyForName(tableName);
+        const receiptKey = progressiveBallReceiptKey(r.recvIndex, r.locId, rawProgressiveName || nm, {
+          tableName: "",
+          locationName: String(r.locationName || "")
+        });
+        const redirect = resolveProgressiveBallDisplayTarget(tableName, receiptKey, { balls: state.balls });
+        const appliedTable = String(redirect?.tableName || "").trim();
+        if(!appliedTable || redirect?.suppressed || !isActiveSeedTableName(appliedTable)){
+          try{ apLog(`Ignoring Progressive Ball inventory target: ${tableName} (${redirect?.reason || "no valid seed table"})`); }catch(_){}
+        }else{
+          const key = getTableKeyForName(appliedTable);
           if (key) {
-            prog.set(key, Math.min(3, (prog.get(key) || 0) + 1));
+            const cur = progressiveBallLevelForTableKey(key, state.balls);
+            const next = Math.min(3, cur + 1);
+            if(next >= 1) state.balls[`${key}|1`] = true;
+            if(next >= 2) state.balls[`${key}|2`] = true;
+            if(next >= 3) state.balls[`${key}|3`] = true;
+            prog.set(key, Math.max(Number(prog.get(key) || 0), next));
           }
         }
       }
@@ -42046,9 +42642,11 @@ function reconcileWorldStateFromReceivedInventory(reason) {
       if(state.worlds && state.worlds[worldKey] && !isBossWorldId(worldKey, state)) state.worlds[worldKey].locked = false;
     }
 
-    // Ensure at least World 1 stays unlocked
-    const w1 = state.worlds && state.worlds.w1;
-    if (w1) w1.locked = false;
+    if(!isSeedRandomStartEnabled(ap?.slotData || {})){
+      // Ensure at least World 1 stays unlocked for legacy non-random starts.
+      const w1 = state.worlds && state.worlds.w1;
+      if (w1) w1.locked = false;
+    }
 
     // Update counters from recompute.
     // Junk bars show remainder pieces; every full 3-piece set creates one ready redeem.
@@ -42097,9 +42695,17 @@ function forceUnlockTablesFromProgressiveInventory(opts){
 
   try{
     for(const r of (list || [])){
-      const nm = String(r?.itemName || r?.baseItemName || "").trim();
-      const tableName = parseProgressiveBallTarget(nm);
+      const displayName = String(r?.itemName || r?.baseItemName || "").trim();
+      const rawName = String(r?.baseItemName || r?.itemName || "").trim();
+      const tableName = getProgressiveBallAwardedTarget(r?.recvIndex, r?.locId, rawName || displayName, {
+        tableName: "",
+        locationName: String(r?.locationName || "")
+      }) || getProgressiveBallAwardedTarget(r?.recvIndex, r?.locId, displayName, {
+        tableName: "",
+        locationName: String(r?.locationName || "")
+      });
       if(!tableName) continue;
+      if(!isActiveSeedTableName(tableName)) continue;
 
       let tableKey = getTableKeyForName(tableName);
       if(!tableKey){
@@ -42228,15 +42834,22 @@ function apReconcileWorldStateFromReceived(){
     window.__apBossKeyCount = bossKeyCount;
     try{ flprStatsRecordBossKeyCount(bossKeyCountRaw); }catch(_){}
 for(const r of (received || [])){
-      const nm = String(r.itemName || r.baseItemName || "");
-      const table = getProgressiveBallAwardedTarget(r.recvIndex, r.locId, nm, {
+      const displayName = String(r.itemName || r.baseItemName || "");
+      const rawName = String(r.baseItemName || r.itemName || "");
+      const originalTarget = parseProgressiveBallTarget(rawName) || parseProgressiveBallTarget(displayName);
+      if(!originalTarget) continue;
+      const receiptKey = progressiveBallReceiptKey(r.recvIndex, r.locId, rawName || displayName, {
         tableName: "",
         locationName: String(r.locationName || "")
       });
-      if(!table) continue;
-      if(!isActiveSeedTableName(table)){
-        try{ apLog(`Ignoring off-seed Progressive Ball inventory target: ${table}`); }catch(_){}
+      const redirect = resolveProgressiveBallDisplayTarget(originalTarget, receiptKey, { balls:base.balls });
+      const table = String(redirect?.tableName || "").trim();
+      if(!table || redirect?.suppressed || !isActiveSeedTableName(table)){
+        try{ apLog(`Ignoring Progressive Ball inventory target: ${originalTarget} (${redirect?.reason || "no valid seed table"})`); }catch(_){}
         continue;
+      }
+      if(!progressiveBallTargetsSame(table, originalTarget)){
+        try{ apLog(`Progressive Ball inventory remapped; ${originalTarget} -> ${table} (${redirect?.reason || "reroute"})`); }catch(_){}
       }
       const baseKey = getTableKeyForName(table);
       if(!baseKey) continue;
@@ -54503,6 +55116,9 @@ function makeControlsPanelSection(parent, title, nodes, opts){
   list.forEach((node)=>{
     if(node && node.parentElement !== sec) sec.appendChild(node);
   });
+  if(String(opts?.panelKey || "") === "visual-dev-tools"){
+    try{ ensureDevToolsPasswordGate(sec); }catch(_){}
+  }
   parent.appendChild(sec);
   try{ ensureControlPanelHandles(sec); }catch(_){}
   try{
@@ -54525,6 +55141,102 @@ function buildControlsNote(text){
   note.textContent = msg;
   return note;
 }
+function isDevToolsUnlocked(){
+  try{ return window.__flprDevToolsUnlocked === true; }catch(_){ return false; }
+}
+function setDevToolsUnlocked(panel, unlocked){
+  try{ window.__flprDevToolsUnlocked = !!unlocked; }catch(_){}
+  const scope = panel || document.querySelector('.connectPanelSection[data-panel-key="visual-dev-tools"]');
+  if(!scope) return;
+  scope.classList.toggle("devToolsUnlocked", !!unlocked);
+  scope.classList.toggle("devToolsLocked", !unlocked);
+  const input = scope.querySelector("#devToolsPasswordInput");
+  if(input && unlocked) input.value = "";
+  const status = scope.querySelector("#devToolsPasswordStatus");
+  if(status){
+    status.classList.remove("warn");
+    status.textContent = unlocked ? "Dev Tools unlocked for this launcher session." : "Electron password required before these controls open.";
+  }
+}
+function devToolsUnlockApi(){
+  try{
+    const api = window.flprElectron || window.flprStandaloneElectron;
+    if(api && typeof api.unlockDevTools === "function") return api;
+  }catch(_){}
+  return null;
+}
+function ensureDevToolsPasswordGate(panel){
+  if(!panel) return null;
+  panel.classList.add(isDevToolsUnlocked() ? "devToolsUnlocked" : "devToolsLocked");
+  panel.classList.toggle("devToolsUnlocked", isDevToolsUnlocked());
+  panel.classList.toggle("devToolsLocked", !isDevToolsUnlocked());
+  let gate = panel.querySelector(":scope > .devToolsPasswordGate");
+  if(!gate){
+    gate = document.createElement("div");
+    gate.className = "devToolsPasswordGate";
+    gate.innerHTML = `
+      <div class="devToolsPasswordGateTitle">DEV TOOLS PASSWORD</div>
+      <div class="cNote">Advanced tools are locked for the launcher session.</div>
+      <form class="devToolsPasswordGateRow" id="devToolsPasswordForm">
+        <input class="cInput" id="devToolsPasswordInput" type="password" autocomplete="off" spellcheck="false" placeholder="Password">
+        <button class="cBtn" id="devToolsPasswordSubmit" type="submit">UNLOCK</button>
+      </form>
+      <div class="devToolsPasswordGateStatus" id="devToolsPasswordStatus">Electron password required before these controls open.</div>
+    `;
+    const title = panel.querySelector(":scope > .connectPanelSectionTitle");
+    if(title && title.nextSibling) panel.insertBefore(gate, title.nextSibling);
+    else panel.insertBefore(gate, panel.firstChild || null);
+  }
+  const form = gate.querySelector("#devToolsPasswordForm");
+  const input = gate.querySelector("#devToolsPasswordInput");
+  const status = gate.querySelector("#devToolsPasswordStatus");
+  if(form && !form.__flprDevToolsPasswordBound){
+    form.__flprDevToolsPasswordBound = true;
+    form.addEventListener("submit", async (event)=>{
+      event.preventDefault();
+      event.stopPropagation();
+      const api = devToolsUnlockApi();
+      if(!api){
+        if(status){
+          status.textContent = "Electron launcher validation is unavailable.";
+          status.classList.add("warn");
+        }
+        return;
+      }
+      const submit = gate.querySelector("#devToolsPasswordSubmit");
+      try{
+        if(submit) submit.disabled = true;
+        if(status){
+          status.textContent = "Checking...";
+          status.classList.remove("warn");
+        }
+        const result = await api.unlockDevTools(input?.value || "");
+        if(result && result.ok){
+          setDevToolsUnlocked(panel, true);
+          try{ playSfx("click"); }catch(_){}
+          return;
+        }
+        if(status){
+          status.textContent = "Password rejected.";
+          status.classList.add("warn");
+        }
+        if(input){
+          input.value = "";
+          input.focus();
+        }
+      }catch(err){
+        if(status){
+          status.textContent = "Unlock failed: " + (err?.message || err);
+          status.classList.add("warn");
+        }
+      }finally{
+        if(submit) submit.disabled = false;
+      }
+    });
+  }
+  setDevToolsUnlocked(panel, isDevToolsUnlocked());
+  return gate;
+}
 function buildSiegeSuppressionControl(){
   let wrap = document.getElementById("siegeSuppressionControl");
   if(!wrap){
@@ -54542,6 +55254,245 @@ function buildSiegeSuppressionControl(){
   updateBesiegedSuppressionUi(wrap);
   return wrap;
 }
+
+function taskRepositoryLauncherApi(){
+  try{
+    const api = window.flprElectron || window.flprStandaloneElectron;
+    if(api && typeof api.saveTaskRepositoryCfg === "function") return api;
+  }catch(_){}
+  return null;
+}
+
+function getCurrentTaskRepositorySeedMode(){
+  try{
+    if(ap?.connected || ap?.socket || ap?.ws || ap?.roomInfoReceived) return "MP";
+    if(ap?.inherentSeedActive || ap?.slotData || ap?.seedName) return "SP";
+  }catch(_){}
+  return "SP";
+}
+
+function getTaskRepositoryOpenTables(){
+  const out = [];
+  const seen = new Set();
+  try{
+    const worlds = state?.worlds || {};
+    Object.entries(worlds).forEach(([wk, world])=>{
+      if(!world || !Array.isArray(world.tables) || isBossWorldId(wk, state)) return;
+      world.tables.forEach((tableName, idx)=>{
+        const name = String(tableName || "").trim();
+        if(!name) return;
+        const baseKey = `${wk}|${idx}`;
+        const ballLevel = Number(getBallLevelByTableKey(baseKey) || 0);
+        if(ballLevel <= 0) return;
+        const key = canonicalTableMapKey(name);
+        if(!key || seen.has(key)) return;
+        seen.add(key);
+        const meta = repoMetaForTaskRepositoryTable(name);
+        out.push({
+          key,
+          name,
+          displayName: meta.displayName || meta.name || name,
+          code: meta.code || "",
+          manufacturer: meta.manufacturer || "",
+          year: meta.year || "",
+          worldKey: wk,
+          tableKey: baseKey,
+          ballLevel
+        });
+      });
+    });
+  }catch(_){}
+  try{
+    if(typeof isBossTableRevealReady === "function" && isBossTableRevealReady()){
+      const bossName = String(getUnifiedBossTableName?.({ includePlaceholder:false }) || "").trim();
+      const key = canonicalTableMapKey(bossName);
+      if(bossName && key && !seen.has(key)){
+        seen.add(key);
+        const meta = repoMetaForTaskRepositoryTable(bossName);
+        out.push({
+          key,
+          name: bossName,
+          displayName: meta.displayName || meta.name || bossName,
+          code: meta.code || "",
+          manufacturer: meta.manufacturer || "",
+          year: meta.year || "",
+          worldKey: "boss",
+          tableKey: "boss|0",
+          ballLevel: 3,
+          boss: true
+        });
+      }
+    }
+  }catch(_){}
+  return out;
+}
+
+function repoMetaForTaskRepositoryTable(tableName){
+  try{
+    const repo = window.FLPR_TABLE_REPO;
+    const meta = repo && typeof repo.getTableMeta === "function" ? repo.getTableMeta(tableName) : null;
+    if(meta) return meta;
+  }catch(_){}
+  return { code:"", name:String(tableName || "").trim(), displayName:String(tableName || "").trim(), manufacturer:"", year:"" };
+}
+
+function getTaskRepositorySeedTasks(openTables){
+  const tableKeys = new Set((openTables || []).map((table)=>canonicalTableMapKey(table.name || table.displayName || table.key)).filter(Boolean));
+  const tasks = [];
+  const pushEntry = (entry)=>{
+    try{
+      if(!entry || typeof entry !== "object") return;
+      const location = String(entry.location || entry.source_location || entry.sourceLocation || "").trim();
+      const split = splitLocName(location);
+      const tableName = String(entry.target_table || entry.targetTable || entry.table || split.table || "").trim();
+      const tableKey = canonicalTableMapKey(tableName);
+      if(!tableKey || !tableKeys.has(tableKey)) return;
+      tasks.push({
+        tableKey,
+        table: tableName,
+        difficulty: String(entry.difficulty || extractGenericSlotMeta(location)?.difficulty || "").trim().toLowerCase(),
+        kind: String(entry.kind || entry.task_type || entry.type || extractGenericSlotMeta(location)?.kind || "").trim().toLowerCase(),
+        objective: String(entry.objective || entry.display_name || entry.displayName || entry.title || split.rest || "").trim(),
+        location
+      });
+    }catch(_){}
+  };
+  try{ (Array.isArray(ap?.taskShuffle?.entries) ? ap.taskShuffle.entries : []).forEach(pushEntry); }catch(_){}
+  try{ (Array.isArray(ap?.genericChecks?.entries) ? ap.genericChecks.entries : []).forEach(pushEntry); }catch(_){}
+  const seen = new Set();
+  return tasks.filter((task)=>{
+    const sig = `${task.tableKey}|${task.difficulty}|${task.kind}|${normalizeTaskRepositoryTaskKey(task.objective || task.location)}`;
+    if(seen.has(sig)) return false;
+    seen.add(sig);
+    return true;
+  });
+}
+
+function buildTaskRepositorySeedFocus(){
+  const tables = getTaskRepositoryOpenTables();
+  return {
+    kind: "flippermizer_task_repository_focus",
+    version: "1.0.0",
+    mode: getCurrentTaskRepositorySeedMode(),
+    seedName: String(ap?.seedName || state?.bossTableSeed || "").trim(),
+    updatedAt: new Date().toISOString(),
+    tables,
+    tasks: getTaskRepositorySeedTasks(tables)
+  };
+}
+
+function ensureTaskRepositoryOverlay(){
+  let overlay = document.getElementById("taskRepositoryOverlay");
+  if(overlay) return overlay;
+  overlay = document.createElement("div");
+  overlay.id = "taskRepositoryOverlay";
+  overlay.className = "taskRepositoryOverlay";
+  overlay.innerHTML = `
+    <div class="taskRepositoryOverlayHead">
+      <div class="taskRepositoryOverlayTitle">Task Repository<span id="taskRepositoryOverlaySub">Seed tables only.</span></div>
+      <button class="taskRepositoryOverlayClose" id="taskRepositoryOverlayClose" type="button">X</button>
+    </div>
+    <iframe class="taskRepositoryOverlayFrame" id="taskRepositoryOverlayFrame" title="Flippermizer Task Repository"></iframe>
+  `;
+  document.body.appendChild(overlay);
+  const close = overlay.querySelector("#taskRepositoryOverlayClose");
+  if(close && !close.__flprTaskRepoCloseBound){
+    close.__flprTaskRepoCloseBound = true;
+    close.addEventListener("click", ()=>{
+      try{ playSfx("click"); }catch(_){}
+      closeTaskRepositoryOverlay();
+    });
+  }
+  return overlay;
+}
+
+function closeTaskRepositoryOverlay(){
+  const overlay = document.getElementById("taskRepositoryOverlay");
+  if(!overlay) return;
+  overlay.classList.remove("show");
+}
+
+function openTaskRepositoryOverlay(){
+  const focus = buildTaskRepositorySeedFocus();
+  if(!focus.tables.length){
+    try{ toast("warn", "TASK REPOSITORY", "No open seed tables are available yet.", 2600); }catch(_){}
+    return;
+  }
+  try{ localStorage.setItem("flpr_task_repository_embedded_focus_v1", JSON.stringify(focus)); }catch(_){}
+  const overlay = ensureTaskRepositoryOverlay();
+  const sub = overlay.querySelector("#taskRepositoryOverlaySub");
+  if(sub){
+    sub.textContent = `${focus.mode || "RUN"}${focus.seedName ? ` / ${focus.seedName}` : ""} / ${focus.tables.length} open table${focus.tables.length === 1 ? "" : "s"} / ${focus.tasks.length || "all"} seed tasks`;
+  }
+  const frame = overlay.querySelector("#taskRepositoryOverlayFrame");
+  if(frame){
+    frame.src = `./flippermizer_task_repository.html?embedded=1&v=${Date.now()}`;
+  }
+  overlay.classList.add("show");
+}
+
+function buildTaskRepositoryLauncherControl(){
+  let wrap = document.getElementById("taskRepositoryLauncherDock");
+  if(!wrap){
+    wrap = document.createElement("div");
+    wrap.id = "taskRepositoryLauncherDock";
+    wrap.className = "ctrlCard taskRepositoryLauncherDock";
+    wrap.innerHTML = `
+      <div class="cNote taskRepositoryLauncherStatus" id="taskRepositoryLauncherStatus">Open the focused repository for currently unlocked seed tables only.</div>
+      <div class="taskRepositoryLauncherActions">
+        <button class="cBtn" id="openTaskRepositoryOverlayBtn" type="button">OPEN TASK REPOSITORY</button>
+      </div>
+    `;
+  }
+  const btn = wrap.querySelector("#openTaskRepositoryOverlayBtn");
+  if(btn && !btn.__flprTaskRepositoryBound){
+    btn.__flprTaskRepositoryBound = true;
+    btn.addEventListener("click", (event)=>{
+      event.preventDefault();
+      try{ playSfx("click"); }catch(_){}
+      openTaskRepositoryOverlay();
+    });
+  }
+  updateTaskRepositoryLauncherStatus(wrap);
+  return wrap;
+}
+
+function updateTaskRepositoryLauncherStatus(root){
+  try{
+    const wrap = root || document.getElementById("taskRepositoryLauncherDock");
+    const status = wrap?.querySelector?.("#taskRepositoryLauncherStatus") || document.getElementById("taskRepositoryLauncherStatus");
+    if(!status) return;
+    const focus = buildTaskRepositorySeedFocus();
+    status.textContent = focus.tables.length
+      ? `Focused to ${focus.tables.length} currently open ${focus.mode || "run"} table${focus.tables.length === 1 ? "" : "s"}. Closed tables stay hidden.`
+      : "Start/connect a seed and unlock a table before opening the task repository.";
+  }catch(_){}
+}
+
+window.addEventListener("message", (event)=>{
+  const data = event && event.data;
+  if(!data || typeof data !== "object") return;
+  if(data.type === "flpr-task-repository-close"){
+    closeTaskRepositoryOverlay();
+    return;
+  }
+  if(data.type !== "flpr-task-repository-cfg-updated") return;
+  try{
+    setTaskRepositoryRuntimeCfg(data.cfg, { persist:true });
+    const api = taskRepositoryLauncherApi();
+    if(api){
+      api.saveTaskRepositoryCfg({ cfg:data.cfg, source:data.source }).then(()=>{
+        const status = document.getElementById("taskRepositoryLauncherStatus");
+        if(status) status.textContent = "Task CFG saved and live launcher checks refreshed.";
+      }).catch((err)=>{
+        const status = document.getElementById("taskRepositoryLauncherStatus");
+        if(status) status.textContent = "Live edits applied, but CFG file save failed: " + (err?.message || err);
+      });
+    }
+    try{ toast("good", "TASK CFG UPDATED", "Launcher checks refreshed from repository edits.", 1800); }catch(_){}
+  }catch(_){}
+});
+
 function updateBesiegedSuppressionUi(root){
   const scope = root || document;
   const toggle = scope.querySelector ? scope.querySelector("#siegeSuppressForRunToggle") : document.getElementById("siegeSuppressForRunToggle");
@@ -54840,6 +55791,7 @@ function compactVisualsControlsLayout(panelVisuals){
   const rendererDock = ensureFlprLauncherRendererDock(staging);
   const fontDock = buildFlprFontControlsDock();
   const siegeSuppressionControl = buildSiegeSuppressionControl();
+  const taskRepositoryControl = buildTaskRepositoryLauncherControl();
   const bossMusicGroup = buildMusicScenarioGroup([
     "boss_battle_beginning",
     "boss_battle_phase2"
@@ -54864,7 +55816,7 @@ function compactVisualsControlsLayout(panelVisuals){
 
   makeControlsPanelSection(leftCol, "Display Controls", [topRow, fontDock, checksBgTitle, checksBgNote, checksBgRow, swapRow], { accent:"green", mini:"font / chroma / checks bg / auto swap" });
   makeControlsPanelSection(leftCol, "Electron Renderer", [rendererDock], { accent:"gold", mini:"vulkan / relaunch", panelKey:"electron-renderer" });
-  makeControlsPanelSection(leftCol, "Dev Tools", [buildControlsNote("Current-run override for players who want to continue this seed without surprise Siege events."), siegeSuppressionControl], { accent:"red", mini:"siege override / no free EB", panelKey:"visual-dev-tools", defaultCollapsed:true, forceCollapsed:true });
+  makeControlsPanelSection(leftCol, "Dev Tools", [buildControlsNote("Current-run overrides and repository repair tools. The repository editor only receives currently open seed tables."), siegeSuppressionControl, taskRepositoryControl], { accent:"red", mini:"siege / task repository / advanced layout", panelKey:"visual-dev-tools", defaultCollapsed:true, forceCollapsed:true });
   makeControlsPanelSection(leftCol, "Boss Card + Audio", [hpTestCard, soundTitle, soundRow], { accent:"blue", mini:"boss card / overlay sound" });
   makeControlsPanelSection(leftCol, "Boss Battle Music", [bossMusicGroup], { accent:"red", mini:"phase 1 / phase 2 handoff" });
   makeControlsPanelSection(rightCol, "Run Music", [runMusicGroup], { accent:"gold", mini:"bonus / opening / victory / stats" });
