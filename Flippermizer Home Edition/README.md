@@ -14,6 +14,11 @@ Release asset:
 
 - `Flippermizer-Home-Edition-1.1.0-portable.exe`
 
+### Home Edition 1.1 Hotfix - 2026-05-26
+
+- Fixed vertical 1080x1920 orientation so the top HUD, Overview, and controls stack within the Electron window without right-edge overhang.
+- Updated the portrait scaling baseline to 1080x1920 for cleaner Home Edition capture and portable launcher behavior.
+
 ## Home Edition Player Options
 
 Online, you can build a trapless Home Edition YAML in the hosted player options page:
