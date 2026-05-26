@@ -9072,7 +9072,7 @@
           "source_location": "Collect a 50,000 P-L-A-Y award"
         },
         {
-          "title": "Score the 100,000 1-2-3 Award",
+          "title": "Collect the 100,000 1-2-3 Award",
           "type": "task",
           "explanation": "GUIDE: Complete this objective exactly as written one time on the table.",
           "source_location": "Score the 100,000 1-2-3 award"
@@ -9110,7 +9110,7 @@
           "source_location": "Collect a 3X golden-ball bonus"
         },
         {
-          "title": "Score Two 100,000 1-2-3 Awards in One Game",
+          "title": "Collect Two 100,000 1-2-3 Awards in One Game",
           "type": "task",
           "explanation": "GUIDE: Complete this objective exactly as written one time on the table.",
           "source_location": "Score two 100,000 1-2-3 awards in one game"
