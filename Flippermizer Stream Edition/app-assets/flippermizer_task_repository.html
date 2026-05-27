@@ -97,26 +97,6 @@ body.embeddedTaskRepository .select{
   gap:8px;
   flex-wrap:wrap;
 }
-.iconBtn{
-  width:38px;
-  min-width:38px;
-  padding:8px;
-  display:inline-grid;
-  place-items:center;
-}
-.iconBtn svg{
-  width:16px;
-  height:16px;
-  stroke:currentColor;
-  fill:none;
-  stroke-width:2.3;
-  stroke-linecap:round;
-  stroke-linejoin:round;
-}
-.iconBtn.active{
-  border-color:rgba(32,230,148,.78);
-  color:#baffdf;
-}
 .toolbar{
   margin-top:12px;
   display:grid;
@@ -576,51 +556,6 @@ body.embeddedTaskRepository .select{
   opacity:1;
   transform:translateY(0);
 }
-.powerConfirm{
-  position:fixed;
-  inset:0;
-  z-index:99999;
-  display:grid;
-  place-items:center;
-  padding:24px;
-  background:
-    linear-gradient(135deg, rgba(42,0,0,.88), rgba(5,0,0,.94)),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 2px, transparent 2px 6px);
-}
-.powerConfirm[hidden]{
-  display:none;
-}
-.powerDialog{
-  width:min(720px, 94vw);
-  border:3px solid #e43b44;
-  border-radius:0;
-  background:linear-gradient(180deg, rgba(45,7,8,.98), rgba(12,2,3,.99));
-  box-shadow:0 0 0 5px rgba(0,0,0,.9), 0 0 42px rgba(228,59,68,.38);
-  padding:26px;
-  text-align:center;
-}
-.powerKicker{
-  color:#ffcf6c;
-  font-size:9px;
-  line-height:1.6;
-  margin-bottom:14px;
-  text-transform:uppercase;
-}
-.powerQuestion{
-  color:#fff2f2;
-  font-size:16px;
-  line-height:1.85;
-  text-transform:uppercase;
-  text-shadow:3px 3px 0 #000;
-}
-.powerActions{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:24px;
-}
 .hiddenFile{
   position:absolute;
   width:1px;
@@ -667,16 +602,6 @@ body.embeddedTaskRepository .select{
         <button class="btn violet" id="copyTemplateGuideBtn" type="button">Copy Templates</button>
         <button class="btn" id="importCfgBtn" type="button">Import CFG</button>
         <button class="btn red" id="resetCfgBtn" type="button">Reset Local</button>
-        <button class="btn iconBtn" id="fullscreenTaskRepoBtn" type="button" title="Fullscreen" aria-label="Toggle fullscreen">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 3H3v5"></path><path d="M16 3h5v5"></path><path d="M21 16v5h-5"></path><path d="M3 16v5h5"></path>
-          </svg>
-        </button>
-        <button class="btn red iconBtn" id="powerTaskRepoBtn" type="button" title="Exit" aria-label="Exit task repository">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2v10"></path><path d="M18.4 6.6a9 9 0 1 1-12.8 0"></path>
-          </svg>
-        </button>
         <button class="btn red" id="closeEmbeddedBtn" type="button" style="display:none;">Close</button>
       </div>
     </div>
@@ -739,16 +664,6 @@ body.embeddedTaskRepository .select{
   </div>
 </div>
 <input class="hiddenFile" id="cfgFileInput" type="file" accept=".json,.cfg,application/json" />
-<div class="powerConfirm" id="powerConfirm" role="dialog" aria-modal="true" aria-labelledby="powerConfirmTitle" hidden>
-  <div class="powerDialog">
-    <div class="powerKicker">SYSTEM EXIT REQUEST</div>
-    <div class="powerQuestion" id="powerConfirmTitle">Are you sure you want to abandon the journey into Pinball?</div>
-    <div class="powerActions">
-      <button class="btn red" id="powerConfirmYesBtn" type="button">Abandon</button>
-      <button class="btn gold" id="powerConfirmNoBtn" type="button">Stay the Course</button>
-    </div>
-  </div>
-</div>
 <div class="toast" id="toast"></div>
 <script src="./flippermizer_table_repository.js"></script>
 <script src="./flippermizer_task_explanations.js"></script>
@@ -788,10 +703,6 @@ body.embeddedTaskRepository .select{
     templateToggleBtn: document.getElementById("templateToggleBtn"),
     saveStatus: document.getElementById("saveStatus"),
     cfgFileInput: document.getElementById("cfgFileInput"),
-    fullscreenTaskRepoBtn: document.getElementById("fullscreenTaskRepoBtn"),
-    powerConfirm: document.getElementById("powerConfirm"),
-    powerConfirmYesBtn: document.getElementById("powerConfirmYesBtn"),
-    powerConfirmNoBtn: document.getElementById("powerConfirmNoBtn"),
     toast: document.getElementById("toast")
   };
 
@@ -1447,35 +1358,6 @@ body.embeddedTaskRepository .select{
     els.toast.textContent = String(text || "");
     els.toast.classList.add("show");
     toastTimer = setTimeout(function(){ els.toast.classList.remove("show"); }, 1800);
-  }
-
-  function updateFullscreenButton(){
-    var active = !!document.fullscreenElement;
-    if(!els.fullscreenTaskRepoBtn) return;
-    els.fullscreenTaskRepoBtn.classList.toggle("active", active);
-    els.fullscreenTaskRepoBtn.title = active ? "Exit fullscreen" : "Fullscreen";
-    els.fullscreenTaskRepoBtn.setAttribute("aria-label", active ? "Exit fullscreen" : "Enter fullscreen");
-  }
-
-  function toggleTaskRepositoryFullscreen(){
-    try{
-      if(document.fullscreenElement){
-        if(document.exitFullscreen) document.exitFullscreen();
-        return;
-      }
-      var root = document.documentElement;
-      if(root.requestFullscreen){
-        root.requestFullscreen().catch(function(){ showToast("Fullscreen blocked."); });
-        return;
-      }
-    }catch(_){}
-    showToast("Fullscreen unavailable.");
-  }
-
-  function setPowerConfirmOpen(open){
-    if(!els.powerConfirm) return;
-    els.powerConfirm.hidden = !open;
-    if(open && els.powerConfirmNoBtn) els.powerConfirmNoBtn.focus();
   }
 
   function requestTaskRepositoryClose(){
@@ -2418,22 +2300,6 @@ body.embeddedTaskRepository .select{
 
   document.addEventListener("click", function(event){
     var target = event.target;
-    if(target && target.closest && target.closest("#fullscreenTaskRepoBtn")){
-      toggleTaskRepositoryFullscreen();
-      return;
-    }
-    if(target && target.closest && target.closest("#powerTaskRepoBtn")){
-      setPowerConfirmOpen(true);
-      return;
-    }
-    if(target && (target.id === "powerConfirmNoBtn" || target.id === "powerConfirm")){
-      setPowerConfirmOpen(false);
-      return;
-    }
-    if(target && target.id === "powerConfirmYesBtn"){
-      requestTaskRepositoryClose();
-      return;
-    }
     var tableBtn = event.target.closest("[data-table]");
     if(tableBtn){
       state.selectedTable = tableBtn.getAttribute("data-table") || state.selectedTable;
@@ -2510,18 +2376,10 @@ body.embeddedTaskRepository .select{
       return;
     }
     if(event.target.id === "closeEmbeddedBtn"){
-      setPowerConfirmOpen(true);
+      requestTaskRepositoryClose();
       return;
     }
   });
-
-  document.addEventListener("keydown", function(event){
-    if(event.key === "Escape" && els.powerConfirm && !els.powerConfirm.hidden){
-      setPowerConfirmOpen(false);
-    }
-  });
-
-  document.addEventListener("fullscreenchange", updateFullscreenButton);
 
   document.addEventListener("input", function(event){
     var target = event.target;

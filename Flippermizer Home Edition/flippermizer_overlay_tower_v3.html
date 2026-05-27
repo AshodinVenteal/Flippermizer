@@ -841,13 +841,141 @@ body.controlsLayoutDragging *{
 .headerInner{
   position:relative;
   border-radius: inherit;
-  padding: 10px 16px;
+  padding: 10px 96px 10px 16px;
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
   gap: 14px;
   height:75px;
   align-items:center;
+}
+.flprAppChromeControls{
+  position:absolute;
+  top:8px;
+  right:10px;
+  z-index:16;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.flprAppChromeBtn{
+  width:32px;
+  height:32px;
+  padding:0;
+  border:2px solid rgba(0,217,255,.58);
+  border-radius:8px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:rgba(231,250,255,.94);
+  background:linear-gradient(180deg, rgba(4,23,37,.94), rgba(2,11,19,.92));
+  box-shadow:0 0 0 1px rgba(255,255,255,.04) inset, 0 0 14px rgba(0,217,255,.12);
+  cursor:pointer;
+}
+.flprAppChromeBtn:hover{
+  border-color:rgba(34,255,136,.86);
+  color:rgba(213,255,236,.98);
+  transform:translateY(-1px);
+}
+.flprAppChromeBtn:active{
+  transform:translateY(0);
+}
+.flprAppChromeBtn svg{
+  width:17px;
+  height:17px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:2.2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.flprAppChromeBtn.isActive{
+  border-color:rgba(34,255,136,.92);
+  color:rgba(194,255,225,.98);
+  box-shadow:0 0 0 1px rgba(255,255,255,.05) inset, 0 0 16px rgba(34,255,136,.24);
+}
+.flprAppChromeBtn.power{
+  border-color:rgba(255,101,124,.68);
+  color:#ffdbe1;
+  box-shadow:0 0 0 1px rgba(255,255,255,.04) inset, 0 0 16px rgba(255,101,124,.15);
+}
+.flprAppChromeBtn.power:hover{
+  border-color:rgba(255,207,108,.9);
+  color:#ffefc7;
+}
+.flprExitConfirm{
+  position:fixed;
+  inset:0;
+  z-index:19000;
+  display:grid;
+  place-items:center;
+  padding:24px;
+}
+.flprExitConfirm[hidden]{
+  display:none;
+}
+.flprExitShade{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(135deg, rgba(51,0,0,.9), rgba(5,0,0,.94)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 2px, transparent 2px 7px);
+}
+.flprExitDialog{
+  position:relative;
+  width:min(740px, 94vw);
+  border:4px solid #e43b44;
+  border-radius:0;
+  background:linear-gradient(180deg, rgba(48,7,9,.98), rgba(12,2,3,.99));
+  box-shadow:0 0 0 6px rgba(0,0,0,.9), 0 0 46px rgba(228,59,68,.38);
+  padding:28px;
+  text-align:center;
+}
+.flprExitKicker{
+  color:#ffcf6c;
+  font-size:9px;
+  line-height:1.6;
+  margin-bottom:14px;
+  text-transform:uppercase;
+}
+.flprExitQuestion{
+  color:#fff2f2;
+  font-size:16px;
+  line-height:1.85;
+  text-transform:uppercase;
+  text-shadow:3px 3px 0 #000;
+}
+.flprExitActions{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:24px;
+}
+.flprExitBtn{
+  min-height:38px;
+  border:2px solid rgba(255,255,255,.2);
+  border-radius:0;
+  padding:10px 14px;
+  color:#f8fdff;
+  background:#111927;
+  font-size:9px;
+  line-height:1.2;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.flprExitBtn.danger{
+  border-color:rgba(255,101,124,.82);
+  background:linear-gradient(180deg, rgba(114,17,29,.96), rgba(40,4,9,.98));
+}
+.flprExitBtn.stay{
+  border-color:rgba(255,207,108,.82);
+  color:#fff4cf;
+  background:linear-gradient(180deg, rgba(86,66,16,.96), rgba(30,20,5,.98));
+}
+.flprExitBtn:hover{
+  filter:brightness(1.14);
 }
 
 .brand{ display:flex; flex-direction:column; gap: 8px; }
@@ -21717,6 +21845,18 @@ body.flprShopSparksSlime .spark{
 <div class="header">
       <div class="headerBanner" id="headerBanner" style="background-image: url(&quot;blob:null/f0f13552-319d-4a69-9cc0-b6a4ea305aeb&quot;);"></div>
       <div class="headerOverlay"></div>
+      <div class="flprAppChromeControls" aria-label="Application controls">
+        <button class="flprAppChromeBtn" id="flprFullscreenBtn" type="button" title="Fullscreen" aria-label="Enter fullscreen">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 3H3v5"></path><path d="M16 3h5v5"></path><path d="M21 16v5h-5"></path><path d="M3 16v5h5"></path>
+          </svg>
+        </button>
+        <button class="flprAppChromeBtn power" id="flprPowerBtn" type="button" title="Exit" aria-label="Exit application">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2v10"></path><path d="M18.4 6.6a9 9 0 1 1-12.8 0"></path>
+          </svg>
+        </button>
+      </div>
 
         <div class="headerInner">
           <div class="brand">
@@ -21743,6 +21883,17 @@ body.flprShopSparksSlime .spark{
             <div class="worldPageMetaSub" id="worldPageMetaSub">TABLES 1-25</div>
           </div>
           <button class="worldPageBtn" id="worldPageNextBtn" type="button" aria-label="Next table page" title="Next table page">›</button>
+        </div>
+      </div>
+    </div>
+    <div class="flprExitConfirm" id="flprExitConfirm" role="dialog" aria-modal="true" aria-labelledby="flprExitConfirmTitle" hidden>
+      <div class="flprExitShade" id="flprExitShade"></div>
+      <div class="flprExitDialog">
+        <div class="flprExitKicker">SYSTEM EXIT REQUEST</div>
+        <div class="flprExitQuestion" id="flprExitConfirmTitle">Are you sure you want to abandon the journey into Pinball?</div>
+        <div class="flprExitActions">
+          <button class="flprExitBtn danger" id="flprExitConfirmYesBtn" type="button">Abandon</button>
+          <button class="flprExitBtn stay" id="flprExitConfirmNoBtn" type="button">Stay the Course</button>
         </div>
       </div>
     </div>
@@ -57721,12 +57872,124 @@ try{
   });
 }catch(_){}
 
+function flprAppChromeApi(){
+  try{
+    return window.flprElectron || window.flprStandaloneElectron || window.flprLauncher || null;
+  }catch(_){
+    return null;
+  }
+}
+function flprAppChromeToast(title, value){
+  try{ toast("info", title, value, 2600); }catch(_){}
+}
+function flprSetFullscreenButtonActive(active){
+  const btn = document.getElementById("flprFullscreenBtn");
+  if(!btn) return;
+  btn.classList.toggle("isActive", !!active);
+  btn.title = active ? "Exit fullscreen" : "Fullscreen";
+  btn.setAttribute("aria-label", active ? "Exit fullscreen" : "Enter fullscreen");
+}
+async function flprRefreshFullscreenButton(){
+  const api = flprAppChromeApi();
+  if(api && typeof api.getFullscreenState === "function"){
+    try{
+      const result = await api.getFullscreenState();
+      flprSetFullscreenButtonActive(!!result?.fullscreen);
+      return;
+    }catch(_){}
+  }
+  flprSetFullscreenButtonActive(!!document.fullscreenElement);
+}
+async function flprToggleAppFullscreen(){
+  const api = flprAppChromeApi();
+  if(api && typeof api.toggleFullscreen === "function"){
+    try{
+      const result = await api.toggleFullscreen();
+      flprSetFullscreenButtonActive(!!result?.fullscreen);
+      return;
+    }catch(_){}
+  }
+  try{
+    if(document.fullscreenElement){
+      if(document.exitFullscreen) await document.exitFullscreen();
+    }else if(document.documentElement?.requestFullscreen){
+      await document.documentElement.requestFullscreen();
+    }else{
+      throw new Error("Fullscreen unavailable");
+    }
+    flprSetFullscreenButtonActive(!!document.fullscreenElement);
+  }catch(_){
+    flprAppChromeToast("SYSTEM", "Fullscreen unavailable.");
+  }
+}
+function flprSetExitConfirmOpen(open){
+  const modal = document.getElementById("flprExitConfirm");
+  if(!modal) return;
+  modal.hidden = !open;
+  modal.setAttribute("aria-hidden", open ? "false" : "true");
+  if(open){
+    try{ document.getElementById("flprExitConfirmNoBtn")?.focus(); }catch(_){}
+  }
+}
+async function flprExitApplication(){
+  flprSetExitConfirmOpen(false);
+  const api = flprAppChromeApi();
+  if(api && typeof api.exitApp === "function"){
+    try{
+      await api.exitApp();
+      return;
+    }catch(_){}
+  }
+  try{ window.close(); }catch(_){}
+  setTimeout(()=> flprAppChromeToast("SYSTEM", "Close the window when ready."), 80);
+}
+function initFlprAppChromeControls(){
+  const fullscreenBtn = document.getElementById("flprFullscreenBtn");
+  const powerBtn = document.getElementById("flprPowerBtn");
+  const yesBtn = document.getElementById("flprExitConfirmYesBtn");
+  const noBtn = document.getElementById("flprExitConfirmNoBtn");
+  const shade = document.getElementById("flprExitShade");
+  if(fullscreenBtn && fullscreenBtn.dataset.bound !== "1"){
+    fullscreenBtn.dataset.bound = "1";
+    fullscreenBtn.addEventListener("click", ()=> flprToggleAppFullscreen());
+  }
+  if(powerBtn && powerBtn.dataset.bound !== "1"){
+    powerBtn.dataset.bound = "1";
+    powerBtn.addEventListener("click", ()=> flprSetExitConfirmOpen(true));
+  }
+  if(yesBtn && yesBtn.dataset.bound !== "1"){
+    yesBtn.dataset.bound = "1";
+    yesBtn.addEventListener("click", ()=> flprExitApplication());
+  }
+  if(noBtn && noBtn.dataset.bound !== "1"){
+    noBtn.dataset.bound = "1";
+    noBtn.addEventListener("click", ()=> flprSetExitConfirmOpen(false));
+  }
+  if(shade && shade.dataset.bound !== "1"){
+    shade.dataset.bound = "1";
+    shade.addEventListener("click", ()=> flprSetExitConfirmOpen(false));
+  }
+  if(!window.__flprAppChromeGlobalBound){
+    window.__flprAppChromeGlobalBound = true;
+    document.addEventListener("fullscreenchange", ()=> flprRefreshFullscreenButton());
+    window.addEventListener("resize", ()=> setTimeout(()=> flprRefreshFullscreenButton(), 80));
+    document.addEventListener("keydown", (event)=>{
+      if(event.key === "Escape"){
+        const modal = document.getElementById("flprExitConfirm");
+        if(modal && !modal.hidden) flprSetExitConfirmOpen(false);
+      }
+    });
+  }
+  flprRefreshFullscreenButton();
+}
+
 
 /* Init */
 flprSafeBoot("saveState", ()=> saveState());
 flprSafeBoot("scrubDeadBlobSessionMarkup", ()=> scrubDeadBlobSessionMarkup(document));
 flprSafeBoot("renderAll", ()=> renderAll());
 flprSafeBoot("bindOverlayUniversalClickFx", ()=> bindOverlayUniversalClickFx());
+flprSafeBoot("initFlprAppChromeControls", ()=> initFlprAppChromeControls());
 flprSafeBoot("initDesignerInfoOverlay", ()=> initDesignerInfoOverlay());
 flprSafeBoot("initRelicsOverlay", ()=> initRelicsOverlay());
 flprSafeBoot("initHintsTab", ()=> initHintsTab());
