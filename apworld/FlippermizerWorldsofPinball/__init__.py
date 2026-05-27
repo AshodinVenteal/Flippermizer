@@ -493,14 +493,23 @@ class ManualWorld(World):
 
         if extras > 0:
             trap_percent = get_option_value(self.multiworld, self.player, "filler_traps")
-            if not traps:
+            enabled_traps = [
+                trap_name for trap_name in traps
+                if is_item_enabled(self.multiworld, self.player, self.item_name_to_item.get(trap_name, {}))
+            ]
+            if not enabled_traps:
                 trap_percent = 0
 
             trap_count = extras * trap_percent // 100
             filler_count = extras - trap_count
 
+            if trap_count > 0 and "Filter Mode Trap" in enabled_traps:
+                extra_item = self.create_item("Filter Mode Trap")
+                item_pool.append(extra_item)
+                trap_count -= 1
+
             for _ in range(0, trap_count):
-                extra_item = self.create_item(self.random.choice(traps))
+                extra_item = self.create_item(self.random.choice(enabled_traps))
                 item_pool.append(extra_item)
 
             for _ in range(0, filler_count):

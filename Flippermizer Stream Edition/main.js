@@ -9,6 +9,7 @@ const { app, BrowserWindow, ipcMain, shell, dialog, screen } = require("electron
 const APP_TITLE = "Flippermizer Launcher";
 const DEFAULT_WINDOW_MARGIN = 28;
 const GRAPHICS_MODE_DEFAULT = "vulkan";
+const KEEP_BACKGROUND_PAINTING = process.env.FLPR_KEEP_BACKGROUND_PAINTING === "1";
 const GRAPHICS_MODE_LABELS = Object.freeze({
   vulkan: "Vulkan / ANGLE",
   default_gpu: "Auto / Direct3D",
@@ -32,6 +33,7 @@ function appendUniqueSwitchValue(switchName, nextValue) {
 }
 
 function applyWindowCompositorStabilityFlags() {
+  if (!KEEP_BACKGROUND_PAINTING) return;
   if (process.platform !== "win32") return;
   app.commandLine.appendSwitch("disable-backgrounding-occluded-windows");
   app.commandLine.appendSwitch("disable-background-timer-throttling");
@@ -614,12 +616,13 @@ function makeWindowOptions(config, bounds) {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
-      backgroundThrottling: false
+      backgroundThrottling: !KEEP_BACKGROUND_PAINTING
     }
   };
 }
 
 function keepWindowPaintingOnFocusChanges(win) {
+  if (!KEEP_BACKGROUND_PAINTING) return;
   if (!win || win.isDestroyed()) return;
   try {
     win.webContents.setBackgroundThrottling(false);
@@ -982,12 +985,20 @@ async function createContentWindow(kind, opts = {}) {
     const localServer = await ensureStaticServer();
     const url = new URL(config.file.replace(/\\/g, "/"), `${localServer.baseUrl}/`);
     url.searchParams.set("launcherGraphicsMode", activeGraphicsMode);
+    if (config.kind === "overlay") {
+      url.searchParams.set("launcherStreamPerformance", "1");
+      url.searchParams.set("launcherTwitchVideoAutoload", "0");
+    }
     win.loadURL(url.toString());
   } catch (err) {
     console.warn("Local asset server failed; falling back to file://", err);
     win.loadFile(assetPath, {
       query: {
-        launcherGraphicsMode: activeGraphicsMode
+        launcherGraphicsMode: activeGraphicsMode,
+        ...(config.kind === "overlay" ? {
+          launcherStreamPerformance: "1",
+          launcherTwitchVideoAutoload: "0"
+        } : {})
       }
     });
   }

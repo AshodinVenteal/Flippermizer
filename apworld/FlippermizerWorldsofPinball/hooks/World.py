@@ -26,14 +26,73 @@ PROGRESSIVE_BALL_STARTS_SLOT_KEY = "progressive_ball_starts"
 BASE_GAME_TABLE_SET_SLOT_KEY = "base_game_table_set"
 LEGACY_METASIZER_TABLE_SET_SLOT_KEY = "metasizer_table_set"
 FORCED_EASY_BOSS_KEY_SLOT_KEY = "forced_easy_boss_key_location"
+PROGRESSIVE_BALL_ITEM_PREFIX = "Progressive Ball - "
 GENERIC_TASK_RE = re.compile(r"^(?P<table>.+?)\s-\s(?P<difficulty>Easy|Medium|Hard)\sTask$", re.IGNORECASE)
 METASIZER_SELECTION_MODES = {
     0: "random_catalog_pool",
     1: "curated_catalog_groups",
     2: "hybrid_curated_random_fill",
+    3: "curated_table_list",
 }
 METASIZER_DEFAULT_SELECTION_MODE = "random_catalog_pool"
 METASIZER_GROUP_SELECTION_SPLIT_RE = re.compile(r"[\r\n,|]+")
+METASIZER_TABLE_SELECTION_SPLIT_RE = re.compile(r"[\r\n,|]+")
+METASIZER_CURATED_THEME_RULES = {
+    "cosmic": {
+        "needles": ("star", "space", "mars", "trek", "stargate", "starship", "independence", "x-files", "mandalorian", "alien", "orbit"),
+        "adjectives": ("Neon", "Astral", "Orbital", "Galactic"),
+        "nouns": ("Signal", "Orbit", "Frontier", "Launch"),
+        "palette": {"from": "#05173b", "mid": "#102b78", "to": "#00d9ff", "accent": "#b9f6ff"},
+    },
+    "monsters": {
+        "needles": ("monster", "creature", "crypt", "dracula", "freddy", "elvira", "scared", "ghost", "haunted", "hulk"),
+        "adjectives": ("Midnight", "Haunted", "Moonlit", "Cryptic"),
+        "nouns": ("Masquerade", "Manor", "Coven", "Bash"),
+        "palette": {"from": "#21051f", "mid": "#61215f", "to": "#ff4d9d", "accent": "#ffd1ec"},
+    },
+    "music": {
+        "needles": ("ac/dc", "aerosmith", "beatles", "elvis", "rolling", "garage band", "parton", "party", "song"),
+        "adjectives": ("Backstage", "Amplified", "Encore", "Electric"),
+        "nouns": ("Riff", "Stage", "Setlist", "Arena"),
+        "palette": {"from": "#321108", "mid": "#a13f12", "to": "#ffd67a", "accent": "#fff0b5"},
+    },
+    "speed": {
+        "needles": ("getaway", "speed", "corvette", "whirlwind", "cyclone", "hurricane", "police", "dirty harry", "no fear", "race"),
+        "adjectives": ("Nitro", "Thunder", "Redline", "Velocity"),
+        "nouns": ("Run", "Chase", "Storm", "Circuit"),
+        "palette": {"from": "#061f26", "mid": "#087a7f", "to": "#22ff88", "accent": "#d8fff0"},
+    },
+    "magic": {
+        "needles": ("magic", "arabian", "mystery", "circus", "cirqus", "wizard", "dungeons", "dragons", "castle"),
+        "adjectives": ("Arcane", "Golden", "Moonspell", "Mystic"),
+        "nouns": ("Mirage", "Carnival", "Citadel", "Spellbook"),
+        "palette": {"from": "#241348", "mid": "#6f42c1", "to": "#ffd67a", "accent": "#f2e6ff"},
+    },
+    "heroes": {
+        "needles": ("batman", "spider", "iron man", "deadpool", "judge", "a-team", "rocky", "hulk", "robocop", "demolition"),
+        "adjectives": ("Comic", "Heroic", "Masked", "Impact"),
+        "nouns": ("Collision", "Patrol", "Showdown", "Arc"),
+        "palette": {"from": "#081a33", "mid": "#0a62c9", "to": "#ff4d6d", "accent": "#e8faff"},
+    },
+    "casino": {
+        "needles": ("poker", "casino", "roller", "who dunnit", "monopoly", "city slicker", "gold ball"),
+        "adjectives": ("Jackpot", "Velvet", "High-Roll", "Gilded"),
+        "nouns": ("Parlor", "Heist", "House", "Avenue"),
+        "palette": {"from": "#071f17", "mid": "#0e7a48", "to": "#ffd67a", "accent": "#fff7cf"},
+    },
+    "arcade": {
+        "needles": ("mario", "street fighter", "q*bert", "pac-man", "space invaders", "video", "game"),
+        "adjectives": ("Pixel", "Quarter", "8-Bit", "Cabinet"),
+        "nouns": ("Rush", "Arcade", "Combo", "Quest"),
+        "palette": {"from": "#07111f", "mid": "#00a6ff", "to": "#22ff88", "accent": "#ffef5a"},
+    },
+    "classic": {
+        "needles": ("fathom", "meteor", "paragon", "taxi", "bad cats", "jokerz", "skateball", "vector", "genesis"),
+        "adjectives": ("Chrome", "Vintage", "Silver", "Retro"),
+        "nouns": ("Alley", "Arc", "Vault", "Loop"),
+        "palette": {"from": "#07121f", "mid": "#23445c", "to": "#e8faff", "accent": "#00d9ff"},
+    },
+}
 HARD_TASK_FORBIDDEN_OBJECTIVE_RE = re.compile(
     r"\b(?:start|begin|qualify|reach|complete|play|light)\b.*\b(?:wizard\s*mode|wizard|grand\s*finale|join\s*the\s*cirqus|battle\s*for\s*the\s*kingdom|final\s*battle|final\s*frontier|champion\s*challenge)\b",
     re.IGNORECASE,
@@ -134,13 +193,16 @@ def _get_progressive_ball_start_payload(world: World) -> list[dict[str, Any]]:
     start_inventory = getattr(world, "start_inventory", {}) or {}
     payload: list[dict[str, Any]] = []
     for item_name, count in start_inventory.items():
-        if not isinstance(item_name, str) or not item_name.startswith("Progressive Ball - "):
+        if not isinstance(item_name, str) or not item_name.startswith(PROGRESSIVE_BALL_ITEM_PREFIX):
             continue
         if int(count or 0) <= 0:
             continue
+        table_name = _extract_metasizer_progressive_ball_table_name(item_name)
+        if not table_name:
+            table_name = item_name.replace(PROGRESSIVE_BALL_ITEM_PREFIX, "", 1).strip()
         payload.append({
             "item": item_name,
-            "table": item_name.replace("Progressive Ball - ", "", 1).strip(),
+            "table": table_name,
             "count": int(count),
         })
     payload.sort(key=lambda entry: str(entry.get("table", "")))
@@ -197,6 +259,7 @@ def _metasizer_table_entries() -> list[dict[str, Any]]:
             "pool_tier": pool_tier,
             "group_key": group_key,
             "group_label": group_label,
+            "world_group_keys": [str(key or "").strip() for key in (raw.get("world_group_keys") or []) if str(key or "").strip()] if isinstance(raw, dict) else [],
             "guide_key": code.lower() if code else re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_"),
             "flyer_code": code,
             "notes": notes,
@@ -206,6 +269,55 @@ def _metasizer_table_entries() -> list[dict[str, Any]]:
 
 def _metasizer_table_pool_names() -> list[str]:
     return [str(entry.get("name") or "").strip() for entry in _metasizer_table_entries() if str(entry.get("name") or "").strip()]
+
+
+def _metasizer_table_pool_name_lookup() -> dict[str, str]:
+    return {
+        _metasizer_normalize_lookup_key(name): name
+        for name in _metasizer_table_pool_names()
+        if str(name or "").strip()
+    }
+
+
+def _canonical_metasizer_table_name(value: str) -> str | None:
+    table_name = str(value or "").strip()
+    if not table_name:
+        return None
+    if table_name in _metasizer_table_pool_names():
+        return table_name
+    return _metasizer_table_pool_name_lookup().get(_metasizer_normalize_lookup_key(table_name))
+
+
+def _progressive_ball_item_name_lookup(world: World | None = None) -> dict[str, str]:
+    names: list[str] = []
+    item_name_to_item = getattr(world, "item_name_to_item", None) if world is not None else None
+    if isinstance(item_name_to_item, dict):
+        names = [str(name or "").strip() for name in item_name_to_item.keys()]
+    if not names:
+        try:
+            names = [
+                str(item.get("name") or "").strip()
+                for item in load_data_file("items.json")
+                if isinstance(item, dict)
+            ]
+        except Exception:
+            names = []
+    lookup: dict[str, str] = {}
+    for item_name in names:
+        if not item_name.startswith(PROGRESSIVE_BALL_ITEM_PREFIX):
+            continue
+        raw_table_name = item_name[len(PROGRESSIVE_BALL_ITEM_PREFIX):].strip()
+        canonical_table_name = _canonical_metasizer_table_name(raw_table_name) or raw_table_name
+        lookup.setdefault(_metasizer_normalize_lookup_key(canonical_table_name), item_name)
+    return lookup
+
+
+def _progressive_ball_item_name_for_table(table_name: str, world: World | None = None) -> str:
+    canonical_table_name = _canonical_metasizer_table_name(table_name) or str(table_name or "").strip()
+    item_name = _progressive_ball_item_name_lookup(world).get(_metasizer_normalize_lookup_key(canonical_table_name))
+    if item_name:
+        return item_name
+    return f"{PROGRESSIVE_BALL_ITEM_PREFIX}{canonical_table_name}"
 
 
 def _metasizer_table_generation_data_status(table_name: str) -> dict[str, Any]:
@@ -614,6 +726,157 @@ def _metasizer_resolve_group_keys(
     return resolved, unresolved
 
 
+def _metasizer_parse_curated_table_list(raw: Any) -> list[str]:
+    if raw is None:
+        return []
+    if isinstance(raw, (int, float)) and int(raw) in (0, 1):
+        return []
+    if isinstance(raw, dict):
+        return _metasizer_parse_curated_table_list(raw.get("name") or raw.get("code") or "")
+    if isinstance(raw, (list, tuple, set)):
+        out: list[str] = []
+        for item in raw:
+            out.extend(_metasizer_parse_curated_table_list(item))
+        return out
+    text = str(raw or "").strip()
+    if not text or text.lower() in {"auto", "default", "random", "none", "0", "1"}:
+        return []
+    return [part.strip() for part in METASIZER_TABLE_SELECTION_SPLIT_RE.split(text) if str(part or "").strip()]
+
+
+def _metasizer_resolve_table_entries(table_entries: list[dict[str, Any]], raw_selection: Any) -> tuple[list[dict[str, Any]], list[str]]:
+    lookup: dict[str, dict[str, Any]] = {}
+
+    def remember(token: Any, entry: dict[str, Any]) -> None:
+        key = _metasizer_normalize_lookup_key(token)
+        if key and key not in lookup:
+            lookup[key] = entry
+
+    for entry in table_entries:
+        remember(entry.get("name"), entry)
+        remember(entry.get("code"), entry)
+        remember(entry.get("guide_key"), entry)
+        remember(entry.get("flyer_code"), entry)
+
+    resolved: list[dict[str, Any]] = []
+    unresolved: list[str] = []
+    seen_names: set[str] = set()
+    for token in _metasizer_parse_curated_table_list(raw_selection):
+        entry = lookup.get(_metasizer_normalize_lookup_key(token))
+        if not entry:
+            unresolved.append(token)
+            continue
+        name = str(entry.get("name") or "").strip()
+        if not name or name in seen_names:
+            continue
+        seen_names.add(name)
+        resolved.append(dict(entry))
+    return resolved, unresolved
+
+
+def _metasizer_player_display_name(multiworld: MultiWorld, player: int) -> str:
+    try:
+        names = getattr(multiworld, "player_name", None)
+        if isinstance(names, dict):
+            value = str(names.get(player) or "").strip()
+            if value:
+                return value
+        if isinstance(names, (list, tuple)) and 0 <= player < len(names):
+            value = str(names[player] or "").strip()
+            if value:
+                return value
+    except Exception:
+        pass
+    try:
+        getter = getattr(multiworld, "get_player_name", None)
+        if callable(getter):
+            value = str(getter(player) or "").strip()
+            if value:
+                return value
+    except Exception:
+        pass
+    return f"Player {player}"
+
+
+def _metasizer_curated_world_theme(world_chunk: list[dict[str, Any]], world_num: int) -> tuple[str, dict[str, str], str]:
+    text = " ".join(
+        [
+            str(entry.get("name") or "")
+            + " "
+            + str(entry.get("group_label") or "")
+            + " "
+            + " ".join(str(key or "") for key in (entry.get("world_group_keys") or []))
+            for entry in world_chunk
+        ]
+    ).lower()
+    scored: list[tuple[int, str]] = []
+    for theme_key, theme in METASIZER_CURATED_THEME_RULES.items():
+        score = sum(1 for needle in theme.get("needles", ()) if str(needle or "").lower() in text)
+        if score > 0:
+            scored.append((score, theme_key))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    primary_key = scored[0][1] if scored else "classic"
+    secondary_key = scored[1][1] if len(scored) > 1 else primary_key
+    primary = METASIZER_CURATED_THEME_RULES.get(primary_key, METASIZER_CURATED_THEME_RULES["classic"])
+    secondary = METASIZER_CURATED_THEME_RULES.get(secondary_key, primary)
+    signature = "|".join(str(entry.get("name") or "").strip() for entry in world_chunk)
+    offset = sum(ord(ch) for ch in signature) + int(world_num or 0)
+    adjectives = tuple(primary.get("adjectives") or ("Curated",))
+    nouns = tuple(secondary.get("nouns") or primary.get("nouns") or ("World",))
+    name = f"{adjectives[offset % len(adjectives)]} {nouns[(offset // 7) % len(nouns)]}"
+    palette = dict(primary.get("palette") or METASIZER_CURATED_THEME_RULES["classic"]["palette"])
+    return name, palette, primary_key
+
+
+def _build_metasizer_curated_table_world_layout(
+    active_entries: list[dict[str, Any]],
+    starting_open_tables: list[str],
+    curated_by: str,
+) -> dict[str, Any]:
+    group_size = 5
+    worlds_per_page = 5
+    tables_per_page = group_size * worlds_per_page
+    starting_open = set(str(name or "").strip() for name in starting_open_tables if str(name or "").strip())
+    worlds: list[dict[str, Any]] = []
+    world_order: list[str] = []
+    for start in range(0, len(active_entries), group_size):
+        world_chunk = [dict(entry) for entry in active_entries[start:start + group_size]]
+        if not world_chunk:
+            continue
+        world_num = len(worlds) + 1
+        world_key = f"w{world_num}"
+        tables = [str(entry.get("name") or "").strip() for entry in world_chunk if str(entry.get("name") or "").strip()]
+        generated_name, palette, theme_key = _metasizer_curated_world_theme(world_chunk, world_num)
+        world_order.append(world_key)
+        worlds.append({
+            "key": world_key,
+            "label": f"World {world_num}; {generated_name}",
+            "generated_name": generated_name,
+            "curated": True,
+            "curated_seed": True,
+            "curated_by": curated_by,
+            "banner_palette": palette,
+            "banner_theme": theme_key,
+            "tables": tables,
+            "table_codes": [str(entry.get("code") or "").strip() for entry in world_chunk if str(entry.get("code") or "").strip()],
+            "group_keys": [f"curated_w{world_num}"],
+            "group_labels": [generated_name],
+            "starting_open_tables": [name for name in tables if name in starting_open],
+        })
+    world_order.append("boss")
+    return {
+        "group_size": group_size,
+        "tables_per_page": tables_per_page,
+        "worlds_per_page": worlds_per_page,
+        "page_count": max(1, (len(worlds) + worlds_per_page - 1) // worlds_per_page),
+        "layout_mode": "curated_table_list",
+        "curated": True,
+        "curated_by": curated_by,
+        "world_order": world_order,
+        "worlds": worlds,
+    }
+
+
 def _metasizer_select_group_keys(
     catalog_groups: list[dict[str, Any]],
     table_entries: list[dict[str, Any]],
@@ -831,11 +1094,130 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
     random_one_featured_only = bool(get_option_value(multiworld, player, "base_game_random_one_featured_designer_only"))
     selection_mode_requested, selection_mode_applied, selection_mode_fallback_reason = _get_metasizer_selection_mode(world, multiworld, player)
     curated_world_groups_raw = get_option_value(multiworld, player, "base_game_curated_world_groups")
+    curated_tables_raw = get_option_value(multiworld, player, "base_game_curated_tables")
     group_size = 5
     desired_world_count = max(1, min(len(catalog_groups), requested_count // group_size if requested_count > 0 else len(catalog_groups)))
     seed_name = str(getattr(multiworld, "seed_name", ""))
     numeric_seed = str(getattr(multiworld, "seed", ""))
     rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|metasizer_table_set_v2")
+    if selection_mode_applied == "curated_table_list":
+        resolved_curated_entries, unresolved_curated_tables = _metasizer_resolve_table_entries(generation_ready_entries, curated_tables_raw)
+        curated_table_fallback_reason = ""
+        if unresolved_curated_tables:
+            curated_table_fallback_reason = "unresolved curated table selectors: " + ", ".join(unresolved_curated_tables)
+        if resolved_curated_entries:
+            desired_active_count = max(1, min(
+                len(generation_ready_entries),
+                requested_count if requested_count > 0 else min(25, len(generation_ready_entries)),
+            ))
+            rng.shuffle(resolved_curated_entries)
+            trimmed_count = max(0, len(resolved_curated_entries) - desired_active_count)
+            active_entries = [dict(entry) for entry in resolved_curated_entries[:desired_active_count]]
+            for idx, staged in enumerate(active_entries):
+                staged["active_group_key"] = f"curated_w{idx // group_size + 1}"
+                staged["active_group_label"] = "Curated Table List"
+            if trimmed_count:
+                curated_table_fallback_reason = "; ".join([
+                    reason for reason in [
+                        curated_table_fallback_reason,
+                        f"curated table list trimmed to {desired_active_count} active tables",
+                    ] if reason
+                ])
+            active_tables = [str(entry.get("name") or "").strip() for entry in active_entries if str(entry.get("name") or "").strip()]
+            active_count = len(active_tables)
+            if active_entries:
+                start_open_count = max(1, min(active_count, requested_start_open if requested_start_open > 0 else min(5, active_count)))
+                opening_entries = [dict(entry) for entry in rng.sample(active_entries, start_open_count)]
+                opening_entries.sort(key=lambda entry: active_tables.index(str(entry.get("name") or "").strip()) if str(entry.get("name") or "").strip() in active_tables else 10**9)
+            else:
+                opening_entries = []
+            opening_tables = [str(entry.get("name") or "").strip() for entry in opening_entries]
+            curated_by = _metasizer_player_display_name(multiworld, player)
+            world_layout = _build_metasizer_curated_table_world_layout(active_entries, opening_tables, curated_by)
+            boss_table_entry = _select_metasizer_boss_table_entry(active_entries, seed_name, numeric_seed, player)
+            boss_table_name = str(boss_table_entry.get("name") or "").strip()
+            boss_table_checks = _build_boss_table_checks_payload(boss_table_name, seed_name, numeric_seed, player)
+            active_world_groups = []
+            for entry in world_layout.get("worlds", []) or []:
+                active_world_groups.append({
+                    "key": str(entry.get("key") or "").strip(),
+                    "label": str(entry.get("generated_name") or entry.get("label") or "").strip(),
+                    "table_names": list(entry.get("tables") or []),
+                    "table_codes": list(entry.get("table_codes") or []),
+                    "generation_ready": True,
+                    "explicit": True,
+                    "curated": True,
+                    "banner_palette": dict(entry.get("banner_palette") or {}),
+                })
+            return {
+                "enabled": enabled and bool(active_tables),
+                "version": 5,
+                "base_variant": "Base Game",
+                "variant": "Base Game",
+                "pool_size": len(table_pool),
+                "generation_ready_pool_size": len(generation_ready_tables),
+                "candidate_pool_size": len(candidate_only_tables),
+                "requested_active_table_count": requested_count,
+                "requested_starting_open_count": requested_start_open,
+                "random_one_featured_designer_only": random_one_featured_only,
+                "selection_scope": "curated_table_list",
+                "selection_mode_requested": selection_mode_requested,
+                "selection_mode": selection_mode_applied,
+                "selection_mode_options": list(METASIZER_SELECTION_MODES.values()),
+                "selection_mode_fallback_reason": selection_mode_fallback_reason,
+                "selection_group_count": len(active_world_groups),
+                "selected_group_keys": [str(group.get("key") or "").strip() for group in active_world_groups],
+                "selected_group_metadata": active_world_groups,
+                "selected_group_keys_requested": [],
+                "selected_group_keys_inactive": [],
+                "curated_world_groups_input": curated_world_groups_raw,
+                "curated_world_groups_resolved": [],
+                "curated_world_groups_unresolved": [],
+                "curated_tables_input": curated_tables_raw,
+                "curated_tables_resolved": active_tables,
+                "curated_tables_unresolved": unresolved_curated_tables,
+                "curated_by": curated_by,
+                "group_selection_fallback_reason": curated_table_fallback_reason,
+                "manual_pick_scaffold": True,
+                "curated_pick_scaffold": True,
+                "curated_table_scaffold": True,
+                "active_tables": active_tables,
+                "active_table_entries": active_entries,
+                "active_table_count": len(active_tables),
+                "starting_open_tables": opening_tables,
+                "starting_open_entries": opening_entries,
+                "starting_open_count": len(opening_tables),
+                "boss_table": boss_table_name,
+                "boss_table_name": boss_table_name,
+                "boss_table_code": str(boss_table_entry.get("code") or "").strip(),
+                "boss_table_entry": boss_table_entry,
+                "boss_table_checks": boss_table_checks,
+                "table_pool": table_pool,
+                "table_entries": table_entries,
+                "catalog_groups": catalog_groups,
+                "generation_ready_tables": generation_ready_tables,
+                "candidate_only_tables": candidate_only_tables,
+                "effective_active_table_count": len(active_tables),
+                "effective_starting_open_count": len(opening_tables),
+                "active_world_count": len(active_world_groups),
+                "active_world_groups": active_world_groups,
+                "world_layout": world_layout,
+                "graph_mode": "curated_table_list",
+                "notes": [
+                    "Base Game selected a curated table list from YAML and shuffled it into generated worlds.",
+                    "Curated world banners use generated names and generated color palettes instead of source table/background art.",
+                    "Curated table selectors can be supplied as table names, table codes, guide keys, or flyer codes.",
+                    "Only generation-ready tables with complete task/check data participate in the active AP graph.",
+                ],
+            }
+        selection_mode_applied = METASIZER_DEFAULT_SELECTION_MODE
+        selection_mode_fallback_reason = "; ".join([
+            reason for reason in [
+                selection_mode_fallback_reason,
+                curated_table_fallback_reason,
+                "Curated Table List mode had no resolved generation-ready tables; falling back to seeded random catalog sampling.",
+            ] if reason
+        ])
     selected_group_keys, group_selection_fallback_reason, curated_group_keys, unresolved_curated_groups = _metasizer_select_group_keys(
         catalog_groups,
         table_entries,
@@ -935,7 +1317,7 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
     selection_scope = "generation_ready_world_groups"
     payload: dict[str, Any] = {
         "enabled": enabled and bool(generation_ready_tables),
-        "version": 4,
+        "version": 5,
         "base_variant": "Base Game",
         "variant": "Base Game",
         "pool_size": len(table_pool),
@@ -957,9 +1339,14 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
         "curated_world_groups_input": curated_world_groups_raw,
         "curated_world_groups_resolved": curated_group_keys,
         "curated_world_groups_unresolved": unresolved_curated_groups,
+        "curated_tables_input": curated_tables_raw,
+        "curated_tables_resolved": [],
+        "curated_tables_unresolved": [],
+        "curated_by": _metasizer_player_display_name(multiworld, player),
         "group_selection_fallback_reason": group_selection_fallback_reason,
         "manual_pick_scaffold": selection_mode_applied != METASIZER_DEFAULT_SELECTION_MODE,
         "curated_pick_scaffold": selection_mode_applied in ("curated_catalog_groups", "hybrid_curated_random_fill"),
+        "curated_table_scaffold": False,
         "active_tables": active_tables,
         "active_table_entries": active_entries,
         "starting_open_tables": [],
@@ -1062,14 +1449,11 @@ def _extract_metasizer_location_table_name(location_name: str) -> str | None:
 
 
 def _extract_metasizer_progressive_ball_table_name(item_name: str) -> str | None:
-    prefix = "Progressive Ball - "
     item_name = str(item_name or "").strip()
-    if not item_name.startswith(prefix):
+    if not item_name.startswith(PROGRESSIVE_BALL_ITEM_PREFIX):
         return None
-    table_name = item_name[len(prefix):].strip()
-    if table_name in _metasizer_table_pool_names():
-        return table_name
-    return None
+    table_name = item_name[len(PROGRESSIVE_BALL_ITEM_PREFIX):].strip()
+    return _canonical_metasizer_table_name(table_name)
 
 
 def _build_task_shuffle_payload(world: World, multiworld: MultiWorld, player: int) -> dict[str, Any]:
@@ -1159,6 +1543,113 @@ def _generic_task_allowed_for_difficulty(pick: dict[str, Any], difficulty: str) 
     return HARD_TASK_FORBIDDEN_OBJECTIVE_RE.search(text) is None
 
 
+def _generic_task_objective_text(table_name: str, pick: dict[str, Any]) -> str:
+    raw_title = str(pick.get("title", "") or "").strip()
+    raw_source = str(pick.get("source_location", "") or "").strip()
+    parts: list[str] = []
+    if raw_source:
+        source_table, source_objective = _split_table_and_objective(raw_source)
+        if source_objective and source_objective != source_table:
+            parts.append(source_objective)
+        else:
+            parts.append(raw_source)
+    if raw_title:
+        parts.append(raw_title)
+    text = " ".join(parts).replace("&", " and ").lower()
+    if table_name:
+        text = re.sub(rf"\b{re.escape(str(table_name).strip().lower())}\b", " ", text)
+    return text
+
+
+def _generic_task_objective_tokens(table_name: str, pick: dict[str, Any]) -> list[str]:
+    text = _generic_task_objective_text(table_name, pick)
+    number_words = {
+        "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+        "single", "double", "triple",
+    }
+    stop_words = {
+        "a", "an", "and", "any", "at", "by", "during", "each", "for", "from", "in", "into", "of",
+        "on", "once", "or", "same", "the", "then", "to", "total", "toward", "towards", "with",
+        "game", "games", "ball", "balls", "shot", "shots", "time", "times",
+        "make", "shoot", "hit", "collect", "complete", "start", "light", "qualify", "advance",
+        "build", "finish", "score", "earn", "get", "win", "play", "reach", "begin", "destroy",
+        "beat", "rip",
+    }
+    tokens: list[str] = []
+    for raw_word in re.findall(r"[a-z0-9]+", text):
+        word = raw_word.strip().lower()
+        if not word:
+            continue
+        if word.isdigit() or word in number_words or re.fullmatch(r"\d+(?:st|nd|rd|th)", word):
+            tokens.append("count")
+            continue
+        if word in stop_words:
+            continue
+        if word.endswith("ies") and len(word) > 4:
+            word = word[:-3] + "y"
+        elif word.endswith("es") and len(word) > 4 and not word.endswith(("ss", "us")):
+            word = word[:-2]
+        elif word.endswith("s") and len(word) > 3 and not word.endswith(("ss", "us")):
+            word = word[:-1]
+        if word and word not in stop_words:
+            tokens.append(word)
+    return tokens
+
+
+def _generic_task_similarity_family_signature(table_name: str, pick: dict[str, Any], difficulty: str) -> str:
+    tokens = _generic_task_objective_tokens(table_name, pick)
+    if not tokens:
+        return _metasizer_normalize_lookup_key(difficulty)
+    words = set(tokens)
+    text = _generic_task_objective_text(table_name, pick)
+    scope = _metasizer_normalize_lookup_key(table_name) or "generic"
+
+    def family(name: str) -> str:
+        return f"{scope}:{name}"
+
+    if "wizard" in words or any(key in text for key in ("grand finale", "join the cirqus", "battle for the kingdom", "final battle", "final frontier", "champion challenge")):
+        return family("wizard_progress")
+    if "multiball" in words and "jackpot" in words:
+        return family("multiball_jackpot")
+    if "jackpot" in words and ("super" in words or "multiball" in words):
+        return family("multiball_jackpot")
+    if "jackpot" in words:
+        return family("jackpot_progress")
+    if "multiball" in words or ("lock" in words and "count" in words):
+        return family("multiball_progress")
+    if "goal" in words:
+        return family("goal_progress")
+    if "passenger" in words:
+        return family("passenger_pickups")
+    if "tale" in words:
+        return family("tale_progress")
+    if "city" in words and ({"stop", "tour", "mode"} & words):
+        return family("city_tour_progress")
+    if "mode" in words or "mission" in words or "round" in words or "song" in words:
+        return family("mode_progress")
+    if "spinner" in words:
+        return family("spinner_progress")
+    if "combo" in words:
+        return family("combo_progress")
+    if "ramp" in words:
+        return family("ramp_progress")
+    if "orbit" in words or "loop" in words:
+        return family("orbit_loop_progress")
+    if "lane" in words or "rollover" in words or "inline" in words:
+        return family("lane_progress")
+    if "target" in words or "bank" in words or "drop" in words:
+        return family("target_bank_progress")
+    if "scoop" in words or "saucer" in words or "hole" in words:
+        return family("scoop_saucer_progress")
+    if "award" in words or "mystery" in words or "tv" in words:
+        return family("award_progress")
+    if "bonus" in words or "multiplier" in words:
+        return family("bonus_multiplier_progress")
+    if "letter" in words:
+        return family("letter_completion")
+    return family(_metasizer_normalize_lookup_key(" ".join(tokens)) or difficulty)
+
+
 def _generic_task_requirement_categories(pick: dict[str, Any]) -> set[str]:
     text = " ".join(
         str(pick.get(field, "") or "")
@@ -1174,10 +1665,10 @@ def _generic_task_requirement_categories(pick: dict[str, Any]) -> set[str]:
         categories.add("requires:multiball")
     if "jackpot" in compact:
         categories.add("requires:jackpot")
-        # Every jackpot task in the pool is gated by multiball or a jackpot mode.
-        # Treat it as multiball-overlapping so E/M/H cannot stack "start MB"
-        # with "collect MB jackpot" on the same table.
-        categories.add("requires:multiball")
+        if "multiball" in compact or "superjackpot" in compact:
+            # Treat multiball jackpots as multiball-overlapping so E/M/H cannot
+            # stack "start MB" with "collect MB jackpot" on the same table.
+            categories.add("requires:multiball")
     if has_word("mode", "mission", "round", "feature", "hurry-up", "hurryup") or any(token in compact for token in ("startanymode", "startamode", "completeanymode", "complete1mode", "startanymission", "completeanymission", "startanysongmode", "completeanysongmode")):
         categories.add("requires:mode")
     if has_word("wizard") or any(token in compact for token in ("grandfinale", "jointhecirqus", "battleforthekingdom", "finalbattle", "finalfrontier", "championchallenge", "ruletheuniverse")):
@@ -1198,6 +1689,10 @@ def _generic_task_requirement_categories(pick: dict[str, Any]) -> set[str]:
         categories.add("requires:spinner")
     if has_word("scoop", "saucer", "hole"):
         categories.add("requires:scoop_saucer")
+    if has_word("award", "awards", "mystery") or "tvaward" in compact:
+        categories.add("requires:award")
+    if "tvaward" in compact or "finaldraw" in compact or "finalmatch" in compact:
+        categories.add("requires:tv_award_progress")
     if has_word("bonus", "multiplier", "multipliers"):
         categories.add("requires:bonus_multiplier")
     if has_word("extra ball", "extraball"):
@@ -1284,7 +1779,7 @@ def _filter_slot_payload_entries_to_active_tables(payload: dict[str, Any], activ
 def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: int) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "enabled": False,
-        "version": 4,
+        "version": 5,
         "mode": "generic_task_slots",
         "entries": [],
         "by_location": {},
@@ -1307,7 +1802,7 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
     seed_name = str(getattr(multiworld, "seed_name", ""))
     numeric_seed = str(getattr(multiworld, "seed", ""))
     shuffle_enabled = True
-    rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|generic_checks_v4")
+    rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|generic_checks_v5")
 
     entries: list[dict[str, Any]] = []
     by_location: dict[str, dict[str, Any]] = {}
@@ -1375,7 +1870,7 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
             return f"{table_name}:mode_start"
         if "completeanymode" in norm or "complete1mode" in norm or "completeanymission" in norm or "completeanysongmode" in norm:
             return f"{table_name}:mode_completion"
-        return norm
+        return _generic_task_similarity_family_signature(table_name, pick, difficulty) or norm
 
     def combo_duplicate_count(values: list[str]) -> int:
         seen_values: set[str] = set()
@@ -1402,9 +1897,9 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
         signatures = [str(entry.get("signature", "")) for _, entry in combo]
         shuffled_rank_sum = sum(int(entry.get("shuffle_index", 0)) for _, entry in combo)
         return (
-            combo_category_duplicate_count(category_sets),
             combo_duplicate_count(families),
             combo_duplicate_count(signatures),
+            combo_category_duplicate_count(category_sets),
             shuffled_rank_sum,
         )
 
@@ -1630,7 +2125,7 @@ def before_create_regions(world: World, multiworld: MultiWorld, player: int):
         if str(name or "").strip() in active_tables
     ]
     world._metasizer_starting_items_override = [
-        {"items": [f"Progressive Ball - {name}"], "random": 1}
+        {"items": [_progressive_ball_item_name_for_table(name, world)], "random": 1}
         for name in starting_open_tables
     ]
     logging.info(
@@ -1677,8 +2172,10 @@ def before_create_items_all(item_config: dict[str, int|dict], world: World, mult
 
     removed_ball_items = 0
     for item_name in list(filtered_config.keys()):
+        if not str(item_name or "").startswith(PROGRESSIVE_BALL_ITEM_PREFIX):
+            continue
         table_name = _extract_metasizer_progressive_ball_table_name(item_name)
-        if not table_name or table_name in active_tables:
+        if table_name and table_name in active_tables:
             continue
         filtered_config[item_name] = 0
         removed_ball_items += 1
@@ -1786,13 +2283,13 @@ def after_fill_slot_data(slot_data: dict, world: World, multiworld: MultiWorld, 
         next_start_inventory: dict[str, Any] = {}
         if isinstance(existing_start_inventory, dict):
             for item_name, count in existing_start_inventory.items():
-                if str(item_name or "").startswith("Progressive Ball - "):
+                if str(item_name or "").startswith(PROGRESSIVE_BALL_ITEM_PREFIX):
                     continue
                 next_start_inventory[str(item_name)] = count
         for table_name in metasizer_payload.get("starting_open_tables", []):
             table_name_str = str(table_name or "").strip()
             if table_name_str:
-                next_start_inventory[f"Progressive Ball - {table_name_str}"] = 1
+                next_start_inventory[_progressive_ball_item_name_for_table(table_name_str, world)] = 1
         slot_data["start_inventory_from_pool"] = next_start_inventory
     slot_data[BASE_GAME_TABLE_SET_SLOT_KEY] = metasizer_payload
     slot_data[LEGACY_METASIZER_TABLE_SET_SLOT_KEY] = metasizer_payload

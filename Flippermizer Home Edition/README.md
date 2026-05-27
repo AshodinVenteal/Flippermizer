@@ -34,7 +34,7 @@ Home Edition runs now open a first-launch Quick Start inside the app. Open **Sin
 - Checks are table goals. Complete the listed VPX goal, then redeem it in Flippermizer; score checks can be entered manually from the Checks page.
 - Play checks on Ball 1 unless a future seed or rule screen explicitly says otherwise.
 - After a reward animation, Home Edition returns to Checks so the next goal is ready without losing the current table context.
-- Sieges are surprise defense events. Their score targets now scale by table era so early solid-state tables ask for smaller totals than later high-scoring tables.
+- Sieges are surprise defense events. Their score targets use each table's score-guide anchors with era-aware profiles, keeping early solid-state tables generous and high-scoring tables reachable.
 
 ## Table Requirements And VPX Flow
 

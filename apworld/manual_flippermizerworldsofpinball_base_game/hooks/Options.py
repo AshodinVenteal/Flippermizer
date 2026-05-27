@@ -60,7 +60,7 @@ def after_options_defined(options: Type[PerGameCommonOptions]):
                 "nightmare": 50,
             }
     if "filter_mode_trap_enabled" in options.type_hints:
-        options.type_hints["filter_mode_trap_enabled"].default = False
+        options.type_hints["filter_mode_trap_enabled"].default = True
 
 # Use this Hook if you want to add your Option to an Option group (existing or not)
 def before_option_groups_created(groups: dict[str, list[Type[Option[Any]]]]) -> dict[str, list[Type[Option[Any]]]]:
