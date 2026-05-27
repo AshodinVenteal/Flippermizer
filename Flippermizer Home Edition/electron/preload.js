@@ -6,7 +6,10 @@ const rendererApi = {
   relaunch: () => ipcRenderer.invoke("flpr-renderer-settings:relaunch"),
   getTaskRepositoryCfg: () => ipcRenderer.invoke("flpr-task-repository-cfg:get"),
   saveTaskRepositoryCfg: (payload) => ipcRenderer.invoke("flpr-task-repository-cfg:save", payload),
-  unlockDevTools: (password) => ipcRenderer.invoke("flpr-dev-tools:unlock", String(password || ""))
+  unlockDevTools: (password) => ipcRenderer.invoke("flpr-dev-tools:unlock", String(password || "")),
+  getFullscreenState: () => ipcRenderer.invoke("flpr-window:get-fullscreen-state"),
+  toggleFullscreen: () => ipcRenderer.invoke("flpr-window:toggle-fullscreen"),
+  exitApp: () => ipcRenderer.invoke("flpr-window:exit-app")
 };
 
 contextBridge.exposeInMainWorld("flprElectron", rendererApi);

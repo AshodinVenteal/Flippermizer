@@ -1164,9 +1164,35 @@ function installDevToolsIpc() {
   ipcMain.handle("flpr-dev-tools:unlock", (_event, password) => ({ ok: verifyDevToolsPassword(password) }));
 }
 
+function windowFromIpcEvent(event) {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win && !win.isDestroyed()) return win;
+  const focused = BrowserWindow.getFocusedWindow();
+  return focused && !focused.isDestroyed() ? focused : null;
+}
+
+function installWindowIpc() {
+  ipcMain.handle("flpr-window:get-fullscreen-state", (event) => {
+    const win = windowFromIpcEvent(event);
+    return { ok: !!win, fullscreen: !!(win && win.isFullScreen()) };
+  });
+  ipcMain.handle("flpr-window:toggle-fullscreen", (event) => {
+    const win = windowFromIpcEvent(event);
+    if (!win) return { ok: false, fullscreen: false };
+    const next = !win.isFullScreen();
+    win.setFullScreen(next);
+    return { ok: true, fullscreen: next };
+  });
+  ipcMain.handle("flpr-window:exit-app", () => {
+    app.quit();
+    return { ok: true };
+  });
+}
+
 installRendererSettingsIpc();
 installTaskRepositoryIpc();
 installDevToolsIpc();
+installWindowIpc();
 
 ipcMain.handle("launcher:get-data", async () => getLauncherData());
 ipcMain.handle("launcher:get-settings", async () => {

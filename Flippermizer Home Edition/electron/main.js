@@ -379,6 +379,31 @@ function installDevToolsIpc(){
   });
 }
 
+function windowFromIpcEvent(event){
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if(win && !win.isDestroyed()) return win;
+  const focused = BrowserWindow.getFocusedWindow();
+  return focused && !focused.isDestroyed() ? focused : null;
+}
+
+function installWindowIpc(){
+  ipcMain.handle("flpr-window:get-fullscreen-state", (event)=>{
+    const win = windowFromIpcEvent(event);
+    return { ok: !!win, fullscreen: !!(win && win.isFullScreen()) };
+  });
+  ipcMain.handle("flpr-window:toggle-fullscreen", (event)=>{
+    const win = windowFromIpcEvent(event);
+    if(!win) return { ok:false, fullscreen:false };
+    const next = !win.isFullScreen();
+    win.setFullScreen(next);
+    return { ok:true, fullscreen:next };
+  });
+  ipcMain.handle("flpr-window:exit-app", ()=>{
+    app.quit();
+    return { ok:true };
+  });
+}
+
 function createWindow(){
   const savedWindowState = readWindowState();
   const savedBounds = savedWindowState ? savedWindowState.bounds : null;
@@ -489,6 +514,7 @@ app.setAppUserModelId(APP_ID);
 installRendererSettingsIpc();
 installTaskRepositoryIpc();
 installDevToolsIpc();
+installWindowIpc();
 
 app.whenReady().then(()=>{
   createWindow();
