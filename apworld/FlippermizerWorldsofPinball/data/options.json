@@ -162,7 +162,8 @@
             "values": {
                 "random_catalog_pool": 0,
                 "curated_catalog_groups": 1,
-                "hybrid_curated_random_fill": 2
+                "hybrid_curated_random_fill": 2,
+                "curated_table_list": 3
             },
             "default": 0,
             "allow_custom_value": false,
@@ -179,6 +180,26 @@
                 "Comma-separated world group keys, labels, table codes, or table names in the episode order you want them to appear.",
                 "Used when Base Game Selection Mode is Curated or Hybrid.",
                 "Examples: storm_chasers, steve_ritchie_showcase, dennis_nordman_party_monsters."
+            ],
+            "type": "Choice",
+            "values": {
+                "auto": 1
+            },
+            "default": 1,
+            "allow_custom_value": true,
+            "group": "Base Game Options",
+            "visibility": [
+                "simple_ui",
+                "complex_ui",
+                "template"
+            ]
+        },
+        "base_game_curated_tables": {
+            "display_name": "Base Game Curated Tables",
+            "description": [
+                "Comma-separated table names or table codes to use when Base Game Selection Mode is Curated Table List.",
+                "The selected tables are de-duplicated, shuffled into five-table worlds, and given generated world names and color banners.",
+                "Example: Medieval Madness, Attack from Mars, Theatre of Magic, Monster Bash, Star Trek: The Next Generation."
             ],
             "type": "Choice",
             "values": {

@@ -1,11 +1,8 @@
-/* Generated from generic_check_pools.json for the standalone task repository. */
-(function(global){
-  'use strict';
-  global.FLPR_TASK_REPOSITORY_SOURCE = Object.freeze({
+window.FLPR_TASK_REPOSITORY_SOURCE = {
   "version": "1.0.0",
   "sourcePath": "ap_multiworld_test/world_source/manual_flippermizerworldsofpinball_base_game/data/generic_check_pools.json",
   "tableCount": 90,
-  "taskCount": 1612,
+  "taskCount": 1608,
   "pools": {
     "Medieval Madness": {
       "Easy": [
@@ -13,13 +10,13 @@
           "title": "Destroy the Castle Gate",
           "type": "task",
           "explanation": "GUIDE: Shoot the castle entrance repeatedly until the gate breaks. A normal gate takes three solid castle hits; later castle shots continue the castle-destruction path.",
-          "source_location": "Medieval Madness \u2013 Destroy the castle gate"
+          "source_location": "Medieval Madness – Destroy the castle gate"
         },
         {
           "title": "Easy Score (2,540,285+)",
           "type": "score",
           "explanation": "GUIDE: Score 2,540,285+ on Medieval Madness. Best scoring from the guide: Start Castle Multiball and Collect a Jackpot: Shoot any lit jackpot or super jackpot shot during multiball. Start Castle Multiball: Complete a major Madness shot or finish Trolls! to light Multiball Madness at the.",
-          "source_location": "Medieval Madness \u2013 Easy Score (2,540,285+)"
+          "source_location": "Medieval Madness – Easy Score (2,540,285+)"
         },
         {
           "title": "Win 1 Joust Victory",
@@ -31,7 +28,7 @@
           "title": "Complete the Catapult (3 Hits)",
           "type": "task",
           "explanation": "GUIDE: Shoot the catapult shot three times to complete the catapult objective.",
-          "source_location": "Medieval Madness \u2013 Complete the catapult (3 hits)"
+          "source_location": "Medieval Madness – Complete the catapult (3 hits)"
         },
         {
           "title": "Beat 3 Trolls",
@@ -51,13 +48,13 @@
           "title": "Complete the Catapult (3 Hits)",
           "type": "task",
           "explanation": "GUIDE: Shoot the catapult shot three times to complete the catapult objective.",
-          "source_location": "Medieval Madness \u2013 Complete the catapult (3 hits)"
+          "source_location": "Medieval Madness – Complete the catapult (3 hits)"
         },
         {
           "title": "Medium Score (7,249,268+)",
           "type": "score",
           "explanation": "GUIDE: Score 7,249,268+ on Medieval Madness. Best scoring from the guide: Start Castle Multiball and Collect a Jackpot: Shoot any lit jackpot or super jackpot shot during multiball. Start Castle Multiball: Complete a major Madness shot or finish Trolls! to light Multiball Madness at the.",
-          "source_location": "Medieval Madness \u2013 Medium Score (7,249,268+)"
+          "source_location": "Medieval Madness – Medium Score (7,249,268+)"
         },
         {
           "title": "Beat 3 Trolls",
@@ -69,7 +66,7 @@
           "title": "Destroy the Castle Gate",
           "type": "task",
           "explanation": "GUIDE: Shoot the castle entrance repeatedly until the gate breaks. A normal gate takes three solid castle hits; later castle shots continue the castle-destruction path.",
-          "source_location": "Medieval Madness \u2013 Destroy the castle gate"
+          "source_location": "Medieval Madness – Destroy the castle gate"
         },
         {
           "title": "Win 1 Joust Victory",
@@ -89,13 +86,13 @@
           "title": "Start Castle Multiball and Collect a Jackpot",
           "type": "task",
           "explanation": "GUIDE: Complete a major Madness shot or finish Trolls! to light Multiball Madness at the scoop. Shoot the scoop to start it, then shoot any lit jackpot or super jackpot shot during multiball.",
-          "source_location": "Medieval Madness \u2013 Start Castle Multiball and collect a Jackpot"
+          "source_location": "Medieval Madness – Start Castle Multiball and collect a Jackpot"
         },
         {
           "title": "Hard Score (16,228,435+)",
           "type": "score",
           "explanation": "GUIDE: Score 16,228,435+ on Medieval Madness. Best scoring from the guide: Start Castle Multiball and Collect a Jackpot: Shoot any lit jackpot or super jackpot shot during multiball. Start Castle Multiball: Complete a major Madness shot or finish Trolls! to light Multiball Madness at the.",
-          "source_location": "Medieval Madness \u2013 Hard Score (16,228,435+)"
+          "source_location": "Medieval Madness – Hard Score (16,228,435+)"
         },
         {
           "title": "Complete Royal Madness",
@@ -107,7 +104,7 @@
           "title": "Complete the Catapult (3 Hits)",
           "type": "task",
           "explanation": "GUIDE: Shoot the catapult shot three times to complete the catapult objective.",
-          "source_location": "Medieval Madness \u2013 Complete the catapult (3 hits)"
+          "source_location": "Medieval Madness – Complete the catapult (3 hits)"
         },
         {
           "title": "Beat 3 Trolls",
@@ -119,7 +116,7 @@
           "title": "Destroy the Castle Gate",
           "type": "task",
           "explanation": "GUIDE: Shoot the castle entrance repeatedly until the gate breaks. A normal gate takes three solid castle hits; later castle shots continue the castle-destruction path.",
-          "source_location": "Medieval Madness \u2013 Destroy the castle gate"
+          "source_location": "Medieval Madness – Destroy the castle gate"
         }
       ]
     },
@@ -129,13 +126,13 @@
           "title": "Start a Martian Attack (Any Saucer Mode)",
           "type": "task",
           "explanation": "GUIDE: Shoot a saucer when Martian Attack is available to start any Martian saucer mode.",
-          "source_location": "Attack from Mars \u2013 Start a Martian Attack (any saucer mode)"
+          "source_location": "Attack from Mars – Start a Martian Attack (any saucer mode)"
         },
         {
           "title": "Easy Score (371,293,964+)",
           "type": "score",
           "explanation": "GUIDE: Score 371,293,964+ on Attack from Mars. Best scoring from the guide: Complete a 5 Way Combo: Rule the Universe is a 5-ball multiball with a very long ball save where everything. Collect a Super Jackpot in Martian Multiball: At the beginning of standard Multiball, all four Total Annihilation shots plus the.",
-          "source_location": "Attack from Mars \u2013 Easy Score (371,293,964+)"
+          "source_location": "Attack from Mars – Easy Score (371,293,964+)"
         },
         {
           "title": "Hit 5 Martians",
@@ -167,13 +164,13 @@
           "title": "Start Martian Multiball",
           "type": "task",
           "explanation": "GUIDE: Lock/qualify Martian Multiball and shoot the start shot when lit to launch it.",
-          "source_location": "Attack from Mars \u2013 Start Martian Multiball"
+          "source_location": "Attack from Mars – Start Martian Multiball"
         },
         {
           "title": "Medium Score (896,531,739+)",
           "type": "score",
           "explanation": "GUIDE: Score 896,531,739+ on Attack from Mars. Best scoring from the guide: Complete a 5 Way Combo: Rule the Universe is a 5-ball multiball with a very long ball save where everything. Collect a Super Jackpot in Martian Multiball: At the beginning of standard Multiball, all four Total Annihilation shots plus the.",
-          "source_location": "Attack from Mars \u2013 Medium Score (896,531,739+)"
+          "source_location": "Attack from Mars – Medium Score (896,531,739+)"
         },
         {
           "title": "Destroy 2 Saucers in One Game",
@@ -211,7 +208,7 @@
           "title": "Hard Score (1,794,034,514+)",
           "type": "score",
           "explanation": "GUIDE: Score 1,794,034,514+ on Attack from Mars. Best scoring from the guide: Complete a 5 Way Combo: Rule the Universe is a 5-ball multiball with a very long ball save where everything. Collect a Super Jackpot in Martian Multiball: At the beginning of standard Multiball, all four Total Annihilation shots plus the.",
-          "source_location": "Attack from Mars \u2013 Hard Score (1,794,034,514+)"
+          "source_location": "Attack from Mars – Hard Score (1,794,034,514+)"
         },
         {
           "title": "Conquer Mars",
@@ -245,13 +242,13 @@
           "title": "Score 1 Goal",
           "type": "task",
           "explanation": "GUIDE: Shoot the lit soccer goal/goal mouth shot and register one goal.",
-          "source_location": "World Cup Soccer \u2013 Score 1 goal"
+          "source_location": "World Cup Soccer – Score 1 goal"
         },
         {
           "title": "Easy Score (121,428,642+)",
           "type": "score",
           "explanation": "GUIDE: Score 121,428,642+ on World Cup Soccer. Best scoring from the guide: Score 1 Goal: Every 4th goal lights the TV saucer for an award. Start Multiball at the TV Saucer: Lock one ball at a lit ramp, then shoot the TV saucer for Final Draw multiball.",
-          "source_location": "World Cup Soccer \u2013 Easy Score (121,428,642+)"
+          "source_location": "World Cup Soccer – Easy Score (121,428,642+)"
         },
         {
           "title": "Make 3 Spinner Rips",
@@ -260,22 +257,10 @@
           "source_location": "Make 3 spinner rips"
         },
         {
-          "title": "Light and Collect a TV Award",
-          "type": "task",
-          "explanation": "GUIDE: TV Awards - The TV is lit at the start of each ball, and relit by collecting 4 goals. Shooting the TV when it is lit for TV award (but not if it is lit for Final Draw or Final Match) starts the next mode.",
-          "source_location": "World Cup Soccer \u2013 Light and collect a TV award"
-        },
-        {
           "title": "Score 2 Goals",
           "type": "task",
           "explanation": "GUIDE: Score 2+ on World Cup Soccer. Best scoring from the guide: Score 1 Goal: Every 4th goal lights the TV saucer for an award. Start Multiball at the TV Saucer: Lock one ball at a lit ramp, then shoot the TV saucer for Final Draw multiball.",
           "source_location": "Score 2 goals"
-        },
-        {
-          "title": "Start Multiball at the TV Saucer",
-          "type": "task",
-          "explanation": "GUIDE: Shoot Build Lock shots, usually the left orbit, either ramp, or Striker's Hideout, until all soccer-ball qualities are collected. Lock one ball at a lit ramp, then shoot the TV saucer for Final Draw multiball.",
-          "source_location": "Start Multiball at the TV saucer"
         }
       ],
       "Medium": [
@@ -283,13 +268,13 @@
           "title": "Light and Collect a TV Award",
           "type": "task",
           "explanation": "GUIDE: TV Awards - The TV is lit at the start of each ball, and relit by collecting 4 goals. Shooting the TV when it is lit for TV award (but not if it is lit for Final Draw or Final Match) starts the next mode.",
-          "source_location": "World Cup Soccer \u2013 Light and collect a TV award"
+          "source_location": "World Cup Soccer – Light and collect a TV award"
         },
         {
           "title": "Medium Score (267,003,082+)",
           "type": "score",
           "explanation": "GUIDE: Score 267,003,082+ on World Cup Soccer. Best scoring from the guide: Score 1 Goal: Every 4th goal lights the TV saucer for an award. Start Multiball at the TV Saucer: Lock one ball at a lit ramp, then shoot the TV saucer for Final Draw multiball.",
-          "source_location": "World Cup Soccer \u2013 Medium Score (267,003,082+)"
+          "source_location": "World Cup Soccer – Medium Score (267,003,082+)"
         },
         {
           "title": "Score 2 Goals",
@@ -301,19 +286,7 @@
           "title": "Score 1 Goal",
           "type": "task",
           "explanation": "GUIDE: Shoot the lit soccer goal/goal mouth shot and register one goal.",
-          "source_location": "World Cup Soccer \u2013 Score 1 goal"
-        },
-        {
-          "title": "Make 3 Spinner Rips",
-          "type": "task",
-          "explanation": "GUIDE: Shoot the spinner with enough speed to score a clean rip each time until you reach the target.",
-          "source_location": "Make 3 spinner rips"
-        },
-        {
-          "title": "Start Multiball at the TV Saucer",
-          "type": "task",
-          "explanation": "GUIDE: Shoot Build Lock shots, usually the left orbit, either ramp, or Striker's Hideout, until all soccer-ball qualities are collected. Lock one ball at a lit ramp, then shoot the TV saucer for Final Draw multiball.",
-          "source_location": "Start Multiball at the TV saucer"
+          "source_location": "World Cup Soccer – Score 1 goal"
         }
       ],
       "Hard": [
@@ -321,25 +294,19 @@
           "title": "Start Multiball at the TV Saucer",
           "type": "task",
           "explanation": "GUIDE: Shoot Build Lock shots, usually the left orbit, either ramp, or Striker's Hideout, until all soccer-ball qualities are collected. Lock one ball at a lit ramp, then shoot the TV saucer for Final Draw multiball.",
-          "source_location": "World Cup Soccer \u2013 Start Multiball at the TV saucer"
+          "source_location": "World Cup Soccer – Start Multiball at the TV saucer"
         },
         {
           "title": "Hard Score (482,642,542+)",
           "type": "score",
           "explanation": "GUIDE: Score 482,642,542+ on World Cup Soccer. Best scoring from the guide: Score 1 Goal: Every 4th goal lights the TV saucer for an award. Start Multiball at the TV Saucer: Lock one ball at a lit ramp, then shoot the TV saucer for Final Draw multiball.",
-          "source_location": "World Cup Soccer \u2013 Hard Score (482,642,542+)"
+          "source_location": "World Cup Soccer – Hard Score (482,642,542+)"
         },
         {
           "title": "Light Final Draw",
           "type": "task",
           "explanation": "GUIDE: Shoot Build Lock shots, usually the left orbit, either ramp, or Striker's Hideout, until all soccer-ball qualities are collected. After the ball is built, lock one ball at a lit ramp to light Final Draw at the TV saucer.",
           "source_location": "Light Final Draw"
-        },
-        {
-          "title": "Light and Collect a TV Award",
-          "type": "task",
-          "explanation": "GUIDE: TV Awards - The TV is lit at the start of each ball, and relit by collecting 4 goals. Shooting the TV when it is lit for TV award (but not if it is lit for Final Draw or Final Match) starts the next mode.",
-          "source_location": "World Cup Soccer \u2013 Light and collect a TV award"
         },
         {
           "title": "Score 2 Goals",
@@ -361,19 +328,19 @@
           "title": "Complete GREEN-YELLOW-RED to Light Lock",
           "type": "task",
           "explanation": "GUIDE: Finish the GREEN-YELLOW-RED set to light ball lock, then confirm lock is lit.",
-          "source_location": "The Getaway \u2013 Complete GREEN-YELLOW-RED to light lock"
+          "source_location": "The Getaway – Complete GREEN-YELLOW-RED to light lock"
         },
         {
           "title": "Easy Score (12,853,713+)",
           "type": "score",
           "explanation": "GUIDE: Score 12,853,713+ on The Getaway. Best scoring from the guide: Collect a Super Jackpot in Multiball: Standard Multiball is started by locking 3 balls at the left orbit or upper loop. Light Redline Mania: Going through the left in lane when it is lit for 2x RPM will cause the right orbit.",
-          "source_location": "The Getaway \u2013 Easy Score (12,853,713+)"
+          "source_location": "The Getaway – Easy Score (12,853,713+)"
         },
         {
           "title": "Lock 1 Ball (Left Orbit/Upper Loop)",
           "type": "task",
           "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "The Getaway \u2013 Lock 1 ball (left orbit/upper loop)"
+          "source_location": "The Getaway – Lock 1 ball (left orbit/upper loop)"
         },
         {
           "title": "Complete 1 Supercharger Cycle",
@@ -382,10 +349,10 @@
           "source_location": "Complete 1 Supercharger cycle"
         },
         {
-          "title": "Light Redline Mania",
+          "title": "Complete the 1-2-3 Standup Targets",
           "type": "task",
-          "explanation": "GUIDE: Playing and completing Redline Mania instantly resets your progress to pre-1st Gear levels. Going through the left in lane when it is lit for 2x RPM will cause the right orbit shot to count as 2 RPM shots for the purpose of working toward the.",
-          "source_location": "Light Redline Mania"
+          "explanation": "GUIDE: Hit all three 1-2-3 standup targets to light a one-shot Supercharger Boost at the left ramp.",
+          "source_location": "Complete the 1-2-3 Standup Targets"
         },
         {
           "title": "Start Multiball",
@@ -399,13 +366,13 @@
           "title": "Lock 1 Ball (Left Orbit/Upper Loop)",
           "type": "task",
           "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "The Getaway \u2013 Lock 1 ball (left orbit/upper loop)"
+          "source_location": "The Getaway – Lock 1 ball (left orbit/upper loop)"
         },
         {
           "title": "Medium Score (29,933,214+)",
           "type": "score",
           "explanation": "GUIDE: Score 29,933,214+ on The Getaway. Best scoring from the guide: Collect a Super Jackpot in Multiball: Standard Multiball is started by locking 3 balls at the left orbit or upper loop. Light Redline Mania: Going through the left in lane when it is lit for 2x RPM will cause the right orbit.",
-          "source_location": "The Getaway \u2013 Medium Score (29,933,214+)"
+          "source_location": "The Getaway – Medium Score (29,933,214+)"
         },
         {
           "title": "Light Redline Mania",
@@ -417,7 +384,7 @@
           "title": "Complete GREEN-YELLOW-RED to Light Lock",
           "type": "task",
           "explanation": "GUIDE: Finish the GREEN-YELLOW-RED set to light ball lock, then confirm lock is lit.",
-          "source_location": "The Getaway \u2013 Complete GREEN-YELLOW-RED to light lock"
+          "source_location": "The Getaway – Complete GREEN-YELLOW-RED to light lock"
         },
         {
           "title": "Complete 1 Supercharger Cycle",
@@ -437,13 +404,13 @@
           "title": "Start Multiball and Collect a Jackpot at the Upper Loop",
           "type": "task",
           "explanation": "GUIDE: Standard Multiball is started by locking 3 balls at the left orbit or upper loop after completing the stoplight targets, or as an immediate award.",
-          "source_location": "The Getaway \u2013 Start Multiball and collect a Jackpot at the upper loop"
+          "source_location": "The Getaway – Start Multiball and collect a Jackpot at the upper loop"
         },
         {
           "title": "Hard Score (60,918,207+)",
           "type": "score",
           "explanation": "GUIDE: Score 60,918,207+ on The Getaway. Best scoring from the guide: Collect a Super Jackpot in Multiball: Standard Multiball is started by locking 3 balls at the left orbit or upper loop. Light Redline Mania: Going through the left in lane when it is lit for 2x RPM will cause the right orbit.",
-          "source_location": "The Getaway \u2013 Hard Score (60,918,207+)"
+          "source_location": "The Getaway – Hard Score (60,918,207+)"
         },
         {
           "title": "Collect a Super Jackpot in Multiball",
@@ -461,7 +428,7 @@
           "title": "Complete GREEN-YELLOW-RED to Light Lock",
           "type": "task",
           "explanation": "GUIDE: Finish the GREEN-YELLOW-RED set to light ball lock, then confirm lock is lit.",
-          "source_location": "The Getaway \u2013 Complete GREEN-YELLOW-RED to light lock"
+          "source_location": "The Getaway – Complete GREEN-YELLOW-RED to light lock"
         },
         {
           "title": "Complete 2 Supercharger Cycles in One Game",
@@ -593,13 +560,13 @@
           "title": "Hit the Genie to Start a Tale (Mode)",
           "type": "task",
           "explanation": "GUIDE: Shoot the Genie when lit to start a Tale mode.",
-          "source_location": "Tales of the Arabian Nights \u2013 Hit the Genie to start a tale (mode)"
+          "source_location": "Tales of the Arabian Nights – Hit the Genie to start a tale (mode)"
         },
         {
           "title": "Easy Score (992,834+)",
           "type": "score",
           "explanation": "GUIDE: Score 992,834+ on Tales of the Arabian Nights. Best scoring from the guide: Collect a Harem Multiball Jackpot: This shot will only be lit for Harem if there's nothing else to score here (such as a. Collect 1 Tale and Light Lock: A ball can then be locked at either orbit. ) For the first multiball, one spelling of.",
-          "source_location": "Tales of the Arabian Nights \u2013 Easy Score (992,834+)"
+          "source_location": "Tales of the Arabian Nights – Easy Score (992,834+)"
         },
         {
           "title": "Collect a Jewel Award",
@@ -611,7 +578,7 @@
           "title": "Collect 1 Tale and Light Lock",
           "type": "task",
           "explanation": "GUIDE: Complete one Tale mode objective and continue until lock becomes lit.",
-          "source_location": "Tales of the Arabian Nights \u2013 Collect 1 tale and light lock"
+          "source_location": "Tales of the Arabian Nights – Collect 1 tale and light lock"
         },
         {
           "title": "Complete 1 Tale",
@@ -631,13 +598,13 @@
           "title": "Collect 1 Tale and Light Lock",
           "type": "task",
           "explanation": "GUIDE: Complete one Tale mode objective and continue until lock becomes lit.",
-          "source_location": "Tales of the Arabian Nights \u2013 Collect 1 tale and light lock"
+          "source_location": "Tales of the Arabian Nights – Collect 1 tale and light lock"
         },
         {
           "title": "Medium Score (2,872,762+)",
           "type": "score",
           "explanation": "GUIDE: Score 2,872,762+ on Tales of the Arabian Nights. Best scoring from the guide: Collect a Harem Multiball Jackpot: This shot will only be lit for Harem if there's nothing else to score here (such as a. Collect 1 Tale and Light Lock: A ball can then be locked at either orbit. ) For the first multiball, one spelling of.",
-          "source_location": "Tales of the Arabian Nights \u2013 Medium Score (2,872,762+)"
+          "source_location": "Tales of the Arabian Nights – Medium Score (2,872,762+)"
         },
         {
           "title": "Complete 1 Tale",
@@ -649,7 +616,7 @@
           "title": "Hit the Genie to Start a Tale (Mode)",
           "type": "task",
           "explanation": "GUIDE: Shoot the Genie when lit to start a Tale mode.",
-          "source_location": "Tales of the Arabian Nights \u2013 Hit the Genie to start a tale (mode)"
+          "source_location": "Tales of the Arabian Nights – Hit the Genie to start a tale (mode)"
         },
         {
           "title": "Collect a Jewel Award",
@@ -669,13 +636,13 @@
           "title": "Lock 2 Balls and Start Multiball at the Genie",
           "type": "task",
           "explanation": "GUIDE: Light and lock two balls, then shoot Genie start to begin multiball.",
-          "source_location": "Tales of the Arabian Nights \u2013 Lock 2 balls and start Multiball at the Genie"
+          "source_location": "Tales of the Arabian Nights – Lock 2 balls and start Multiball at the Genie"
         },
         {
           "title": "Hard Score (6,432,610+)",
           "type": "score",
           "explanation": "GUIDE: Score 6,432,610+ on Tales of the Arabian Nights. Best scoring from the guide: Collect a Harem Multiball Jackpot: This shot will only be lit for Harem if there's nothing else to score here (such as a. Collect 1 Tale and Light Lock: A ball can then be locked at either orbit. ) For the first multiball, one spelling of.",
-          "source_location": "Tales of the Arabian Nights \u2013 Hard Score (6,432,610+)"
+          "source_location": "Tales of the Arabian Nights – Hard Score (6,432,610+)"
         },
         {
           "title": "Collect a Harem Multiball Jackpot",
@@ -687,7 +654,7 @@
           "title": "Collect 1 Tale and Light Lock",
           "type": "task",
           "explanation": "GUIDE: Complete one Tale mode objective and continue until lock becomes lit.",
-          "source_location": "Tales of the Arabian Nights \u2013 Collect 1 tale and light lock"
+          "source_location": "Tales of the Arabian Nights – Collect 1 tale and light lock"
         },
         {
           "title": "Complete 1 Tale",
@@ -699,7 +666,7 @@
           "title": "Hit the Genie to Start a Tale (Mode)",
           "type": "task",
           "explanation": "GUIDE: Shoot the Genie when lit to start a Tale mode.",
-          "source_location": "Tales of the Arabian Nights \u2013 Hit the Genie to start a tale (mode)"
+          "source_location": "Tales of the Arabian Nights – Hit the Genie to start a tale (mode)"
         }
       ]
     },
@@ -709,13 +676,13 @@
           "title": "Light and Rip the Spinner",
           "type": "task",
           "explanation": "GUIDE: The spinner is worth 500 points per spin. Hitting the right standup target at any time lights the spinner for 5,000 points per spin for the rest of the ball.",
-          "source_location": "Fathom \u2013 Light and rip the spinner"
+          "source_location": "Fathom – Light and rip the spinner"
         },
         {
           "title": "Easy Score (93,187+)",
           "type": "score",
           "explanation": "GUIDE: Score 93,187+ on Fathom. Best scoring from the guide: Collect a Multiball Jackpot: The front in line drop target scores 10,000 points, 1 bonus advance of its colour. Lock 1 Ball in a Saucer: Shooting that saucer will lock a ball.",
-          "source_location": "Fathom \u2013 Easy Score (93,187+)"
+          "source_location": "Fathom – Easy Score (93,187+)"
         },
         {
           "title": "Collect Spinner Value 3 Times",
@@ -727,7 +694,7 @@
           "title": "Lock 1 Ball in a Saucer",
           "type": "task",
           "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "Fathom \u2013 Lock 1 ball in a saucer"
+          "source_location": "Fathom – Lock 1 ball in a saucer"
         },
         {
           "title": "Light a Second Lock",
@@ -747,13 +714,13 @@
           "title": "Lock 1 Ball in a Saucer",
           "type": "task",
           "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "Fathom \u2013 Lock 1 ball in a saucer"
+          "source_location": "Fathom – Lock 1 ball in a saucer"
         },
         {
           "title": "Medium Score (293,655+)",
           "type": "score",
           "explanation": "GUIDE: Score 293,655+ on Fathom. Best scoring from the guide: Collect a Multiball Jackpot: The front in line drop target scores 10,000 points, 1 bonus advance of its colour. Lock 1 Ball in a Saucer: Shooting that saucer will lock a ball.",
-          "source_location": "Fathom \u2013 Medium Score (293,655+)"
+          "source_location": "Fathom – Medium Score (293,655+)"
         },
         {
           "title": "Light a Second Lock",
@@ -765,7 +732,7 @@
           "title": "Light and Rip the Spinner",
           "type": "task",
           "explanation": "GUIDE: The spinner is worth 500 points per spin. Hitting the right standup target at any time lights the spinner for 5,000 points per spin for the rest of the ball.",
-          "source_location": "Fathom \u2013 Light and rip the spinner"
+          "source_location": "Fathom – Light and rip the spinner"
         },
         {
           "title": "Collect Spinner Value 3 Times",
@@ -785,13 +752,13 @@
           "title": "Start Multiball",
           "type": "task",
           "explanation": "GUIDE: Lock lanes and multiball - If there is not a ball locked in one lane's saucer, the drop targets will be down. If there is a ball locked in a saucer, the drop targets will be up.",
-          "source_location": "Fathom \u2013 Start Multiball"
+          "source_location": "Fathom – Start Multiball"
         },
         {
           "title": "Hard Score (718,507+)",
           "type": "score",
           "explanation": "GUIDE: Score 718,507+ on Fathom. Best scoring from the guide: Collect a Multiball Jackpot: The front in line drop target scores 10,000 points, 1 bonus advance of its colour. Lock 1 Ball in a Saucer: Shooting that saucer will lock a ball.",
-          "source_location": "Fathom \u2013 Hard Score (718,507+)"
+          "source_location": "Fathom – Hard Score (718,507+)"
         },
         {
           "title": "Collect a Multiball Jackpot",
@@ -803,7 +770,7 @@
           "title": "Lock 1 Ball in a Saucer",
           "type": "task",
           "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "Fathom \u2013 Lock 1 ball in a saucer"
+          "source_location": "Fathom – Lock 1 ball in a saucer"
         },
         {
           "title": "Light a Second Lock",
@@ -815,7 +782,7 @@
           "title": "Light and Rip the Spinner",
           "type": "task",
           "explanation": "GUIDE: The spinner is worth 500 points per spin. Hitting the right standup target at any time lights the spinner for 5,000 points per spin for the rest of the ball.",
-          "source_location": "Fathom \u2013 Light and rip the spinner"
+          "source_location": "Fathom – Light and rip the spinner"
         }
       ]
     },
@@ -825,13 +792,13 @@
           "title": "Shoot the Left Ramp to Start an Objective",
           "type": "task",
           "explanation": "GUIDE: Advance objective qualifiers, then shoot left ramp when objective start is lit.",
-          "source_location": "Hook \u2013 Shoot the left ramp to start an objective"
+          "source_location": "Hook – Shoot the left ramp to start an objective"
         },
         {
           "title": "Easy Score (6,859,062+)",
           "type": "score",
           "explanation": "GUIDE: Score 6,859,062+ on Hook. Best scoring from the guide: Start Multiball and Collect a Jackpot: You must upgrade the multiball to 3 balls before the jackpots become available. Hit the Right Ramp 3 Times: During Shoot Clocks, the lock shot and the right ramp are both worth 5,000,000 points.",
-          "source_location": "Hook \u2013 Easy Score (6,859,062+)"
+          "source_location": "Hook – Easy Score (6,859,062+)"
         },
         {
           "title": "Hit the Right Ramp 3 Times",
@@ -843,7 +810,7 @@
           "title": "Start a Mode (Lost Boys/Jolly Roger/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Skull shot and modes - To start a mode, shoot the scoop in the lower right of the game that's in a similar position as the Swamp kickout on Addams Family. If you shoot the mode start hole when there is no mode ready (flashing), you receive a mystery score.",
-          "source_location": "Hook \u2013 Start a mode (Lost Boys/Jolly Roger/etc.)"
+          "source_location": "Hook – Start a mode (Lost Boys/Jolly Roger/etc.)"
         },
         {
           "title": "Complete 1 Mode Objective",
@@ -863,13 +830,13 @@
           "title": "Start a Mode (Lost Boys/Jolly Roger/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Skull shot and modes - To start a mode, shoot the scoop in the lower right of the game that's in a similar position as the Swamp kickout on Addams Family. If you shoot the mode start hole when there is no mode ready (flashing), you receive a mystery score.",
-          "source_location": "Hook \u2013 Start a mode (Lost Boys/Jolly Roger/etc.)"
+          "source_location": "Hook – Start a mode (Lost Boys/Jolly Roger/etc.)"
         },
         {
           "title": "Medium Score (19,549,049+)",
           "type": "score",
           "explanation": "GUIDE: Score 19,549,049+ on Hook. Best scoring from the guide: Start Multiball and Collect a Jackpot: You must upgrade the multiball to 3 balls before the jackpots become available. Hit the Right Ramp 3 Times: During Shoot Clocks, the lock shot and the right ramp are both worth 5,000,000 points.",
-          "source_location": "Hook \u2013 Medium Score (19,549,049+)"
+          "source_location": "Hook – Medium Score (19,549,049+)"
         },
         {
           "title": "Complete 1 Mode Objective",
@@ -881,7 +848,7 @@
           "title": "Shoot the Left Ramp to Start an Objective",
           "type": "task",
           "explanation": "GUIDE: Advance objective qualifiers, then shoot left ramp when objective start is lit.",
-          "source_location": "Hook \u2013 Shoot the left ramp to start an objective"
+          "source_location": "Hook – Shoot the left ramp to start an objective"
         },
         {
           "title": "Hit the Right Ramp 3 Times",
@@ -901,13 +868,13 @@
           "title": "Start Multiball and Collect a Jackpot",
           "type": "task",
           "explanation": "GUIDE: Locks and Multiball - You must upgrade the multiball to 3 balls before the jackpots become available. If you make the first skill shot but miss the second, standard 3-ball multiball begins.",
-          "source_location": "Hook \u2013 Start Multiball and collect a Jackpot"
+          "source_location": "Hook – Start Multiball and collect a Jackpot"
         },
         {
           "title": "Hard Score (46,641,687+)",
           "type": "score",
           "explanation": "GUIDE: Score 46,641,687+ on Hook. Best scoring from the guide: Start Multiball and Collect a Jackpot: You must upgrade the multiball to 3 balls before the jackpots become available. Hit the Right Ramp 3 Times: During Shoot Clocks, the lock shot and the right ramp are both worth 5,000,000 points.",
-          "source_location": "Hook \u2013 Hard Score (46,641,687+)"
+          "source_location": "Hook – Hard Score (46,641,687+)"
         },
         {
           "title": "Lock 2 Balls for Multiball",
@@ -919,7 +886,7 @@
           "title": "Start a Mode (Lost Boys/Jolly Roger/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Skull shot and modes - To start a mode, shoot the scoop in the lower right of the game that's in a similar position as the Swamp kickout on Addams Family. If you shoot the mode start hole when there is no mode ready (flashing), you receive a mystery score.",
-          "source_location": "Hook \u2013 Start a mode (Lost Boys/Jolly Roger/etc.)"
+          "source_location": "Hook – Start a mode (Lost Boys/Jolly Roger/etc.)"
         },
         {
           "title": "Complete 1 Mode Objective",
@@ -931,7 +898,7 @@
           "title": "Shoot the Left Ramp to Start an Objective",
           "type": "task",
           "explanation": "GUIDE: Advance objective qualifiers, then shoot left ramp when objective start is lit.",
-          "source_location": "Hook \u2013 Shoot the left ramp to start an objective"
+          "source_location": "Hook – Shoot the left ramp to start an objective"
         }
       ]
     },
@@ -941,13 +908,13 @@
           "title": "Start Any Map/Mode Objective",
           "type": "task",
           "explanation": "GUIDE: Left ramp and Map awards - The left ramp collects letters in the word Map. Collecting the P will light the right saucer for a Map award, and put the ball on the left flipper for a shot at that award.",
-          "source_location": "Congo \u2013 Start any map/mode objective"
+          "source_location": "Congo – Start any map/mode objective"
         },
         {
           "title": "Easy Score (99,810,138+)",
           "type": "score",
           "explanation": "GUIDE: Score 99,810,138+ on Congo. Best scoring from the guide: Collect a Super Jackpot in Multiball: You can also repeatedly score Super Jackpots worth double the regular jackpot value. Complete Gray Attack: Lock 3 balls, or defeat the second Gray Attack, to instantly start multiball.",
-          "source_location": "Congo \u2013 Easy Score (99,810,138+)"
+          "source_location": "Congo – Easy Score (99,810,138+)"
         },
         {
           "title": "Spell C-O-N-G-O Once",
@@ -959,7 +926,7 @@
           "title": "Lock 1 Ball for Multiball",
           "type": "task",
           "explanation": "GUIDE: Lock one ball toward Congo Multiball. Full Multiball requires 3 locked balls or defeating the second Gray Attack.",
-          "source_location": "Congo \u2013 Start Multiball"
+          "source_location": "Congo – Start Multiball"
         },
         {
           "title": "Advance 1 Map Destination",
@@ -979,13 +946,13 @@
           "title": "Start Multiball",
           "type": "task",
           "explanation": "GUIDE: Locks and multiball - Lock 3 balls, or defeat the second Gray Attack, to instantly start multiball. The jackpot value for multiball is 10,000,000 points plus an additional 500,000 for each diamond collected over the course of the game so.",
-          "source_location": "Congo \u2013 Start Multiball"
+          "source_location": "Congo – Start Multiball"
         },
         {
           "title": "Medium Score (246,246,985+)",
           "type": "score",
           "explanation": "GUIDE: Score 246,246,985+ on Congo. Best scoring from the guide: Collect a Super Jackpot in Multiball: You can also repeatedly score Super Jackpots worth double the regular jackpot value. Complete Gray Attack: Lock 3 balls, or defeat the second Gray Attack, to instantly start multiball.",
-          "source_location": "Congo \u2013 Medium Score (246,246,985+)"
+          "source_location": "Congo – Medium Score (246,246,985+)"
         },
         {
           "title": "Advance 1 Map Destination",
@@ -997,7 +964,7 @@
           "title": "Start Any Map/Mode Objective",
           "type": "task",
           "explanation": "GUIDE: Left ramp and Map awards - The left ramp collects letters in the word Map. Collecting the P will light the right saucer for a Map award, and put the ball on the left flipper for a shot at that award.",
-          "source_location": "Congo \u2013 Start any map/mode objective"
+          "source_location": "Congo – Start any map/mode objective"
         },
         {
           "title": "Spell C-O-N-G-O Once",
@@ -1017,13 +984,13 @@
           "title": "Collect a Super Jackpot in Multiball",
           "type": "task",
           "explanation": "GUIDE: Locks and multiball - The jackpot value for multiball is 10,000,000 points plus an additional 500,000 for each diamond collected over the course of the game so.",
-          "source_location": "Congo \u2013 Collect a Super Jackpot in Multiball"
+          "source_location": "Congo – Collect a Super Jackpot in Multiball"
         },
         {
           "title": "Hard Score (488,713,718+)",
           "type": "score",
           "explanation": "GUIDE: Score 488,713,718+ on Congo. Best scoring from the guide: Collect a Super Jackpot in Multiball: You can also repeatedly score Super Jackpots worth double the regular jackpot value. Complete Gray Attack: Lock 3 balls, or defeat the second Gray Attack, to instantly start multiball.",
-          "source_location": "Congo \u2013 Hard Score (488,713,718+)"
+          "source_location": "Congo – Hard Score (488,713,718+)"
         },
         {
           "title": "Complete Gray Attack",
@@ -1035,7 +1002,7 @@
           "title": "Start Multiball",
           "type": "task",
           "explanation": "GUIDE: Locks and multiball - Lock 3 balls, or defeat the second Gray Attack, to instantly start multiball. The jackpot value for multiball is 10,000,000 points plus an additional 500,000 for each diamond collected over the course of the game so.",
-          "source_location": "Congo \u2013 Start Multiball"
+          "source_location": "Congo – Start Multiball"
         },
         {
           "title": "Advance 1 Map Destination",
@@ -1047,7 +1014,7 @@
           "title": "Start Any Map/Mode Objective",
           "type": "task",
           "explanation": "GUIDE: Left ramp and Map awards - The left ramp collects letters in the word Map. Collecting the P will light the right saucer for a Map award, and put the ball on the left flipper for a shot at that award.",
-          "source_location": "Congo \u2013 Start any map/mode objective"
+          "source_location": "Congo – Start any map/mode objective"
         }
       ]
     },
@@ -1057,25 +1024,25 @@
           "title": "Start an Item Mode",
           "type": "task",
           "explanation": "GUIDE: Item modes - Crystal Ball: lights the right ramp for extra ball. Three hurry-ups can be collected in total. The third is at the Bridge left ramp, worth up to 18,000,000 points.",
-          "source_location": "Mystery Castle \u2013 Start an Item Mode"
+          "source_location": "Mystery Castle – Start an Item Mode"
         },
         {
           "title": "Easy Score (38,358,887+)",
           "type": "score",
           "explanation": "GUIDE: Score 38,358,887+ on Mystery Castle. Best scoring from the guide: Start Multiball: Skull: scores 10,000,000 points and lights the Dungeon left orbit for Doom Mode. Start an Item Mode: Crystal Ball: lights the right ramp for extra ball.",
-          "source_location": "Mystery Castle \u2013 Easy Score (38,358,887+)"
+          "source_location": "Mystery Castle – Easy Score (38,358,887+)"
         },
         {
           "title": "Collect 1 Item Award",
           "type": "task",
           "explanation": "GUIDE: Collect that award the required number of times.",
-          "source_location": "Mystery Castle \u2013 Collect 1 Item Award"
+          "source_location": "Mystery Castle – Collect 1 Item Award"
         },
         {
           "title": "Complete a Mode (Collect Its Shots)",
           "type": "task",
           "explanation": "GUIDE: Item modes - Potion: starts a hurry-up round. Three hurry-ups can be collected in total. The third is at the Bridge left ramp, worth up to 18,000,000 points.",
-          "source_location": "Mystery Castle \u2013 Complete a mode (collect its shots)"
+          "source_location": "Mystery Castle – Complete a mode (collect its shots)"
         },
         {
           "title": "Light a Multiball Lock",
@@ -1095,13 +1062,13 @@
           "title": "Complete a Mode (Collect Its Shots)",
           "type": "task",
           "explanation": "GUIDE: Item modes - Potion: starts a hurry-up round. Three hurry-ups can be collected in total. The third is at the Bridge left ramp, worth up to 18,000,000 points.",
-          "source_location": "Mystery Castle \u2013 Complete a mode (collect its shots)"
+          "source_location": "Mystery Castle – Complete a mode (collect its shots)"
         },
         {
           "title": "Medium Score (110,619,814+)",
           "type": "score",
           "explanation": "GUIDE: Score 110,619,814+ on Mystery Castle. Best scoring from the guide: Start Multiball: Skull: scores 10,000,000 points and lights the Dungeon left orbit for Doom Mode. Start an Item Mode: Crystal Ball: lights the right ramp for extra ball.",
-          "source_location": "Mystery Castle \u2013 Medium Score (110,619,814+)"
+          "source_location": "Mystery Castle – Medium Score (110,619,814+)"
         },
         {
           "title": "Light a Multiball Lock",
@@ -1113,13 +1080,13 @@
           "title": "Start an Item Mode",
           "type": "task",
           "explanation": "GUIDE: Item modes - Crystal Ball: lights the right ramp for extra ball. Three hurry-ups can be collected in total. The third is at the Bridge left ramp, worth up to 18,000,000 points.",
-          "source_location": "Mystery Castle \u2013 Start an Item Mode"
+          "source_location": "Mystery Castle – Start an Item Mode"
         },
         {
           "title": "Collect 1 Item Award",
           "type": "task",
           "explanation": "GUIDE: Collect that award the required number of times.",
-          "source_location": "Mystery Castle \u2013 Collect 1 Item Award"
+          "source_location": "Mystery Castle – Collect 1 Item Award"
         },
         {
           "title": "Start Multiball",
@@ -1133,13 +1100,13 @@
           "title": "Start Multiball",
           "type": "task",
           "explanation": "GUIDE: Item modes - Jester: a 2-ball quick multiball where all 5 major shots are worth 5,000,000 points. Skull: scores 10,000,000 points and lights the Dungeon left orbit for Doom Mode.",
-          "source_location": "Mystery Castle \u2013 Start Multiball"
+          "source_location": "Mystery Castle – Start Multiball"
         },
         {
           "title": "Hard Score (256,373,930+)",
           "type": "score",
           "explanation": "GUIDE: Score 256,373,930+ on Mystery Castle. Best scoring from the guide: Start Multiball: Skull: scores 10,000,000 points and lights the Dungeon left orbit for Doom Mode. Start an Item Mode: Crystal Ball: lights the right ramp for extra ball.",
-          "source_location": "Mystery Castle \u2013 Hard Score (256,373,930+)"
+          "source_location": "Mystery Castle – Hard Score (256,373,930+)"
         },
         {
           "title": "Complete 2 Modes in One Game",
@@ -1151,7 +1118,7 @@
           "title": "Complete a Mode (Collect Its Shots)",
           "type": "task",
           "explanation": "GUIDE: Item modes - Potion: starts a hurry-up round. Three hurry-ups can be collected in total. The third is at the Bridge left ramp, worth up to 18,000,000 points.",
-          "source_location": "Mystery Castle \u2013 Complete a mode (collect its shots)"
+          "source_location": "Mystery Castle – Complete a mode (collect its shots)"
         },
         {
           "title": "Light a Multiball Lock",
@@ -1163,7 +1130,7 @@
           "title": "Start an Item Mode (Lit Item Shot)",
           "type": "task",
           "explanation": "GUIDE: Item modes - Crystal Ball: lights the right ramp for extra ball. Three hurry-ups can be collected in total. The third is at the Bridge left ramp, worth up to 18,000,000 points.",
-          "source_location": "Mystery Castle \u2013 Start an Item Mode"
+          "source_location": "Mystery Castle – Start an Item Mode"
         }
       ]
     },
@@ -1173,7 +1140,7 @@
           "title": "Start Any Main Mission at the Van",
           "type": "task",
           "explanation": "GUIDE: SKILLSHOT - Hit a second time to start the mission. MR LEE: If during an active main mission you put the ball in the van you will be one point closer to contacting Mr Lee and, therefore, hiring the.",
-          "source_location": "The A-Team \u2013 Start any main mission at the van"
+          "source_location": "The A-Team – Start any main mission at the van"
         },
         {
           "title": "Easy Score (12,500,000+)",
@@ -1229,7 +1196,7 @@
           "title": "Start Any Main Mission at the Van",
           "type": "task",
           "explanation": "GUIDE: SKILLSHOT - Hit a second time to start the mission. MR LEE: If during an active main mission you put the ball in the van you will be one point closer to contacting Mr Lee and, therefore, hiring the.",
-          "source_location": "The A-Team \u2013 Start any main mission at the van"
+          "source_location": "The A-Team – Start any main mission at the van"
         },
         {
           "title": "Shoot the Van 3 Times",
@@ -1279,7 +1246,7 @@
           "title": "Start Any Main Mission at the Van",
           "type": "task",
           "explanation": "GUIDE: SKILLSHOT - Hit a second time to start the mission. MR LEE: If during an active main mission you put the ball in the van you will be one point closer to contacting Mr Lee and, therefore, hiring the.",
-          "source_location": "The A-Team \u2013 Start any main mission at the van"
+          "source_location": "The A-Team – Start any main mission at the van"
         }
       ]
     },
@@ -1405,25 +1372,25 @@
           "title": "Complete 1-2-3 Top Lanes",
           "type": "task",
           "explanation": "GUIDE: Lane change can be used with the right flipper only to rotate the positions of the lit 1-2-3 top lanes.",
-          "source_location": "Hollywood Heat \u2013 Complete 1-2-3 top lanes"
+          "source_location": "Hollywood Heat – Complete 1-2-3 top lanes"
         },
         {
           "title": "Easy Score (228,948+)",
           "type": "score",
           "explanation": "GUIDE: Score 228,948+ on Hollywood Heat. Best scoring from the guide: Complete 1 2 3 Top Lanes: Lane change can be used with the right flipper only to rotate the positions of the. Complete Either Drop Target Bank: In multiball, completing either drop target bank increases the completion value for.",
-          "source_location": "Hollywood Heat \u2013 Easy Score (228,948+)"
+          "source_location": "Hollywood Heat – Easy Score (228,948+)"
         },
         {
           "title": "Complete Either Drop Target Bank",
           "type": "task",
           "explanation": "GUIDE: Drop targets and extra ball - However, if extra balls are on, collecting an extra ball by any means resets the drop target values for your next turn.",
-          "source_location": "Hollywood Heat \u2013 Complete either drop target bank"
+          "source_location": "Hollywood Heat – Complete either drop target bank"
         },
         {
           "title": "Lock 1 Ball Toward Multiball",
           "type": "task",
           "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "Hollywood Heat \u2013 Lock 1 ball toward Multiball"
+          "source_location": "Hollywood Heat – Lock 1 ball toward Multiball"
         },
         {
           "title": "Lock a Second Ball for Multiball",
@@ -1443,13 +1410,13 @@
           "title": "Lock 1 Ball Toward Multiball",
           "type": "task",
           "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "Hollywood Heat \u2013 Lock 1 ball toward Multiball"
+          "source_location": "Hollywood Heat – Lock 1 ball toward Multiball"
         },
         {
           "title": "Medium Score (483,326+)",
           "type": "score",
           "explanation": "GUIDE: Score 483,326+ on Hollywood Heat. Best scoring from the guide: Complete 1 2 3 Top Lanes: Lane change can be used with the right flipper only to rotate the positions of the. Complete Either Drop Target Bank: In multiball, completing either drop target bank increases the completion value for.",
-          "source_location": "Hollywood Heat \u2013 Medium Score (483,326+)"
+          "source_location": "Hollywood Heat – Medium Score (483,326+)"
         },
         {
           "title": "Lock a Second Ball for Multiball",
@@ -1461,13 +1428,13 @@
           "title": "Complete 1-2-3 Top Lanes",
           "type": "task",
           "explanation": "GUIDE: Lane change can be used with the right flipper only to rotate the positions of the lit 1-2-3 top lanes.",
-          "source_location": "Hollywood Heat \u2013 Complete 1-2-3 top lanes"
+          "source_location": "Hollywood Heat – Complete 1-2-3 top lanes"
         },
         {
           "title": "Complete Either Drop Target Bank",
           "type": "task",
           "explanation": "GUIDE: Drop targets and extra ball - However, if extra balls are on, collecting an extra ball by any means resets the drop target values for your next turn.",
-          "source_location": "Hollywood Heat \u2013 Complete either drop target bank"
+          "source_location": "Hollywood Heat – Complete either drop target bank"
         },
         {
           "title": "Start Multiball",
@@ -1481,13 +1448,13 @@
           "title": "Start Multiball",
           "type": "task",
           "explanation": "GUIDE: Drop targets and extra ball - However, if extra balls are on, collecting an extra ball by any means resets the drop target values for your next turn.",
-          "source_location": "Hollywood Heat \u2013 Start Multiball"
+          "source_location": "Hollywood Heat – Start Multiball"
         },
         {
           "title": "Hard Score (909,866+)",
           "type": "score",
           "explanation": "GUIDE: Score 909,866+ on Hollywood Heat. Best scoring from the guide: Complete 1 2 3 Top Lanes: Lane change can be used with the right flipper only to rotate the positions of the. Complete Either Drop Target Bank: In multiball, completing either drop target bank increases the completion value for.",
-          "source_location": "Hollywood Heat \u2013 Hard Score (909,866+)"
+          "source_location": "Hollywood Heat – Hard Score (909,866+)"
         },
         {
           "title": "Collect 2 Multiball Jackpots",
@@ -1499,7 +1466,7 @@
           "title": "Lock 1 Ball Toward Multiball",
           "type": "task",
           "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "Hollywood Heat \u2013 Lock 1 ball toward Multiball"
+          "source_location": "Hollywood Heat – Lock 1 ball toward Multiball"
         },
         {
           "title": "Lock a Second Ball for Multiball",
@@ -1511,7 +1478,7 @@
           "title": "Complete 1-2-3 Top Lanes",
           "type": "task",
           "explanation": "GUIDE: Lane change can be used with the right flipper only to rotate the positions of the lit 1-2-3 top lanes.",
-          "source_location": "Hollywood Heat \u2013 Complete 1-2-3 top lanes"
+          "source_location": "Hollywood Heat – Complete 1-2-3 top lanes"
         }
       ]
     },
@@ -1521,13 +1488,13 @@
           "title": "Relight Laser Kick (Kickback)",
           "type": "task",
           "explanation": "GUIDE: Hit the right relight target/lane for Laser Kick until the kickback is active again.",
-          "source_location": "Baywatch \u2013 Relight Laser Kick (kickback)"
+          "source_location": "Baywatch – Relight Laser Kick (kickback)"
         },
         {
           "title": "Easy Score (108,775,626+)",
           "type": "score",
           "explanation": "GUIDE: Build score to at least 108,775,626 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-          "source_location": "Baywatch \u2013 Easy Score (108,775,626+)"
+          "source_location": "Baywatch – Easy Score (108,775,626+)"
         },
         {
           "title": "Rescue 1 Swimmer",
@@ -1539,7 +1506,7 @@
           "title": "Start a Major Shot Mode",
           "type": "task",
           "explanation": "GUIDE: Make the same major shot 3 times. Each of the 5 major shots can start its own mode when enough shots are made.",
-          "source_location": "Baywatch \u2013 Start a major shot mode"
+          "source_location": "Baywatch – Start a major shot mode"
         },
         {
           "title": "Complete 3 Lit Shots in a Major Mode",
@@ -1559,13 +1526,13 @@
           "title": "Start a Major Shot Mode",
           "type": "task",
           "explanation": "GUIDE: Make the same major shot 3 times. Each of the 5 major shots can start its own mode when enough shots are made.",
-          "source_location": "Baywatch \u2013 Start a major shot mode"
+          "source_location": "Baywatch – Start a major shot mode"
         },
         {
           "title": "Medium Score (245,826,701+)",
           "type": "score",
           "explanation": "GUIDE: Build score to at least 245,826,701 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-          "source_location": "Baywatch \u2013 Medium Score (245,826,701+)"
+          "source_location": "Baywatch – Medium Score (245,826,701+)"
         },
         {
           "title": "Complete 3 Lit Shots in a Major Mode",
@@ -1577,7 +1544,7 @@
           "title": "Relight Laser Kick (Kickback)",
           "type": "task",
           "explanation": "GUIDE: Hit the right relight target/lane for Laser Kick until the kickback is active again.",
-          "source_location": "Baywatch \u2013 Relight Laser Kick (kickback)"
+          "source_location": "Baywatch – Relight Laser Kick (kickback)"
         },
         {
           "title": "Rescue 1 Swimmer",
@@ -1597,13 +1564,13 @@
           "title": "Start Multiball and Collect a Jackpot",
           "type": "task",
           "explanation": "GUIDE: Lock 3 balls to start 5-ball Multiball, then shoot any lit Guard jackpot shot before it turns off.",
-          "source_location": "Baywatch \u2013 Start Multiball and collect a Jackpot"
+          "source_location": "Baywatch – Start Multiball and collect a Jackpot"
         },
         {
           "title": "Hard Score (449,568,189+)",
           "type": "score",
           "explanation": "GUIDE: Build score to at least 449,568,189 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-          "source_location": "Baywatch \u2013 Hard Score (449,568,189+)"
+          "source_location": "Baywatch – Hard Score (449,568,189+)"
         },
         {
           "title": "Collect a Super Jackpot",
@@ -1615,7 +1582,7 @@
           "title": "Start a Major Shot Mode",
           "type": "task",
           "explanation": "GUIDE: Make the same major shot 3 times. Each of the 5 major shots can start its own mode when enough shots are made.",
-          "source_location": "Baywatch \u2013 Start a major shot mode"
+          "source_location": "Baywatch – Start a major shot mode"
         },
         {
           "title": "Complete 3 Lit Shots in a Major Mode",
@@ -1627,7 +1594,7 @@
           "title": "Relight Laser Kick (Kickback)",
           "type": "task",
           "explanation": "GUIDE: Hit the right relight target/lane for Laser Kick until the kickback is active again.",
-          "source_location": "Baywatch \u2013 Relight Laser Kick (kickback)"
+          "source_location": "Baywatch – Relight Laser Kick (kickback)"
         }
       ]
     },
@@ -1753,13 +1720,13 @@
           "title": "Light and Rip the Spinner",
           "type": "task",
           "explanation": "GUIDE: METEOR letters and spinner - The M and R targets score 6,000 when hit and add 600 points/spin to the spinner value. The E, T, E, and O targets score 2,000 when hit and add 200 points/spin to the spinner value.",
-          "source_location": "Meteor \u2013 Light and rip the spinner"
+          "source_location": "Meteor – Light and rip the spinner"
         },
         {
           "title": "Easy Score (35,253+)",
           "type": "score",
           "explanation": "GUIDE: Score 35,253+ on Meteor. Best scoring from the guide: Light and Rip the Spinner: Completing the bank resets the spinner value to its base of 200/spin and advances the. Light Special or Extra Ball: If I had to guess, it would light if all 3 bonuses are maxed out at 7,000 each AND.",
-          "source_location": "Meteor \u2013 Easy Score (35,253+)"
+          "source_location": "Meteor – Easy Score (35,253+)"
         },
         {
           "title": "Complete Both Inline Target Banks Once",
@@ -1771,7 +1738,7 @@
           "title": "Complete 1 Bank of Targets",
           "type": "task",
           "explanation": "GUIDE: Complete bank of targets once.",
-          "source_location": "Meteor \u2013 Complete 1 bank of targets"
+          "source_location": "Meteor – Complete 1 bank of targets"
         },
         {
           "title": "Light Special or Extra Ball",
@@ -1791,13 +1758,13 @@
           "title": "Complete 1 Bank of Targets",
           "type": "task",
           "explanation": "GUIDE: Complete bank of targets once.",
-          "source_location": "Meteor \u2013 Complete 1 bank of targets"
+          "source_location": "Meteor – Complete 1 bank of targets"
         },
         {
           "title": "Medium Score (83,498+)",
           "type": "score",
           "explanation": "GUIDE: Score 83,498+ on Meteor. Best scoring from the guide: Light and Rip the Spinner: Completing the bank resets the spinner value to its base of 200/spin and advances the. Light Special or Extra Ball: If I had to guess, it would light if all 3 bonuses are maxed out at 7,000 each AND.",
-          "source_location": "Meteor \u2013 Medium Score (83,498+)"
+          "source_location": "Meteor – Medium Score (83,498+)"
         },
         {
           "title": "Light Special or Extra Ball",
@@ -1809,7 +1776,7 @@
           "title": "Light and Rip the Spinner",
           "type": "task",
           "explanation": "GUIDE: METEOR letters and spinner - The M and R targets score 6,000 when hit and add 600 points/spin to the spinner value. The E, T, E, and O targets score 2,000 when hit and add 200 points/spin to the spinner value.",
-          "source_location": "Meteor \u2013 Light and rip the spinner"
+          "source_location": "Meteor – Light and rip the spinner"
         },
         {
           "title": "Complete Both Inline Target Banks Once",
@@ -1829,13 +1796,13 @@
           "title": "Reach 4x Bonus Multiplier",
           "type": "task",
           "explanation": "GUIDE: 1-2-3 targets and bonus - Hitting any numbered drop target will advance the corresponding bonus, and then score whatever that current bonus is at.",
-          "source_location": "Meteor \u2013 Reach 4x bonus multiplier"
+          "source_location": "Meteor – Reach 4x bonus multiplier"
         },
         {
           "title": "Hard Score (152,603+)",
           "type": "score",
           "explanation": "GUIDE: Score 152,603+ on Meteor. Best scoring from the guide: Light and Rip the Spinner: Completing the bank resets the spinner value to its base of 200/spin and advances the. Light Special or Extra Ball: If I had to guess, it would light if all 3 bonuses are maxed out at 7,000 each AND.",
-          "source_location": "Meteor \u2013 Hard Score (152,603+)"
+          "source_location": "Meteor – Hard Score (152,603+)"
         },
         {
           "title": "Reach 5x Bonus Multiplier",
@@ -1847,7 +1814,7 @@
           "title": "Complete 1 Bank of Targets",
           "type": "task",
           "explanation": "GUIDE: Complete bank of targets once.",
-          "source_location": "Meteor \u2013 Complete 1 bank of targets"
+          "source_location": "Meteor – Complete 1 bank of targets"
         },
         {
           "title": "Light Special or Extra Ball",
@@ -1859,7 +1826,7 @@
           "title": "Light and Rip the Spinner",
           "type": "task",
           "explanation": "GUIDE: METEOR letters and spinner - The M and R targets score 6,000 when hit and add 600 points/spin to the spinner value. The E, T, E, and O targets score 2,000 when hit and add 200 points/spin to the spinner value.",
-          "source_location": "Meteor \u2013 Light and rip the spinner"
+          "source_location": "Meteor – Light and rip the spinner"
         }
       ]
     },
@@ -1869,13 +1836,13 @@
           "title": "Complete Inlane Drop Targets for 5x Bonus",
           "type": "task",
           "explanation": "GUIDE: Complete the inlane drop targets until 5x bonus is lit/awarded.",
-          "source_location": "Harlem Globetrotters \u2013 Complete inlane drop targets for 5x bonus"
+          "source_location": "Harlem Globetrotters – Complete inlane drop targets for 5x bonus"
         },
         {
           "title": "Easy Score (44,890+)",
           "type": "score",
           "explanation": "GUIDE: Score 44,890+ on Harlem Globetrotters. Best scoring from the guide: Complete Inlane Drop Targets for 5X Bonus: Fourth drop targets also light 2X, 3X. 5X bonus, respectively. Collect a Lit Special Award: In line drop targets and 5 spins of the lit center spinner award 1 bonus advance.",
-          "source_location": "Harlem Globetrotters \u2013 Easy Score (44,890+)"
+          "source_location": "Harlem Globetrotters – Easy Score (44,890+)"
         },
         {
           "title": "Make 3 Clean Orbit/Spinner Feeds",
@@ -1887,7 +1854,7 @@
           "title": "Complete G-L-O-B-E",
           "type": "task",
           "explanation": "GUIDE: Complete all letters in G-L-O-B-E by hitting each required lit lane/target.",
-          "source_location": "Harlem Globetrotters \u2013 Complete G-L-O-B-E"
+          "source_location": "Harlem Globetrotters – Complete G-L-O-B-E"
         },
         {
           "title": "Light 5x Bonus Twice",
@@ -1907,13 +1874,13 @@
           "title": "Complete G-L-O-B-E",
           "type": "task",
           "explanation": "GUIDE: Complete all letters in G-L-O-B-E by hitting each required lit lane/target.",
-          "source_location": "Harlem Globetrotters \u2013 Complete G-L-O-B-E"
+          "source_location": "Harlem Globetrotters – Complete G-L-O-B-E"
         },
         {
           "title": "Medium Score (121,215+)",
           "type": "score",
           "explanation": "GUIDE: Score 121,215+ on Harlem Globetrotters. Best scoring from the guide: Complete Inlane Drop Targets for 5X Bonus: Fourth drop targets also light 2X, 3X. 5X bonus, respectively. Collect a Lit Special Award: In line drop targets and 5 spins of the lit center spinner award 1 bonus advance.",
-          "source_location": "Harlem Globetrotters \u2013 Medium Score (121,215+)"
+          "source_location": "Harlem Globetrotters – Medium Score (121,215+)"
         },
         {
           "title": "Light 5x Bonus Twice",
@@ -1925,7 +1892,7 @@
           "title": "Complete Inlane Drop Targets for 5x Bonus",
           "type": "task",
           "explanation": "GUIDE: Complete the inlane drop targets until 5x bonus is lit/awarded.",
-          "source_location": "Harlem Globetrotters \u2013 Complete inlane drop targets for 5x bonus"
+          "source_location": "Harlem Globetrotters – Complete inlane drop targets for 5x bonus"
         },
         {
           "title": "Make 3 Clean Orbit/Spinner Feeds",
@@ -1945,13 +1912,13 @@
           "title": "Light the Spinner to 2,000 and Rip It",
           "type": "task",
           "explanation": "GUIDE: Left spinner - Each in line drop target knocked down increases its value for the rest of the ball, to 100. Finally 2,000 points per spin.",
-          "source_location": "Harlem Globetrotters \u2013 Light the spinner to 2,000 and rip it"
+          "source_location": "Harlem Globetrotters – Light the spinner to 2,000 and rip it"
         },
         {
           "title": "Hard Score (262,375+)",
           "type": "score",
           "explanation": "GUIDE: Score 262,375+ on Harlem Globetrotters. Best scoring from the guide: Complete Inlane Drop Targets for 5X Bonus: Fourth drop targets also light 2X, 3X. 5X bonus, respectively. Collect a Lit Special Award: In line drop targets and 5 spins of the lit center spinner award 1 bonus advance.",
-          "source_location": "Harlem Globetrotters \u2013 Hard Score (262,375+)"
+          "source_location": "Harlem Globetrotters – Hard Score (262,375+)"
         },
         {
           "title": "Collect a Lit Special Award",
@@ -1963,7 +1930,7 @@
           "title": "Complete G-L-O-B-E",
           "type": "task",
           "explanation": "GUIDE: Complete all letters in G-L-O-B-E by hitting each required lit lane/target.",
-          "source_location": "Harlem Globetrotters \u2013 Complete G-L-O-B-E"
+          "source_location": "Harlem Globetrotters – Complete G-L-O-B-E"
         },
         {
           "title": "Light 5x Bonus Twice",
@@ -1975,7 +1942,7 @@
           "title": "Complete Inlane Drop Targets for 5x Bonus",
           "type": "task",
           "explanation": "GUIDE: Complete the inlane drop targets until 5x bonus is lit/awarded.",
-          "source_location": "Harlem Globetrotters \u2013 Complete inlane drop targets for 5x bonus"
+          "source_location": "Harlem Globetrotters – Complete inlane drop targets for 5x bonus"
         }
       ]
     },
@@ -1985,13 +1952,13 @@
           "title": "Clear Inline Drop Targets",
           "type": "task",
           "explanation": "GUIDE: Inline drop targets - The first drop target scores 200 points and lights the spinner. The target at the back of the inline drops lane scores extra ball the first time, special the second time.",
-          "source_location": "Dolly Parton \u2013 Clear inline drop targets"
+          "source_location": "Dolly Parton – Clear inline drop targets"
         },
         {
           "title": "Easy Score (38,194+)",
           "type": "score",
           "explanation": "GUIDE: Score 38,194+ on Dolly Parton. Best scoring from the guide: Complete DOLLY PARTON Once: Any completion of Dolly Parton unlights all letters to be collected again. Clear Inline Drop Targets: The target at the back of the inline drops lane scores extra ball the first time.",
-          "source_location": "Dolly Parton \u2013 Easy Score (38,194+)"
+          "source_location": "Dolly Parton – Easy Score (38,194+)"
         },
         {
           "title": "Rip the Spinner 5 Times While Lit",
@@ -2003,7 +1970,7 @@
           "title": "Light the Spinner and Score Spinner Rips",
           "type": "task",
           "explanation": "GUIDE: Right spinner - Scores 100 points per spin, or 1,000 when lit. Spinner is lit for the remainder of the ball by hitting the first of the inline drop targets.",
-          "source_location": "Dolly Parton \u2013 Light the spinner and score spinner rips"
+          "source_location": "Dolly Parton – Light the spinner and score spinner rips"
         },
         {
           "title": "Complete One Dolly Lane Set",
@@ -2023,13 +1990,13 @@
           "title": "Light the Spinner and Score Spinner Rips",
           "type": "task",
           "explanation": "GUIDE: Right spinner - Scores 100 points per spin, or 1,000 when lit. Spinner is lit for the remainder of the ball by hitting the first of the inline drop targets.",
-          "source_location": "Dolly Parton \u2013 Light the spinner and score spinner rips"
+          "source_location": "Dolly Parton – Light the spinner and score spinner rips"
         },
         {
           "title": "Medium Score (93,866+)",
           "type": "score",
           "explanation": "GUIDE: Score 93,866+ on Dolly Parton. Best scoring from the guide: Complete DOLLY PARTON Once: Any completion of Dolly Parton unlights all letters to be collected again. Clear Inline Drop Targets: The target at the back of the inline drops lane scores extra ball the first time.",
-          "source_location": "Dolly Parton \u2013 Medium Score (93,866+)"
+          "source_location": "Dolly Parton – Medium Score (93,866+)"
         },
         {
           "title": "Complete One Dolly Lane Set",
@@ -2041,7 +2008,7 @@
           "title": "Clear Inline Drop Targets",
           "type": "task",
           "explanation": "GUIDE: Inline drop targets - The first drop target scores 200 points and lights the spinner. The target at the back of the inline drops lane scores extra ball the first time, special the second time.",
-          "source_location": "Dolly Parton \u2013 Clear inline drop targets"
+          "source_location": "Dolly Parton – Clear inline drop targets"
         },
         {
           "title": "Rip the Spinner 5 Times While Lit",
@@ -2061,13 +2028,13 @@
           "title": "Complete DOLLY PARTON Once",
           "type": "task",
           "explanation": "GUIDE: Finish the full DOLLY PARTON letter/objective sequence one time.",
-          "source_location": "Dolly Parton \u2013 Complete DOLLY PARTON once"
+          "source_location": "Dolly Parton – Complete DOLLY PARTON once"
         },
         {
           "title": "Hard Score (187,577+)",
           "type": "score",
           "explanation": "GUIDE: Score 187,577+ on Dolly Parton. Best scoring from the guide: Complete DOLLY PARTON Once: Any completion of Dolly Parton unlights all letters to be collected again. Clear Inline Drop Targets: The target at the back of the inline drops lane scores extra ball the first time.",
-          "source_location": "Dolly Parton \u2013 Hard Score (187,577+)"
+          "source_location": "Dolly Parton – Hard Score (187,577+)"
         },
         {
           "title": "Complete DOLLY PARTON Twice",
@@ -2079,7 +2046,7 @@
           "title": "Light the Spinner and Score Spinner Rips",
           "type": "task",
           "explanation": "GUIDE: Right spinner - Scores 100 points per spin, or 1,000 when lit. Spinner is lit for the remainder of the ball by hitting the first of the inline drop targets.",
-          "source_location": "Dolly Parton \u2013 Light the spinner and score spinner rips"
+          "source_location": "Dolly Parton – Light the spinner and score spinner rips"
         },
         {
           "title": "Complete One Dolly Lane Set",
@@ -2091,7 +2058,7 @@
           "title": "Clear Inline Drop Targets",
           "type": "task",
           "explanation": "GUIDE: Inline drop targets - The first drop target scores 200 points and lights the spinner. The target at the back of the inline drops lane scores extra ball the first time, special the second time.",
-          "source_location": "Dolly Parton \u2013 Clear inline drop targets"
+          "source_location": "Dolly Parton – Clear inline drop targets"
         }
       ]
     },
@@ -2101,13 +2068,13 @@
           "title": "Collect a Bonus Build at a Drop Target",
           "type": "task",
           "explanation": "GUIDE: Build bonus at the table's drop target bank, then collect the lit bonus increase from a qualifying drop target hit.",
-          "source_location": "Paragon \u2013 Collect a bonus build at a drop target"
+          "source_location": "Paragon – Collect a bonus build at a drop target"
         },
         {
           "title": "Easy Score (29,714+)",
           "type": "score",
           "explanation": "GUIDE: Score 29,714+ on Paragon. Best scoring from the guide: Collect a Huge End of Ball Bonus: Bonus multiplier is advanced as described in the \"In line drops and back saucer\". Collect 2 Saucer Awards: The first visit to this saucer awards 5X bonus. The second awards an extra ball.",
-          "source_location": "Paragon \u2013 Easy Score (29,714+)"
+          "source_location": "Paragon – Easy Score (29,714+)"
         },
         {
           "title": "Collect 2 Saucer Awards",
@@ -2119,7 +2086,7 @@
           "title": "Light and Collect a Saucer Award",
           "type": "task",
           "explanation": "GUIDE: In line drops and back saucer - The first visit to this saucer awards 5X bonus; the second awards an extra ball; the third and on award a special. Landing in this saucer also resets the in line targets on every collect starting with the second (the EB).",
-          "source_location": "Paragon \u2013 Light and collect a saucer award"
+          "source_location": "Paragon – Light and collect a saucer award"
         },
         {
           "title": "Complete Either Drop Target Bank Twice",
@@ -2139,13 +2106,13 @@
           "title": "Light and Collect a Saucer Award",
           "type": "task",
           "explanation": "GUIDE: In line drops and back saucer - The first visit to this saucer awards 5X bonus; the second awards an extra ball; the third and on award a special. Landing in this saucer also resets the in line targets on every collect starting with the second (the EB).",
-          "source_location": "Paragon \u2013 Light and collect a saucer award"
+          "source_location": "Paragon – Light and collect a saucer award"
         },
         {
           "title": "Medium Score (69,411+)",
           "type": "score",
           "explanation": "GUIDE: Score 69,411+ on Paragon. Best scoring from the guide: Collect a Huge End of Ball Bonus: Bonus multiplier is advanced as described in the \"In line drops and back saucer\". Collect 2 Saucer Awards: The first visit to this saucer awards 5X bonus. The second awards an extra ball.",
-          "source_location": "Paragon \u2013 Medium Score (69,411+)"
+          "source_location": "Paragon – Medium Score (69,411+)"
         },
         {
           "title": "Complete Either Drop Target Bank Twice",
@@ -2157,7 +2124,7 @@
           "title": "Collect a Bonus Build at a Drop Target",
           "type": "task",
           "explanation": "GUIDE: Build bonus at the table's drop target bank, then collect the lit bonus increase from a qualifying drop target hit.",
-          "source_location": "Paragon \u2013 Collect a bonus build at a drop target"
+          "source_location": "Paragon – Collect a bonus build at a drop target"
         },
         {
           "title": "Collect 2 Saucer Awards",
@@ -2177,13 +2144,13 @@
           "title": "Reach a High Bonus and Collect End-Of-Ball Bonus",
           "type": "task",
           "explanation": "GUIDE: Bonus is advanced at the top star rollover, Paragon saucer, Golden Cliffs saucer (when value is maxed at 20,000 only), spinner (every 5 hits), in line.",
-          "source_location": "Paragon \u2013 Reach a high bonus and collect end-of-ball bonus"
+          "source_location": "Paragon – Reach a high bonus and collect end-of-ball bonus"
         },
         {
           "title": "Hard Score (138,838+)",
           "type": "score",
           "explanation": "GUIDE: Score 138,838+ on Paragon. Best scoring from the guide: Collect 2 Saucer Awards: The first visit to this saucer awards 5X bonus. The second awards an extra ball. Collect a Huge End of Ball Bonus: Bonus multiplier is advanced as described in the \"In line drops and back saucer\".",
-          "source_location": "Paragon \u2013 Hard Score (138,838+)"
+          "source_location": "Paragon – Hard Score (138,838+)"
         },
         {
           "title": "Collect a Huge End-Of-Ball Bonus",
@@ -2195,7 +2162,7 @@
           "title": "Light and Collect a Saucer Award",
           "type": "task",
           "explanation": "GUIDE: In line drops and back saucer - The first visit to this saucer awards 5X bonus; the second awards an extra ball; the third and on award a special. Landing in this saucer also resets the in line targets on every collect starting with the second (the EB).",
-          "source_location": "Paragon \u2013 Light and collect a saucer award"
+          "source_location": "Paragon – Light and collect a saucer award"
         },
         {
           "title": "Complete Either Drop Target Bank Twice",
@@ -2207,7 +2174,7 @@
           "title": "Collect a Bonus Build at a Drop Target",
           "type": "task",
           "explanation": "GUIDE: Build bonus at the table's drop target bank, then collect the lit bonus increase from a qualifying drop target hit.",
-          "source_location": "Paragon \u2013 Collect a bonus build at a drop target"
+          "source_location": "Paragon – Collect a bonus build at a drop target"
         }
       ]
     },
@@ -2333,13 +2300,13 @@
           "title": "Shoot to Access the Upper Playfield",
           "type": "task",
           "explanation": "GUIDE: A-B ramps and upper playfield - Shoot either the A or B ramp all the way to the dragon head so the ball is fed onto the upper playfield. Once there, complete the 4-bank or 3-bank drop targets for the upper-playfield awards.",
-          "source_location": "Grand Lizard \u2013 Shoot to access the upper playfield"
+          "source_location": "Grand Lizard – Shoot to access the upper playfield"
         },
         {
           "title": "Easy Score (91,852+)",
           "type": "score",
           "explanation": "GUIDE: Score 91,852+ on Grand Lizard. Best scoring from the guide: Collect a Multiball Jackpot: Keep control long enough to shoot the lit jackpot shot once before the mode collapses. Complete 1 Upper Playfield Lane Set: Get to the upper playfield through the A or B ramp.",
-          "source_location": "Grand Lizard \u2013 Easy Score (91,852+)"
+          "source_location": "Grand Lizard – Easy Score (91,852+)"
         },
         {
           "title": "Shoot the Upper Playfield Twice",
@@ -2351,7 +2318,7 @@
           "title": "Start Multiball (Lock Balls)",
           "type": "task",
           "explanation": "GUIDE: Multiball locks - Raise the lock path, then lock balls for Multiball. Locked balls can be stolen in multiplayer rules, so treat each lock as progress you may need to resecure.",
-          "source_location": "Grand Lizard \u2013 Start Multiball (lock balls)"
+          "source_location": "Grand Lizard – Start Multiball (lock balls)"
         },
         {
           "title": "Complete 1 Upper Playfield Lane Set",
@@ -2409,13 +2376,13 @@
           "title": "Complete 1 Upper Playfield Objective",
           "type": "task",
           "explanation": "GUIDE: Get to the upper playfield through the A or B ramp, then finish either drop-target objective: clear the 4-bank before the scan timer ends for its lit value, or clear the 3-bank to build the cave value and collect its award.",
-          "source_location": "Grand Lizard \u2013 Complete 1 upper playfield objective"
+          "source_location": "Grand Lizard – Complete 1 upper playfield objective"
         },
         {
           "title": "Hard Score (635,636+)",
           "type": "score",
           "explanation": "GUIDE: Score 635,636+ on Grand Lizard. Best scoring from the guide: Collect a Multiball Jackpot: Keep control long enough to shoot the lit jackpot shot once before the mode collapses. Start Multiball Lock Balls: Raise the lock path, then lock balls for Multiball.",
-          "source_location": "Grand Lizard \u2013 Hard Score (635,636+)"
+          "source_location": "Grand Lizard – Hard Score (635,636+)"
         },
         {
           "title": "Collect a Multiball Jackpot",
@@ -2427,7 +2394,7 @@
           "title": "Start Multiball (Lock Balls)",
           "type": "task",
           "explanation": "GUIDE: Multiball locks - Raise the lock path, then lock balls for Multiball. Locked balls can be stolen in multiplayer rules, so treat each lock as progress you may need to resecure.",
-          "source_location": "Grand Lizard \u2013 Start Multiball (lock balls)"
+          "source_location": "Grand Lizard – Start Multiball (lock balls)"
         },
         {
           "title": "Complete 1 Upper Playfield Lane Set",
@@ -2439,7 +2406,7 @@
           "title": "Shoot to Access the Upper Playfield",
           "type": "task",
           "explanation": "GUIDE: A-B ramps and upper playfield - Shoot either the A or B ramp all the way to the dragon head so the ball is fed onto the upper playfield. Once there, complete the 4-bank or 3-bank drop targets for the upper-playfield awards.",
-          "source_location": "Grand Lizard \u2013 Shoot to access the upper playfield"
+          "source_location": "Grand Lizard – Shoot to access the upper playfield"
         }
       ]
     },
@@ -2449,13 +2416,13 @@
           "title": "Complete a Drop Target Bank",
           "type": "task",
           "explanation": "GUIDE: All three banks of drop targets follow the same rules. When a bank is completed, the white light in front of that bank will turn on.",
-          "source_location": "Jokerz \u2013 Complete a drop target bank"
+          "source_location": "Jokerz – Complete a drop target bank"
         },
         {
           "title": "Easy Score (416,915+)",
           "type": "score",
           "explanation": "GUIDE: Score 416,915+ on Jokerz. Best scoring from the guide: Start Multiball and Collect a Jackpot: Locking two balls starts multiball. Start a Mode Feature Jokerz Etc: When all three lights are on, Million Round starts immediately.",
-          "source_location": "Jokerz \u2013 Easy Score (416,915+)"
+          "source_location": "Jokerz – Easy Score (416,915+)"
         },
         {
           "title": "Complete Both Easy Drop Banks Once",
@@ -2467,7 +2434,7 @@
           "title": "Start a Mode/Feature (Jokerz!/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Drop targets and Million Round - Complete all three drop target banks to turn on the white lights in front of them. When all three lights are on, Million Round starts immediately; during the timed round, clearing a lit bank scores 1,000,000 points.",
-          "source_location": "Jokerz \u2013 Start a mode/feature (Jokerz!/etc.)"
+          "source_location": "Jokerz – Start a mode/feature (Jokerz!/etc.)"
         },
         {
           "title": "Start 2 Features in One Game",
@@ -2487,13 +2454,13 @@
           "title": "Start a Mode/Feature (Jokerz!/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Drop targets and Million Round - Complete all three drop target banks to turn on the white lights in front of them. When all three lights are on, Million Round starts immediately; during the timed round, clearing a lit bank scores 1,000,000 points.",
-          "source_location": "Jokerz \u2013 Start a mode/feature (Jokerz!/etc.)"
+          "source_location": "Jokerz – Start a mode/feature (Jokerz!/etc.)"
         },
         {
           "title": "Medium Score (897,162+)",
           "type": "score",
           "explanation": "GUIDE: Score 897,162+ on Jokerz. Best scoring from the guide: Start Multiball and Collect a Jackpot: Locking two balls starts multiball. Start a Mode Feature Jokerz Etc: When all three lights are on, Million Round starts immediately.",
-          "source_location": "Jokerz \u2013 Medium Score (897,162+)"
+          "source_location": "Jokerz – Medium Score (897,162+)"
         },
         {
           "title": "Start 2 Features in One Game",
@@ -2505,7 +2472,7 @@
           "title": "Complete a Drop Target Bank",
           "type": "task",
           "explanation": "GUIDE: All three banks of drop targets follow the same rules. When a bank is completed, the white light in front of that bank will turn on.",
-          "source_location": "Jokerz \u2013 Complete a drop target bank"
+          "source_location": "Jokerz – Complete a drop target bank"
         },
         {
           "title": "Complete Both Easy Drop Banks Once",
@@ -2525,13 +2492,13 @@
           "title": "Start Multiball and Collect a Jackpot",
           "type": "task",
           "explanation": "GUIDE: Center ramp: locks and multiball - When the center ramp is up, shoot it to score 20,000 points and lock a ball. Locking two balls starts multiball.",
-          "source_location": "Jokerz \u2013 Start Multiball and collect a Jackpot"
+          "source_location": "Jokerz – Start Multiball and collect a Jackpot"
         },
         {
           "title": "Hard Score (1,723,182+)",
           "type": "score",
           "explanation": "GUIDE: Score 1,723,182+ on Jokerz. Best scoring from the guide: Start Multiball and Collect a Jackpot: Locking two balls starts multiball. Start a Mode Feature Jokerz Etc: When all three lights are on, Million Round starts immediately.",
-          "source_location": "Jokerz \u2013 Hard Score (1,723,182+)"
+          "source_location": "Jokerz – Hard Score (1,723,182+)"
         },
         {
           "title": "Collect 2 Jackpots in Multiball",
@@ -2543,7 +2510,7 @@
           "title": "Start a Mode/Feature (Jokerz!/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Drop targets and Million Round - Complete all three drop target banks to turn on the white lights in front of them. When all three lights are on, Million Round starts immediately; during the timed round, clearing a lit bank scores 1,000,000 points.",
-          "source_location": "Jokerz \u2013 Start a mode/feature (Jokerz!/etc.)"
+          "source_location": "Jokerz – Start a mode/feature (Jokerz!/etc.)"
         },
         {
           "title": "Start 2 Features in One Game",
@@ -2555,7 +2522,7 @@
           "title": "Complete a Drop Target Bank",
           "type": "task",
           "explanation": "GUIDE: All three banks of drop targets follow the same rules. When a bank is completed, the white light in front of that bank will turn on.",
-          "source_location": "Jokerz \u2013 Complete a drop target bank"
+          "source_location": "Jokerz – Complete a drop target bank"
         }
       ]
     },
@@ -2565,13 +2532,13 @@
           "title": "Make 1 Left Ramp Shot",
           "type": "task",
           "explanation": "GUIDE: Shoot the left ramp once and confirm the table awards the ramp shot.",
-          "source_location": "Bad Cats \u2013 Make 1 left ramp shot"
+          "source_location": "Bad Cats – Make 1 left ramp shot"
         },
         {
           "title": "Easy Score (564,642+)",
           "type": "score",
           "explanation": "GUIDE: Build score to at least 564,642 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-          "source_location": "Bad Cats \u2013 Easy Score (564,642+)"
+          "source_location": "Bad Cats – Easy Score (564,642+)"
         },
         {
           "title": "Make 3 Left Ramp Shots",
@@ -2583,7 +2550,7 @@
           "title": "Complete a Drop Target Bank (Birds or Milk)",
           "type": "task",
           "explanation": "GUIDE: Clear either the Birds or Milk drop-target bank once.\n\nNOTE: Completing a 3-bank also lights the Fishbowl center ramp when it is unlit.",
-          "source_location": "Bad Cats \u2013 Complete either drop target bank (Birds or Milk)"
+          "source_location": "Bad Cats – Complete either drop target bank (Birds or Milk)"
         },
         {
           "title": "Complete Both Birds and Milk Drop Target Banks",
@@ -2603,13 +2570,13 @@
           "title": "Complete a Drop Target Bank (Birds or Milk)",
           "type": "task",
           "explanation": "GUIDE: Clear either the Birds or Milk drop-target bank once.\n\nNOTE: Completing a 3-bank also lights the Fishbowl center ramp when it is unlit.",
-          "source_location": "Bad Cats \u2013 Complete either drop target bank (Birds or Milk)"
+          "source_location": "Bad Cats – Complete either drop target bank (Birds or Milk)"
         },
         {
           "title": "Medium Score (1,178,710+)",
           "type": "score",
           "explanation": "GUIDE: Build score to at least 1,178,710 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-          "source_location": "Bad Cats \u2013 Medium Score (1,178,710+)"
+          "source_location": "Bad Cats – Medium Score (1,178,710+)"
         },
         {
           "title": "Complete Both Birds and Milk Drop Target Banks",
@@ -2621,7 +2588,7 @@
           "title": "Make 1 Left Ramp Shot",
           "type": "task",
           "explanation": "GUIDE: Shoot the left ramp once and confirm the table awards the ramp shot.",
-          "source_location": "Bad Cats \u2013 Make 1 left ramp shot"
+          "source_location": "Bad Cats – Make 1 left ramp shot"
         },
         {
           "title": "Make 3 Left Ramp Shots",
@@ -2641,13 +2608,13 @@
           "title": "Light Jackpot and Collect It at the Center Ramp",
           "type": "task",
           "explanation": "GUIDE: Complete the required Jackpot progress until Jackpot is lit, then shoot the center Fishbowl ramp to collect it.",
-          "source_location": "Bad Cats \u2013 Light Jackpot (7 bank completions) and collect it at the center ramp"
+          "source_location": "Bad Cats – Light Jackpot (7 bank completions) and collect it at the center ramp"
         },
         {
           "title": "Hard Score (2,163,757+)",
           "type": "score",
           "explanation": "GUIDE: Build score to at least 2,163,757 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-          "source_location": "Bad Cats \u2013 Hard Score (2,163,757+)"
+          "source_location": "Bad Cats – Hard Score (2,163,757+)"
         },
         {
           "title": "Light Jackpot and Complete Center Ramp Twice",
@@ -2659,7 +2626,7 @@
           "title": "Complete a Drop Target Bank (Birds or Milk)",
           "type": "task",
           "explanation": "GUIDE: Clear either the Birds or Milk drop-target bank once.\n\nNOTE: Completing a 3-bank also lights the Fishbowl center ramp when it is unlit.",
-          "source_location": "Bad Cats \u2013 Complete either drop target bank (Birds or Milk)"
+          "source_location": "Bad Cats – Complete either drop target bank (Birds or Milk)"
         },
         {
           "title": "Complete Both Birds and Milk Drop Target Banks",
@@ -2671,7 +2638,7 @@
           "title": "Make 1 Left Ramp Shot",
           "type": "task",
           "explanation": "GUIDE: Shoot the left ramp once and confirm the table awards the ramp shot.",
-          "source_location": "Bad Cats \u2013 Make 1 left ramp shot"
+          "source_location": "Bad Cats – Make 1 left ramp shot"
         }
       ]
     },
@@ -2681,13 +2648,13 @@
           "title": "Pick Up 1 Passenger",
           "type": "task",
           "explanation": "GUIDE: Shoot the lit pickup/passenger shot once to load a passenger.",
-          "source_location": "Taxi \u2013 Pick up 1 passenger"
+          "source_location": "Taxi – Pick up 1 passenger"
         },
         {
           "title": "Easy Score (375,039+)",
           "type": "score",
           "explanation": "GUIDE: Score 375,039+ on Taxi. Best scoring from the guide: Collect a Super Jackpot in Multiball: There will always be two passengers lit at a time until the first jackpot is. Start Multiball and Collect a Jackpot: Pick up passengers until Jackpot lights at Gorbie and shoot Gorbie before the timer.",
-          "source_location": "Taxi \u2013 Easy Score (375,039+)"
+          "source_location": "Taxi – Easy Score (375,039+)"
         },
         {
           "title": "Pick Up 2 Passengers",
@@ -2699,7 +2666,7 @@
           "title": "Light and Lock 1 Ball at the Scoop",
           "type": "task",
           "explanation": "GUIDE: Shoot the right-side Express Lane/lock shot when it is lit to lock the first ball toward multiball.",
-          "source_location": "Taxi \u2013 Light and lock 1 ball at the scoop"
+          "source_location": "Taxi – Light and lock 1 ball at the scoop"
         },
         {
           "title": "Light 2 Locks in One Game",
@@ -2719,13 +2686,13 @@
           "title": "Light and Lock 1 Ball at the Scoop",
           "type": "task",
           "explanation": "GUIDE: Shoot the right-side Express Lane/lock shot when it is lit to lock the first ball toward multiball.",
-          "source_location": "Taxi \u2013 Light and lock 1 ball at the scoop"
+          "source_location": "Taxi – Light and lock 1 ball at the scoop"
         },
         {
           "title": "Medium Score (738,638+)",
           "type": "score",
           "explanation": "GUIDE: Score 738,638+ on Taxi. Best scoring from the guide: Collect a Super Jackpot in Multiball: There will always be two passengers lit at a time until the first jackpot is. Start Multiball and Collect a Jackpot: Pick up passengers until Jackpot lights at Gorbie and shoot Gorbie before the timer.",
-          "source_location": "Taxi \u2013 Medium Score (738,638+)"
+          "source_location": "Taxi – Medium Score (738,638+)"
         },
         {
           "title": "Light 2 Locks in One Game",
@@ -2737,7 +2704,7 @@
           "title": "Pick Up 1 Passenger",
           "type": "task",
           "explanation": "GUIDE: Shoot the lit pickup/passenger shot once to load a passenger.",
-          "source_location": "Taxi \u2013 Pick up 1 passenger"
+          "source_location": "Taxi – Pick up 1 passenger"
         },
         {
           "title": "Pick Up 2 Passengers",
@@ -2757,13 +2724,13 @@
           "title": "Start Multiball and Collect a Jackpot",
           "type": "task",
           "explanation": "GUIDE: Lock both balls through the Express Lane lock sequence, then pick up passengers until Jackpot lights at Gorbie and shoot Gorbie before the timer expires.",
-          "source_location": "Taxi \u2013 Start Multiball and collect a Jackpot"
+          "source_location": "Taxi – Start Multiball and collect a Jackpot"
         },
         {
           "title": "Hard Score (1,270,148+)",
           "type": "score",
           "explanation": "GUIDE: Score 1,270,148+ on Taxi. Best scoring from the guide: Collect a Super Jackpot in Multiball: There will always be two passengers lit at a time until the first jackpot is. Start Multiball and Collect a Jackpot: Pick up passengers until Jackpot lights at Gorbie and shoot Gorbie before the timer.",
-          "source_location": "Taxi \u2013 Hard Score (1,270,148+)"
+          "source_location": "Taxi – Hard Score (1,270,148+)"
         },
         {
           "title": "Collect a Super Jackpot in Multiball",
@@ -2775,7 +2742,7 @@
           "title": "Light and Lock 1 Ball at the Scoop",
           "type": "task",
           "explanation": "GUIDE: Shoot the right-side Express Lane/lock shot when it is lit to lock the first ball toward multiball.",
-          "source_location": "Taxi \u2013 Light and lock 1 ball at the scoop"
+          "source_location": "Taxi – Light and lock 1 ball at the scoop"
         },
         {
           "title": "Light 2 Locks in One Game",
@@ -2797,13 +2764,13 @@
           "title": "Advance the Metamorphosis Steps Once",
           "type": "task",
           "explanation": "GUIDE: Bride face/metamorphosis - Shoot the left ramp into the Face structure to advance Bride progress. If the space shuttle is lit the ramp may divert to the PinBot board.",
-          "source_location": "Bride of Pinbot \u2013 Advance the metamorphosis steps once"
+          "source_location": "Bride of Pinbot – Advance the metamorphosis steps once"
         },
         {
           "title": "Easy Score (1,036,158+)",
           "type": "score",
           "explanation": "GUIDE: Score 1,036,158+ on Bride of Pinbot. Best scoring from the guide: Complete a Face Part Eyes Ears Etc: Even if the shuttle is lit, a slightly weaker than full ramp shot can still fall into. Advance the Metamorphosis Steps Once: Shoot the left ramp into the Face structure to advance Bride progress.",
-          "source_location": "Bride of Pinbot \u2013 Easy Score (1,036,158+)"
+          "source_location": "Bride of Pinbot – Easy Score (1,036,158+)"
         },
         {
           "title": "Advance 3 Metamorphosis Steps",
@@ -2815,7 +2782,7 @@
           "title": "Complete a Face Part (Eyes/Ears/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Complete one full face part by finishing the required lit part shots (for example eyes or ears).",
-          "source_location": "Bride of Pinbot \u2013 Complete a face part (eyes/ears/etc.)"
+          "source_location": "Bride of Pinbot – Complete a face part (eyes/ears/etc.)"
         },
         {
           "title": "Complete 2 Face Parts",
@@ -2835,13 +2802,13 @@
           "title": "Complete a Face Part (Eyes/Ears/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Complete one full face part by finishing the required lit part shots (for example eyes or ears).",
-          "source_location": "Bride of Pinbot \u2013 Complete a face part (eyes/ears/etc.)"
+          "source_location": "Bride of Pinbot – Complete a face part (eyes/ears/etc.)"
         },
         {
           "title": "Medium Score (2,293,558+)",
           "type": "score",
           "explanation": "GUIDE: Score 2,293,558+ on Bride of Pinbot. Best scoring from the guide: Complete a Face Part Eyes Ears Etc: Even if the shuttle is lit, a slightly weaker than full ramp shot can still fall into. Advance the Metamorphosis Steps Once: Shoot the left ramp into the Face structure to advance Bride progress.",
-          "source_location": "Bride of Pinbot \u2013 Medium Score (2,293,558+)"
+          "source_location": "Bride of Pinbot – Medium Score (2,293,558+)"
         },
         {
           "title": "Complete 2 Face Parts",
@@ -2853,7 +2820,7 @@
           "title": "Advance the Metamorphosis Steps Once",
           "type": "task",
           "explanation": "GUIDE: Bride face/metamorphosis - Shoot the left ramp into the Face structure to advance Bride progress. If the space shuttle is lit the ramp may divert to the PinBot board.",
-          "source_location": "Bride of Pinbot \u2013 Advance the metamorphosis steps once"
+          "source_location": "Bride of Pinbot – Advance the metamorphosis steps once"
         },
         {
           "title": "Advance 3 Metamorphosis Steps",
@@ -2873,13 +2840,13 @@
           "title": "Complete the Bride (Finish Metamorphosis)",
           "type": "task",
           "explanation": "GUIDE: Finish all metamorphosis parts so Bride is completed on the table progression.",
-          "source_location": "Bride of Pinbot \u2013 Complete the Bride (finish metamorphosis)"
+          "source_location": "Bride of Pinbot – Complete the Bride (finish metamorphosis)"
         },
         {
           "title": "Hard Score (4,712,887+)",
           "type": "score",
           "explanation": "GUIDE: Score 4,712,887+ on Bride of Pinbot. Best scoring from the guide: Complete a Face Part Eyes Ears Etc: Even if the shuttle is lit, a slightly weaker than full ramp shot can still fall into. Advance the Metamorphosis Steps Once: Shoot the left ramp into the Face structure to advance Bride progress.",
-          "source_location": "Bride of Pinbot \u2013 Hard Score (4,712,887+)"
+          "source_location": "Bride of Pinbot – Hard Score (4,712,887+)"
         },
         {
           "title": "Start Metamorphosis and Complete the Bride",
@@ -2891,7 +2858,7 @@
           "title": "Complete a Face Part (Eyes/Ears/Etc.)",
           "type": "task",
           "explanation": "GUIDE: Complete one full face part by finishing the required lit part shots (for example eyes or ears).",
-          "source_location": "Bride of Pinbot \u2013 Complete a face part (eyes/ears/etc.)"
+          "source_location": "Bride of Pinbot – Complete a face part (eyes/ears/etc.)"
         },
         {
           "title": "Complete 2 Face Parts",
@@ -2903,7 +2870,7 @@
           "title": "Advance the Metamorphosis Steps Once",
           "type": "task",
           "explanation": "GUIDE: Bride face/metamorphosis - Shoot the left ramp into the Face structure to advance Bride progress. If the space shuttle is lit the ramp may divert to the PinBot board.",
-          "source_location": "Bride of Pinbot \u2013 Advance the metamorphosis steps once"
+          "source_location": "Bride of Pinbot – Advance the metamorphosis steps once"
         }
       ]
     },
@@ -7380,6 +7347,12 @@
           "type": "score",
           "explanation": "GUIDE: Score 237,815+ on Rolling Stones. Best scoring: Collect Bonus - drop the Collect Bonus target, build 20/40/60 with 1-5 targets, then shoot the scoop. Target bank - clear the upper-right drops.",
           "source_location": "Rolling Stones - Hard Score (237,815+)"
+        },
+        {
+          "title": "Start Multiball",
+          "type": "task",
+          "explanation": "GUIDE: Light lock, lock the required ball(s), then start multiball.",
+          "source_location": "Start Multiball"
         }
       ]
     },
@@ -9072,7 +9045,7 @@
           "source_location": "Collect a 50,000 P-L-A-Y award"
         },
         {
-          "title": "Collect the 100,000 1-2-3 Award",
+          "title": "Score the 100,000 1-2-3 Award",
           "type": "task",
           "explanation": "GUIDE: Complete this objective exactly as written one time on the table.",
           "source_location": "Score the 100,000 1-2-3 award"
@@ -9110,7 +9083,7 @@
           "source_location": "Collect a 3X golden-ball bonus"
         },
         {
-          "title": "Collect Two 100,000 1-2-3 Awards in One Game",
+          "title": "Score Two 100,000 1-2-3 Awards in One Game",
           "type": "task",
           "explanation": "GUIDE: Complete this objective exactly as written one time on the table.",
           "source_location": "Score two 100,000 1-2-3 awards in one game"
@@ -10400,5 +10373,4 @@
       ]
     }
   }
-});
-})(typeof window !== 'undefined' ? window : this);
+};

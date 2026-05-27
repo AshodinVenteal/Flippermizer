@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Flippermizer Home Edition YAML Options Builder</title>
+<title>Flippermizer YAML Options Builder</title>
 <style>
   @font-face{
     font-family:'Press Start 2P';
@@ -118,6 +118,7 @@
     font:10px/1 var(--fontPixel);
     text-shadow:0 0 10px rgba(255,214,122,.34);
   }
+  body[data-edition="stream"] header::before{ content:"STREAM EDITION"; }
   header::after{
     content:"";
     position:absolute;
@@ -248,6 +249,43 @@
   }
   .tableItem:hover{ border-color:rgba(34,255,136,.62); box-shadow:0 0 14px rgba(34,255,136,.10); }
   .tName{ font-size:12px; line-height:1.2; color:rgba(232,250,255,.88); }
+  .curatedTableTools{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:8px;
+  }
+  .curatedTableGrid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+    max-height:320px;
+    overflow:auto;
+    padding:8px;
+    border:1px solid rgba(0,166,255,.28);
+    border-radius:8px;
+    background:rgba(2,13,22,.54);
+  }
+  @media (min-width:1200px){ .curatedTableGrid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+  .curatedPick{
+    min-height:42px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid rgba(0,166,255,.30);
+    border-radius:8px;
+    padding:8px;
+    background:linear-gradient(180deg, rgba(8,28,45,.82), rgba(3,18,30,.82));
+    color:rgba(232,250,255,.88);
+    font:600 11px/1.25 var(--fontUi);
+    cursor:pointer;
+  }
+  .curatedPick:hover{ border-color:rgba(34,255,136,.62); box-shadow:0 0 14px rgba(34,255,136,.10); }
+  .curatedPick input{ accent-color:var(--green); }
+  .curatedPick.isSelected{
+    border-color:rgba(34,255,136,.78);
+    background:linear-gradient(180deg, rgba(11,43,32,.92), rgba(3,23,17,.88));
+  }
 
   .actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
   button{
@@ -319,8 +357,8 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Flippermizer Home Edition YAML Options Builder</h1>
-      <div class="sub">Build a trapless YAML for the Home Edition AP world. Game key: <span class="pill" id="gameKeyPill">FlippermizerWorldsofPinball</span></div>
+      <h1>Flippermizer YAML Options Builder</h1>
+      <div class="sub">Build a YAML for Home Edition or Stream Edition AP worlds. Game key: <span class="pill" id="gameKeyPill">FlippermizerWorldsofPinball</span></div>
     </header>
 
     <div class="grid">
@@ -330,12 +368,13 @@
 
         <div class="row">
           <div class="col" style="flex:1;">
-            <div class="label">Home Edition World</div>
-            <div class="small">This builder targets the trapless Home Edition AP world.</div>
+            <div class="label">Edition</div>
+            <div class="small">Home and Stream both support curated table-list worlds.</div>
           </div>
           <div style="width:260px;">
-            <select id="worldVariant" disabled>
-              <option value="base">Home Edition</option>
+            <select id="worldVariant">
+              <option value="home">Home Edition</option>
+              <option value="stream">Stream Edition</option>
             </select>
           </div>
         </div>
@@ -437,7 +476,7 @@
 
         <div id="metasizerOptionsWrap" class="hidden">
           <div class="inlineInfo">
-            Base Game builds a 25-table episode from curated or random five-table world groups. Curated group keys use the same values the AP world reads from YAML.
+            Base Game builds a 25-table episode from curated or random five-table world groups. Table-list curation shuffles your selected tables into generated worlds with generated banner names.
           </div>
 
           <div class="row">
@@ -478,6 +517,7 @@
                 <option value="random_catalog_pool">Random Catalog Pool</option>
                 <option value="curated_catalog_groups">Curated Catalog Groups</option>
                 <option value="hybrid_curated_random_fill">Hybrid Curated + Random Fill</option>
+                <option value="curated_table_list">Curated Table List</option>
               </select>
             </div>
           </div>
@@ -510,6 +550,22 @@
             <button id="btnCuratedClassicFive" class="gray" type="button">Preset: Original 5 Worlds</button>
             <button id="btnCuratedAllReady" class="gray" type="button">Preset: All Ready Worlds</button>
             <button id="btnCuratedAuto" class="alt" type="button">Set Curated: auto</button>
+          </div>
+          <div class="row">
+            <div class="col" style="flex:1;">
+              <div class="label">Curated Table List</div>
+              <div class="small">Pick exact tables for Curated Table List mode. The AP world shuffles them into generated five-table worlds with no table-art world backgrounds.</div>
+            </div>
+          </div>
+          <div class="curatedTableTools">
+            <input id="metasizerCuratedTableSearch" type="text" placeholder="Search tables..." autocomplete="off" />
+            <div class="curatedTableGrid" id="metasizerCuratedTableGrid"></div>
+            <textarea id="metasizerCuratedTables" style="min-height:76px;" spellcheck="false"></textarea>
+          </div>
+          <div class="actions" style="margin-top:8px;">
+            <button id="btnCuratedWellMade" type="button">Preset: Well-Made Tables</button>
+            <button id="btnCuratedAllTables" class="gray" type="button">Select All Ready Tables</button>
+            <button id="btnCuratedTablesClear" class="alt" type="button">Clear Table List</button>
           </div>
           <div id="metasizerCuratedInfo" class="inlineInfo"></div>
         </div>
@@ -550,15 +606,34 @@
 
 <script>
 (() => {
-  const BASE_GAME_META = {
-    gameKey: "FlippermizerWorldsofPinball",
-    fileName: "FlippermizerWorldsofPinball.yaml",
-    description: "Flippermizer Home Edition trapless AP world.",
-    defaultName: "FlippermizerWorldsofPinball"
+  const EDITION_META = {
+    home: {
+      editionLabel: "Home Edition",
+      gameKey: "FlippermizerWorldsofPinball",
+      fileName: "FlippermizerWorldsofPinball.yaml",
+      description: "Flippermizer Home Edition trapless AP world.",
+      defaultName: "FlippermizerWorldsofPinball"
+    },
+    stream: {
+      editionLabel: "Stream Edition",
+      gameKey: "Manual_FlippermizerBaseGame_Ashodin",
+      fileName: "Manual_FlippermizerBaseGame_Ashodin.yaml",
+      description: "Flippermizer Stream Edition AP world.",
+      defaultName: "Ashodin_BaseGame"
+    }
   };
-  function getVariantMeta(){
-    return BASE_GAME_META;
+  const BASE_GAME_META = EDITION_META.home;
+  function detectDefaultEdition(){
+    try{
+      const href = decodeURIComponent(String(location?.href || "")).toLowerCase();
+      if(href.includes("flippermizer stream edition")) return "stream";
+    }catch(_){}
+    return "home";
   }
+  function getVariantMeta(){
+    return EDITION_META[state.worldVariant] || BASE_GAME_META;
+  }
+  function isBaseGameVariant(){ return state.worldVariant === "home" || state.worldVariant === "stream" || state.worldVariant === "base"; }
 
   const BASE_TABLES = [
     "Attack from Mars","Bad Cats","Baywatch","Bride of Pinbot","Congo","Dolly Parton","Fathom","Grand Lizard",
@@ -567,21 +642,31 @@
     "Tales of the Arabian Nights","Taxi","The A-Team","The Getaway","World Cup Soccer"
   ];
   const METASIZER_TABLES = [
-    "Attack from Mars","Bad Cats","Baywatch","Bride of Pinbot","Congo","Dolly Parton","Fathom","Grand Lizard",
-    "Harlem Globetrotters","Hollywood Heat","Hook","Jokerz","Batman 66","Medieval Madness","Meteor",
-    "Mystery Castle","Paragon","Robocop","Star Trek Stern 2013","Star Trek The Next Generation",
-    "Tales of the Arabian Nights","Taxi","The A-Team","The Getaway","World Cup Soccer",
-    "Cirqus Voltaire","Al's Garage Band Goes on a World Tour","Circus","Phantom of the Opera","Theatre of Magic",
+    "Medieval Madness","Attack from Mars","World Cup Soccer","The Getaway","Star Trek Stern 2013",
+    "Tales of the Arabian Nights","Fathom","Hook","Congo","Mystery Castle",
+    "The A-Team","Batman 66","Hollywood Heat","Baywatch","Star Trek: The Next Generation",
+    "Meteor","Harlem Globetrotters","Dolly Parton","Paragon","Robocop",
+    "Grand Lizard","Jokerz","Bad Cats","Taxi","Bride of Pinbot",
     "White Water","Hurricane","Comet","Cyclone","Whirlwind",
-    "High Speed","No Fear Dangerous Sports","Spider-Man Vault Edition","Iron Man Vault Edition","AC/DC",
+    "High Speed","No Fear: Dangerous Sports","Spider-Man Vault Edition","Iron Man Vault Edition","AC/DC",
     "Party Animal","Elvira and the Party Monsters","Dr. Dude","Party Zone","Scared Stiff",
-    "Batman Forever","Demolition Man","GoldenEye","Jurassic Park","Last Action Hero",
-    "Stargate","Starship Troopers","Independence Day","The X-Files",
-    "Aerosmith","The Beatles","Elvis","Rolling Stones",
-    "Creature from the Black Lagoon","Freddy: A Nightmare on Elm Street","Monster Bash","Tales from the Crypt",
-    "Game of Thrones","Stranger Things","The Mandalorian","The Walking Dead",
-    "Corvette","Dirty Harry","Judge Dredd",
-    "Deadpool","Ghostbusters","The Adventures of Rocky and Bullwinkle and Friends"
+    "Bram Stoker's Dracula","Creature from the Black Lagoon","Police Force","Cirqus Voltaire","Al's Garage Band Goes on a World Tour",
+    "Circus","Phantom of the Opera","Theatre of Magic","Batman Forever","Demolition Man",
+    "GoldenEye","Jurassic Park","Last Action Hero","Stargate","Starship Troopers",
+    "Independence Day","The X-Files","Aerosmith","The Beatles","Elvis",
+    "Rolling Stones","Freddy: A Nightmare on Elm Street","Monster Bash","Tales from the Crypt","Game of Thrones",
+    "Lord of the Rings","The Walking Dead","Corvette","Dirty Harry","Judge Dredd",
+    "Deadpool","Ghostbusters","The Adventures of Rocky and Bullwinkle and Friends","Skateball","Vector",
+    "Gold Ball","City Slicker","Super Mario Bros.","Street Fighter II","Q*bert's Quest",
+    "Mr. & Mrs. Pac-Man","Space Invaders","Monopoly","Dungeons & Dragons","World Poker Tour",
+    "High Roller Casino","Who Dunnit","Genesis","Haunted House","The Incredible Hulk"
+  ];
+  const WELL_MADE_TABLES_PRESET = [
+    "Medieval Madness","Attack from Mars","Theatre of Magic","Monster Bash","Tales of the Arabian Nights",
+    "Star Trek: The Next Generation","Scared Stiff","Cirqus Voltaire","White Water","The Getaway",
+    "World Cup Soccer","Creature from the Black Lagoon","Bram Stoker's Dracula","Fathom","Spider-Man Vault Edition",
+    "Iron Man Vault Edition","AC/DC","Batman 66","Deadpool","Ghostbusters",
+    "Lord of the Rings","The Walking Dead","Game of Thrones","Jurassic Park","Star Trek Stern 2013"
   ];
   const METASIZER_WORLD_GROUP_PRESETS = {
     tonight_new_worlds: [
@@ -626,9 +711,9 @@
   ];
 
   const state = {
-    worldVariant: "base",
-    name: "FlippermizerWorldsofPinball",
-    description: BASE_GAME_META.description,
+    worldVariant: detectDefaultEdition(),
+    name: (EDITION_META[detectDefaultEdition()] || BASE_GAME_META).defaultName,
+    description: (EDITION_META[detectDefaultEdition()] || BASE_GAME_META).description,
     progression_balancing: 50,
     accessibility: "items",
     boss_keys_required_for_boss_table_open: 3,
@@ -644,6 +729,7 @@
     base_game_active_table_count: 25,
     base_game_selection_mode: "random_catalog_pool",
     base_game_curated_world_groups: "auto",
+    base_game_curated_tables: "auto",
     base_game_random_one_featured_designer_only: false,
     base_game_starting_open_table_count: 5,
     start_inventory_from_pool: {}
@@ -653,13 +739,18 @@
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
   function asInt(v,fallback=0){ const n = Number(v); return Number.isFinite(n) ? Math.trunc(n) : fallback; }
   function quoteYaml(s){ return '"' + String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"') + '"'; }
+  function escapeHtml(s){
+    return String(s ?? "").replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;" }[ch]));
+  }
+  function quoteAttr(s){ return escapeHtml(s); }
   function syncVariantUi(){
     const meta = getVariantMeta();
+    document.body.dataset.edition = state.worldVariant === "stream" ? "stream" : "home";
     const pill = q("gameKeyPill");
     const foot = q("gameKeyFoot");
     if(pill) pill.textContent = meta.gameKey;
     if(foot) foot.textContent = meta.gameKey;
-    const baseGame = state.worldVariant === "base";
+    const baseGame = isBaseGameVariant();
     q("metasizerOptionsWrap")?.classList.toggle("hidden", !baseGame);
     q("metasizerStartInfo")?.classList.toggle("hidden", !baseGame);
     q("randomStartTables").disabled = baseGame;
@@ -673,6 +764,7 @@
       updateRandomStartInfo();
     }
     updateMetasizerCuratedInfo();
+    renderCuratedTablePicker();
   }
   function currentTableList(){
     return METASIZER_TABLES;
@@ -694,10 +786,62 @@
     updateMetasizerCuratedInfo();
     renderYaml();
   }
+  function normalizeTableNameKey(name){
+    return String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+  }
+  function canonicalTableName(name){
+    const key = normalizeTableNameKey(name);
+    return currentTableList().find(table => normalizeTableNameKey(table) === key) || "";
+  }
+  function parseCuratedTableList(raw){
+    if(raw == null) return [];
+    if(Array.isArray(raw)) return raw.flatMap(parseCuratedTableList);
+    const text = String(raw || "").trim();
+    if(!text || ["auto", "default", "random", "none", "0", "1"].includes(text.toLowerCase())) return [];
+    const out = [];
+    const seen = new Set();
+    text.split(/[\r\n,|]+/).forEach(part => {
+      const canonical = canonicalTableName(part.trim());
+      if(!canonical || seen.has(canonical)) return;
+      seen.add(canonical);
+      out.push(canonical);
+    });
+    return out;
+  }
+  function setCuratedTableSelection(tables){
+    const out = [];
+    const seen = new Set();
+    (tables || []).forEach(table => {
+      const canonical = canonicalTableName(table);
+      if(!canonical || seen.has(canonical)) return;
+      seen.add(canonical);
+      out.push(canonical);
+    });
+    state.base_game_curated_tables = out.length ? out.join(", ") : "auto";
+    const area = q("metasizerCuratedTables");
+    if(area) area.value = state.base_game_curated_tables;
+    renderCuratedTablePicker();
+    updateMetasizerCuratedInfo();
+    renderYaml();
+  }
+  function renderCuratedTablePicker(){
+    const grid = q("metasizerCuratedTableGrid");
+    if(!grid) return;
+    const selected = new Set(parseCuratedTableList(state.base_game_curated_tables));
+    const query = normalizeTableNameKey(q("metasizerCuratedTableSearch")?.value || "");
+    const visibleTables = currentTableList().filter(table => !query || normalizeTableNameKey(table).includes(query));
+    grid.innerHTML = visibleTables.map(table => {
+      const checked = selected.has(table);
+      return `<label class="curatedPick${checked ? " isSelected" : ""}">
+        <input type="checkbox" data-curated-table="${quoteAttr(table)}"${checked ? " checked" : ""} />
+        <span>${escapeHtml(table)}</span>
+      </label>`;
+    }).join("");
+  }
   function updateMetasizerCuratedInfo(){
     const info = q("metasizerCuratedInfo");
     if(!info) return;
-    if(state.worldVariant !== "base"){
+    if(!isBaseGameVariant()){
       info.textContent = "";
       return;
     }
@@ -710,6 +854,15 @@
     const expectedWorlds = Math.max(1, Math.ceil(activeCount / 5));
     const prefix = `Expected world slots: ${expectedWorlds}.`;
     const featuredCapNote = state.base_game_random_one_featured_designer_only ? " Random cap: one Featured Designer world." : "";
+    if(mode === "curated_table_list"){
+      const tables = parseCuratedTableList(state.base_game_curated_tables);
+      if(!tables.length){
+        info.textContent = `${prefix} Curated Table List mode is active, but the table list is empty. Use the Well-Made Tables preset or pick tables below.`;
+        return;
+      }
+      info.textContent = `${prefix} Curated table list contains ${tables.length} table${tables.length === 1 ? "" : "s"} and will shuffle into ${Math.max(1, Math.ceil(Math.min(activeCount, tables.length) / 5))} generated world${tables.length <= 5 ? "" : "s"}.`;
+      return;
+    }
     if(mode === "random_catalog_pool"){
       info.textContent = `${prefix} Selection mode is random, so curated entries are ignored unless you switch to Curated or Hybrid.${featuredCapNote}`;
       return;
@@ -779,10 +932,10 @@
     info.textContent = list || "No random tables selected yet.";
   }
   function updateProgressiveInputsLock(){
-    const locked = !!state.random_start_tables_open || state.worldVariant === "base";
+    const locked = !!state.random_start_tables_open || isBaseGameVariant();
     document.querySelectorAll('#tableItems input[data-start-key], button[id^=\"btnOpen\"]').forEach(el => {
       el.disabled = locked;
-      if(state.worldVariant === "base"){
+      if(isBaseGameVariant()){
         el.setAttribute("title", "Base Game seeds derive Progressive Ball starts from the selected world layout.");
       }else if(locked){
         el.setAttribute("title", "Disable Random Start Tables Open to edit manual table starts.");
@@ -1016,8 +1169,37 @@
       updateMetasizerCuratedInfo();
       renderYaml();
     });
+    q("metasizerCuratedTables").addEventListener("input", () => {
+      state.base_game_curated_tables = String(q("metasizerCuratedTables").value || "").trim() || "auto";
+      renderCuratedTablePicker();
+      updateMetasizerCuratedInfo();
+      renderYaml();
+    });
+    q("metasizerCuratedTableSearch").addEventListener("input", () => renderCuratedTablePicker());
+    q("metasizerCuratedTableGrid").addEventListener("change", (ev) => {
+      const box = ev.target && ev.target.matches ? ev.target : null;
+      if(!box || !box.matches("input[data-curated-table]")) return;
+      const table = box.getAttribute("data-curated-table");
+      const selected = parseCuratedTableList(state.base_game_curated_tables);
+      const next = selected.filter(name => name !== table);
+      if(box.checked && table && !next.includes(table)) next.push(table);
+      setCuratedTableSelection(next);
+    });
+    q("btnCuratedWellMade").addEventListener("click", () => {
+      state.base_game_selection_mode = "curated_table_list";
+      q("metasizerSelectionMode").value = "curated_table_list";
+      state.base_game_active_table_count = 25;
+      q("metasizerActiveTableCount").value = "25";
+      setCuratedTableSelection(WELL_MADE_TABLES_PRESET);
+    });
+    q("btnCuratedAllTables").addEventListener("click", () => {
+      state.base_game_selection_mode = "curated_table_list";
+      q("metasizerSelectionMode").value = "curated_table_list";
+      setCuratedTableSelection(currentTableList());
+    });
+    q("btnCuratedTablesClear").addEventListener("click", () => setCuratedTableSelection([]));
     q("randomStartTables").addEventListener("change", () => {
-      if(state.worldVariant === "base"){
+      if(isBaseGameVariant()){
         state.random_start_tables_open = false;
         q("randomStartTables").checked = false;
         updateRandomStartInfo();
@@ -1036,7 +1218,7 @@
       renderYaml();
     });
     q("btnRerollRandomStart").addEventListener("click", () => {
-      if(state.worldVariant === "base") return;
+      if(isBaseGameVariant()) return;
       state.random_start_tables_open = true;
       q("randomStartTables").checked = true;
       applyRandomStartToInventory(true);
@@ -1050,11 +1232,11 @@
     q("btnOpenAllB3").addEventListener("click", presetAllB3);
 
     q("btnResetAll").addEventListener("click", () => {
-      state.worldVariant = "base";
+      state.worldVariant = detectDefaultEdition();
       state.progression_balancing = 50;
       state.accessibility = "items";
-      state.name = BASE_GAME_META.defaultName;
-      state.description = BASE_GAME_META.description;
+      state.name = getVariantMeta().defaultName;
+      state.description = getVariantMeta().description;
       state.boss_keys_required_for_boss_table_open = 3;
       state.filter_mode_trap_enabled = false;
       state.task_shuffle_enabled = false;
@@ -1068,6 +1250,7 @@
       state.base_game_active_table_count = 25;
       state.base_game_selection_mode = "random_catalog_pool";
       state.base_game_curated_world_groups = "auto";
+      state.base_game_curated_tables = "auto";
       state.base_game_random_one_featured_designer_only = false;
       state.base_game_starting_open_table_count = 5;
       state.start_inventory_from_pool = {};
@@ -1075,7 +1258,7 @@
       q("progression").value = "50";
       q("progressionRange").value = "50";
       q("accessibility").value = "items";
-      q("worldVariant").value = "base";
+      q("worldVariant").value = state.worldVariant;
       q("playerName").value = state.name;
       q("bossKeysRequired").value = "3";
       q("filterTrapEnabled").checked = false;
@@ -1089,6 +1272,7 @@
       q("metasizerActiveTableCount").value = "25";
       q("metasizerSelectionMode").value = "random_catalog_pool";
       q("metasizerCuratedGroups").value = "auto";
+      q("metasizerCuratedTables").value = "auto";
       q("metasizerOneFeaturedDesignerOnly").checked = false;
       q("metasizerStartingOpenTableCount").value = "5";
       buildStartEditors();
@@ -1134,13 +1318,14 @@
     lines.push(`  boss_keys_required_for_boss_table_open: ${state.boss_keys_required_for_boss_table_open}`);
     lines.push(`  filter_mode_trap_enabled: ${state.filter_mode_trap_enabled ? "true" : "false"}`);
     lines.push(`  task_shuffle_enabled: ${state.task_shuffle_enabled ? "true" : "false"}`);
-    lines.push(`  random_start_tables_open: ${state.worldVariant === "base" ? "false" : (state.random_start_tables_open ? "true" : "false")}`);
+    lines.push(`  random_start_tables_open: ${isBaseGameVariant() ? "false" : (state.random_start_tables_open ? "true" : "false")}`);
     lines.push(`  filler_traps: ${trapDensityValue()}`);
-    if(state.worldVariant === "base"){
+    if(isBaseGameVariant()){
       lines.push(`  score_adjustment_mode: ${state.score_adjustment_mode}`);
       lines.push(`  base_game_active_table_count: ${state.base_game_active_table_count}`);
       lines.push(`  base_game_selection_mode: ${state.base_game_selection_mode}`);
       lines.push(`  base_game_curated_world_groups: ${quoteYaml(state.base_game_curated_world_groups)}`);
+      lines.push(`  base_game_curated_tables: ${quoteYaml(state.base_game_curated_tables)}`);
       lines.push(`  base_game_random_one_featured_designer_only: ${state.base_game_random_one_featured_designer_only ? "true" : "false"}`);
       lines.push(`  base_game_starting_open_table_count: ${state.base_game_starting_open_table_count}`);
       lines.push(`  base_game_enabled: ${state.base_game_enabled ? "true" : "false"}`);
@@ -1148,10 +1333,10 @@
 
     const entries = Object.entries(state.start_inventory_from_pool)
       .filter(([,v]) => Number(v) > 0)
-      .filter(([k]) => !(state.worldVariant === "base" && String(k).startsWith("Progressive Ball - ")))
+      .filter(([k]) => !(isBaseGameVariant() && String(k).startsWith("Progressive Ball - ")))
       .sort((a,b) => a[0].localeCompare(b[0]));
 
-    const hideRandomStartSelection = state.worldVariant !== "base" && state.random_start_tables_open && !state.random_start_revealed;
+    const hideRandomStartSelection = !isBaseGameVariant() && state.random_start_tables_open && !state.random_start_revealed;
     const hiddenRandomKeys = new Set((state.random_start_tables_selection || []).map(t => `Progressive Ball - ${t}`));
     const visibleEntries = hideRandomStartSelection ? entries.filter(([k]) => !hiddenRandomKeys.has(k)) : entries;
     const hiddenRandomCount = hideRandomStartSelection
@@ -1173,7 +1358,7 @@
 
   q("taskShuffleEnabled").checked = state.task_shuffle_enabled;
   q("scoreAdjustmentMode").value = state.score_adjustment_mode;
-  q("worldVariant").value = "base";
+  q("worldVariant").value = state.worldVariant;
   q("playerName").value = state.name;
   q("filterTrapEnabled").checked = state.filter_mode_trap_enabled;
   q("trapMode").value = state.trapMode;
@@ -1183,6 +1368,7 @@
   q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
   q("metasizerSelectionMode").value = state.base_game_selection_mode;
   q("metasizerCuratedGroups").value = state.base_game_curated_world_groups;
+  q("metasizerCuratedTables").value = state.base_game_curated_tables;
   q("metasizerOneFeaturedDesignerOnly").checked = state.base_game_random_one_featured_designer_only;
   q("metasizerStartingOpenTableCount").value = String(state.base_game_starting_open_table_count);
   buildStartEditors();

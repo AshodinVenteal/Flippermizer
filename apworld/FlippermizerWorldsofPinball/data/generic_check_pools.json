@@ -252,22 +252,10 @@
         "source_location": "Make 3 spinner rips"
       },
       {
-        "title": "Light and collect a TV award",
-        "type": "task",
-        "explanation": "",
-        "source_location": "World Cup Soccer – Light and collect a TV award"
-      },
-      {
         "title": "Score 2 goals",
         "type": "task",
         "explanation": "Shoot the goal enough times to score two total goals in the match flow.",
         "source_location": "Score 2 goals"
-      },
-      {
-        "title": "Start Multiball at the TV saucer",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Start Multiball at the TV saucer"
       }
     ],
     "Medium": [
@@ -294,18 +282,6 @@
         "type": "task",
         "explanation": "",
         "source_location": "World Cup Soccer – Score 1 goal"
-      },
-      {
-        "title": "Make 3 spinner rips",
-        "type": "task",
-        "explanation": "Light the spinner and send the ball through for three strong rips.",
-        "source_location": "Make 3 spinner rips"
-      },
-      {
-        "title": "Start Multiball at the TV saucer",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Start Multiball at the TV saucer"
       }
     ],
     "Hard": [
@@ -326,12 +302,6 @@
         "type": "task",
         "explanation": "Advance the TV awards and mode progress until Final Draw is lit.",
         "source_location": "Light Final Draw"
-      },
-      {
-        "title": "Light and collect a TV award",
-        "type": "task",
-        "explanation": "",
-        "source_location": "World Cup Soccer – Light and collect a TV award"
       },
       {
         "title": "Score 2 goals",
@@ -374,10 +344,10 @@
         "source_location": "Complete 1 Supercharger cycle"
       },
       {
-        "title": "Light Redline Mania",
+        "title": "Complete the 1-2-3 Standup Targets",
         "type": "task",
-        "explanation": "Build Supercharger progress until Redline Mania is lit and ready.",
-        "source_location": "Light Redline Mania"
+        "explanation": "GUIDE: Hit all three 1-2-3 standup targets to light a one-shot Supercharger Boost at the left ramp.",
+        "source_location": "Complete the 1-2-3 Standup Targets"
       },
       {
         "title": "Start Multiball",
@@ -4698,10 +4668,10 @@
         "source_location": "Start Coffin Multiball"
       },
       {
-        "title": "Start Castle Multiball",
+        "title": "Lock 2 Castle Multiball Balls",
         "type": "task",
         "explanation": "",
-        "source_location": "Start Castle Multiball"
+        "source_location": "Lock 2 Castle Multiball Balls"
       },
       {
         "title": "Start Mist Multiball",
@@ -4758,10 +4728,10 @@
   "Creature from the Black Lagoon": {
     "Easy": [
       {
-        "title": "Start Creature Feature",
+        "title": "Collect the Slide or KISS Letters",
         "type": "task",
         "explanation": "",
-        "source_location": "Start Creature Feature"
+        "source_location": "Collect the Slide or KISS Letters"
       },
       {
         "title": "Easy Score (16,586,729+)",
@@ -4808,10 +4778,10 @@
         "source_location": "Creature from the Black Lagoon - Medium Score (38,828,192+)"
       },
       {
-        "title": "Lock 1 ball for multiball",
+        "title": "Start Move Your Car and Shoot It Twice",
         "type": "task",
         "explanation": "",
-        "source_location": "Lock 1 ball for multiball"
+        "source_location": "Start Move Your Car and Shoot It Twice"
       },
       {
         "title": "Start multiball",
@@ -6134,10 +6104,10 @@
         "source_location": "Collect a Super Jackpot"
       },
       {
-        "title": "Complete 2 modes in one game",
+        "title": "Start 2 Modes in One Game",
         "type": "task",
         "explanation": "",
-        "source_location": "Complete 2 modes in one game"
+        "source_location": "Start 2 Modes in One Game"
       },
       {
         "title": "Collect 2 Cryo-Claw awards in one game",
@@ -6226,10 +6196,10 @@
     ],
     "Hard": [
       {
-        "title": "Complete Q's Pen mode",
+        "title": "Start Q's Pen Mode",
         "type": "task",
         "explanation": "",
-        "source_location": "Complete Q's Pen mode"
+        "source_location": "Start Q's Pen Mode"
       },
       {
         "title": "Hard Score (758,635,943+)",
@@ -6504,10 +6474,10 @@
         "source_location": "Start any pyramid mode"
       },
       {
-        "title": "Easy Score (58,354,060+)",
+        "title": "Easy Score (43,765,545+)",
         "type": "score",
-        "explanation": "Build score to at least 58,354,060 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Stargate - Easy Score (58,354,060+)"
+        "explanation": "Build score to at least 43,765,545 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Stargate - Easy Score (43,765,545+)"
       },
       {
         "title": "Raise either guardian once",
@@ -6542,10 +6512,10 @@
         "source_location": "Complete any pyramid mode"
       },
       {
-        "title": "Medium Score (121,038,286+)",
+        "title": "Medium Score (90,778,715+)",
         "type": "score",
-        "explanation": "Build score to at least 121,038,286 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Stargate - Medium Score (121,038,286+)"
+        "explanation": "Build score to at least 90,778,715 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Stargate - Medium Score (90,778,715+)"
       },
       {
         "title": "Open the Stargate once",
@@ -6580,10 +6550,10 @@
         "source_location": "Lock 2 balls toward multiball"
       },
       {
-        "title": "Hard Score (211,525,310+)",
+        "title": "Hard Score (158,643,983+)",
         "type": "score",
-        "explanation": "Build score to at least 211,525,310 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Stargate - Hard Score (211,525,310+)"
+        "explanation": "Build score to at least 158,643,983 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Stargate - Hard Score (158,643,983+)"
       },
       {
         "title": "Start multiball and collect a jackpot",
@@ -7372,6 +7342,12 @@
         "type": "score",
         "explanation": "Build score to at least 237,815 before drain. Focus target completions, bonus advances, and Collect Bonus at the scoop.",
         "source_location": "Rolling Stones - Hard Score (237,815+)"
+      },
+      {
+        "title": "Start Multiball",
+        "type": "task",
+        "explanation": "Light lock, lock the required ball(s), then start multiball.",
+        "source_location": "Start Multiball"
       }
     ]
   },
@@ -7402,10 +7378,10 @@
         "source_location": "Light lock for multiball"
       },
       {
-        "title": "Shoot the ramp 3 times",
+        "title": "Shoot Either Loop 3 Times",
         "type": "task",
         "explanation": "",
-        "source_location": "Shoot the ramp 3 times"
+        "source_location": "Shoot Either Loop 3 Times"
       },
       {
         "title": "Collect a mystery award",
@@ -7428,10 +7404,10 @@
         "source_location": "Freddy: A Nightmare on Elm Street - Medium Score (50,298,526+)"
       },
       {
-        "title": "Lock 1 ball for multiball",
+        "title": "Reach 2 Nightmares in One Ball",
         "type": "task",
         "explanation": "",
-        "source_location": "Lock 1 ball for multiball"
+        "source_location": "Reach 2 Nightmares in One Ball"
       },
       {
         "title": "Start multiball",
@@ -7942,10 +7918,10 @@
         "source_location": "Start Destroy the Ring"
       },
       {
-        "title": "Destroy the Ring",
+        "title": "Collect a Jackpot in Any Main Multiball",
         "type": "task",
         "explanation": "",
-        "source_location": "Destroy the Ring"
+        "source_location": "Collect a Jackpot in Any Main Multiball"
       },
       {
         "title": "Start Two Towers Multiball",
