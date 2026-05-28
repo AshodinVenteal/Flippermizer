@@ -4673,10 +4673,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Start Coffin Multiball"
         },
         {
-          "title": "Start Castle Multiball",
+          "title": "Lock 2 Castle Multiball Balls",
           "type": "task",
-          "explanation": "GUIDE: If the Coffin is complete and Coffin locks are qualified, these bonuses can still light a Castle lock. Therefore, if you notice that your next left ramp will be a multiple of 12, see if it's reasonable to finish the Coffin first to ensure that the next.",
-          "source_location": "Start Castle Multiball"
+          "explanation": "GUIDE: Light Castle locks from left-ramp awards, then shoot the left ramp to lock two balls toward Castle Multiball.",
+          "source_location": "Lock 2 Castle Multiball Balls"
         },
         {
           "title": "Start Mist Multiball",
@@ -4733,10 +4733,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
     "Creature from the Black Lagoon": {
       "Easy": [
         {
-          "title": "Start Creature Feature",
+          "title": "Collect the Slide or KISS Letters",
           "type": "task",
-          "explanation": "GUIDE: F-I-L-M and multiball path - Complete F-I-L-M from the Kiss lane, Snackbar targets, Paid lanes, and Slide lane, then lock at either Kiss or Slide.",
-          "source_location": "Start Creature Feature"
+          "explanation": "GUIDE: Shoot the Slide lane or KISS lane to collect its F-I-L-M letter. Either letter path satisfies this task.",
+          "source_location": "Collect the Slide or KISS Letters"
         },
         {
           "title": "Easy Score (16,586,729+)",
@@ -4783,10 +4783,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Creature from the Black Lagoon - Medium Score (38,828,192+)"
         },
         {
-          "title": "Lock 1 Ball for Multiball",
+          "title": "Start Move Your Car and Shoot It Twice",
           "type": "task",
-          "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "Lock 1 ball for multiball"
+          "explanation": "GUIDE: Shoot the center Move Your Car lane until the mode starts, then make two lit center-lane shots during the mode.",
+          "source_location": "Start Move Your Car and Shoot It Twice"
         },
         {
           "title": "Start Multiball",
@@ -6109,10 +6109,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Collect a Super Jackpot"
         },
         {
-          "title": "Complete 2 Modes in One Game",
+          "title": "Start 2 Modes in One Game",
           "type": "task",
-          "explanation": "GUIDE: Complete modes twice during a single game.",
-          "source_location": "Complete 2 modes in one game"
+          "explanation": "GUIDE: Qualify the Cryo-Claw, collect any mode award, then repeat to start a second mode in the same game. Completing the modes is not required.",
+          "source_location": "Start 2 Modes in One Game"
         },
         {
           "title": "Collect 2 Cryo-Claw Awards in One Game",
@@ -6201,10 +6201,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
       ],
       "Hard": [
         {
-          "title": "Complete Q's Pen Mode",
+          "title": "Start Q's Pen Mode",
           "type": "task",
-          "explanation": "GUIDE: 007 Encounters: main modes - In single ball play when no other mode is running, the center scoop starts the currently flashing Encounter mode. After making all 6, shoot the center ramp for 30,000,000 points and to finish the mode.",
-          "source_location": "Complete Q's Pen mode"
+          "explanation": "GUIDE: Hit either Q target three total times to start Q's Grenade Pen mode. Completing the timed mode is not required.",
+          "source_location": "Start Q's Pen Mode"
         },
         {
           "title": "Hard Score (758,635,943+)",
@@ -6479,10 +6479,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Start any pyramid mode"
         },
         {
-          "title": "Easy Score (58,354,060+)",
+          "title": "Easy Score (43,765,545+)",
           "type": "score",
-          "explanation": "GUIDE: Score 58,354,060+ on Stargate. Best scoring from the guide: Collect a Jackpot: Early in a game, Double Advance Super Jackpot can also be quite valuable, since the. Start Multiball and Collect a Jackpot: The large blue portal near the flippers wants you to complete 7 tasks throughout the.",
-          "source_location": "Stargate - Easy Score (58,354,060+)"
+          "explanation": "GUIDE: Build score to at least 43,765,545 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+          "source_location": "Stargate - Easy Score (43,765,545+)"
         },
         {
           "title": "Raise Either Guardian Once",
@@ -6517,10 +6517,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Complete any pyramid mode"
         },
         {
-          "title": "Medium Score (121,038,286+)",
+          "title": "Medium Score (90,778,715+)",
           "type": "score",
-          "explanation": "GUIDE: Score 121,038,286+ on Stargate. Best scoring from the guide: Collect a Jackpot: Early in a game, Double Advance Super Jackpot can also be quite valuable, since the. Start Multiball and Collect a Jackpot: The large blue portal near the flippers wants you to complete 7 tasks throughout the.",
-          "source_location": "Stargate - Medium Score (121,038,286+)"
+          "explanation": "GUIDE: Build score to at least 90,778,715 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+          "source_location": "Stargate - Medium Score (90,778,715+)"
         },
         {
           "title": "Open the Stargate Once",
@@ -6555,10 +6555,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Lock 2 balls toward multiball"
         },
         {
-          "title": "Hard Score (211,525,310+)",
+          "title": "Hard Score (158,643,983+)",
           "type": "score",
-          "explanation": "GUIDE: Score 211,525,310+ on Stargate. Best scoring from the guide: Collect a Jackpot: Early in a game, Double Advance Super Jackpot can also be quite valuable, since the. Start Multiball and Collect a Jackpot: The large blue portal near the flippers wants you to complete 7 tasks throughout the.",
-          "source_location": "Stargate - Hard Score (211,525,310+)"
+          "explanation": "GUIDE: Build score to at least 158,643,983 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+          "source_location": "Stargate - Hard Score (158,643,983+)"
         },
         {
           "title": "Start Multiball and Collect a Jackpot",
@@ -7383,10 +7383,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Light lock for multiball"
         },
         {
-          "title": "Shoot the Ramp 3 Times",
+          "title": "Shoot Either Loop 3 Times",
           "type": "task",
-          "explanation": "GUIDE: Shoot ramp shots cleanly 3 times.",
-          "source_location": "Shoot the ramp 3 times"
+          "explanation": "GUIDE: Shoot the left loop or right loop three total times; either loop counts toward this task.",
+          "source_location": "Shoot Either Loop 3 Times"
         },
         {
           "title": "Collect a Mystery Award",
@@ -7409,10 +7409,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Freddy: A Nightmare on Elm Street - Medium Score (50,298,526+)"
         },
         {
-          "title": "Lock 1 Ball for Multiball",
+          "title": "Reach 2 Nightmares in One Ball",
           "type": "task",
-          "explanation": "GUIDE: Light the correct lock shot and secure the required number of locks for this objective.",
-          "source_location": "Lock 1 ball for multiball"
+          "explanation": "GUIDE: Fall Asleep twice before the ball drains. Light or shoot the Boiler Room to start each Nightmare, then survive long enough to reach the next one.",
+          "source_location": "Reach 2 Nightmares in One Ball"
         },
         {
           "title": "Start Multiball",
@@ -7923,10 +7923,10 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Start Destroy the Ring"
         },
         {
-          "title": "Destroy the Ring",
+          "title": "Collect a Jackpot in Any Main Multiball",
           "type": "task",
-          "explanation": "GUIDE: After the three main multiballs have been started, Destroy the Ring lights at the center ring shot. If you drain during Destroy the Ring, the mode ends, and you must requalify it by starting the three main multiballs again.",
-          "source_location": "Destroy the Ring"
+          "explanation": "GUIDE: Start Fellowship, Two Towers, or Return of the King Multiball, then shoot any lit jackpot shot before the multiball ends.",
+          "source_location": "Collect a Jackpot in Any Main Multiball"
         },
         {
           "title": "Start Two Towers Multiball",
@@ -9045,7 +9045,7 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Collect a 50,000 P-L-A-Y award"
         },
         {
-          "title": "Score the 100,000 1-2-3 Award",
+          "title": "Collect the 100,000 1-2-3 Award",
           "type": "task",
           "explanation": "GUIDE: Complete this objective exactly as written one time on the table.",
           "source_location": "Score the 100,000 1-2-3 award"
@@ -9083,7 +9083,7 @@ window.FLPR_TASK_REPOSITORY_SOURCE = {
           "source_location": "Collect a 3X golden-ball bonus"
         },
         {
-          "title": "Score Two 100,000 1-2-3 Awards in One Game",
+          "title": "Collect Two 100,000 1-2-3 Awards in One Game",
           "type": "task",
           "explanation": "GUIDE: Complete this objective exactly as written one time on the table.",
           "source_location": "Score two 100,000 1-2-3 awards in one game"
