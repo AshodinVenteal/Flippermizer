@@ -13,7 +13,7 @@ This repository keeps the Home Edition source, Stream Edition source, and viewab
 
 ## Release
 
-The current stable release is **Flippermizer 1.1.1**:
+The current stable release is **Home Edition 1.1.1**:
 
 https://github.com/AshodinVenteal/Flippermizer/releases/tag/flippermizer-v1.1.1-2026-05-27
 
@@ -21,17 +21,14 @@ Release assets:
 
 - `Flippermizer-Home-Edition-1.1.1-portable.exe`
 - `Flippermizer-Home-Edition-1.1.1-win-unpacked.zip`
-- `Flippermizer-Stream-Edition-1.1.1-portable.exe`
-- `Flippermizer-Stream-Edition-1.1.1-win-unpacked.zip`
 
-### Flippermizer 1.1.1 Incremental - 2026-05-27
+### Home Edition 1.1.1 Incremental - 2026-05-27
 
-- Rebuilt Home Edition and Stream Edition as 1.1.1 packages.
-- Added app chrome controls for fullscreen and a themed exit confirmation in both editions.
+- Rebuilt Home Edition as 1.1.1 portable and win-unpacked packages.
+- Added app chrome controls for fullscreen and a themed exit confirmation.
 - Fixed the System Exit Request dialog so it appears above panels and controls.
 - Added soft splash feedback for non-clickable clicks.
 - Added curated table list options and updated the Well-Made Tables preset to a mixed-era VPX maker-tier list.
-- Synced Stream Edition's bundled task repository data from the current Home Edition source.
 
 ### Home Edition 1.1 Hotfix - 2026-05-26
 
