@@ -906,7 +906,7 @@ body.controlsLayoutDragging *{
 .flprExitConfirm{
   position:fixed;
   inset:0;
-  z-index:19000;
+  z-index:2147483647;
   display:grid;
   place-items:center;
   padding:24px;
@@ -917,6 +917,7 @@ body.controlsLayoutDragging *{
 .flprExitShade{
   position:absolute;
   inset:0;
+  cursor:pointer;
   background:
     linear-gradient(135deg, rgba(51,0,0,.9), rgba(5,0,0,.94)),
     repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 2px, transparent 2px 7px);
@@ -949,19 +950,22 @@ body.controlsLayoutDragging *{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:12px;
+  gap:16px;
   flex-wrap:wrap;
-  margin-top:24px;
+  margin-top:28px;
 }
 .flprExitBtn{
-  min-height:38px;
+  flex:0 1 320px;
+  min-width:min(320px, 100%);
+  min-height:66px;
   border:2px solid rgba(255,255,255,.2);
   border-radius:0;
-  padding:10px 14px;
+  padding:16px 20px;
   color:#f8fdff;
   background:#111927;
-  font-size:9px;
-  line-height:1.2;
+  font-size:16px;
+  line-height:1.25;
+  text-shadow:3px 3px 0 #000;
   text-transform:uppercase;
   cursor:pointer;
 }
@@ -21892,8 +21896,8 @@ body.flprShopSparksSlime .spark{
         <div class="flprExitKicker">SYSTEM EXIT REQUEST</div>
         <div class="flprExitQuestion" id="flprExitConfirmTitle">Are you sure you want to abandon the journey into Pinball?</div>
         <div class="flprExitActions">
-          <button class="flprExitBtn danger" id="flprExitConfirmYesBtn" type="button">Abandon</button>
-          <button class="flprExitBtn stay" id="flprExitConfirmNoBtn" type="button">Stay the Course</button>
+          <button class="flprExitBtn danger" id="flprExitConfirmYesBtn" type="button">LET IT DRAIN</button>
+          <button class="flprExitBtn stay" id="flprExitConfirmNoBtn" type="button">SURE, I'M GAME</button>
         </div>
       </div>
     </div>
@@ -35029,6 +35033,21 @@ function playSfx(kind){
   // Small; non-annoying; distinct
   if(kind === "click"){
     playTone({freq:820, dur:0.05, type:"triangle", gain:0.12, sweepTo:650, sweepDur:0.05});
+  }else if(kind === "splash"){
+    // Soft low-impact miss-click cue for non-interactive surfaces.
+    playTone({freq:260, dur:0.09, type:"sine", gain:0.045, sweepTo:190, sweepDur:0.08});
+    setTimeout(()=>playTone({freq:410, dur:0.07, type:"triangle", gain:0.032, sweepTo:300, sweepDur:0.07}), 34);
+    setTimeout(()=>playTone({freq:165, dur:0.11, type:"sine", gain:0.026, sweepTo:120, sweepDur:0.10}), 82);
+  }else if(kind === "exitDrainCallout"){
+    // Drain/tilt flavored exit cue without shipping copyrighted machine callouts.
+    playTone({freq:360, dur:0.08, type:"square", gain:0.12, sweepTo:240, sweepDur:0.07});
+    setTimeout(()=>playTone({freq:220, dur:0.15, type:"sawtooth", gain:0.11, sweepTo:98, sweepDur:0.14}), 74);
+    setTimeout(()=>playTone({freq:96, dur:0.18, type:"triangle", gain:0.07, sweepTo:64, sweepDur:0.16}), 168);
+  }else if(kind === "exitStayCallout"){
+    // Bright replay/extra-ball flavored continue cue.
+    playTone({freq:523, dur:0.07, type:"triangle", gain:0.12, sweepTo:659, sweepDur:0.06});
+    setTimeout(()=>playTone({freq:784, dur:0.09, type:"sine", gain:0.12, sweepTo:988, sweepDur:0.08}), 68);
+    setTimeout(()=>playTone({freq:1175, dur:0.12, type:"triangle", gain:0.10, sweepTo:1397, sweepDur:0.10}), 150);
   }else if(kind === "chaching"){
     // Table swap: pinball-style cash register "cha-ching".
     playTone({freq:620, dur:0.07, type:"triangle", gain:0.13, sweepTo:780, sweepDur:0.06});
@@ -46664,6 +46683,60 @@ function bindOverlayUniversalClickFx(){
   }, true);
 }
 
+const FLPR_CLICKABLE_TARGET_SELECTOR = [
+  "button",
+  "a[href]",
+  "input",
+  "select",
+  "textarea",
+  "label",
+  "summary",
+  "[contenteditable='true']",
+  "[role='button']",
+  "[role='link']",
+  "[onclick]",
+  "[data-action]",
+  "[data-view]",
+  "[data-table]",
+  "[data-ctrl-tab]",
+  "[data-clickable]",
+  ".tab",
+  ".tabBtn",
+  ".cBtn",
+  ".worldPageBtn",
+  ".flprAppChromeBtn",
+  ".flprExitShade"
+].join(",");
+
+function flprIsClickableClickTarget(target){
+  try{
+    if(!target || !(target instanceof Element)) return false;
+    if(target.closest(FLPR_CLICKABLE_TARGET_SELECTOR)) return true;
+    for(let el = target; el && el !== document.body && el !== document.documentElement; el = el.parentElement){
+      const cursor = getComputedStyle(el).cursor;
+      if(cursor === "pointer") return true;
+    }
+  }catch(_){}
+  return false;
+}
+
+function bindNonClickableSplashFx(){
+  if(window.__flprNonClickableSplashFxBound) return;
+  window.__flprNonClickableSplashFxBound = true;
+  document.addEventListener("click", (ev)=>{
+    try{
+      if(!ev || ev.isTrusted !== true) return;
+      if(typeof ev.button === "number" && ev.button !== 0) return;
+      if(flprIsClickableClickTarget(ev.target)) return;
+      const perf = window.performance;
+      const now = (perf && typeof perf.now === "function") ? perf.now() : Date.now();
+      if(now - Number(window.__flprLastNonClickableSplashAt || 0) < 85) return;
+      window.__flprLastNonClickableSplashAt = now;
+      playSfx("splash");
+    }catch(_){}
+  }, true);
+}
+
 function escapeHtml(str){
   return String(str)
     .replaceAll("&","&amp;")
@@ -57879,6 +57952,45 @@ function flprAppChromeApi(){
     return null;
   }
 }
+const FLPR_EXIT_DRAIN_CALLOUTS = Object.freeze([
+  "LET IT DRAIN",
+  "BALL DRAINED",
+  "DANGER!",
+  "TILT WARNING",
+  "HOUSE BALL",
+  "OUTLANE AGAIN",
+  "SAVE LOST",
+  "YOU'RE TILTED"
+]);
+const FLPR_EXIT_STAY_CALLOUTS = Object.freeze([
+  "SURE, I'M GAME",
+  "SHOOT AGAIN",
+  "EXTRA BALL",
+  "JACKPOT!",
+  "SUPER JACKPOT",
+  "BALL SAVED",
+  "REPLAY!",
+  "SPECIAL LIT"
+]);
+function flprRandomCallout(list, fallback){
+  const safe = Array.isArray(list) ? list.filter(Boolean) : [];
+  if(!safe.length) return fallback;
+  return safe[Math.floor(Math.random() * safe.length)] || fallback;
+}
+function flprRandomizeExitCallouts(){
+  const yesBtn = document.getElementById("flprExitConfirmYesBtn");
+  const noBtn = document.getElementById("flprExitConfirmNoBtn");
+  if(yesBtn){
+    const label = flprRandomCallout(FLPR_EXIT_DRAIN_CALLOUTS, "LET IT DRAIN");
+    yesBtn.textContent = label;
+    yesBtn.setAttribute("aria-label", label);
+  }
+  if(noBtn){
+    const label = flprRandomCallout(FLPR_EXIT_STAY_CALLOUTS, "SURE, I'M GAME");
+    noBtn.textContent = label;
+    noBtn.setAttribute("aria-label", label);
+  }
+}
 function flprAppChromeToast(title, value){
   try{ toast("info", title, value, 2600); }catch(_){}
 }
@@ -57925,6 +58037,10 @@ async function flprToggleAppFullscreen(){
 function flprSetExitConfirmOpen(open){
   const modal = document.getElementById("flprExitConfirm");
   if(!modal) return;
+  if(open){
+    try{ document.body.appendChild(modal); }catch(_){}
+    flprRandomizeExitCallouts();
+  }
   modal.hidden = !open;
   modal.setAttribute("aria-hidden", open ? "false" : "true");
   if(open){
@@ -57933,15 +58049,22 @@ function flprSetExitConfirmOpen(open){
 }
 async function flprExitApplication(){
   flprSetExitConfirmOpen(false);
-  const api = flprAppChromeApi();
-  if(api && typeof api.exitApp === "function"){
-    try{
-      await api.exitApp();
-      return;
-    }catch(_){}
-  }
-  try{ window.close(); }catch(_){}
-  setTimeout(()=> flprAppChromeToast("SYSTEM", "Close the window when ready."), 80);
+  try{ playSfx("exitDrainCallout"); }catch(_){}
+  setTimeout(async ()=>{
+    const api = flprAppChromeApi();
+    if(api && typeof api.exitApp === "function"){
+      try{
+        await api.exitApp();
+        return;
+      }catch(_){}
+    }
+    try{ window.close(); }catch(_){}
+    setTimeout(()=> flprAppChromeToast("SYSTEM", "Close the window when ready."), 80);
+  }, 220);
+}
+function flprKeepPlayingApplication(){
+  try{ playSfx("exitStayCallout"); }catch(_){}
+  flprSetExitConfirmOpen(false);
 }
 function initFlprAppChromeControls(){
   const fullscreenBtn = document.getElementById("flprFullscreenBtn");
@@ -57963,7 +58086,7 @@ function initFlprAppChromeControls(){
   }
   if(noBtn && noBtn.dataset.bound !== "1"){
     noBtn.dataset.bound = "1";
-    noBtn.addEventListener("click", ()=> flprSetExitConfirmOpen(false));
+    noBtn.addEventListener("click", ()=> flprKeepPlayingApplication());
   }
   if(shade && shade.dataset.bound !== "1"){
     shade.dataset.bound = "1";
@@ -57989,6 +58112,7 @@ flprSafeBoot("saveState", ()=> saveState());
 flprSafeBoot("scrubDeadBlobSessionMarkup", ()=> scrubDeadBlobSessionMarkup(document));
 flprSafeBoot("renderAll", ()=> renderAll());
 flprSafeBoot("bindOverlayUniversalClickFx", ()=> bindOverlayUniversalClickFx());
+flprSafeBoot("bindNonClickableSplashFx", ()=> bindNonClickableSplashFx());
 flprSafeBoot("initFlprAppChromeControls", ()=> initFlprAppChromeControls());
 flprSafeBoot("initDesignerInfoOverlay", ()=> initDesignerInfoOverlay());
 flprSafeBoot("initRelicsOverlay", ()=> initRelicsOverlay());
