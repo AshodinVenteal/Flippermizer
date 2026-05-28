@@ -1,6 +1,6 @@
 {
   "name": "flippermizer-launcher",
-  "version": "1.1.1",
+  "version": "1.1.0",
   "description": "Desktop launcher for the Flippermizer Overlay, Bestiary, and Base Game AP setup",
   "author": "OpenAI Codex",
   "main": "main.js",
