@@ -23396,37 +23396,23 @@ const FLPR_OVERLAY_CHANGELOG = computeOverlayRecentChanges();
 const FLPR_PATCH_NOTES_SEEN_LS_KEY = "flpr_changelog_patch_notes_seen_v1";
 const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1";
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
-const FLPR_PATCH_NOTES_RELEASE_LABEL = "May 26 Home Edition Hotfix";
+const FLPR_PATCH_NOTES_RELEASE_LABEL = "June 2 YAML + Preset Update";
 const FLPR_PATCH_NOTES_ITEMS_SHARED = [
   {
-    k: "May 26 Hotfix",
-    d: "Fresh Home Edition build with AP Progressive Ball safeguards, seed rebuild cleanup, and packaged layout defaults."
-  }
-];
-const FLPR_PATCH_NOTES_ITEMS_HOME = [
-  {
-    k: "Progressive Ball routing",
-    d: "Remote Progressive Balls now verify against the active Overview tables, reroute off-seed or 4th balls to eligible tables, and stay stable on Sync Received."
+    k: "YAML Builder editions",
+    d: "The player options builder now targets Home or Stream Edition from one page and includes a Stream starter preset."
   },
   {
-    k: "Packaged layout defaults",
-    d: "The release now bakes in the current logo position, keeps Overview rows at five tables, and restores original starting tables when rebuilding AP state."
-  }
-];
-const FLPR_PATCH_NOTES_ITEMS_STREAM = [
-  {
-    k: "Stream counter flow",
-    d: "Easy Junk, Medium Junk, and Pinball Fragment rewards bank usable redeems and Extra Ball tokens again."
+    k: "Custom world sets",
+    d: "Curated seeds can keep custom world names and exact table groupings. Stream Edition shows these as generic named world banners."
   },
   {
-    k: "Checks BALLS button",
-    d: "The Checks page now shows BALLS as a compact button beside the 1/2/3 ball pills instead of printing BALLS 1/3 in the header."
-  },
-  {
-    k: "Stream header polish",
-    d: "Relics now centers between STREAM EDITION and the tower tabs, and the title badge is labeled PLAYER TITLE."
+    k: "Well-Made Tables",
+    d: "The preset now follows the VPX creator-tier list, removes Original VPX tables, and avoids Stern 2016+ tables."
   }
 ];
+const FLPR_PATCH_NOTES_ITEMS_HOME = [];
+const FLPR_PATCH_NOTES_ITEMS_STREAM = [];
 const LEGACY_MAIN_STATE_KEYS = [
   "flpr_vertical_worlds_overview_v3_restore",
   "flpr_vertical_worlds_overview_v2"
