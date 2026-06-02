@@ -1230,11 +1230,7 @@
       info.textContent = `${prefix} Selection mode is random, so curated entries are ignored unless you switch to Curated Table List.${featuredCapNote}`;
       return;
     }
-    if(!groups.length || (groups.length === 1 && groups[0].toLowerCase() === "auto")){
-      info.textContent = `${prefix} Curated world groups are currently set to auto.${featuredCapNote}`;
-      return;
-    }
-    info.textContent = `${prefix} Curated groups loaded: ${groups.join(" | ")}.${featuredCapNote}`;
+    info.textContent = `${prefix} Switch to Curated Table List to package exact named world slots.${featuredCapNote}`;
   }
 
   function trapDensityValue(){
