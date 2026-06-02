@@ -143,10 +143,10 @@
         },
         "base_game_active_table_count": {
             "display_name": "Base Game Active Table Count",
-            "description": "How many tables from the larger Base Game pool should exist in this seed's active graph. For the current episode contract, this stays at 25 so the seed is built from five 5-table worlds.",
+            "description": "How many tables from the larger Base Game pool should exist in this seed's active graph. Curated table-list worlds are packaged in five-table slots and can grow beyond the original 25-table episode size.",
             "type": "Range",
             "range_start": 5,
-            "range_end": 25,
+            "range_end": 90,
             "default": 25,
             "group": "Base Game Options",
             "visibility": [
