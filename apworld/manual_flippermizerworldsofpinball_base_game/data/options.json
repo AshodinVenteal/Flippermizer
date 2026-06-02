@@ -214,6 +214,26 @@
                 "template"
             ]
         },
+        "base_game_custom_world_sets": {
+            "display_name": "Base Game Custom World Sets",
+            "description": [
+                "Named table chunks to use when Base Game Selection Mode is Curated Table List.",
+                "Each line can be formatted as World Name: Table A | Table B | Table C | Table D | Table E.",
+                "When set, custom world sets preserve your grouping and world names instead of shuffling the curated table list into generated worlds."
+            ],
+            "type": "Choice",
+            "values": {
+                "auto": 1
+            },
+            "default": 1,
+            "allow_custom_value": true,
+            "group": "Base Game Options",
+            "visibility": [
+                "simple_ui",
+                "complex_ui",
+                "template"
+            ]
+        },
         "base_game_random_one_featured_designer_only": {
             "display_name": "Random Limit Featured Designer Worlds",
             "description": "When enabled, random Base Game world selection will include at most one Featured Designer world. Fully curated selections are left alone, but hybrid random fill also respects the cap.",
