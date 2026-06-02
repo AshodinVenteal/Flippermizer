@@ -22,6 +22,13 @@ Release assets:
 - `Flippermizer-Home-Edition-1.1.1-portable.exe`
 - `Flippermizer-Home-Edition-1.1.1-win-unpacked.zip`
 
+### Home / Stream Edition YAML + Preset Update - 2026-06-02
+
+- YAML Builder now supports Home Edition and Stream Edition from one page, including a Stream starter preset.
+- Curated seeds can now use custom named world sets that keep your chosen world names and table groupings.
+- Stream Edition shows custom named worlds with generic named banners instead of table-art world banners.
+- Well-Made Tables now follows the VPX creator-tier preference list, removes Original VPX entries, and avoids Stern 2016+ tables.
+
 ### Home Edition 1.1.1 Incremental - 2026-05-27
 
 - Rebuilt Home Edition as 1.1.1 portable and win-unpacked packages.

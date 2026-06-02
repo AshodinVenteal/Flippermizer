@@ -23654,23 +23654,19 @@ const FLPR_OVERLAY_CHANGELOG = computeOverlayRecentChanges();
 const FLPR_PATCH_NOTES_SEEN_LS_KEY = "flpr_changelog_patch_notes_seen_v1";
 const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1";
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
-const FLPR_PATCH_NOTES_RELEASE_LABEL = "May 29 Checks + Counter Hotfix";
+const FLPR_PATCH_NOTES_RELEASE_LABEL = "June 2 YAML + Preset Update";
 const FLPR_PATCH_NOTES_ITEMS_SHARED = [
   {
-    k: "Checks page banners",
-    d: "Checks by World now uses darker Tower world banners for world bubbles, restores each table's own banner on table sections, and includes the City Slicker flyer mapping."
+    k: "YAML Builder editions",
+    d: "The player options builder now targets Home or Stream Edition from one page and includes a Stream starter preset."
   },
   {
-    k: "Counter redeems persist",
-    d: "Full AP inventory snapshots now rebuild Junk Redeems from the given/used ledger instead of minting fresh charges, so spent Easy, Medium, and HARD redeems stay spent after reconnecting."
+    k: "Custom world sets",
+    d: "Curated seeds can keep custom world names and exact table groupings. Stream Edition shows these as generic named world banners."
   },
   {
-    k: "Hard redeem fusion",
-    d: "Easy + Medium visibly fuse into a HARD redeem before targeting Hard checks."
-  },
-  {
-    k: "Updated banner art",
-    d: "Toccata Terror and Tabletop Rumblespot have refreshed banner art synced across Home and Stream Edition assets."
+    k: "Well-Made Tables",
+    d: "The preset now follows the VPX creator-tier list, removes Original VPX tables, and avoids Stern 2016+ tables."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_HOME = [];
