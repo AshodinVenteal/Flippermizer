@@ -679,21 +679,22 @@
     "Mr. & Mrs. Pac-Man","Space Invaders","Monopoly","Dungeons & Dragons","World Poker Tour",
     "High Roller Casino","Who Dunnit","Genesis","Haunted House","The Incredible Hulk"
   ];
-  // Best-effort VPX author-tier preset: favors known tables from the supplied maker tiers, then balances eras.
-  const STREAM_EDITION_TABLES_PRESET = [
-    "Space Invaders","Fathom","Bram Stoker's Dracula","Vector","Q*bert's Quest",
-    "Comet","High Speed","Whirlwind","Bride of Pinbot","The Getaway",
-    "Creature from the Black Lagoon","White Water","Star Trek: The Next Generation","Theatre of Magic","Attack from Mars",
-    "Medieval Madness","Monster Bash","Cirqus Voltaire","Scared Stiff","Tales of the Arabian Nights",
-    "Lord of the Rings","AC/DC","Batman 66","Deadpool","Star Trek Stern 2013"
+  // Author-tier-biased VPX preset: VPW/TastyWasps local notes first, then strong non-original,
+  // non-2016+ Stern tables for era balance.
+  const WELL_MADE_TABLES_PRESET = [
+    "High Speed","No Fear: Dangerous Sports","AC/DC","Cirqus Voltaire","White Water",
+    "Medieval Madness","Attack from Mars","Tales of the Arabian Nights","Theatre of Magic","Monster Bash",
+    "Fathom","Skateball","Vector","Space Invaders","Q*bert's Quest",
+    "Bram Stoker's Dracula","Creature from the Black Lagoon","Phantom of the Opera","Jurassic Park","Demolition Man",
+    "Lord of the Rings","Star Trek Stern 2013","Iron Man Vault Edition","Game of Thrones","The Walking Dead"
   ];
-  const WELL_MADE_TABLES_PRESET = STREAM_EDITION_TABLES_PRESET.slice();
+  const STREAM_EDITION_TABLES_PRESET = WELL_MADE_TABLES_PRESET.slice();
   const STREAM_EDITION_WORLD_SET_PRESET = [
-    { name:"Retro Signals", tables:["Space Invaders","Fathom","Bram Stoker's Dracula","Vector","Q*bert's Quest"] },
-    { name:"Speed Circuit", tables:["Comet","High Speed","Whirlwind","Bride of Pinbot","The Getaway"] },
-    { name:"Creature Feature", tables:["Creature from the Black Lagoon","White Water","Star Trek: The Next Generation","Theatre of Magic","Attack from Mars"] },
-    { name:"Arcade Legends", tables:["Medieval Madness","Monster Bash","Cirqus Voltaire","Scared Stiff","Tales of the Arabian Nights"] },
-    { name:"Modern Showdown", tables:["Lord of the Rings","AC/DC","Batman 66","Deadpool","Star Trek Stern 2013"] }
+    { name:"Workshop Velocity", tables:["High Speed","No Fear: Dangerous Sports","AC/DC","Cirqus Voltaire","White Water"] },
+    { name:"Bally Williams Crown", tables:["Medieval Madness","Attack from Mars","Tales of the Arabian Nights","Theatre of Magic","Monster Bash"] },
+    { name:"Retro Skill Shot", tables:["Fathom","Skateball","Vector","Space Invaders","Q*bert's Quest"] },
+    { name:"Cinema Arcades", tables:["Bram Stoker's Dracula","Creature from the Black Lagoon","Phantom of the Opera","Jurassic Park","Demolition Man"] },
+    { name:"Stern Before Dawn", tables:["Lord of the Rings","Star Trek Stern 2013","Iron Man Vault Edition","Game of Thrones","The Walking Dead"] }
   ];
   const METASIZER_WORLD_GROUP_PRESETS = {
     tonight_new_worlds: [
