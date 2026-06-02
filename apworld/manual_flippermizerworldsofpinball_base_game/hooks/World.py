@@ -37,6 +37,8 @@ METASIZER_SELECTION_MODES = {
 METASIZER_DEFAULT_SELECTION_MODE = "random_catalog_pool"
 METASIZER_GROUP_SELECTION_SPLIT_RE = re.compile(r"[\r\n,|]+")
 METASIZER_TABLE_SELECTION_SPLIT_RE = re.compile(r"[\r\n,|]+")
+METASIZER_CUSTOM_WORLD_LINE_SPLIT_RE = re.compile(r"[\r\n]+")
+METASIZER_CUSTOM_WORLD_TABLE_SPLIT_RE = re.compile(r"\s*(?:\||;)\s*")
 METASIZER_CURATED_THEME_RULES = {
     "cosmic": {
         "needles": ("star", "space", "mars", "trek", "stargate", "starship", "independence", "x-files", "mandalorian", "alien", "orbit"),
@@ -762,6 +764,81 @@ def _metasizer_resolve_table_entries(table_entries: list[dict[str, Any]], raw_se
     return resolved, unresolved
 
 
+def _metasizer_split_custom_world_tables(raw: Any) -> list[str]:
+    text = str(raw or "").strip()
+    if not text:
+        return []
+    if "|" in text or ";" in text:
+        return [part.strip() for part in METASIZER_CUSTOM_WORLD_TABLE_SPLIT_RE.split(text) if str(part or "").strip()]
+    return _metasizer_parse_curated_table_list(text)
+
+
+def _metasizer_parse_custom_world_sets(raw: Any) -> list[dict[str, Any]]:
+    if raw is None:
+        return []
+    if isinstance(raw, dict):
+        out: list[dict[str, Any]] = []
+        for name, tables in raw.items():
+            table_list = _metasizer_split_custom_world_tables(tables)
+            if table_list:
+                out.append({"name": str(name or "").strip(), "tables": table_list})
+        return out
+    if isinstance(raw, (list, tuple)):
+        out: list[dict[str, Any]] = []
+        for item in raw:
+            if isinstance(item, dict):
+                name = str(item.get("name") or item.get("world") or item.get("label") or "").strip()
+                tables = item.get("tables") or item.get("table_names") or item.get("entries") or ""
+                table_list = _metasizer_split_custom_world_tables(tables)
+                if table_list:
+                    out.append({"name": name, "tables": table_list})
+            else:
+                out.extend(_metasizer_parse_custom_world_sets(str(item or "")))
+        return out
+    text = str(raw or "").strip()
+    if not text or text.lower() in {"auto", "default", "random", "none", "0", "1"}:
+        return []
+    out: list[dict[str, Any]] = []
+    for raw_line in METASIZER_CUSTOM_WORLD_LINE_SPLIT_RE.split(text):
+        line = re.sub(r"^\s*[-*]\s*", "", str(raw_line or "").strip())
+        if not line:
+            continue
+        if ":" in line:
+            name, tables_text = line.split(":", 1)
+        elif "=" in line:
+            name, tables_text = line.split("=", 1)
+        else:
+            name, tables_text = f"World {len(out) + 1}", line
+        table_list = _metasizer_split_custom_world_tables(tables_text)
+        if table_list:
+            out.append({"name": str(name or "").strip(), "tables": table_list})
+    return out
+
+
+def _metasizer_resolve_custom_world_sets(table_entries: list[dict[str, Any]], raw_selection: Any) -> tuple[list[dict[str, Any]], list[str], list[str]]:
+    worlds: list[dict[str, Any]] = []
+    unresolved: list[str] = []
+    duplicate_tables: list[str] = []
+    seen_names: set[str] = set()
+    for idx, custom_world in enumerate(_metasizer_parse_custom_world_sets(raw_selection), start=1):
+        world_name = str(custom_world.get("name") or "").strip() or f"World {idx}"
+        resolved_entries, missing = _metasizer_resolve_table_entries(table_entries, custom_world.get("tables") or [])
+        unresolved.extend([f"{world_name}: {token}" for token in missing])
+        world_entries: list[dict[str, Any]] = []
+        for entry in resolved_entries:
+            table_name = str(entry.get("name") or "").strip()
+            if not table_name:
+                continue
+            if table_name in seen_names:
+                duplicate_tables.append(table_name)
+                continue
+            seen_names.add(table_name)
+            world_entries.append(dict(entry))
+        if world_entries:
+            worlds.append({"name": world_name, "entries": world_entries})
+    return worlds, unresolved, duplicate_tables
+
+
 def _metasizer_player_display_name(multiworld: MultiWorld, player: int) -> str:
     try:
         names = getattr(multiworld, "player_name", None)
@@ -859,6 +936,59 @@ def _build_metasizer_curated_table_world_layout(
         "page_count": max(1, (len(worlds) + worlds_per_page - 1) // worlds_per_page),
         "layout_mode": "curated_table_list",
         "curated": True,
+        "curated_by": curated_by,
+        "world_order": world_order,
+        "worlds": worlds,
+    }
+
+
+def _build_metasizer_custom_world_set_layout(
+    custom_worlds: list[dict[str, Any]],
+    starting_open_tables: list[str],
+    curated_by: str,
+) -> dict[str, Any]:
+    group_size = 5
+    worlds_per_page = 5
+    tables_per_page = group_size * worlds_per_page
+    starting_open = set(str(name or "").strip() for name in starting_open_tables if str(name or "").strip())
+    worlds: list[dict[str, Any]] = []
+    world_order: list[str] = []
+    for custom_world in custom_worlds:
+        world_chunk = [dict(entry) for entry in custom_world.get("entries") or []]
+        if not world_chunk:
+            continue
+        world_num = len(worlds) + 1
+        world_key = f"w{world_num}"
+        tables = [str(entry.get("name") or "").strip() for entry in world_chunk if str(entry.get("name") or "").strip()]
+        _, palette, theme_key = _metasizer_curated_world_theme(world_chunk, world_num)
+        custom_name = str(custom_world.get("name") or "").strip() or f"World {world_num}"
+        world_order.append(world_key)
+        worlds.append({
+            "key": world_key,
+            "label": f"World {world_num}; {custom_name}",
+            "generated_name": custom_name,
+            "custom_name": custom_name,
+            "curated": True,
+            "curated_seed": True,
+            "custom_world_set": True,
+            "curated_by": curated_by,
+            "banner_palette": palette,
+            "banner_theme": theme_key,
+            "tables": tables,
+            "table_codes": [str(entry.get("code") or "").strip() for entry in world_chunk if str(entry.get("code") or "").strip()],
+            "group_keys": [f"custom_w{world_num}"],
+            "group_labels": [custom_name],
+            "starting_open_tables": [name for name in tables if name in starting_open],
+        })
+    world_order.append("boss")
+    return {
+        "group_size": group_size,
+        "tables_per_page": tables_per_page,
+        "worlds_per_page": worlds_per_page,
+        "page_count": max(1, (len(worlds) + worlds_per_page - 1) // worlds_per_page),
+        "layout_mode": "custom_world_sets",
+        "curated": True,
+        "custom_world_sets": True,
         "curated_by": curated_by,
         "world_order": world_order,
         "worlds": worlds,
@@ -1064,12 +1194,132 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
     selection_mode_requested, selection_mode_applied, selection_mode_fallback_reason = _get_metasizer_selection_mode(world, multiworld, player)
     curated_world_groups_raw = get_option_value(multiworld, player, "base_game_curated_world_groups")
     curated_tables_raw = get_option_value(multiworld, player, "base_game_curated_tables")
+    custom_world_sets_raw = get_option_value(multiworld, player, "base_game_custom_world_sets")
     group_size = 5
     desired_world_count = max(1, min(len(catalog_groups), requested_count // group_size if requested_count > 0 else len(catalog_groups)))
     seed_name = str(getattr(multiworld, "seed_name", ""))
     numeric_seed = str(getattr(multiworld, "seed", ""))
     rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|metasizer_table_set_v2")
     if selection_mode_applied == "curated_table_list":
+        custom_world_sets, unresolved_custom_world_tables, duplicate_custom_world_tables = _metasizer_resolve_custom_world_sets(generation_ready_entries, custom_world_sets_raw)
+        if custom_world_sets:
+            desired_active_count = max(1, min(
+                len(generation_ready_entries),
+                requested_count if requested_count > 0 else min(25, len(generation_ready_entries)),
+            ))
+            active_world_sets: list[dict[str, Any]] = []
+            active_entries: list[dict[str, Any]] = []
+            custom_fallback_reasons: list[str] = []
+            for world_idx, custom_world in enumerate(custom_world_sets, start=1):
+                remaining = desired_active_count - len(active_entries)
+                if remaining <= 0:
+                    break
+                chunk_entries = [dict(entry) for entry in (custom_world.get("entries") or [])[:remaining]]
+                if not chunk_entries:
+                    continue
+                world_name = str(custom_world.get("name") or "").strip() or f"World {world_idx}"
+                for staged in chunk_entries:
+                    staged["active_group_key"] = f"custom_w{len(active_world_sets) + 1}"
+                    staged["active_group_label"] = world_name
+                active_entries.extend(chunk_entries)
+                active_world_sets.append({"name": world_name, "entries": chunk_entries})
+            trimmed_count = sum(len(world.get("entries") or []) for world in custom_world_sets) - len(active_entries)
+            if unresolved_custom_world_tables:
+                custom_fallback_reasons.append("unresolved custom world table selectors: " + ", ".join(unresolved_custom_world_tables))
+            if duplicate_custom_world_tables:
+                custom_fallback_reasons.append("duplicate custom world tables skipped: " + ", ".join(duplicate_custom_world_tables))
+            if trimmed_count > 0:
+                custom_fallback_reasons.append(f"custom world sets trimmed to {desired_active_count} active tables")
+            active_tables = [str(entry.get("name") or "").strip() for entry in active_entries if str(entry.get("name") or "").strip()]
+            active_count = len(active_tables)
+            if active_entries:
+                start_open_count = max(1, min(active_count, requested_start_open if requested_start_open > 0 else min(5, active_count)))
+                opening_entries = [dict(entry) for entry in rng.sample(active_entries, start_open_count)]
+                opening_entries.sort(key=lambda entry: active_tables.index(str(entry.get("name") or "").strip()) if str(entry.get("name") or "").strip() in active_tables else 10**9)
+            else:
+                opening_entries = []
+            opening_tables = [str(entry.get("name") or "").strip() for entry in opening_entries]
+            curated_by = _metasizer_player_display_name(multiworld, player)
+            world_layout = _build_metasizer_custom_world_set_layout(active_world_sets, opening_tables, curated_by)
+            active_world_groups = []
+            for entry in world_layout.get("worlds", []) or []:
+                active_world_groups.append({
+                    "key": str(entry.get("key") or "").strip(),
+                    "label": str(entry.get("custom_name") or entry.get("generated_name") or entry.get("label") or "").strip(),
+                    "table_names": list(entry.get("tables") or []),
+                    "table_codes": list(entry.get("table_codes") or []),
+                    "generation_ready": True,
+                    "explicit": True,
+                    "curated": True,
+                    "custom_world_set": True,
+                    "banner_palette": dict(entry.get("banner_palette") or {}),
+                })
+            return {
+                "enabled": enabled and bool(active_tables),
+                "version": 6,
+                "base_variant": "Base Game",
+                "variant": "Base Game",
+                "pool_size": len(table_pool),
+                "generation_ready_pool_size": len(generation_ready_tables),
+                "candidate_pool_size": len(candidate_only_tables),
+                "requested_active_table_count": requested_count,
+                "requested_starting_open_count": requested_start_open,
+                "random_one_featured_designer_only": random_one_featured_only,
+                "selection_scope": "custom_world_sets",
+                "selection_mode_requested": selection_mode_requested,
+                "selection_mode": selection_mode_applied,
+                "selection_mode_options": list(METASIZER_SELECTION_MODES.values()),
+                "selection_mode_fallback_reason": selection_mode_fallback_reason,
+                "selection_group_count": len(active_world_groups),
+                "selected_group_keys": [str(group.get("key") or "").strip() for group in active_world_groups],
+                "selected_group_metadata": active_world_groups,
+                "selected_group_keys_requested": [],
+                "selected_group_keys_inactive": [],
+                "curated_world_groups_input": curated_world_groups_raw,
+                "curated_world_groups_resolved": [],
+                "curated_world_groups_unresolved": [],
+                "curated_tables_input": curated_tables_raw,
+                "curated_tables_resolved": active_tables,
+                "curated_tables_unresolved": [],
+                "custom_world_sets_input": custom_world_sets_raw,
+                "custom_world_sets_resolved": [
+                    {
+                        "name": str(world.get("name") or "").strip(),
+                        "tables": [str(entry.get("name") or "").strip() for entry in world.get("entries") or [] if str(entry.get("name") or "").strip()],
+                    }
+                    for world in active_world_sets
+                ],
+                "custom_world_sets_unresolved": unresolved_custom_world_tables,
+                "custom_world_sets_duplicates": duplicate_custom_world_tables,
+                "curated_by": curated_by,
+                "group_selection_fallback_reason": "; ".join(custom_fallback_reasons),
+                "manual_pick_scaffold": True,
+                "curated_pick_scaffold": True,
+                "curated_table_scaffold": True,
+                "custom_world_set_scaffold": True,
+                "active_tables": active_tables,
+                "active_table_entries": active_entries,
+                "active_table_count": len(active_tables),
+                "starting_open_tables": opening_tables,
+                "starting_open_entries": opening_entries,
+                "starting_open_count": len(opening_tables),
+                "table_pool": table_pool,
+                "table_entries": table_entries,
+                "catalog_groups": catalog_groups,
+                "generation_ready_tables": generation_ready_tables,
+                "candidate_only_tables": candidate_only_tables,
+                "effective_active_table_count": len(active_tables),
+                "effective_starting_open_count": len(opening_tables),
+                "active_world_count": len(active_world_groups),
+                "active_world_groups": active_world_groups,
+                "world_layout": world_layout,
+                "graph_mode": "custom_world_sets",
+                "notes": [
+                    "Base Game selected custom named world sets from YAML.",
+                    f"Custom world sets active tables: {len(active_tables)}.",
+                    *custom_fallback_reasons,
+                ],
+            }
         resolved_curated_entries, unresolved_curated_tables = _metasizer_resolve_table_entries(generation_ready_entries, curated_tables_raw)
         curated_table_fallback_reason = ""
         if unresolved_curated_tables:
