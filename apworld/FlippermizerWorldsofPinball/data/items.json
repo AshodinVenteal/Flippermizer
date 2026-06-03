@@ -20,7 +20,7 @@
         "local": true
     },
     {
-        "count": "0",
+        "count": "3",
         "name": "Boss Key",
         "category": [
             "Progression",
@@ -76,7 +76,16 @@
         "useful": true
     },
     {
-        "count": "0",
+        "count": "10",
+        "name": "Hint: Progressive Ball",
+        "category": [
+            "Filler",
+            "Hint"
+        ],
+        "useful": true
+    },
+    {
+        "count": "6",
         "name": "Hint: Boss Key",
         "category": [
             "Filler",

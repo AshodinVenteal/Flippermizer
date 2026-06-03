@@ -2925,33 +2925,38 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 }
 .world.curatedWorld .worldText{
   position:absolute;
-  left:112px;
-  right:220px;
-  top:50%;
-  transform:translateY(-50%);
+  left:28px;
+  right:112px;
+  top:10px;
+  bottom:10px;
+  transform:none;
   align-items:center;
   justify-content:center;
   text-align:center;
   gap:6px;
 }
 .world.curatedWorld.selected .worldText{
-  transform:translateY(-50%);
+  transform:none;
 }
 .world.curatedWorld.compact .worldText{
-  transform:translateY(-50%) scale(.92);
+  transform:none;
   opacity:.92;
 }
 .world.curatedWorld .worldCode{
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
   display:inline-flex;
   align-items:center;
   justify-content:center;
   min-height:18px;
-  padding:3px 9px 2px;
+  padding:3px 10px 2px;
   border:1px solid rgba(232,250,255,.38);
   border-radius:999px;
   background:rgba(2,8,16,.50);
   color:rgba(232,250,255,.92);
-  font-size:9px;
+  font-size:11px;
 }
 .world.curatedWorld .worldSub{
   max-width:none;
@@ -2959,22 +2964,42 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   overflow:visible;
   text-overflow:clip;
   color:rgba(232,250,255,.98);
-  font-size:24px;
-  line-height:1.02;
+  font-family:'Jersey 15', var(--flprTitleFontFamily), monospace;
+  font-size:32px;
+  line-height:.95;
   text-shadow:0 0 12px rgba(0,217,255,.42), 0 2px 0 rgba(0,0,0,.60);
 }
 .world.curatedWorld.compact .worldSub{
   opacity:1;
   transform:none;
   max-height:none;
-  font-size:17px;
+  font-size:20px;
 }
-.world.curatedWorld .worldEmoji{ opacity:0; }
+.world.curatedWorld.compact .worldCode{
+  font-size:8px;
+  min-height:14px;
+  padding:2px 7px 1px;
+}
+.world.curatedWorld .worldEmoji{
+  position:absolute;
+  right:42px;
+  top:50%;
+  transform:translateY(-50%);
+  opacity:.96;
+  font-size:25px;
+  z-index:5;
+  filter: drop-shadow(0 0 10px rgba(0,217,255,.34));
+}
+.world.curatedWorld.compact .worldEmoji{
+  right:32px;
+  font-size:18px;
+  opacity:.86;
+}
 .worldCuratedBy{
   position:absolute;
   right:14px;
-  top:50%;
-  transform:translateY(-50%);
+  bottom:10px;
+  transform:none;
   z-index:5;
   width:190px;
   max-width:24%;
@@ -4759,6 +4784,29 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   outline:none;
   box-shadow:0 8px 16px rgba(0,0,0,.24), 0 0 16px rgba(34,255,136,.18);
 }
+#viewChecks .checksScorePanel.scoreMode-normal .checksScoreModBtn,
+.nodeBtn.scoreNode.scoreMode-normal .scoreValue{
+  color:rgba(245,252,255,.98);
+  text-shadow:0 0 12px rgba(232,250,255,.22);
+}
+#viewChecks .checksScorePanel.scoreMode-easy .checksScoreModBtn,
+.nodeBtn.scoreNode.scoreMode-easy .scoreValue{
+  color:rgba(90,255,160,.98);
+  text-shadow:0 0 14px rgba(34,255,136,.34);
+}
+#viewChecks .checksScorePanel.scoreMode-hard .checksScoreModBtn,
+.nodeBtn.scoreNode.scoreMode-hard .scoreValue{
+  color:rgba(255,180,86,.98);
+  text-shadow:0 0 14px rgba(255,146,50,.36);
+}
+#viewChecks .checksScorePanel.scoreMode-maddening .checksScoreModBtn,
+.nodeBtn.scoreNode.scoreMode-maddening .scoreValue{
+  color:rgba(255,96,112,.98);
+  text-shadow:0 0 14px rgba(255,64,80,.40);
+}
+#viewChecks .checksScorePanel.scoreMode-easy .checksScoreModBtn{ border-color:rgba(34,255,136,.62); }
+#viewChecks .checksScorePanel.scoreMode-hard .checksScoreModBtn{ border-color:rgba(255,150,60,.66); }
+#viewChecks .checksScorePanel.scoreMode-maddening .checksScoreModBtn{ border-color:rgba(255,76,92,.72); }
 #viewChecks .checksScoreInput{
   width:100%;
   min-height:48px;
@@ -4986,6 +5034,15 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   line-height:1.1;
   color:rgba(245,252,255,0.98);
   text-shadow:0 0 12px rgba(88,226,255,.18);
+}
+.nodeBtn.scoreNode.scoreMode-easy{
+  border-color:rgba(34,255,136,.72);
+}
+.nodeBtn.scoreNode.scoreMode-hard{
+  border-color:rgba(255,160,64,.74);
+}
+.nodeBtn.scoreNode.scoreMode-maddening{
+  border-color:rgba(255,77,96,.78);
 }
 .nodeBtn:after{
   content:"";
@@ -12215,6 +12272,21 @@ body.chromaBlue .bossKeyCard::before{
   flex-wrap:wrap;
   gap:7px;
 }
+.relicCarouselActions{
+  position:relative;
+  z-index:7;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+.relicCarouselActions .relicActionBtn{
+  min-width:0;
+  min-height:30px;
+  padding:7px 8px 6px;
+  border-radius:9px;
+  font-size:7px;
+  line-height:1.15;
+}
 .relicPill{
   font-size:8px;
   line-height:1.2;
@@ -12305,11 +12377,12 @@ body.chromaBlue .bossKeyCard::before{
   position:absolute;
   left:50%;
   top:50%;
-  width:154px;
-  height:220px;
+  width:204px;
+  height:286px;
   min-height:0;
   flex:none;
   scroll-snap-align:none;
+  grid-template-rows:auto auto minmax(0, 1fr) auto auto;
   transform:translate(-50%, -50%);
   transform-origin:50% 72%;
   padding:12px;
@@ -12327,9 +12400,9 @@ body.chromaBlue .bossKeyCard::before{
     0 12px 28px rgba(0,0,0,.55);
 }
 .relicCarouselViewport.relicLazySusan .relicCarouselCard.isLocked{
-  opacity:.08 !important;
-  filter:grayscale(1) brightness(.36) saturate(.18) blur(.2px) !important;
-  pointer-events:none;
+  opacity:.58 !important;
+  filter:grayscale(.82) brightness(.62) saturate(.32) blur(.1px) !important;
+  pointer-events:auto;
 }
 .relicCarouselViewport.relicLazySusan .relicCarouselEmoji{
   font-size:34px;
@@ -12346,11 +12419,18 @@ body.chromaBlue .bossKeyCard::before{
   line-height:1.45;
   overflow:hidden;
   display:-webkit-box;
-  -webkit-line-clamp:5;
+  -webkit-line-clamp:7;
   -webkit-box-orient:vertical;
 }
 .relicCarouselViewport.relicLazySusan .relicCarouselMeta{
   gap:6px;
+}
+.relicCarouselViewport.relicLazySusan .relicCarouselActions{
+  gap:5px;
+}
+.relicCarouselViewport.relicLazySusan .relicCarouselActions .relicActionBtn{
+  min-height:28px;
+  padding:6px 6px 5px;
 }
 .relicCarouselViewport.relicLazySusan .relicCarouselNavBtn{
   position:absolute;
@@ -12362,6 +12442,8 @@ body.chromaBlue .bossKeyCard::before{
   align-self:auto;
   transform:translateY(-50%);
   border-radius:14px;
+  font-size:200%;
+  line-height:1;
 }
 .relicCarouselViewport.relicLazySusan .relicCarouselNavBtn[data-relic-carousel="prev"]{
   left:12px;
@@ -12475,12 +12557,12 @@ body.chromaBlue .bossKeyCard::before{
   min-height:438px;
   padding:12px 14px 14px;
   display:grid;
-  grid-template-columns:minmax(216px, 260px) minmax(0, 1fr);
+  grid-template-columns:1fr;
   gap:14px;
   align-items:stretch;
 }
 .relicArchiveShell.detailOpen{
-  grid-template-columns:minmax(216px, 260px) minmax(0, 1fr);
+  grid-template-columns:1fr;
 }
 .relicDetailSide{
   min-width:0;
@@ -12700,18 +12782,18 @@ body.chromaBlue .bossKeyCard::before{
   display:grid;
 }
 .relicLazySusanStage .relicCarouselViewport.relicLazySusan{
-  height:420px;
-  min-height:420px;
+  height:500px;
+  min-height:500px;
   border:1px solid rgba(91,255,185,.18);
   border-radius:14px;
 }
 .relicArchiveShell:not(.detailOpen) .relicCarouselViewport.relicLazySusan .relicCarouselCard{
-  width:174px;
-  height:236px;
+  width:214px;
+  height:296px;
 }
 .relicArchiveShell.detailOpen .relicCarouselViewport.relicLazySusan .relicCarouselCard{
-  width:174px;
-  height:236px;
+  width:214px;
+  height:296px;
 }
 @media (max-width: 980px){
   .relicArchiveShell,
@@ -12727,8 +12809,8 @@ body.chromaBlue .bossKeyCard::before{
     inset:44px 54px 128px;
   }
   .relicCarouselViewport.relicLazySusan .relicCarouselCard{
-    width:138px;
-    height:210px;
+    width:164px;
+    height:262px;
   }
   .relicCarouselViewport.relicLazySusan .relicCarouselNavBtn{
     min-height:132px;
@@ -15706,6 +15788,43 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   opacity: 1 !important;
   mix-blend-mode: normal !important;
 }
+#viewChecks .checksWorldTabs .wTab.hasWorldTabBanner{
+  position: absolute !important;
+  isolation: isolate;
+  overflow: hidden !important;
+  color: rgba(238,252,255,.98) !important;
+  background:
+    linear-gradient(180deg, rgba(2,10,18,.84), rgba(2,10,18,.92)),
+    var(--checks-world-tab-bg, none) center / cover no-repeat !important;
+  text-shadow: 0 0 12px rgba(0,217,255,.58), 0 2px 0 rgba(0,0,0,.86);
+}
+#viewChecks .checksWorldTabs .wTab.hasWorldTabBanner::before{
+  content: "" !important;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0,217,255,.12), transparent 38%, rgba(34,255,136,.08)),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.34));
+}
+#viewChecks .checksWorldTabs .wTab.hasWorldTabBanner.bossHeroTab{
+  background:
+    linear-gradient(180deg, rgba(54,6,10,.86), rgba(14,3,5,.94)),
+    var(--checks-world-tab-bg, none) center / cover no-repeat !important;
+  text-shadow: 0 0 14px rgba(255,70,92,.68), 0 2px 0 rgba(0,0,0,.9);
+}
+#viewChecks .checksWorldTabs .wTab.bossLockedBlank.hasWorldTabBanner{
+  color: transparent !important;
+  background:
+    linear-gradient(180deg, rgba(10,18,26,.82), rgba(2,8,14,.92)),
+    var(--checks-world-tab-bg, none) center / cover no-repeat !important;
+}
+#viewChecks .checksWorldTabs .wTab.hasWorldTabBanner > *:not(.lockChainsOverlay):not(.lockBadgeOverlay){
+  position: relative;
+  z-index: 2;
+}
 @keyframes bossThreatTabPulseKF{
   0%,100%{
     border-color: rgba(255,70,70,0.98);
@@ -15778,7 +15897,7 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
   line-height: 1.14 !important;
-  font-size: 18px !important;
+  font-size: 20px !important;
   padding: 6px 10px !important;
   overflow: hidden !important;
   word-break: normal !important;
@@ -15797,12 +15916,13 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 #viewChecks .checksWorldTabs .wTab.tabSlotTop{
   z-index: 3;
   transform: translate3d(0,0,0) scale(1);
-  font-size: calc(18px * 0.75) !important;
+  font-size: calc(20px * 0.66) !important;
+  padding: 4px 8px !important;
 }
 #viewChecks .checksWorldTabs .wTab.tabSlotMain{
   z-index: 7;
   transform: translate3d(0,0,0) scale(1.0);
-  font-size: calc(18px * 1.25) !important;
+  font-size: calc(20px * 1.32) !important;
   line-height: 1.08 !important;
   padding: 10px 12px 10px !important;
   flex-direction: column !important;
@@ -15821,10 +15941,11 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: calc(18px * 1.16) !important;
+  font-size: calc(20px * 0.62) !important;
   line-height: 1.03;
-  letter-spacing: .01em;
+  letter-spacing: 0;
   transform: none;
+  opacity:.9;
 }
 #viewChecks .checksWorldTabs .wTab.tabSlotMain .wTabSubLine{
   display: block;
@@ -15834,10 +15955,11 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
   text-overflow: clip;
   overflow-wrap: anywhere;
   word-break: break-word;
-  font-size: calc(18px * 0.54) !important;
-  line-height: 1.08;
-  color: rgba(214,244,255,.88);
-  opacity: .95;
+  font-family:'Jersey 15', var(--flprTitleFontFamily), monospace;
+  font-size: calc(20px * 1.36) !important;
+  line-height: .94;
+  color: rgba(232,250,255,.98);
+  opacity: 1;
   text-align: center;
 }
 #viewChecks .checksWorldTabs .wTab:not([data-world-tab="boss"]),
@@ -15848,7 +15970,7 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 }
 #viewChecks .checksWorldTabs .wTab.bossHeroTab.active,
 #viewChecks .checksWorldTabs .wTab.tabSlotMain.bossHeroTab{
-  font-size: calc(18px * 1.25) !important;
+  font-size: calc(20px * 1.32) !important;
 }
 #viewChecks .checksWorldTabs .wTab.tabSlotMain::after{
   content:"";
@@ -20819,6 +20941,152 @@ body.flprShopSparksSlime .spark{
     radial-gradient(120% 120% at 18% 0%, rgba(34,255,136,.20), rgba(0,0,0,0) 62%),
     linear-gradient(180deg, rgba(8,36,26,.96), rgba(4,18,14,.94));
 }
+.counterDrawer.comboSource .counterDrawerHead{
+  animation: counterComboSourcePulseKF 1180ms ease-in-out both;
+}
+.counterHardFusionFx{
+  position:absolute;
+  right:calc(100% + 16px);
+  top:54px;
+  width:264px;
+  height:128px;
+  z-index:10070;
+  pointer-events:none;
+  opacity:0;
+  transform:translateX(12px) scale(.96);
+  border:2px solid rgba(34,255,136,.74);
+  border-radius:14px;
+  background:
+    radial-gradient(120% 130% at 50% 20%, rgba(34,255,136,.20), rgba(0,0,0,0) 62%),
+    linear-gradient(180deg, rgba(4,24,28,.98), rgba(2,10,18,.98));
+  box-shadow:
+    0 18px 34px rgba(0,0,0,.52),
+    0 0 30px rgba(34,255,136,.30),
+    inset 0 0 0 1px rgba(255,255,255,.10);
+  animation: counterHardFusionPanelKF 1500ms ease-out both;
+  overflow:hidden;
+}
+.counterHardFusionFx::before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:10px;
+  border:1px dashed rgba(185,255,220,.28);
+}
+.counterHardFusionFx::after{
+  content:"";
+  position:absolute;
+  left:-30%;
+  top:0;
+  width:28%;
+  height:100%;
+  transform:skewX(-18deg);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.24), transparent);
+  animation: counterHardFusionSweepKF 1500ms ease-out both;
+}
+.counterFusionSource,
+.counterFusionHard{
+  position:absolute;
+  display:grid;
+  place-items:center;
+  font-family:var(--flprUiFontFamily);
+  text-transform:uppercase;
+  line-height:1;
+  letter-spacing:.06em;
+  text-align:center;
+}
+.counterFusionSource{
+  top:20px;
+  width:78px;
+  height:32px;
+  border-radius:9px;
+  color:rgba(232,250,255,.98);
+  font-size:10px;
+  border:1px solid rgba(0,217,255,.58);
+  background:linear-gradient(180deg, rgba(8,36,50,.96), rgba(4,16,28,.96));
+  box-shadow:0 0 14px rgba(0,217,255,.18), inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.counterFusionSource.easy{
+  left:15px;
+  animation: counterFusionEasyKF 1500ms cubic-bezier(.18,.86,.24,1) both;
+}
+.counterFusionSource.med{
+  right:15px;
+  color:rgba(203,255,224,.98);
+  border-color:rgba(34,255,136,.56);
+  box-shadow:0 0 14px rgba(34,255,136,.18), inset 0 0 0 1px rgba(255,255,255,.08);
+  animation: counterFusionMedKF 1500ms cubic-bezier(.18,.86,.24,1) both;
+}
+.counterFusionPlus{
+  position:absolute;
+  left:50%;
+  top:26px;
+  transform:translateX(-50%);
+  color:rgba(210,255,230,.96);
+  font-family:var(--flprUiFontFamily);
+  font-size:16px;
+  line-height:1;
+  text-shadow:0 0 14px rgba(34,255,136,.42);
+  animation: counterFusionPlusKF 1500ms ease-out both;
+}
+.counterFusionHard{
+  left:50%;
+  top:66px;
+  min-width:126px;
+  height:42px;
+  padding:0 18px;
+  transform:translateX(-50%) scale(.48);
+  border-radius:10px;
+  color:rgba(4,18,18,.98);
+  font-size:17px;
+  border:1px solid rgba(232,255,242,.92);
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(255,255,255,.88), rgba(255,255,255,0) 48%),
+    linear-gradient(180deg, rgba(188,255,220,.98), rgba(34,255,136,.96));
+  box-shadow:0 0 22px rgba(34,255,136,.56), 0 8px 20px rgba(0,0,0,.42);
+  animation: counterFusionHardKF 1500ms cubic-bezier(.17,.9,.2,1) both;
+}
+.counterFusionHard span{
+  display:block;
+  margin-top:3px;
+  font-size:7px;
+  letter-spacing:.12em;
+  opacity:.72;
+}
+@keyframes counterComboSourcePulseKF{
+  0%,100%{ filter:saturate(1) brightness(1); }
+  24%,68%{ filter:saturate(1.45) brightness(1.24); box-shadow:0 0 0 1px rgba(34,255,136,.42), 0 0 22px rgba(34,255,136,.28); }
+}
+@keyframes counterHardFusionPanelKF{
+  0%{ opacity:0; transform:translateX(18px) scale(.94); }
+  12%,84%{ opacity:1; transform:translateX(0) scale(1); }
+  100%{ opacity:0; transform:translateX(-8px) scale(.98); }
+}
+@keyframes counterHardFusionSweepKF{
+  0%,18%{ left:-34%; opacity:0; }
+  36%{ opacity:.72; }
+  72%,100%{ left:112%; opacity:0; }
+}
+@keyframes counterFusionEasyKF{
+  0%,18%{ transform:translate(0,0) scale(1); opacity:1; }
+  58%{ transform:translate(62px,18px) scale(.82); opacity:.94; }
+  78%,100%{ transform:translate(82px,28px) scale(.22); opacity:0; }
+}
+@keyframes counterFusionMedKF{
+  0%,18%{ transform:translate(0,0) scale(1); opacity:1; }
+  58%{ transform:translate(-62px,18px) scale(.82); opacity:.94; }
+  78%,100%{ transform:translate(-82px,28px) scale(.22); opacity:0; }
+}
+@keyframes counterFusionPlusKF{
+  0%,18%{ opacity:.42; transform:translateX(-50%) scale(.8); }
+  36%,54%{ opacity:1; transform:translateX(-50%) scale(1.12); }
+  78%,100%{ opacity:0; transform:translateX(-50%) scale(.2); }
+}
+@keyframes counterFusionHardKF{
+  0%,52%{ opacity:0; transform:translateX(-50%) scale(.44); filter:saturate(.9) brightness(.9); }
+  72%{ opacity:1; transform:translateX(-50%) scale(1.16); filter:saturate(1.28) brightness(1.18); }
+  84%,100%{ opacity:1; transform:translateX(-50%) scale(1); filter:saturate(1.12) brightness(1.06); }
+}
 #viewChecks #checksCountersDock .counterDrawerBody .barBlock{
   margin-top: 0 !important;
   padding: 10px 10px 11px;
@@ -22646,7 +22914,7 @@ window.__manualDisconnect = false;
     return src;
   }
   const DEFAULT_WORLD_BANNER_REFS = Object.freeze({
-    w1: "WorldsBanners/RampsRumpus-SQ.png",
+    w1: "WorldsBanners/RampsRumpus.png",
     w2: "WorldsBanners/MaltDesniyWorld-SQ.png",
     w3: "WorldsBanners/VintageTelevision-SQ.png",
     w4: "WorldsBanners/SpinnerSparring-SQ.png",
@@ -22654,7 +22922,7 @@ window.__manualDisconnect = false;
     boss: "WorldsBanners/BossTableSQ.png"
   });
   const DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP = Object.freeze({
-    rampsrumpus: "WorldsBanners/RampsRumpus-SQ.png",
+    rampsrumpus: "WorldsBanners/RampsRumpus.png",
     maltdesniyworld: "WorldsBanners/MaltDesniyWorld-SQ.png",
     vintagetelevision: "WorldsBanners/VintageTelevision-SQ.png",
     spinnersparring: "WorldsBanners/SpinnerSparring-SQ.png",
@@ -22840,8 +23108,8 @@ window.__manualDisconnect = false;
     const custom = getStoredWorldBannerRefsByLookup();
     for(const raw of list){
       const key = normalizeWorldBannerLookup(raw);
-      if(key && custom[key] && !isMissingIdbBannerRef(custom[key])) return normalizeKnownWorldBannerRef(custom[key]);
       if(key && DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key]) return normalizeKnownWorldBannerRef(DEFAULT_WORLD_BANNER_REFS_BY_LOOKUP[key]);
+      if(key && custom[key] && !isMissingIdbBannerRef(custom[key])) return normalizeKnownWorldBannerRef(custom[key]);
     }
     return "";
   }
@@ -23213,23 +23481,20 @@ window.__manualDisconnect = false;
       const cur = currentWorlds[wk] || {};
       const curatedWorld = !!(entry?.curated || entry?.curated_seed || payload?.curated_table_scaffold || payload?.selection_mode === "curated_table_list" || payload?.world_layout?.layout_mode === "curated_table_list");
       const generatedName = String(entry?.generated_name || label.split(";").slice(1).join(";").trim() || label).trim();
+      const bannerLookups = [label]
+        .concat(asArrayish(entry?.group_keys))
+        .concat(asArrayish(entry?.group_labels));
+      const defaultBannerRef = getDefaultWorldBannerRef(wk, bannerLookups);
       nextWorlds[wk] = {
         label,
         locked: (typeof cur.locked === "boolean") ? cur.locked : true,
         banner: curatedWorld
           ? ""
-          : (isCustomWorldBannerRef(cur.banner)
-          ? cur.banner
-          : getDefaultWorldBannerRef(
-              wk,
-              [label]
-                .concat(asArrayish(entry?.group_keys))
-                .concat(asArrayish(entry?.group_labels))
-            )),
+          : (defaultBannerRef || (isCustomWorldBannerRef(cur.banner) ? cur.banner : "")),
         tables,
         curated: curatedWorld,
         generatedName,
-        curatedBy: String(entry?.curated_by || payload?.curated_by || "").trim(),
+        curatedBy: String(entry?.curated_by || entry?.curatedBy || payload?.curated_by || "").trim(),
         bannerPalette: (entry?.banner_palette && typeof entry.banner_palette === "object") ? clone(entry.banner_palette) : {},
         bannerTheme: String(entry?.banner_theme || "").trim()
       };
@@ -23396,19 +23661,19 @@ const FLPR_OVERLAY_CHANGELOG = computeOverlayRecentChanges();
 const FLPR_PATCH_NOTES_SEEN_LS_KEY = "flpr_changelog_patch_notes_seen_v1";
 const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1";
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
-const FLPR_PATCH_NOTES_RELEASE_LABEL = "June 2 YAML + Preset Update";
+const FLPR_PATCH_NOTES_RELEASE_LABEL = "June 3 Task + Boss Hotfix";
 const FLPR_PATCH_NOTES_ITEMS_SHARED = [
   {
-    k: "YAML Builder editions",
-    d: "The player options builder now targets Home or Stream Edition from one page and includes a Stream starter preset."
+    k: "Task and score retunes",
+    d: "Table goals and score targets were refreshed for Attack from Mars, Harlem, Scared Stiff, Congo, Tales, Cirqus, Paragon, High Speed, and Dracula."
   },
   {
-    k: "Custom world sets",
-    d: "Curated seeds can keep custom world names and exact table groupings. Stream Edition shows these as generic named world banners."
+    k: "Boss table flow",
+    d: "Boss seeds now publish table-specific boss task and score checks, with an Away With You Dev Tools override and more reliable off-boss check clearing."
   },
   {
-    k: "Well-Made Tables",
-    d: "The preset now follows the VPX creator-tier list, removes Original VPX tables, and avoids Stern 2016+ tables."
+    k: "Curated worlds and YAML",
+    d: "Curated worlds now use their banner styling across Tower and Checks, and YAML Builder dropdowns plus per-world curated-by signatures were cleaned up."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_HOME = [];
@@ -24093,6 +24358,7 @@ const defaultState = {
   extraBallTokens:0,
   extraBallAssignments:{},
   junkRedeems:{ easy:0, medium:0 },
+  junkRedeemSpentByLocation:{},
   taskProgressByLocation:{},
   tableHighScores:{},
   relics: buildDefaultRelicsState(),
@@ -24753,6 +25019,7 @@ function loadState(){
     s.junkRedeems.easy = Math.max(0, Math.round(Number(s.junkRedeems.easy) || 0));
     s.junkRedeems.medium = Math.max(0, Math.round(Number(s.junkRedeems.medium) || 0));
     if("med" in s.junkRedeems) delete s.junkRedeems.med;
+    s.junkRedeemSpentByLocation = normalizeJunkRedeemSpentLedger(s.junkRedeemSpentByLocation);
     if(!s.taskProgressByLocation || typeof s.taskProgressByLocation !== "object") s.taskProgressByLocation = {};
     Object.entries({ ...(s.taskProgressByLocation || {}) }).forEach(([rawKey, rawVal])=>{
       const cleanKey = String(Math.round(Number(rawKey) || 0));
@@ -24998,6 +25265,7 @@ function flushStatePersistenceNow(){
     try{ writeBossHpLiveSnapshotToLocalStorage(String(state?.bossTableSeed || ""), state?.bossHpLive || null); }catch(_){}
     try{ bossHpTestSave(); }catch(_){}
     try{ __worldBannerLookupOverrideCache = null; }catch(_){}
+    try{ state.junkRedeemSpentByLocation = normalizeJunkRedeemSpentLedger(state.junkRedeemSpentByLocation); }catch(_){}
     if(!state.taskProgressByLocation || typeof state.taskProgressByLocation !== "object") state.taskProgressByLocation = {};
     Object.entries({ ...(state.taskProgressByLocation || {}) }).forEach(([rawKey, rawVal])=>{
       const cleanKey = String(Math.round(Number(rawKey) || 0));
@@ -28214,6 +28482,144 @@ function normalizeJunkRedeemKey(diff){
   if(d === "medium") return "medium";
   return "easy";
 }
+function junkRedeemSpendCountsForDiff(diff, amount){
+  const key = normalizeJunkRedeemKey(diff);
+  const take = Math.max(1, Math.round(Number(amount) || 1));
+  if(key === "hard") return { easy:take, medium:take };
+  if(key === "medium") return { easy:0, medium:take };
+  return { easy:take, medium:0 };
+}
+function normalizeJunkRedeemSpentLedger(ledger){
+  const out = {};
+  if(!ledger || typeof ledger !== "object") return out;
+  Object.entries(ledger || {}).forEach(([rawKey, rawVal])=>{
+    try{
+      const isObj = rawVal && typeof rawVal === "object";
+      const locId = Math.round(Number(isObj ? (rawVal.locationId ?? rawVal.id ?? rawKey) : rawKey) || 0);
+      if(!Number.isFinite(locId) || locId <= 0) return;
+      let easy = Math.max(0, Math.round(Number(isObj ? (rawVal.easy ?? rawVal.easyRedeems ?? 0) : 0) || 0));
+      let medium = Math.max(0, Math.round(Number(isObj ? (rawVal.medium ?? rawVal.med ?? rawVal.mediumRedeems ?? 0) : 0) || 0));
+      if(!isObj && typeof rawVal === "string"){
+        const counts = junkRedeemSpendCountsForDiff(rawVal, 1);
+        easy = counts.easy;
+        medium = counts.medium;
+      }
+      if(easy <= 0 && medium <= 0) return;
+      const key = String(locId);
+      const prev = out[key] || { locationId:locId, easy:0, medium:0, source:"", seedKey:"", updatedAt:0 };
+      out[key] = {
+        locationId: locId,
+        easy: Math.max(prev.easy, easy),
+        medium: Math.max(prev.medium, medium),
+        source: String((isObj ? (rawVal.source || rawVal.sourceTag || rawVal.source_type || rawVal.sourceType) : rawVal) || prev.source || "").slice(0, 80),
+        seedKey: String((isObj ? rawVal.seedKey : "") || prev.seedKey || "").slice(0, 180),
+        updatedAt: Math.max(Number(prev.updatedAt || 0), Number(isObj ? (rawVal.updatedAt || rawVal.ts || 0) : 0) || 0)
+      };
+    }catch(_){}
+  });
+  return out;
+}
+function ensureJunkRedeemSpentState(){
+  if(!state || typeof state !== "object") return {};
+  state.junkRedeemSpentByLocation = normalizeJunkRedeemSpentLedger(state.junkRedeemSpentByLocation);
+  return state.junkRedeemSpentByLocation;
+}
+function sourceTagToJunkRedeemKey(sourceOrMeta){
+  try{
+    const meta = sourceOrMeta && typeof sourceOrMeta === "object" ? sourceOrMeta : null;
+    const source = String(meta ? (meta.source || meta.source_tag || meta.sourceTag || "") : sourceOrMeta || "").trim().toLowerCase();
+    const sourceType = String(meta ? (meta.source_type || meta.sourceType || "") : "").trim().toLowerCase();
+    if(source === "super:hard" || source.startsWith("super:") || sourceType === "super") return "hard";
+    if(source === "junk:easy" || source === "junk_easy") return "easy";
+    if(source === "junk:medium" || source === "junk:med" || source === "junk_medium") return "medium";
+    if(sourceType === "junk"){
+      const d = normalizeRedeemDifficulty(meta?.difficulty || meta?.source_detail || "");
+      if(d === "medium") return "medium";
+      if(d === "easy") return "easy";
+    }
+  }catch(_){}
+  return "";
+}
+function getJunkRedeemSpentLedgerCounts(){
+  const ledger = ensureJunkRedeemSpentState();
+  const totals = { easy:0, medium:0 };
+  Object.values(ledger || {}).forEach((entry)=>{
+    try{
+      totals.easy += Math.max(0, Math.round(Number(entry?.easy || 0) || 0));
+      totals.medium += Math.max(0, Math.round(Number(entry?.medium || 0) || 0));
+    }catch(_){}
+  });
+  return totals;
+}
+function recordJunkRedeemSpendForLocation(locId, diffOrMeta, opts){
+  opts = opts || {};
+  const id = Math.round(Number(locId) || 0);
+  if(!Number.isFinite(id) || id <= 0) return null;
+  let spendKey = sourceTagToJunkRedeemKey(diffOrMeta);
+  if(!spendKey && typeof diffOrMeta === "string"){
+    const raw = diffOrMeta.trim().toLowerCase();
+    if(raw === "easy" || raw === "medium" || raw === "med" || raw === "hard") spendKey = normalizeJunkRedeemKey(raw);
+  }
+  if(!spendKey) return null;
+  const counts = junkRedeemSpendCountsForDiff(spendKey, opts.amount || 1);
+  if(counts.easy <= 0 && counts.medium <= 0) return null;
+  const ledger = ensureJunkRedeemSpentState();
+  const key = String(id);
+  const prev = ledger[key] || { locationId:id, easy:0, medium:0, source:"", seedKey:"", updatedAt:0 };
+  const source = opts.source || (diffOrMeta && typeof diffOrMeta === "object"
+    ? (diffOrMeta.source || diffOrMeta.source_tag || diffOrMeta.sourceTag || "")
+    : diffOrMeta);
+  const next = {
+    locationId: id,
+    easy: Math.max(Math.max(0, Math.round(Number(prev.easy || 0) || 0)), counts.easy),
+    medium: Math.max(Math.max(0, Math.round(Number(prev.medium || 0) || 0)), counts.medium),
+    source: String(source || prev.source || spendKey || "").slice(0, 80),
+    seedKey: String(opts.seedKey || prev.seedKey || (typeof counterRewardSeedKey === "function" ? counterRewardSeedKey() : "") || "").slice(0, 180),
+    updatedAt: Date.now()
+  };
+  ledger[key] = next;
+  if(opts.save !== false){
+    try{ writeJunkRedeemSpentMirror(); }catch(_){}
+    try{ saveState({ immediate:true }); }catch(_){}
+  }
+  return next;
+}
+function recordJunkRedeemSpendFromMeta(locId, meta, opts){
+  const diff = sourceTagToJunkRedeemKey(meta);
+  if(!diff) return null;
+  return recordJunkRedeemSpendForLocation(locId, meta, opts);
+}
+function clearJunkRedeemSpendForLocation(locId, opts){
+  opts = opts || {};
+  const id = Math.round(Number(locId) || 0);
+  if(!Number.isFinite(id) || id <= 0) return { easy:0, medium:0 };
+  const ledger = ensureJunkRedeemSpentState();
+  const key = String(id);
+  const entry = ledger[key] || null;
+  const counts = {
+    easy: Math.max(0, Math.round(Number(entry?.easy || 0) || 0)),
+    medium: Math.max(0, Math.round(Number(entry?.medium || 0) || 0))
+  };
+  if(entry) delete ledger[key];
+  if(entry && opts.save !== false){
+    try{ writeJunkRedeemSpentMirror(); }catch(_){}
+    try{ saveState({ immediate:true }); }catch(_){}
+  }
+  return counts;
+}
+function refundJunkRedeemSpendCounts(counts){
+  const easy = Math.max(0, Math.round(Number(counts?.easy || 0) || 0));
+  const medium = Math.max(0, Math.round(Number(counts?.medium || 0) || 0));
+  if(easy > 0){
+    try{ writeJunkRedeemUsageDelta("easy", -easy); }catch(_){}
+    try{ addJunkRedeemBalance("easy", easy); }catch(_){}
+  }
+  if(medium > 0){
+    try{ writeJunkRedeemUsageDelta("medium", -medium); }catch(_){}
+    try{ addJunkRedeemBalance("medium", medium); }catch(_){}
+  }
+  return easy > 0 || medium > 0;
+}
 function isStreamEditionRuntime(){
   try{
     if(window.__flprStreamEdition === true) return true;
@@ -28323,6 +28729,7 @@ function addJunkRedeemBalance(diff, amount){
   return getJunkRedeemBalance(key);
 }
 const COUNTER_REWARD_EARNED_LS_KEY = "flpr_standalone_ap_reward_state_v1";
+const JUNK_REDEEM_SPENT_LS_KEY = "flpr_standalone_junk_redeem_spent_by_location_v1";
 function counterRewardSeedKey(){
   try{
     const seed = String(ap?.seedName || state?.relics?.run?.seedSig || state?.bossTableSeed || "").trim();
@@ -28332,45 +28739,225 @@ function counterRewardSeedKey(){
     return "unseeded|slot";
   }
 }
+function splitCounterRewardSeedKey(key){
+  const parts = String(key || "").split("|");
+  return {
+    seed: String(parts.shift() || "").trim(),
+    slot: String(parts.join("|") || "").trim()
+  };
+}
+function counterRewardStateHasUsedCounters(raw){
+  return !!(raw && typeof raw === "object" && (
+    raw.easyRedeemsUsed != null ||
+    raw.mediumRedeemsUsed != null ||
+    raw.fragmentTokensUsed != null ||
+    raw?.junkRedeemsUsed?.easy != null ||
+    raw?.junkRedeemsUsed?.medium != null ||
+    raw?.fragments?.usedExtraBalls != null
+  ));
+}
+function counterRewardSeedKeyCompatible(savedKey, currentKey){
+  const saved = splitCounterRewardSeedKey(savedKey);
+  const current = splitCounterRewardSeedKey(currentKey);
+  const savedSeed = saved.seed || "unseeded";
+  const currentSeed = current.seed || "unseeded";
+  const seedOk = savedSeed === currentSeed || savedSeed === "unseeded" || currentSeed === "unseeded";
+  if(!seedOk) return false;
+  const savedSlot = saved.slot || "slot";
+  const currentSlot = current.slot || "slot";
+  const player = String(ap?.cfg?.player || "").trim();
+  return (
+    savedSlot === currentSlot ||
+    savedSlot === "slot" ||
+    currentSlot === "slot" ||
+    (!!player && (savedSlot === player || currentSlot === player))
+  );
+}
+function counterRewardCount(value){
+  return Math.max(0, Math.round(Number(value) || 0));
+}
+function readJunkRedeemSpentMirror(){
+  try{
+    const seedKey = counterRewardSeedKey();
+    const raw = JSON.parse(localStorage.getItem(JUNK_REDEEM_SPENT_LS_KEY) || "{}") || {};
+    const rawSeedKey = String(raw.seedKey || "").trim();
+    if(rawSeedKey && seedKey && rawSeedKey !== seedKey && !counterRewardSeedKeyCompatible(rawSeedKey, seedKey)) return {};
+    return normalizeJunkRedeemSpentLedger(raw.byLocation || raw.locations || raw);
+  }catch(_){}
+  return {};
+}
+function readJunkRedeemSpentMirrorCounts(){
+  try{
+    const seedKey = counterRewardSeedKey();
+    const raw = JSON.parse(localStorage.getItem(JUNK_REDEEM_SPENT_LS_KEY) || "{}") || {};
+    const rawSeedKey = String(raw.seedKey || "").trim();
+    if(rawSeedKey && seedKey && rawSeedKey !== seedKey && !counterRewardSeedKeyCompatible(rawSeedKey, seedKey)) return { easy:0, medium:0 };
+    const ledger = normalizeJunkRedeemSpentLedger(raw.byLocation || raw.locations || raw);
+    const totals = { easy:0, medium:0 };
+    Object.values(ledger || {}).forEach((entry)=>{
+      try{
+        totals.easy += counterRewardCount(entry?.easy);
+        totals.medium += counterRewardCount(entry?.medium);
+      }catch(_){}
+    });
+    const spentTotals = (raw && typeof raw === "object") ? (raw.spentTotals || raw.totals || raw.used || {}) : {};
+    totals.easy = Math.max(
+      totals.easy,
+      counterRewardCount(spentTotals?.easy),
+      counterRewardCount(spentTotals?.easyRedeems),
+      counterRewardCount(spentTotals?.easyRedeemsUsed),
+      counterRewardCount(raw?.easyRedeemsUsed),
+      counterRewardCount(raw?.junkRedeemsUsed?.easy)
+    );
+    totals.medium = Math.max(
+      totals.medium,
+      counterRewardCount(spentTotals?.medium),
+      counterRewardCount(spentTotals?.med),
+      counterRewardCount(spentTotals?.mediumRedeems),
+      counterRewardCount(spentTotals?.mediumRedeemsUsed),
+      counterRewardCount(raw?.mediumRedeemsUsed),
+      counterRewardCount(raw?.junkRedeemsUsed?.medium)
+    );
+    return totals;
+  }catch(_){}
+  return { easy:0, medium:0 };
+}
+function mergeJunkRedeemSpentMirror(){
+  let changed = false;
+  try{
+    const mirror = readJunkRedeemSpentMirror();
+    const ledger = ensureJunkRedeemSpentState();
+    Object.entries(mirror || {}).forEach(([key, entry])=>{
+      const id = Math.round(Number(entry?.locationId ?? key) || 0);
+      if(!Number.isFinite(id) || id <= 0) return;
+      const cleanKey = String(id);
+      const prev = ledger[cleanKey] || { locationId:id, easy:0, medium:0, source:"", seedKey:"", updatedAt:0 };
+      const next = {
+        locationId: id,
+        easy: Math.max(Math.max(0, Math.round(Number(prev.easy || 0) || 0)), Math.max(0, Math.round(Number(entry.easy || 0) || 0))),
+        medium: Math.max(Math.max(0, Math.round(Number(prev.medium || 0) || 0)), Math.max(0, Math.round(Number(entry.medium || 0) || 0))),
+        source: String(entry.source || prev.source || "").slice(0, 80),
+        seedKey: String(entry.seedKey || prev.seedKey || "").slice(0, 180),
+        updatedAt: Math.max(Number(prev.updatedAt || 0), Number(entry.updatedAt || 0) || 0)
+      };
+      if(next.easy <= 0 && next.medium <= 0) return;
+      if(!prev || prev.easy !== next.easy || prev.medium !== next.medium || prev.source !== next.source || prev.seedKey !== next.seedKey){
+        ledger[cleanKey] = next;
+        changed = true;
+      }
+    });
+  }catch(_){}
+  return changed;
+}
+function writeJunkRedeemSpentMirror(){
+  try{
+    const ledger = ensureJunkRedeemSpentState();
+    localStorage.setItem(JUNK_REDEEM_SPENT_LS_KEY, JSON.stringify({
+      seedKey: counterRewardSeedKey(),
+      byLocation: ledger,
+      spentTotals: getJunkRedeemSpentLedgerCounts(),
+      updatedAt: Date.now()
+    }));
+    return true;
+  }catch(_){}
+  return false;
+}
 function readCounterRewardEarnedState(){
   const seedKey = counterRewardSeedKey();
   let saved = {};
   try{
     const raw = JSON.parse(localStorage.getItem(COUNTER_REWARD_EARNED_LS_KEY) || "{}") || {};
-    if(raw && typeof raw === "object" && String(raw.seedKey || "") === seedKey) saved = raw;
+    const rawSeedKey = String(raw.seedKey || "").trim();
+    if(raw && typeof raw === "object" && rawSeedKey === seedKey){
+      saved = raw;
+    }else if(counterRewardStateHasUsedCounters(raw) && counterRewardSeedKeyCompatible(rawSeedKey, seedKey)){
+      saved = { ...raw, seedKey };
+    }
   }catch(_){}
   try{
     const mirror = state?.standaloneApRewardState;
-    if((!saved || !Object.keys(saved).length) && mirror && typeof mirror === "object"){
+    const mirrorSeedKey = String(mirror?.seedKey || seedKey);
+    if((!saved || !Object.keys(saved).length) && mirror && typeof mirror === "object" && (
+      mirrorSeedKey === seedKey || (counterRewardStateHasUsedCounters(mirror) && counterRewardSeedKeyCompatible(mirrorSeedKey, seedKey))
+    )){
       saved = {
         seedKey,
         easyRedeemsEarned: Math.max(0, Math.round(Number(mirror?.junkRedeemsEarned?.easy || 0))),
         mediumRedeemsEarned: Math.max(0, Math.round(Number(mirror?.junkRedeemsEarned?.medium || 0))),
+        easyRedeemsUsed: Math.max(0, Math.round(Number(mirror?.junkRedeemsUsed?.easy || 0))),
+        mediumRedeemsUsed: Math.max(0, Math.round(Number(mirror?.junkRedeemsUsed?.medium || 0))),
         fragmentTokensEarned: Math.max(0, Math.round(Number(mirror?.fragments?.earnedExtraBalls || 0))),
+        fragmentTokensUsed: Math.max(0, Math.round(Number(mirror?.fragments?.usedExtraBalls || 0))),
         totalFragments: Math.max(0, Math.round(Number(mirror?.fragments?.total || 0))),
         currentFragments: Math.max(0, Math.round(Number(mirror?.fragments?.current || 0)))
       };
     }
   }catch(_){}
+  const hasSaved = !!(saved && Object.keys(saved).length);
+  const hasUsedCounters = hasSaved && (
+    saved.easyRedeemsUsed != null ||
+    saved.mediumRedeemsUsed != null ||
+    saved.fragmentTokensUsed != null ||
+    saved?.junkRedeemsUsed?.easy != null ||
+    saved?.junkRedeemsUsed?.medium != null ||
+    saved?.fragments?.usedExtraBalls != null
+  );
+  let easyRedeemsEarned = Math.max(0, Math.round(Number(saved?.easyRedeemsEarned ?? saved?.junkRedeemsEarned?.easy ?? 0) || 0));
+  let mediumRedeemsEarned = Math.max(0, Math.round(Number(saved?.mediumRedeemsEarned ?? saved?.junkRedeemsEarned?.medium ?? 0) || 0));
+  let fragmentTokensEarned = Math.max(0, Math.round(Number(saved?.fragmentTokensEarned ?? saved?.fragments?.earnedExtraBalls ?? 0) || 0));
+  let easyRedeemsUsed = Math.max(0, Math.round(Number(saved?.easyRedeemsUsed ?? saved?.junkRedeemsUsed?.easy ?? 0) || 0));
+  let mediumRedeemsUsed = Math.max(0, Math.round(Number(saved?.mediumRedeemsUsed ?? saved?.junkRedeemsUsed?.medium ?? 0) || 0));
+  let fragmentTokensUsed = Math.max(0, Math.round(Number(saved?.fragmentTokensUsed ?? saved?.fragments?.usedExtraBalls ?? 0) || 0));
+  easyRedeemsEarned = Math.max(easyRedeemsEarned, easyRedeemsUsed);
+  mediumRedeemsEarned = Math.max(mediumRedeemsEarned, mediumRedeemsUsed);
+  fragmentTokensEarned = Math.max(fragmentTokensEarned, fragmentTokensUsed);
+  if(hasSaved && !hasUsedCounters){
+    try{
+      const redeems = ensureJunkRedeemState();
+      easyRedeemsUsed = Math.max(0, easyRedeemsEarned - Math.max(0, Math.round(Number(redeems.easy || 0) || 0)));
+      mediumRedeemsUsed = Math.max(0, mediumRedeemsEarned - Math.max(0, Math.round(Number(redeems.medium || 0) || 0)));
+      const assignedExtraBalls = (typeof getExtraBallAssignmentCount === "function")
+        ? Math.max(0, Math.round(Number(getExtraBallAssignmentCount()) || 0))
+        : 0;
+      const readyExtraBalls = Math.max(0, Math.round(Number(state?.extraBallTokens || 0) || 0)) + assignedExtraBalls;
+      fragmentTokensUsed = Math.max(0, fragmentTokensEarned - readyExtraBalls);
+    }catch(_){}
+  }
+  easyRedeemsUsed = Math.min(easyRedeemsEarned, easyRedeemsUsed);
+  mediumRedeemsUsed = Math.min(mediumRedeemsEarned, mediumRedeemsUsed);
+  fragmentTokensUsed = Math.min(fragmentTokensEarned, fragmentTokensUsed);
   return {
     seedKey,
-    hasSaved: !!(saved && Object.keys(saved).length),
-    easyRedeemsEarned: Math.max(0, Math.round(Number(saved?.easyRedeemsEarned || 0))),
-    mediumRedeemsEarned: Math.max(0, Math.round(Number(saved?.mediumRedeemsEarned || 0))),
-    fragmentTokensEarned: Math.max(0, Math.round(Number(saved?.fragmentTokensEarned || 0))),
-    totalFragments: Math.max(0, Math.round(Number(saved?.totalFragments || 0))),
-    currentFragments: Math.max(0, Math.round(Number(saved?.currentFragments || 0)))
+    hasSaved,
+    hasUsedCounters,
+    easyRedeemsEarned,
+    mediumRedeemsEarned,
+    easyRedeemsUsed,
+    mediumRedeemsUsed,
+    fragmentTokensEarned,
+    fragmentTokensUsed,
+    totalFragments: Math.max(0, Math.round(Number(saved?.totalFragments ?? saved?.fragments?.total ?? 0) || 0)),
+    currentFragments: Math.max(0, Math.round(Number(saved?.currentFragments ?? saved?.fragments?.current ?? 0) || 0))
   };
 }
 function writeCounterRewardEarnedState(next){
   try{
     const seedKey = counterRewardSeedKey();
     const prev = readCounterRewardEarnedState();
+    const easyRedeemsUsed = counterRewardCount(next?.easyRedeemsUsed ?? prev.easyRedeemsUsed);
+    const mediumRedeemsUsed = counterRewardCount(next?.mediumRedeemsUsed ?? prev.mediumRedeemsUsed);
+    const fragmentTokensUsed = counterRewardCount(next?.fragmentTokensUsed ?? prev.fragmentTokensUsed);
+    const easyRedeemsEarned = Math.max(counterRewardCount(next?.easyRedeemsEarned ?? prev.easyRedeemsEarned), easyRedeemsUsed);
+    const mediumRedeemsEarned = Math.max(counterRewardCount(next?.mediumRedeemsEarned ?? prev.mediumRedeemsEarned), mediumRedeemsUsed);
+    const fragmentTokensEarned = Math.max(counterRewardCount(next?.fragmentTokensEarned ?? prev.fragmentTokensEarned), fragmentTokensUsed);
     const record = {
       seedKey,
-      easyRedeemsEarned: Math.max(0, Math.round(Number(next?.easyRedeemsEarned ?? prev.easyRedeemsEarned) || 0)),
-      mediumRedeemsEarned: Math.max(0, Math.round(Number(next?.mediumRedeemsEarned ?? prev.mediumRedeemsEarned) || 0)),
-      fragmentTokensEarned: Math.max(0, Math.round(Number(next?.fragmentTokensEarned ?? prev.fragmentTokensEarned) || 0)),
+      easyRedeemsEarned,
+      mediumRedeemsEarned,
+      easyRedeemsUsed: Math.min(easyRedeemsEarned, easyRedeemsUsed),
+      mediumRedeemsUsed: Math.min(mediumRedeemsEarned, mediumRedeemsUsed),
+      fragmentTokensEarned,
+      fragmentTokensUsed: Math.min(fragmentTokensEarned, fragmentTokensUsed),
       totalFragments: Math.max(0, Math.round(Number(next?.totalFragments ?? prev.totalFragments) || 0)),
       currentFragments: Math.max(0, Math.round(Number(next?.currentFragments ?? prev.currentFragments) || 0)),
       updatedAt: Date.now()
@@ -28383,10 +28970,15 @@ function writeCounterRewardEarnedState(next){
           easy: record.easyRedeemsEarned,
           medium: record.mediumRedeemsEarned
         },
+        junkRedeemsUsed: {
+          easy: record.easyRedeemsUsed,
+          medium: record.mediumRedeemsUsed
+        },
         fragments: {
           total: record.totalFragments,
           current: record.currentFragments,
-          earnedExtraBalls: record.fragmentTokensEarned
+          earnedExtraBalls: record.fragmentTokensEarned,
+          usedExtraBalls: record.fragmentTokensUsed
         },
         updatedAt: record.updatedAt
       };
@@ -28415,25 +29007,134 @@ function bankCounterRewardEarnedDeltasFromTotals(reason){
   let changed = false;
   try{
     ap.junk = ap.junk || { easy:0, med:0, frag:0, easyTotal:0, medTotal:0, fragTotal:0 };
-    const earnedEasy = Math.max(0, Math.round(Number(ap.junk.easyTotal || 0)));
-    const earnedMedium = Math.max(0, Math.round(Number(ap.junk.medTotal || 0)));
+    const observedEarnedEasy = counterRewardCount(ap.junk.easyTotal);
+    const observedEarnedMedium = counterRewardCount(ap.junk.medTotal);
     const saved = readCounterRewardEarnedState();
     const redeems = ensureJunkRedeemState();
-    const easyDelta = saved.hasSaved
-      ? Math.max(0, earnedEasy - saved.easyRedeemsEarned)
-      : (Math.max(0, Math.round(Number(redeems.easy || 0))) > 0 ? 0 : earnedEasy);
-    const mediumDelta = saved.hasSaved
-      ? Math.max(0, earnedMedium - saved.mediumRedeemsEarned)
-      : (Math.max(0, Math.round(Number(redeems.medium || 0))) > 0 ? 0 : earnedMedium);
-    if(easyDelta > 0){
-      addJunkRedeemBalance("easy", easyDelta);
+    let ledgerMerged = false;
+    try{ ledgerMerged = !!mergeJunkRedeemSpentMirror(); }catch(_){}
+    const ledgerUsed = getJunkRedeemSpentLedgerCounts();
+    const mirrorUsed = readJunkRedeemSpentMirrorCounts();
+    ledgerUsed.easy = Math.max(counterRewardCount(ledgerUsed.easy), counterRewardCount(mirrorUsed.easy));
+    ledgerUsed.medium = Math.max(counterRewardCount(ledgerUsed.medium), counterRewardCount(mirrorUsed.medium));
+    const currentEasyReady = Math.max(0, Math.round(Number(redeems.easy || 0) || 0));
+    const currentMediumReady = Math.max(0, Math.round(Number(redeems.medium || 0) || 0));
+    const savedEasyUsed = counterRewardCount(saved.easyRedeemsUsed);
+    const savedMediumUsed = counterRewardCount(saved.mediumRedeemsUsed);
+    const earnedEasy = Math.max(
+      observedEarnedEasy,
+      counterRewardCount(saved.easyRedeemsEarned),
+      savedEasyUsed,
+      counterRewardCount(ledgerUsed.easy),
+      currentEasyReady
+    );
+    const earnedMedium = Math.max(
+      observedEarnedMedium,
+      counterRewardCount(saved.mediumRedeemsEarned),
+      savedMediumUsed,
+      counterRewardCount(ledgerUsed.medium),
+      currentMediumReady
+    );
+    const easyUsed = saved.hasSaved
+      ? Math.min(earnedEasy, Math.max(savedEasyUsed, counterRewardCount(ledgerUsed.easy)))
+      : Math.min(earnedEasy, Math.max(Math.max(0, earnedEasy - currentEasyReady), counterRewardCount(ledgerUsed.easy)));
+    const mediumUsed = saved.hasSaved
+      ? Math.min(earnedMedium, Math.max(savedMediumUsed, counterRewardCount(ledgerUsed.medium)))
+      : Math.min(earnedMedium, Math.max(Math.max(0, earnedMedium - currentMediumReady), counterRewardCount(ledgerUsed.medium)));
+    const nextEasyReady = Math.max(0, earnedEasy - easyUsed);
+    const nextMediumReady = Math.max(0, earnedMedium - mediumUsed);
+    if(currentEasyReady !== nextEasyReady){
+      redeems.easy = nextEasyReady;
       changed = true;
     }
-    if(mediumDelta > 0){
-      addJunkRedeemBalance("medium", mediumDelta);
+    if(currentMediumReady !== nextMediumReady){
+      redeems.medium = nextMediumReady;
       changed = true;
     }
-    rememberCounterRewardEarnedTotals(reason || "earned-delta");
+    writeCounterRewardEarnedState({
+      easyRedeemsEarned: earnedEasy,
+      mediumRedeemsEarned: earnedMedium,
+      easyRedeemsUsed: easyUsed,
+      mediumRedeemsUsed: mediumUsed
+    });
+    if(changed || ledgerMerged) try{ saveState({ immediate:true }); }catch(_){}
+  }catch(_){}
+  return changed;
+}
+function writeJunkRedeemUsageDelta(diff, amount){
+  if(counterRewardRedemptionsDisabled()) return false;
+  try{
+    const key = normalizeJunkRedeemKey(diff);
+    const delta = Math.round(Number(amount) || 0);
+    if(!delta) return false;
+    const saved = readCounterRewardEarnedState();
+    const redeems = ensureJunkRedeemState();
+    const easyReady = Math.max(0, Math.round(Number(redeems.easy || 0) || 0));
+    const mediumReady = Math.max(0, Math.round(Number(redeems.medium || 0) || 0));
+    const easyEarned = Math.max(saved.easyRedeemsEarned, saved.easyRedeemsUsed + easyReady);
+    const mediumEarned = Math.max(saved.mediumRedeemsEarned, saved.mediumRedeemsUsed + mediumReady);
+    const next = {
+      easyRedeemsEarned: easyEarned,
+      mediumRedeemsEarned: mediumEarned,
+      easyRedeemsUsed: saved.easyRedeemsUsed,
+      mediumRedeemsUsed: saved.mediumRedeemsUsed
+    };
+    if(key === "hard"){
+      next.easyRedeemsUsed = Math.max(0, Math.min(easyEarned, next.easyRedeemsUsed + delta));
+      next.mediumRedeemsUsed = Math.max(0, Math.min(mediumEarned, next.mediumRedeemsUsed + delta));
+    }else if(key === "medium"){
+      next.mediumRedeemsUsed = Math.max(0, Math.min(mediumEarned, next.mediumRedeemsUsed + delta));
+    }else{
+      next.easyRedeemsUsed = Math.max(0, Math.min(easyEarned, next.easyRedeemsUsed + delta));
+    }
+    writeCounterRewardEarnedState(next);
+    try{ saveState({ immediate:true }); }catch(_){}
+    return true;
+  }catch(_){}
+  return false;
+}
+function countCounterRewardItemsFromReceivedList(list){
+  const totals = { easyPieces:0, mediumPieces:0, fragments:0 };
+  try{
+    for(const r of (Array.isArray(list) ? list : [])){
+      const locNum = Number(r?.locId ?? 0);
+      if(locNum < 0) continue;
+      const nm = String(r?.itemName || r?.baseItemName || "").trim();
+      let eff = nm;
+      if(isGenericJunkName(nm)){
+        const tier = resolveGenericJunkTier(r?.recvIndex, r?.locId, r?.locationName || "");
+        eff = (tier === "medium") ? "Medium Junk Piece" : "Easy Junk Piece";
+      }
+      if(isEasyJunkName(eff)) totals.easyPieces++;
+      else if(isMediumJunkName(eff)) totals.mediumPieces++;
+      else if(isPinballFragmentItem(eff)) totals.fragments++;
+    }
+  }catch(_){}
+  return totals;
+}
+function reconcileCounterRewardsFromReceivedInventory(reason, opts){
+  opts = opts || {};
+  if(counterRewardRedemptionsDisabled()) return false;
+  let changed = false;
+  try{
+    const totals = countCounterRewardItemsFromReceivedList(loadReceivedList ? loadReceivedList() : []);
+    ap.junk = ap.junk || { easy:0, med:0, frag:0, easyTotal:0, medTotal:0, fragTotal:0 };
+    const nextEasy = Math.max(0, totals.easyPieces % 3);
+    const nextMed = Math.max(0, totals.mediumPieces % 3);
+    const nextFrag = Math.max(0, totals.fragments % 5);
+    const nextEasyTotal = Math.max(0, Math.floor(totals.easyPieces / 3));
+    const nextMedTotal = Math.max(0, Math.floor(totals.mediumPieces / 3));
+    const nextFragTotal = Math.max(0, totals.fragments);
+    if(counterRewardCount(ap.junk.easy) !== nextEasy){ ap.junk.easy = nextEasy; changed = true; }
+    if(counterRewardCount(ap.junk.med) !== nextMed){ ap.junk.med = nextMed; changed = true; }
+    if(counterRewardCount(ap.junk.frag) !== nextFrag){ ap.junk.frag = nextFrag; changed = true; }
+    if(counterRewardCount(ap.junk.easyTotal) !== nextEasyTotal){ ap.junk.easyTotal = nextEasyTotal; changed = true; }
+    if(counterRewardCount(ap.junk.medTotal) !== nextMedTotal){ ap.junk.medTotal = nextMedTotal; changed = true; }
+    if(counterRewardCount(ap.junk.fragTotal) !== nextFragTotal){ ap.junk.fragTotal = nextFragTotal; changed = true; }
+    if(bankCounterRewardEarnedDeltasFromTotals(reason || "counter-inventory-reconcile")) changed = true;
+    try{ updateCounterBarsQuietly(); }catch(_){}
+    if(opts.save !== false) try{ saveState(opts.immediate ? { immediate:true } : undefined); }catch(_){}
+    return changed;
   }catch(_){}
   return changed;
 }
@@ -28482,7 +29183,9 @@ function consumeJunkRedeemBalance(diff, amount){
   const take = Math.max(1, Math.round(Number(amount) || 1));
   const have = getJunkRedeemBalance(key);
   if(have < take) return false;
+  writeJunkRedeemUsageDelta(key, take);
   addJunkRedeemBalance(key, -take);
+  try{ saveState({ immediate:true }); }catch(_){}
   try{ updateCounterBars(); }catch(_){}
   return true;
 }
@@ -28558,6 +29261,7 @@ function armJunkRedeemTargetMode(diff){
   }catch(_){}
   try{ updateCounterBars(); }catch(_){}
   if(want === "hard"){
+    if(wantsSuper) try{ showHardRedeemCombinationFx({ activeDiff, clicked }); }catch(_){}
     toast("info","SUPER ITEM ARMED", "Select a HARD check. This will spend one EASY and one MEDIUM redeem.", 3600);
   }else{
     toast("info","JUNK REDEEM ARMED", `Select a ${want.toUpperCase()} check (green targets).`, 3000);
@@ -30181,7 +30885,7 @@ const RELIC_DEFS = Object.freeze([
     slot:"opening",
     title:"Tilted Compass",
     emoji:"\u{1F9ED}",
-    effect:"At run start, marks 1 table in each world that is guaranteed to contain at least 1 progression check.",
+    effect:"At run start, marks 1 table in each world that contains an uncollected Progressive Ball or Boss Key when spoiler truth is loaded; otherwise it falls back to a revealed table.",
     unlock:"In one run, clear at least 1 check in every non-boss world.",
     unlockHint:"You need one successful check from each regular world before the seed ends. Boss world does not count for this unlock.",
     lore:"The compass was pulled from a cabinet backbox that kept pointing at unopened routes. Its needle leans toward certainty and hates wasted motion."
@@ -30311,7 +31015,7 @@ const SIMPLE_RELIC_DEF_BY_ID = Object.freeze(SIMPLE_RELIC_DEFS.reduce((acc, def)
   return acc;
 }, {}));
 const RELIC_TRIGGER_HINTS = Object.freeze({
-  tilted_compass: "Fires at run start and marks one guaranteed progression table in each world.",
+  tilted_compass: "Fires at run start and marks one table per world with an uncollected Progressive Ball or Boss Key when spoiler truth is loaded.",
   cold_open: "Fires at run start, then pivots again after a dry table when the run needs a recovery target.",
   first_blood: "Assigns within your first 5 visited tables and pays off when that table and its world are fully cleared.",
   deep_coil: "Fires after you clear 4 checks on the same table.",
@@ -33367,6 +34071,15 @@ const FILTER_TRAP_CLASS_BY_MODE = {
   "Neon Vision": "filterTrapNeonVision",
   "Scroll Vision": "filterTrapScrollVision"
 };
+const FILTER_TRAP_FILTER_ALIASES_BY_MODE = {
+  "Night Vision": ["NightVision", "FLPR Night Vision", "Filter Trap - Night Vision"],
+  "Blink Mode": ["Blink", "BlinkMode", "FLPR Blink Mode", "Filter Trap - Blink Mode"],
+  "ASCII Mode": ["ASCII", "Ascii", "AsciiMode", "FLPR ASCII Mode", "Filter Trap - ASCII Mode"],
+  "Cloud Vision": ["CloudVision", "FLPR Cloud Vision", "Filter Trap - Cloud Vision"],
+  "Glitch Vision": ["Glitch", "GlitchVision", "FLPR Glitch Vision", "Filter Trap - Glitch Vision"],
+  "Neon Vision": ["Neon", "NeonVision", "FLPR Neon Vision", "Filter Trap - Neon Vision"],
+  "Scroll Vision": ["Scroll", "ScrollVision", "FLPR Scroll Vision", "Filter Trap - Scroll Vision"]
+};
 const OBS_FILTER_TRAP_CFG_LS = "flpr_obs_filter_trap_cfg_v1";
 const OBS_FILTER_TRAP_SETTINGS_KEY = "obsFilterTrap";
 const OBS_FILTER_TRAP_DEFAULT_CFG = Object.freeze({
@@ -33385,6 +34098,7 @@ const obsFilterTrap = {
   pending: new Map(),
   desiredModes: new Set(),
   activeModes: new Set(),
+  filterNameCache: new Map(),
   lastError: ""
 };
 function normalizeObsFilterTrapCfg(raw){
@@ -33629,22 +34343,61 @@ function obsFilterTrapNormalizeModes(modes){
     .map((mode)=> String(mode || "").trim())
     .filter((mode)=> mode && (!allowed.size || allowed.has(mode)))));
 }
-function obsFilterTrapSetSourceFilterEnabled(mode, enabled, opts){
+function obsFilterTrapNormalizeFilterName(name){
+  return String(name || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+function obsFilterTrapAliasesForMode(mode){
+  const modeName = String(mode || "").trim();
+  const aliases = [modeName]
+    .concat(FILTER_TRAP_FILTER_ALIASES_BY_MODE[modeName] || [])
+    .concat(FILTER_TRAP_CLASS_BY_MODE[modeName] ? [FILTER_TRAP_CLASS_BY_MODE[modeName]] : []);
+  return Array.from(new Set(aliases.map((name)=>String(name || "").trim()).filter(Boolean)));
+}
+async function obsFilterTrapResolveSourceFilterName(mode, cfg, opts){
+  opts = opts || {};
+  const modeName = String(mode || "").trim();
+  if(!modeName) return "";
+  const sourceName = String(cfg?.sourceName || "").trim();
+  const cacheKey = `${sourceName}::${modeName}`;
+  if(obsFilterTrap.filterNameCache.has(cacheKey)) return obsFilterTrap.filterNameCache.get(cacheKey);
+  const aliases = obsFilterTrapAliasesForMode(modeName);
+  const aliasNorms = new Set(aliases.map(obsFilterTrapNormalizeFilterName).filter(Boolean));
+  let resolved = "";
+  try{
+    const response = await obsFilterTrapRequest("GetSourceFilterList", { sourceName }, { ignoreEnabled:!!opts.ignoreEnabled });
+    const filters = Array.isArray(response?.filters) ? response.filters : [];
+    const names = filters.map((filter)=>String(filter?.filterName || filter?.name || "").trim()).filter(Boolean);
+    resolved =
+      names.find((name)=> aliases.some((alias)=> name.toLowerCase() === alias.toLowerCase()))
+      || names.find((name)=> aliasNorms.has(obsFilterTrapNormalizeFilterName(name)))
+      || names.find((name)=>{
+        const normalizedName = obsFilterTrapNormalizeFilterName(name);
+        return Array.from(aliasNorms).some((aliasNorm)=> aliasNorm && (normalizedName.includes(aliasNorm) || aliasNorm.includes(normalizedName)));
+      })
+      || "";
+  }catch(err){
+    obsFilterTrapLog(`filter list unavailable; using ${modeName}. ${String(err?.message || err || "")}`, opts);
+  }
+  if(!resolved) resolved = modeName;
+  obsFilterTrap.filterNameCache.set(cacheKey, resolved);
+  return resolved;
+}
+async function obsFilterTrapSetSourceFilterEnabled(mode, enabled, opts){
   opts = opts || {};
   const cfg = loadObsFilterTrapCfg();
-  const filterName = String(mode || "").trim();
-  if(!filterName) return Promise.resolve(false);
-  return obsFilterTrapRequest("SetSourceFilterEnabled", {
+  const modeName = String(mode || "").trim();
+  if(!modeName) return false;
+  const filterName = await obsFilterTrapResolveSourceFilterName(modeName, cfg, opts);
+  await obsFilterTrapRequest("SetSourceFilterEnabled", {
     sourceName: cfg.sourceName,
     filterName,
     filterEnabled: !!enabled
-  }, { ignoreEnabled:!!opts.ignoreEnabled }).then(()=>{
-    if(enabled) obsFilterTrap.activeModes.add(filterName);
-    else obsFilterTrap.activeModes.delete(filterName);
-    obsFilterTrap.lastError = "";
-    obsFilterTrapRefreshStatus();
-    return true;
-  });
+  }, { ignoreEnabled:!!opts.ignoreEnabled });
+  if(enabled) obsFilterTrap.activeModes.add(modeName);
+  else obsFilterTrap.activeModes.delete(modeName);
+  obsFilterTrap.lastError = "";
+  obsFilterTrapRefreshStatus();
+  return true;
 }
 async function obsFilterTrapFlushDesired(opts){
   opts = opts || {};
@@ -36227,8 +36980,8 @@ function setCounterDrawerSummary(key, cur, max, total){
   if(!streamDisplayOnly && drawer){
     const head = drawer.querySelector(".counterDrawerHead");
     const tipMap = {
-      easy: "Easy Junk Item counter. At 3/3, it creates one READY Easy redeem. Click Easy and Medium to arm a Super Item for a Hard check.",
-      med: "Medium Junk Item counter. At 3/3, it creates one READY Medium redeem. Click Medium and Easy to arm a Super Item for a Hard check.",
+      easy: "Easy Junk Item counter. At 3/3, it creates one READY Easy redeem. Click Easy and Medium to combine into a HARD redeem.",
+      med: "Medium Junk Item counter. At 3/3, it creates one READY Medium redeem. Click Medium and Easy to combine into a HARD redeem.",
       frag: "Pinball Fragment counter. At 5/5, it creates one READY Extra Ball token."
     };
     const tip = String(tipMap[key] || "Item counter details.");
@@ -36441,6 +37194,58 @@ function pulseCounterDrawer(key, opts){
   }, holdMs);
 }
 
+function showHardRedeemCombinationFx(opts){
+  opts = opts || {};
+  const dock = document.getElementById("checksCountersDock");
+  if(!dock) return false;
+  const easyDrawer = dock.querySelector('.counterDrawer[data-counter="easy"]');
+  const medDrawer = dock.querySelector('.counterDrawer[data-counter="med"]');
+  if(!easyDrawer || !medDrawer) return false;
+  try{ clearCounterDockRetreat(); }catch(_){}
+  setCounterDockActive(2800);
+  dock.__hoverExpanded = true;
+  syncCounterDockExpandedState();
+  try{
+    dock.querySelectorAll(".counterHardFusionFx").forEach((el)=>el.remove());
+  }catch(_){}
+  const fx = document.createElement("div");
+  fx.className = "counterHardFusionFx";
+  fx.setAttribute("aria-hidden", "true");
+  fx.innerHTML = [
+    '<div class="counterFusionSource easy">EASY</div>',
+    '<div class="counterFusionPlus">+</div>',
+    '<div class="counterFusionSource med">MED</div>',
+    '<div class="counterFusionHard">HARD<span>READY</span></div>'
+  ].join("");
+  dock.appendChild(fx);
+  [easyDrawer, medDrawer].forEach((drawer)=>{
+    try{
+      drawer.classList.add("open", "autoOpen", "comboSource", "pulse");
+      if(drawer.__autoTimer) clearTimeout(drawer.__autoTimer);
+    }catch(_){}
+  });
+  setTimeout(()=>{
+    try{
+      easyDrawer.classList.remove("comboSource");
+      medDrawer.classList.remove("comboSource");
+    }catch(_){}
+  }, 1220);
+  setTimeout(()=>{
+    try{ fx.remove(); }catch(_){}
+  }, 1600);
+  [easyDrawer, medDrawer].forEach((drawer)=>{
+    try{
+      drawer.__autoTimer = setTimeout(()=>{
+        try{
+          drawer.classList.remove("open", "autoOpen", "pulse");
+          if(!dock.querySelector(".counterDrawer.open")) startCounterDockRetreat();
+        }catch(_){}
+      }, 2600);
+    }catch(_){}
+  });
+  return true;
+}
+
 function initCounterDrawers(){
   const dock = document.getElementById("checksCountersDock");
   if(!dock || dock.__flprDrawerInit === true) return;
@@ -36544,8 +37349,8 @@ function initCounterDrawers(){
       med: "Medium Junk Item counter reward redemptions are disabled.",
       frag: "Pinball Fragment Extra Ball redemptions are disabled."
     } : {
-      easy: "Easy Junk Item counter. At 3/3, it creates one READY Easy redeem. Click Easy and Medium to arm a Super Item for a Hard check.",
-      med: "Medium Junk Item counter. At 3/3, it creates one READY Medium redeem. Click Medium and Easy to arm a Super Item for a Hard check.",
+      easy: "Easy Junk Item counter. At 3/3, it creates one READY Easy redeem. Click Easy and Medium to combine into a HARD redeem.",
+      med: "Medium Junk Item counter. At 3/3, it creates one READY Medium redeem. Click Medium and Easy to combine into a HARD redeem.",
       frag: "Pinball Fragment counter. At 5/5, it creates one READY Extra Ball token."
     };
     const tip = String(tipMap[key] || "Item counter details.");
@@ -38726,6 +39531,44 @@ function getBossAwayWithYouTrapStartedAt(){
   }catch(_){}
   return 0;
 }
+function devClearBossAwayWithYouTrap(){
+  try{
+    if(!isDevToolsUnlocked()){
+      toast("warn", "DEV TOOLS", "Unlock Dev Tools first.", 2200);
+      return false;
+    }
+    const active = ap?.trapActive;
+    if(!active || String(active?.portal || "").trim() !== "bossChecks"){
+      toast("info", "AWAY WITH YOU", "No boss trap stack is active.", 2200);
+      return false;
+    }
+    const entries = getTrapEntryList(active);
+    const remaining = entries.filter((entry)=> !isAwayWithYouTrapName(entry?.name));
+    const removed = entries.length - remaining.length;
+    if(removed <= 0){
+      toast("info", "AWAY WITH YOU", "Away With You is not active.", 2200);
+      return false;
+    }
+    if(remaining.length){
+      ap.trapActive = { ...active, stack: remaining, portal: String(active?.portal || "bossChecks").trim() || "bossChecks" };
+      ap.activeTrapFilterModes = getTrapEntryFilterModes(ap.trapActive);
+      try{ refreshCaptureTrapFilterModes(); }catch(_){}
+      renderActiveTrapBanner();
+    }else{
+      ap.trapActive = null;
+      showNextTrapBanner();
+    }
+    try{ updateBossTrapOverrideStatus(); }catch(_){}
+    try{ renderChecksWorldTabs(); }catch(_){}
+    try{ renderChecks(); }catch(_){}
+    try{ updateChecksHintMessage(); }catch(_){}
+    toast("good", "AWAY WITH YOU CLEARED", removed === 1 ? "Manual Dev Tools override removed the trap." : `Manual Dev Tools override removed ${removed} traps.`, 2800);
+    return true;
+  }catch(err){
+    toast("warn", "AWAY WITH YOU", String(err?.message || err || "Override failed."), 2600);
+  }
+  return false;
+}
 function getOpenNonBossTableCandidates(opts){
   opts = opts || {};
   const allowLocked = !!opts.allowLocked;
@@ -38817,20 +39660,26 @@ function resolveBossAwayWithYouTrapFromChecks(list, opts){
     if(!active || String(active?.portal || "").trim() !== "bossChecks") return false;
     const entries = getTrapEntryList(active);
     if(!entries.length || !entries.some((entry)=> isAwayWithYouTrapName(entry?.name))) return false;
-    const confirmed = new Set((Array.isArray(opts.confirmedLocIds) ? opts.confirmedLocIds : []).map((id)=> Number(id)).filter((id)=> Number.isFinite(id) && id > 0));
+    const confirmedSource = (Array.isArray(opts.confirmedLocIds) && opts.confirmedLocIds.length) ? opts.confirmedLocIds : list;
+    const confirmed = new Set(confirmedSource.map((id)=> Number(id)).filter((id)=> Number.isFinite(id) && id > 0));
     const clearedOffBoss = list.some((id)=> confirmed.has(Number(id)) && !isBossLocationId(id));
     if(!clearedOffBoss) return false;
     const remaining = entries.filter((entry)=> !isAwayWithYouTrapName(entry?.name));
     const doneTrapName = entries.find((entry)=> isAwayWithYouTrapName(entry?.name))?.name || "Away With You!";
     if(remaining.length){
       ap.trapActive = { ...active, stack: remaining, portal: String(active?.portal || "").trim() };
+      ap.activeTrapFilterModes = getTrapEntryFilterModes(ap.trapActive);
+      try{ refreshCaptureTrapFilterModes(); }catch(_){}
       renderActiveTrapBanner();
     }else{
       ap.trapActive = null;
       showNextTrapBanner();
     }
     try{ toast("good", "RETALIATION BROKEN", `${doneTrapName} cleared; boss checks reopening.`, 2600); }catch(_){}
+    try{ updateBossTrapOverrideStatus(); }catch(_){}
+    try{ renderChecksWorldTabs(); }catch(_){}
     try{ renderChecks(); }catch(_){}
+    try{ updateChecksHintMessage(); }catch(_){}
     return true;
   }catch(_){}
   return false;
@@ -39626,6 +40475,9 @@ function getScoreAdjustmentMultiplier(slotData){
   if(mode === "hard") return 1.5;
   if(mode === "maddening") return 2;
   return 1;
+}
+function getScoreAdjustmentModeClass(slotData){
+  return `scoreMode-${getScoreAdjustmentMode(slotData)}`;
 }
 function formatAdjustedScoreTarget(rawTarget, slotData){
   const clean = String(rawTarget || "").trim();
@@ -40845,6 +41697,11 @@ function apSay(text){
 }
 try{ window.apSay = apSay; }catch(_){}
 
+function apIsHintCommandText(text){
+  const msg = String(text || "").trim();
+  return /^(!|\/)hint(?:\s|$)/i.test(msg);
+}
+
 let apSayUiLastSubmit = { text:"", at:0 };
 function apSubmitSayFromControls(){
   const input = document.getElementById("apClientSayInput");
@@ -40856,7 +41713,7 @@ function apSubmitSayFromControls(){
   try{ playSfx("click"); }catch(_){}
   if(apSay(text)){
     if(input) input.value = "";
-    try{ setApLogTab("chat"); }catch(_){}
+    try{ setApLogTab(apIsHintCommandText(text) ? "status" : "chat"); }catch(_){}
     return true;
   }
   return false;
@@ -41619,7 +42476,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
   if(!deferCounterBarsForFragment && !deferCounterBarsForJunk) updateCounterBarsQuietly();
 }
 function flushDeferredReceived(){
-  if(!ap.receivedDeferred || !ap.receivedDeferred.length) return;
+  if(!ap.receivedDeferred || !ap.receivedDeferred.length) return 0;
   const stillDeferred = [];
   let flushed = 0;
 
@@ -41651,6 +42508,7 @@ function flushDeferredReceived(){
   if(flushed){
     apLog(`Deferred ReceivedItems flushed: ${flushed} (remaining ${ap.receivedDeferred.length})`);
   }
+  return flushed;
 }
 
 
@@ -41789,6 +42647,12 @@ function reconcilePending(){
     if(age > 18000){ // 18s without server validation; revert UI
       ap.pendingByLoc.delete(locId);
       changed=true;
+      const spentCounts = clearJunkRedeemSpendForLocation(locId, { save:false });
+      if(refundJunkRedeemSpendCounts(spentCounts)){
+        try{ writeJunkRedeemSpentMirror(); }catch(_){}
+        try{ saveState({ immediate:true }); }catch(_){}
+        try{ updateCounterBars(); }catch(_){}
+      }
       let isBossVictory = false;
       try{
         const locNode = ap?.locById?.get?.(Number(locId)) || null;
@@ -41857,11 +42721,14 @@ function handleCheckedLocations(list, opts){
   let victoryValidated = false;
   const allowAchievements = (opts.awardAchievements !== false);
   const serverConfirmedPendingIds = new Set();
+  const newlyCheckedIds = [];
   for(const id of list){
     const prevSize = ap.checked.size;
     ap.checked.add(id);
     if(ap.checked.size !== prevSize){
       changed = true;
+      const freshId = Number(id);
+      if(Number.isFinite(freshId) && freshId > 0) newlyCheckedIds.push(freshId);
       try{ flprStatsRecordCheckClearedByLocId(id); }catch(_){}
       if(allowAchievements){
         try{ achHandleCheckCleared(id); }catch(_){}
@@ -41878,6 +42745,14 @@ function handleCheckedLocations(list, opts){
       const pendingQueued = Array.isArray(ap?.pendingQueue) && ap.pendingQueue.some((p)=> Number(p?.id) === locId && Number(p?.sentAt || 0) >= minSentAt);
       if(Number.isFinite(locId) && locId > 0 && (pendingByLoc || pendingQueued)){
         serverConfirmedPendingIds.add(locId);
+      }
+    }catch(_){}
+    try{
+      const locId = Number(id);
+      const meta = apPeekPendingPairingForLoc(locId);
+      if(recordJunkRedeemSpendFromMeta(locId, meta, { save:false })){
+        try{ writeJunkRedeemSpentMirror(); }catch(_){}
+        try{ saveState({ immediate:true }); }catch(_){}
       }
     }catch(_){}
     clearPending(id);
@@ -41929,7 +42804,7 @@ function handleCheckedLocations(list, opts){
     try{ saveState(); }catch(_){}
   }
   if(changed){
-    try{ resolveBossAwayWithYouTrapFromChecks(list, { source:opts.source, confirmedLocIds:Array.from(serverConfirmedPendingIds) }); }catch(_){}
+    try{ resolveBossAwayWithYouTrapFromChecks(newlyCheckedIds.length ? newlyCheckedIds : list, { source:opts.source, confirmedLocIds:Array.from(serverConfirmedPendingIds) }); }catch(_){}
   }
   if(changed){
     try{ bossMaybeTriggerBesiegedEvent({ list, awardAchievements: allowAchievements, source: opts.source }); }catch(_){}
@@ -42132,7 +43007,10 @@ function apConnect(){
       if(pkt.cmd === "PrintJSON"){
         handled = true;
         apLogServerMessage(pkt);
-        try{ hintHandlePrintJsonServerHint(pkt); }catch(_){}
+        try{
+          const loggedHint = hintHandlePrintJsonServerHint(pkt);
+          if(loggedHint && hintPrintJsonLooksLikeActualHit(pkt)) hintFocusHintsView();
+        }catch(_){}
       }
 
       if(pkt.cmd === "Print"){
@@ -42178,6 +43056,14 @@ function apConnect(){
               state.bossHpLive = { max:100, cur:100, name:bossHpName, inited:false };
               state.bossHpTest = { ...(state.bossHpTest || {}), show:false, name:bossHpName, cur:100, max:100, _pulse:0, forceShowCard:false };
               state.bossDamageLedger = {};
+              state.junkRedeems = { easy:0, medium:0 };
+              state.junkRedeemSpentByLocation = {};
+              try{ delete state.standaloneApRewardState; }catch(_){}
+              try{ ap.junk = { easy:0, med:0, frag:0, easyTotal:0, medTotal:0, fragTotal:0 }; }catch(_){}
+              try{
+                localStorage.removeItem(COUNTER_REWARD_EARNED_LS_KEY);
+                localStorage.removeItem(JUNK_REDEEM_SPENT_LS_KEY);
+              }catch(_){}
               window.__bossDamageSeen = new Set();
               state.progressiveBallSwapSeed = "";
               state.progressiveBallSwapQueue = [];
@@ -42345,6 +43231,13 @@ function apConnect(){
             renderAchievementsControlsPanel();
           }catch(_){}
         }
+        try{
+          const flushedReceived = flushDeferredReceived();
+          if(flushedReceived){
+            reconcileCounterRewardsFromReceivedInventory("deferred-received-flush", { immediate:true });
+            apReconcileWorldStateFromReceived();
+          }
+        }catch(_){}
         renderChecksWorldTabs();
         renderChecks();
         try{ hintScheduleApServerSpoilerScout("DataPackage", { force:true, delayMs: 200 }); }catch(_){}
@@ -42429,6 +43322,7 @@ function apConnect(){
             noPopup: !shouldPopup,
             noFeed: (!shouldPopup),
             isSnapshot: treatAsSnapshot,
+            inventoryReplayOnly: treatAsSnapshot,
             pairedOverride
           });
           if(shouldPopup){
@@ -42441,6 +43335,12 @@ function apConnect(){
 
         // If we deferred any items and DataPackage is now ready, flush them.
         flushDeferredReceived();
+
+        // A full inventory snapshot should rebuild counter totals from received history,
+        // then subtract the persisted used ledger. Snapshot rows must not mint new redeems.
+        if(baseIndex === 0){
+          try{ reconcileCounterRewardsFromReceivedInventory("received-items-snapshot", { immediate:true }); }catch(_){}
+        }
 
         // Reconcile world/ball state from authoritative received inventory.
         apReconcileWorldStateFromReceived();
@@ -42854,6 +43754,12 @@ function isHintBallItemName(nm){
   const s = normalizeItemLabel(nm).toLowerCase();
   const direct = /\bhint\s+ball\s+location(s)?\b/.test(s) || /\bball\s+location\s+hint\b/.test(s);
   const loose = /\bhint(s)?\b/.test(s) && /\bball(s)?\b/.test(s) && (/\blocation(s)?\b/.test(s) || /\bloc(s)?\b/.test(s));
+  return direct || loose || isHintProgressiveBallItemName(nm);
+}
+function isHintProgressiveBallItemName(nm){
+  const s = normalizeItemLabel(nm).toLowerCase();
+  const direct = /\bhint\s+progressive\s+ball(s)?\b/.test(s) || /\bprogressive\s+ball(s)?\s+hint\b/.test(s);
+  const loose = /\bhint(s)?\b/.test(s) && /\bprogressive\b/.test(s) && /\bball(s)?\b/.test(s);
   return direct || loose;
 }
 function isHintBossKeyItemName(nm){
@@ -44702,7 +45608,7 @@ function runGenericJunkTestFlow(){
 
 function runHintReceiveTest(kind){
   const isBoss = String(kind || "").toLowerCase() === "boss";
-  const itemName = isBoss ? "Hint: Boss Key" : "Hint: Ball Location";
+  const itemName = isBoss ? "Hint: Boss Key" : "Hint: Progressive Ball";
   const fakeItemId = isBoss ? 991002 : 991001;
   try{
     if(!ap.itemNameById) ap.itemNameById = new Map();
@@ -45560,6 +46466,36 @@ function renderChecksWorldTabs(){
     if(!btn) return;
 
     btn.className = "wTab";
+    btn.classList.toggle("curatedWorldTab", !!(wk !== "boss" && state?.worlds?.[wk]?.curated));
+    try{
+      const tabWorld = state?.worlds?.[wk] || null;
+      const curatedTabBanner = (wk !== "boss" && tabWorld?.curated && typeof getCuratedWorldBannerImage === "function")
+        ? String(getCuratedWorldBannerImage(tabWorld) || "").trim()
+        : "";
+      const tabBannerUrl = curatedTabBanner ? "" : (wk === "boss")
+        ? (
+          getBossWorldHeaderBannerUrl()
+          || getBossWorldBannerUrl()
+          || getTowerWorldBannerUrl(bossWorldKey)
+          || getWorldBannerUrl(bossWorldKey)
+          || resolveBannerRef(getDefaultWorldBannerRef("boss") || "")
+        )
+        : (getTowerWorldBannerUrl(wk) || getWorldBannerUrl(wk) || "");
+      if(curatedTabBanner){
+        btn.classList.add("hasWorldTabBanner");
+        btn.style.setProperty("--checks-world-tab-bg", curatedTabBanner);
+      }else if(tabBannerUrl){
+        const safeTabBannerUrl = String(tabBannerUrl).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+        btn.classList.add("hasWorldTabBanner");
+        btn.style.setProperty("--checks-world-tab-bg", `url("${safeTabBannerUrl}")`);
+      }else{
+        btn.classList.remove("hasWorldTabBanner");
+        btn.style.removeProperty("--checks-world-tab-bg");
+      }
+    }catch(_){
+      btn.classList.remove("hasWorldTabBanner");
+      btn.style.removeProperty("--checks-world-tab-bg");
+    }
     if(wk === activeKey) btn.classList.add("active");
     const isBoss = (wk === "boss");
     const isBossLocked = (isBoss && !bossUnlocked);
@@ -45727,29 +46663,14 @@ function renderChecks(){
       if(checksWrap){
         const bossOpen = isBossUnlocked();
         let bUrl = "";
-        const bossTableName = bossRevealReady
-          ? String(getUnifiedBossTableName({ includePlaceholder:false }) || "Boss Table").trim()
-          : "Boss Table";
-        bUrl = getBossTableBannerUrl() || "";
-        const resolvedTableKey = getTableKeyForName(bossTableName) || getTableKeyForName(String(state?.bossTable || "").trim());
-        if(!bUrl && resolvedTableKey){
-          const localResolvedBanner = resolveBannerRef((state?.tableBanners && state.tableBanners[resolvedTableKey]) ? state.tableBanners[resolvedTableKey] : "");
-          if(localResolvedBanner) bUrl = localResolvedBanner;
-          if(!bUrl){
-            const [srcWorld, srcIdxStr] = String(resolvedTableKey).split("|");
-            const srcIdx = Number(srcIdxStr);
-            const srcTableName = Number.isFinite(srcIdx) ? String(state?.worlds?.[srcWorld]?.tables?.[srcIdx] || bossTableName) : bossTableName;
-            bUrl = getTableBannerUrl(srcWorld, srcTableName) || getTableBannerUrl(srcWorld, bossTableName) || "";
-          }
-        }
-        if(!bUrl){
-          const bossTableKey = `${bossWorldKey}|0`;
-          const localBossSlotBanner = resolveBannerRef((state?.tableBanners && state.tableBanners[bossTableKey]) ? state.tableBanners[bossTableKey] : "");
-          if(localBossSlotBanner) bUrl = localBossSlotBanner;
-          if(!bUrl){
-            bUrl = getTableBannerUrl(bossWorldKey, bossTableName) || getTableBannerUrl(bossWorldKey, "Boss Table") || "";
-          }
-        }
+        bUrl =
+          getBossWorldHeaderBannerUrl()
+          || getBossWorldBannerUrl()
+          || getTowerWorldBannerUrl(bossWorldKey)
+          || getWorldBannerUrl(bossWorldKey)
+          || resolveBannerRef(getDefaultWorldBannerRef("boss") || "")
+          || getBossTableBannerUrl()
+          || "";
         if(!bUrl){
           const legacyBossBanner = resolveBannerRef(state?.bossBanner || "");
           if(legacyBossBanner) bUrl = legacyBossBanner;
@@ -45962,18 +46883,14 @@ function renderTableBlock(parent, tableName, nodes, opts){
     const tk = tableKey;
     let bannerUrl = "";
     if(tk.startsWith("boss|")){
-      const chosenBossTableName = String(
-        getUnifiedBossTableName({ includePlaceholder:false })
-        || getBossIncomingTableName()
-        || state?.bossTable
-        || tableName
-        || ""
-      ).trim();
+      const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
       bannerUrl =
-        (typeof getBossTableBannerUrl === "function" ? (getBossTableBannerUrl() || "") : "")
-        || (chosenBossTableName ? getTableBannerUrl(getBossWorldKey(), chosenBossTableName) : "")
-        || (chosenBossTableName ? getTableBannerUrl("boss", chosenBossTableName) : "")
-        || (typeof getBossWorldBannerUrl === "function" ? (getBossWorldBannerUrl() || "") : "");
+        (typeof getBossWorldHeaderBannerUrl === "function" ? (getBossWorldHeaderBannerUrl() || "") : "")
+        || (typeof getBossWorldBannerUrl === "function" ? (getBossWorldBannerUrl() || "") : "")
+        || getTowerWorldBannerUrl(bossWorldKey)
+        || getWorldBannerUrl(bossWorldKey)
+        || resolveBannerRef(getDefaultWorldBannerRef("boss") || "")
+        || (typeof getBossTableBannerUrl === "function" ? (getBossTableBannerUrl() || "") : "");
     }else if(tk){
       const [wkRaw] = tk.split("|");
       const wk = String(wkRaw || "").trim();
@@ -45987,7 +46904,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
     }
     if(bannerUrl){
       head.classList.add("hasBanner");
-      head.style.setProperty("--check-head-bg", `url("${String(bannerUrl).replace(/"/g, "\\\"")}")`);
+      head.style.setProperty("--check-head-bg", `url("${String(bannerUrl).replace(/\\/g, "\\\\").replace(/"/g, "\\\"")}")`);
     }
   }catch(_){}
   if(tableKey && !tableKey.startsWith("boss|") && !relicFinalLocked){
@@ -46061,6 +46978,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
   if(tableUnlocked && !isBossTableBlock && scoreCheckEntries.length > 0){
     scorePanel = document.createElement("form");
     scorePanel.className = "checksScorePanel";
+    scorePanel.classList.add("scoreMode", getScoreAdjustmentModeClass(ap?.slotData));
     scorePanel.setAttribute("autocomplete", "off");
     headStatus.classList.add("hasScorePanel");
     const scoreMultiplier = getManualScoreMultiplierForTable(tableKey, tableName);
@@ -46152,6 +47070,11 @@ function renderTableBlock(parent, tableName, nodes, opts){
     pend.redeemMeta = redeemMeta;
     ap.pendingQueue.push({ ...pend, sentAt: Date.now() });
     markPending(n.id, pend);
+    const redeemSpendRecord = recordJunkRedeemSpendFromMeta(n.id, redeemMeta, { save:false });
+    if(redeemSpendRecord){
+      try{ writeJunkRedeemSpentMirror(); }catch(_){}
+      try{ saveState({ immediate:true }); }catch(_){}
+    }
     playSfx("redeem");
     apLog("CHECK SENT; " + n.id + (sourceTag ? `; ${sourceTag}` : "") + `; ${redeemMeta.task_type}; ${redeemMeta.task_name}`, { tab:"chat", mirrorTabs:["status"] });
     apSendLocationCheckWithMetadata(n.id, redeemMeta);
@@ -46338,6 +47261,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
     }
     if(scoreTitleMatch){
       btn.classList.add("scoreNode");
+      btn.classList.add("scoreMode", getScoreAdjustmentModeClass(ap?.slotData));
       title.innerHTML = `<span class="scoreLead">SCORE TARGET</span><span class="scoreValue">${escapeHtml(String(scoreTitleMatch[1] || "").trim())}</span>`;
     }else{
       if(!bossVictoryNode) btn.classList.add("taskNode");
@@ -46450,7 +47374,9 @@ function renderTableBlock(parent, tableName, nodes, opts){
           counterValue: taskCounterMeta ? getTaskProgressValue(n.id) : null
         });
         if(!sent){
+          writeJunkRedeemUsageDelta(activeDiff, -1);
           addJunkRedeemBalance(activeDiff, 1);
+          try{ saveState({ immediate:true }); }catch(_){}
           toast("warn","REDEEM FAILED", activeDiff === "hard" ? "Could not send check; Super Item restored." : "Could not send check; Junk Redeem restored.", 2400);
           return;
         }
@@ -48504,12 +49430,21 @@ function relicStatusText(def){
   if(relicIsUnlocked(def.id)) return "Unlocked";
   return `Locked ${progress.cur}/${progress.goal}`;
 }
-function relicCarouselBlurb(def){
+function relicEffectText(def){
   if(!def) return "";
-  if(!relicIsUnlocked(def.id)){
-    return String(def.unlockHint || def.unlock || "").trim();
-  }
-  return String(relicGetTriggerHintText(def.id) || def.effect || "").trim();
+  const simple = relicGetSimpleDef(def.id);
+  return String(simple?.effect || def.effect || "").trim();
+}
+function relicAcquireText(def){
+  if(!def) return "";
+  const simple = relicGetSimpleDef(def.id);
+  const primary = String(simple?.earn || def.unlock || "").trim();
+  const hint = String(def.unlockHint || "").trim();
+  if(primary && hint && primary.toLowerCase() !== hint.toLowerCase()) return `${primary} ${hint}`;
+  return primary || hint || "Unlocked through run progress.";
+}
+function relicCarouselBlurb(def){
+  return relicEffectText(def);
 }
 function relicBuildMechanicalRows(def){
   if(!def) return [];
@@ -48521,12 +49456,12 @@ function relicBuildMechanicalRows(def){
   ];
   const trigger = String(relicGetTriggerHintText(def.id) || "").trim();
   if(trigger) rows.push({ k:simple ? "Charge Trigger" : "Trigger", v:trigger });
-  rows.push({ k:"Effect", v:String(simple?.effect || def.effect || "").trim() });
+  rows.push({ k:"Effect", v:relicEffectText(def) });
   if(simple){
     rows.push({ k:"Charge State", v:relicDescribeSimpleAutoState(def.id) });
-    rows.push({ k:"Earned By", v:String(simple.earn || def.unlock || "").trim() });
+    rows.push({ k:"How to Acquire", v:relicAcquireText(def) });
   }else{
-    rows.push({ k:relicIsUnlocked(def.id) ? "Unlock Source" : "Unlock Goal", v:String(def.unlock || "").trim() || `Progress ${progress.cur}/${progress.goal}` });
+    rows.push({ k:"How to Acquire", v:relicAcquireText(def) || `Progress ${progress.cur}/${progress.goal}` });
   }
   return rows.filter((row)=> String(row?.v || "").trim());
 }
@@ -48542,15 +49477,15 @@ function relicUpdateSusanSelectionUi(host, def){
   try{
     if(!host || !def) return;
     const meta = RELIC_SLOT_META[def.slot] || { label:"Relic" };
-    const sub = String(relicCarouselBlurb(def) || def.effect || "").trim();
-    const tag = `${meta.label || "Relic"} | ${relicStatusText(def)}`;
+    const sub = relicAcquireText(def);
+    const tag = `${def.title || "Relic"} | ${meta.label || "Relic"} | ${relicStatusText(def)}`;
     host.querySelectorAll(".relicCarouselCard").forEach((card)=>{
       card.classList.toggle("isSelected", String(card.getAttribute("data-relic-id") || "") === def.id);
     });
     const ttl = host.querySelector(".relicCarouselFeatured .ttl");
     const subEl = host.querySelector(".relicCarouselFeatured .sub");
     const tagEl = host.querySelector(".relicCarouselFeatured .tagline");
-    if(ttl) ttl.textContent = def.title || "Relic";
+    if(ttl) ttl.textContent = "How to Acquire";
     if(subEl) subEl.textContent = sub;
     if(tagEl) tagEl.textContent = tag;
     const body = document.getElementById("relicsBody");
@@ -48608,15 +49543,60 @@ function initRelicLazySusan(){
     relicUiState.susanAngle = angle;
     relicUpdateSusanSelectionUi(host, def);
   }
+  function snapToIndex(i, animated, selectWhenDone){
+    const idx = ((Math.round(Number(i) || 0) % data.length) + data.length) % data.length;
+    const target = -(idx * step);
+    if(!animated){
+      angle = target;
+      renderSusan();
+      if(selectWhenDone) selectIndex(idx);
+      return;
+    }
+    const start = angle;
+    const delta = target - start;
+    const t0 = performance.now();
+    const dur = 260;
+    stopSpin();
+    const tick = (ts)=>{
+      const p = Math.min(1, (ts - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      angle = start + (delta * e);
+      renderSusan();
+      if(p < 1){
+        ctl.raf = requestAnimationFrame(tick);
+      }else{
+        ctl.raf = 0;
+        if(selectWhenDone) selectIndex(idx);
+      }
+    };
+    ctl.raf = requestAnimationFrame(tick);
+  }
+  function toggleCardEquip(def, card){
+    if(!def) return;
+    if(!relicIsUnlocked(def.id)){
+      const pr = relicGetUnlockProgress(def.id);
+      try{ toast("warn", "RELIC LOCKED", `${def.title || "Relic"} is locked ${pr.cur}/${pr.goal}.`, 2200); }catch(_){}
+      return;
+    }
+    if(relicIsEquipped(def.id)){
+      relicSetEquipped(def.slot, "");
+      return;
+    }
+    const fromRect = card ? card.getBoundingClientRect() : null;
+    const didEquip = relicSetEquipped(def.slot, def.id);
+    if(didEquip){
+      try{ requestAnimationFrame(()=> relicPlayEquipSlotAnimation(def.id, def.slot, fromRect)); }catch(_){}
+    }
+  }
   function nearestIndex(){
     return ((Math.round((-angle) / step) % data.length) + data.length) % data.length;
   }
   function renderSusan(){
     if((host.clientWidth || 0) < 120 || (host.clientHeight || 0) < 120) return;
     relicUiState.susanAngle = angle;
-    const cx = host.clientWidth * 0.5;
+    const cx = (host.clientWidth * 0.5) - 20;
     const cy = Math.min(176, Math.max(132, host.clientHeight * 0.30));
-    const radiusX = Math.max(136, host.clientWidth * 0.32);
+    const radiusX = Math.max(96, host.clientWidth * 0.19);
     const radiusY = Math.max(12, Math.min(36, host.clientHeight * 0.07));
     let bestIdx = 0;
     let bestZ = -Infinity;
@@ -48647,31 +49627,7 @@ function initRelicLazySusan(){
   }
   function snapToNearest(animated, selectWhenDone){
     const idx = nearestIndex();
-    const target = -(idx * step);
-    if(!animated){
-      angle = target;
-      renderSusan();
-      if(selectWhenDone) selectIndex(idx);
-      return;
-    }
-    const start = angle;
-    const delta = target - start;
-    const t0 = performance.now();
-    const dur = 260;
-    stopSpin();
-    const tick = (ts)=>{
-      const p = Math.min(1, (ts - t0) / dur);
-      const e = 1 - Math.pow(1 - p, 3);
-      angle = start + (delta * e);
-      renderSusan();
-      if(p < 1){
-        ctl.raf = requestAnimationFrame(tick);
-      }else{
-        ctl.raf = 0;
-        if(selectWhenDone) selectIndex(idx);
-      }
-    };
-    ctl.raf = requestAnimationFrame(tick);
+    snapToIndex(idx, animated, selectWhenDone);
   }
   function runInertia(){
     stopSpin();
@@ -48730,6 +49686,33 @@ function initRelicLazySusan(){
   host.onpointerup = endDrag;
   host.onpointercancel = endDrag;
   host.ondragstart = (ev)=>{ try{ ev.preventDefault(); }catch(_){} return false; };
+  cards.forEach((card, i)=>{
+    card.addEventListener("click", (ev)=>{
+      try{
+        if(ev?.target?.closest?.(".relicActionBtn, .relicCarouselNavBtn, .relicCarouselSlotBtn")) return;
+        ev.stopPropagation();
+        const host = document.getElementById("relicLazySusan");
+        if(host && (performance.now() - Number(host.__relicSusanLastDragAt || 0)) < 520) return;
+      }catch(_){}
+      const def = data[i];
+      if(!def) return;
+      const now = performance.now();
+      const focusedBefore = String(relicGetSelectedId() || "") === String(def.id || "");
+      const prior = relicUiState.lastSusanCardClick || null;
+      const isSecondClick = prior && String(prior.id || "") === String(def.id || "") && (now - Number(prior.ts || 0)) <= 380;
+      if(isSecondClick){
+        relicUiState.lastSusanCardClick = null;
+        snapToIndex(i, true, true);
+        if(prior.focusedBefore) toggleCardEquip(def, card);
+        return;
+      }
+      relicUiState.lastSusanCardClick = { id:def.id, ts:now, focusedBefore };
+      snapToIndex(i, true, true);
+    });
+    card.addEventListener("dblclick", (ev)=>{
+      try{ ev.preventDefault(); ev.stopPropagation(); }catch(_){}
+    });
+  });
   host.onpointerleave = (ev)=>{
     if(ctl.dragging && ev.pointerId === ctl.pointerId) endDrag(ev);
   };
@@ -48808,18 +49791,26 @@ function renderRelicsOverlay(){
   const detailUnlocked = detailDef ? relicIsUnlocked(detailDef.id) : false;
   const detailEquipped = detailDef ? relicIsEquipped(detailDef.id) : false;
   const detailPr = detailDef ? relicGetUnlockProgress(detailDef.id) : { cur:0, goal:1 };
-  const selectedAction = selected && unlocked
-    ? (selectedEquipped
-      ? `<button class="relicActionBtn danger" type="button" data-relic-clear="${escapeHtml(selected.slot)}">UNEQUIP</button>`
-      : `<button class="relicActionBtn primary" type="button" data-relic-equip="${escapeHtml(selected.id)}">EQUIP TO ${escapeHtml(selectedMeta.label.toUpperCase())}</button>`)
-    : `<button class="relicActionBtn" type="button" disabled>LOCKED ${escapeHtml(`${pr.cur}/${pr.goal}`)}</button>`;
   const detailAction = detailDef && detailUnlocked
     ? (detailEquipped
       ? `<button class="relicActionBtn danger" type="button" data-relic-clear="${escapeHtml(detailDef.slot)}">UNEQUIP</button>`
       : `<button class="relicActionBtn primary" type="button" data-relic-equip="${escapeHtml(detailDef.id)}">EQUIP TO ${escapeHtml(detailMeta.label.toUpperCase())}</button>`)
     : `<button class="relicActionBtn" type="button" disabled>LOCKED ${escapeHtml(`${detailPr.cur}/${detailPr.goal}`)}</button>`;
-  const selectedSusanSub = selected ? String(relicCarouselBlurb(selected) || selected.effect || "").trim() : "";
-  const selectedSusanTag = selected ? `${selectedMeta.label || "Relic"} | ${relicStatusText(selected)}` : "Relic";
+  const relicCardActions = (def, isUnlocked, isEquipped, progress)=>{
+    if(!def) return "";
+    const lockedText = `LOCKED ${progress?.cur ?? 0}/${progress?.goal ?? 1}`;
+    const equipAction = isUnlocked
+      ? (isEquipped
+        ? `<button class="relicActionBtn danger" type="button" data-relic-clear="${escapeHtml(def.slot)}">UNEQUIP</button>`
+        : `<button class="relicActionBtn primary" type="button" data-relic-equip="${escapeHtml(def.id)}">EQUIP</button>`)
+      : `<button class="relicActionBtn" type="button" disabled>${escapeHtml(lockedText)}</button>`;
+    return `<div class="relicCarouselActions">
+      <button class="relicActionBtn" type="button" data-relic-detail-open="${escapeHtml(def.id)}">DETAILS</button>
+      ${equipAction}
+    </div>`;
+  };
+  const selectedSusanSub = selected ? relicAcquireText(selected) : "";
+  const selectedSusanTag = selected ? `${selected.title || "Relic"} | ${selectedMeta.label || "Relic"} | ${relicStatusText(selected)}` : "Relic";
   body.innerHTML = `
     <div class="relicsScene">
       <div class="relicSanctum">
@@ -48858,7 +49849,7 @@ function renderRelicsOverlay(){
         <div class="relicsPane relicCarouselPane relicCarouselWidePane">
           <div class="relicArchiveHd">
             <div class="relicsPaneTtl">RELIC LAZY SUSAN</div>
-            <div class="relicsPaneSub">The archive rotates around the selected relic; click a piece to open its dossier.</div>
+            <div class="relicsPaneSub">The archive rotates around the selected relic; focus a card, then use its buttons to equip or open details.</div>
           </div>
           <div class="relicCarouselSlotNav">
             ${RELIC_SLOT_ORDER.map((slot)=>{
@@ -48867,21 +49858,6 @@ function renderRelicsOverlay(){
             }).join("")}
           </div>
           <div class="relicArchiveShell ${detailOpen ? "detailOpen" : ""}">
-            <aside class="relicDetailSide isCompact">
-              <div class="relicMiniPanel">
-                <div class="relicMiniEyebrow">${escapeHtml(selected?.emoji || "\u{1F9ED}")} ${escapeHtml(selectedMeta.label || "Relic")}</div>
-                <div class="relicMiniName">${escapeHtml(selected?.title || "Relic")}</div>
-                <div class="relicDetailStatusRow">
-                  <span class="relicPill ${unlocked ? "" : "locked"}">${escapeHtml(relicStatusText(selected))}</span>
-                  ${selectedEquipped ? `<span class="relicPill">On Pedestal</span>` : ``}
-                </div>
-                <div class="relicMiniBlurb">${escapeHtml(selectedSusanSub || selected?.effect || "")}</div>
-                <div class="relicMiniActions">
-                  <button class="relicActionBtn" type="button" data-relic-detail-open>DETAILS</button>
-                  ${selectedAction}
-                </div>
-              </div>
-            </aside>
             <div class="relicLazySusanStage">
               <div class="relicCarouselViewport relicLazySusan" id="relicLazySusan">
                 <div class="relicCarouselHint">CLICK + DRAG TO SPIN THE LAZY SUSAN</div>
@@ -48897,18 +49873,19 @@ function renderRelicsOverlay(){
                       <div class="relicCarouselSlot">${escapeHtml(RELIC_SLOT_META[def.slot]?.label || def.slot)}</div>
                     </div>
                     <div class="relicCarouselName">${escapeHtml(def.title)}</div>
-                    <div class="relicCarouselDesc">${escapeHtml(relicCarouselBlurb(def))}</div>
+                    <div class="relicCarouselDesc">${escapeHtml(relicEffectText(def))}</div>
                     <div class="relicCarouselMeta">
                       <span class="relicPill ${isUnlocked ? "" : "locked"}">${isUnlocked ? "Unlocked" : `Locked ${progress.cur}/${progress.goal}`}</span>
                       ${isEquipped ? `<span class="relicPill">Equipped</span>` : ``}
                     </div>
+                    ${relicCardActions(def, isUnlocked, isEquipped, progress)}
                   </div>`;
                 }).join("")}
                 </div>
                 <button class="relicCarouselNavBtn" type="button" data-relic-carousel="next" aria-label="Next relic">&gt;</button>
                 <div class="relicCarouselFeatured">
                   <div>
-                    <div class="ttl">${escapeHtml(selected?.title || "Relic")}</div>
+                    <div class="ttl">HOW TO ACQUIRE</div>
                     <div class="sub">${escapeHtml(selectedSusanSub)}</div>
                   </div>
                   <div class="tagline">${escapeHtml(selectedSusanTag)}</div>
@@ -49010,7 +49987,13 @@ function renderRelicsOverlay(){
   body.querySelectorAll("[data-relic-detail-open]").forEach((el)=>{
     el.addEventListener("click", (ev)=>{
       try{ ev.stopPropagation(); }catch(_){}
-      relicUiState.detailId = relicGetSelectedId();
+      const detailId = String(el.getAttribute("data-relic-detail-open") || "").trim() || relicGetSelectedId();
+      const detailDef = relicGetDef(detailId);
+      if(detailDef){
+        relicUiState.selectedSlot = detailDef.slot;
+        relicSetSelectedId(detailDef.id);
+      }
+      relicUiState.detailId = detailId;
       relicUiState.detailOpen = true;
       renderRelicsOverlay();
     });
@@ -49051,6 +50034,7 @@ function renderRelicsOverlay(){
     });
   });
   body.querySelectorAll("[data-relic-id]").forEach((el)=>{
+    if(el.closest("#relicLazySusan")) return;
     el.addEventListener("click", ()=>{
       try{
         const host = document.getElementById("relicLazySusan");
@@ -49061,7 +50045,7 @@ function renderRelicsOverlay(){
       if(def) relicUiState.selectedSlot = def.slot;
       relicSetSelectedId(id);
       relicUiState.detailId = id;
-      relicUiState.detailOpen = true;
+      relicUiState.detailOpen = false;
       renderRelicsOverlay();
     });
   });
@@ -51858,6 +52842,23 @@ function hintHandlePrintJsonServerHint(pkt){
   }catch(_){}
   return false;
 }
+function hintPrintJsonLooksLikeActualHit(pkt){
+  try{
+    const type = String(pkt?.type || "").toLowerCase();
+    if(type !== "hint" && !apJsonParts(pkt).some((part)=>String(part?.type || "").toLowerCase() === "hint_status")) return false;
+    const parts = apJsonParts(pkt);
+    const partTypes = parts.map((part)=>String(part?.type || "").toLowerCase());
+    const hasItem = partTypes.some((t)=>t === "item_id" || t === "item_name");
+    const hasLocation = partTypes.some((t)=>t === "location_id" || t === "location_name" || t === "entrance_name");
+    if(hasItem && hasLocation) return true;
+    const msg = formatApJsonMessage(pkt).toLowerCase();
+    if(!msg) return false;
+    if(/\b(no|not)\s+(hint|hints|found|valid|known|available)\b/.test(msg)) return false;
+    if(/\bunknown\s+(item|location)\b|\bcould not\b|\bcan't\b/.test(msg)) return false;
+    return /\b(is|was|found|located)\s+(at|in|on)\b/.test(msg) || /\bcan be found\b/.test(msg);
+  }catch(_){}
+  return false;
+}
 function hintBuildPools(entries){
   const p = { ball1: [], ball2: [], ball3: [], ballProgressive: [], boss: [] };
   const isBall1 = (item)=> /^Ball\s*1\s*-/i.test(item);
@@ -53073,17 +54074,17 @@ function hintShowReveal(h, opts){
   });
   return estimatedTotalMs;
 }
+function hintFocusHintsView(){
+  try{
+    if(typeof showView === "function") showView("hints");
+    else if(typeof activeView !== "undefined"){
+      activeView = "hints";
+      if(typeof setTabUI === "function") setTabUI();
+    }
+  }catch(_){}
+}
 function hintPickFromPool(poolName, typeLabel, opts){
   opts = opts || {};
-  if(opts.focusHintsTab){
-    try{
-      if(typeof showView === "function") showView("hints");
-      else if(typeof activeView !== "undefined"){
-        activeView = "hints";
-        if(typeof setTabUI === "function") setTabUI();
-      }
-    }catch(_){}
-  }
   const candidates = hintCandidatesForPool(poolName);
   if(!candidates.length){
     if(!opts.suppressEmptyLog) hintLog(`No remaining ${typeLabel} locations to hint.`);
@@ -53105,6 +54106,7 @@ function hintPickFromPool(poolName, typeLabel, opts){
     }
   }
   const entry = sourcePool[Math.floor(Math.random() * sourcePool.length)];
+  if(opts.focusHintsTab) hintFocusHintsView();
   hintState.used.add(entry.locationName);
   if(hintState.hintopediaOpen) hintSetHintopediaOpen(false);
   const resolvedType = typeLabel || hintTypeForEntry(entry.itemName);
@@ -53205,18 +54207,12 @@ function hintHandleReceivedHintItem(itemName){
   const isBallHint = isHintBallItemName(itemName);
   const isBossHint = isHintBossKeyItemName(itemName);
   if(!isBallHint && !isBossHint) return false;
-  try{
-    if(typeof showView === "function") showView("hints");
-    else if(typeof activeView !== "undefined"){
-      activeView = "hints";
-      if(typeof setTabUI === "function") setTabUI();
-    }
-  }catch(_){}
   if(isBallHint){
+    const ballHintLabel = isHintProgressiveBallItemName(itemName) ? "Hint: Progressive Ball" : "Hint: Ball Location";
     hintState.pending.ball = (hintState.pending.ball || 0) + 1;
-    hintLog(`[AP] Hint: Ball Location received; queued (${hintState.pending.ball}).`);
+    hintLog(`[AP] ${ballHintLabel} received; queued (${hintState.pending.ball}).`);
     if(hintState.loaded && hintRemainingCount("ball") > 0){
-      hintLog("[AP] Auto-redeeming Hint: Ball Location token.");
+      hintLog(`[AP] Auto-redeeming ${ballHintLabel} token.`);
       const ok = hintRedeemPendingToken("ball", "Ball Location", { focusHintsTab:true, typewrite:true, silent:true });
       if(!ok){
         hintLog("[AP] Auto-redeem failed; click HINT: BALL LOCATION as fallback.");
@@ -53703,9 +54699,9 @@ function inherentRewardFor(tableIndex, taskIndex, tableName, tables){
   const j = Math.max(0, Number(taskIndex) || 0);
   const next = tables.length ? String(tables[(i + 1) % tables.length]?.tableName || tableName || "").trim() : String(tableName || "").trim();
   if(j === 0) return `Progressive Ball - ${next}`;
-  if(j === 1) return (i % 3 === 0) ? "Hint: Ball Location" : "Easy Junk Item";
+  if(j === 1) return (i % 3 === 0) ? "Hint: Progressive Ball" : "Easy Junk Item";
   if(j === 2) return ([4, 12, 20].includes(i)) ? "Boss Key" : ((i % 4 === 1) ? "Hint: Boss Key" : "Medium Junk Item");
-  if(j === 3) return (i % 5 === 2) ? "Pinball Fragment" : "Hint: Ball Location";
+  if(j === 3) return (i % 5 === 2) ? "Pinball Fragment" : "Hint: Progressive Ball";
   if(j === 4) return `Progressive Ball - ${tableName}`;
   return (i % 6 === 0) ? "Medium Junk Item" : "Easy Junk Item";
 }
@@ -55964,6 +56960,48 @@ function buildSiegeSuppressionControl(){
   return wrap;
 }
 
+function updateBossTrapOverrideStatus(root){
+  try{
+    const wrap = root || document.getElementById("bossTrapOverrideControl");
+    const status = wrap?.querySelector?.("#bossTrapOverrideStatus") || document.getElementById("bossTrapOverrideStatus");
+    const btn = wrap?.querySelector?.("#clearAwayWithYouTrapBtn") || document.getElementById("clearAwayWithYouTrapBtn");
+    const active = isBossAwayWithYouTrapActive();
+    if(status){
+      status.textContent = active
+        ? "Away With You is active on the boss trap stack."
+        : "Away With You is not currently active.";
+    }
+    if(btn) btn.disabled = !active;
+  }catch(_){}
+}
+
+function buildBossTrapOverrideControl(){
+  let wrap = document.getElementById("bossTrapOverrideControl");
+  if(!wrap){
+    wrap = document.createElement("div");
+    wrap.id = "bossTrapOverrideControl";
+    wrap.className = "ctrlCard";
+    wrap.innerHTML = `
+      <div class="cNote" id="bossTrapOverrideStatus">Away With You status unavailable.</div>
+      <div class="cRow">
+        <button class="cBtn danger" id="clearAwayWithYouTrapBtn" type="button">CLEAR AWAY WITH YOU</button>
+      </div>
+    `;
+  }
+  const btn = wrap.querySelector("#clearAwayWithYouTrapBtn");
+  if(btn && !btn.__flprBossTrapOverrideBound){
+    btn.__flprBossTrapOverrideBound = true;
+    btn.addEventListener("click", (event)=>{
+      event.preventDefault();
+      try{ playSfx("click"); }catch(_){}
+      devClearBossAwayWithYouTrap();
+      updateBossTrapOverrideStatus(wrap);
+    });
+  }
+  updateBossTrapOverrideStatus(wrap);
+  return wrap;
+}
+
 function taskRepositoryLauncherApi(){
   try{
     const api = window.flprElectron || window.flprStandaloneElectron;
@@ -56500,6 +57538,7 @@ function compactVisualsControlsLayout(panelVisuals){
   const rendererDock = ensureFlprLauncherRendererDock(staging);
   const fontDock = buildFlprFontControlsDock();
   const siegeSuppressionControl = buildSiegeSuppressionControl();
+  const bossTrapOverrideControl = buildBossTrapOverrideControl();
   const taskRepositoryControl = buildTaskRepositoryLauncherControl();
   const bossMusicGroup = buildMusicScenarioGroup([
     "boss_battle_beginning",
@@ -56525,7 +57564,7 @@ function compactVisualsControlsLayout(panelVisuals){
 
   makeControlsPanelSection(leftCol, "Display Controls", [topRow, fontDock, checksBgTitle, checksBgNote, checksBgRow, swapRow], { accent:"green", mini:"font / chroma / checks bg / auto swap" });
   makeControlsPanelSection(leftCol, "Electron Renderer", [rendererDock], { accent:"gold", mini:"vulkan / relaunch", panelKey:"electron-renderer" });
-  makeControlsPanelSection(leftCol, "Dev Tools", [buildControlsNote("Current-run overrides and repository repair tools. The repository editor only receives currently open seed tables."), siegeSuppressionControl, taskRepositoryControl], { accent:"red", mini:"siege / task repository / advanced layout", panelKey:"visual-dev-tools", defaultCollapsed:true, forceCollapsed:true });
+  makeControlsPanelSection(leftCol, "Dev Tools", [buildControlsNote("Current-run overrides and repository repair tools. The repository editor only receives currently open seed tables."), siegeSuppressionControl, bossTrapOverrideControl, taskRepositoryControl], { accent:"red", mini:"siege / boss traps / task repository / advanced layout", panelKey:"visual-dev-tools", defaultCollapsed:true, forceCollapsed:true });
   makeControlsPanelSection(leftCol, "Boss Card + Audio", [hpTestCard, soundTitle, soundRow], { accent:"blue", mini:"boss card / overlay sound" });
   makeControlsPanelSection(leftCol, "Boss Battle Music", [bossMusicGroup], { accent:"red", mini:"phase 1 / phase 2 handoff" });
   makeControlsPanelSection(rightCol, "Run Music", [runMusicGroup], { accent:"gold", mini:"bonus / opening / victory / stats" });
@@ -58116,7 +59155,7 @@ flprSafeBoot("renderAchievementsControlsPanel", ()=> renderAchievementsControlsP
 flprSafeBoot("achRenderControlsNoticeOverlay", ()=> achRenderControlsNoticeOverlay());
 flprSafeBoot("renderHeaderTitleBadge", ()=> renderHeaderTitleBadge());
 flprSafeBoot("flprMaybeShowPatchNotes", ()=>{
-  if(flprPatchNotesEditionLabel() !== "Stream Edition") flprMaybeShowPatchNotes({ delayMs:900 });
+  flprMaybeShowPatchNotes({ delayMs:900 });
 });
 scheduleOverlayStartupRecoveryCheck("boot-early", 120);
 scheduleOverlayStartupRecoveryCheck("boot-late", 900);
@@ -58684,9 +59723,9 @@ function getBossKeysSeedTotal(slotData){
       ? slotData
       : (ap?.slotData && typeof ap.slotData === "object" ? ap.slotData : {});
     const direct = Number(src?.boss_keys_total);
-    if(Number.isFinite(direct) && direct > 0) return clampBossKeysCount(direct, BOSS_KEYS_COUNT_DEFAULT);
+    if(Number.isFinite(direct)) return clampBossKeysCount(direct <= 0 ? 1 : direct, BOSS_KEYS_COUNT_DEFAULT);
     const required = Number(src?.boss_keys_required_for_boss_table_open);
-    if(Number.isFinite(required) && required > 0) return clampBossKeysCount(required, BOSS_KEYS_COUNT_DEFAULT);
+    if(Number.isFinite(required)) return clampBossKeysCount(required <= 0 ? 1 : required, BOSS_KEYS_COUNT_DEFAULT);
   }catch(_){}
   return BOSS_KEYS_COUNT_DEFAULT;
 }
@@ -58696,7 +59735,7 @@ function getBossKeysRequiredForOpen(slotData){
       ? slotData
       : (ap?.slotData && typeof ap.slotData === "object" ? ap.slotData : {});
     const direct = Number(src?.boss_keys_required_for_boss_table_open);
-    if(Number.isFinite(direct) && direct > 0) return clampBossKeysCount(direct, BOSS_KEYS_COUNT_DEFAULT);
+    if(Number.isFinite(direct)) return clampBossKeysCount(direct <= 0 ? 1 : direct, BOSS_KEYS_COUNT_DEFAULT);
   }catch(_){}
   return BOSS_KEYS_COUNT_DEFAULT;
 }

@@ -558,10 +558,10 @@
         "source_location": "Tales of the Arabian Nights – Hit the Genie to start a tale (mode)"
       },
       {
-        "title": "Easy Score (992,834+)",
+        "title": "Easy Score (750,000+)",
         "type": "score",
-        "explanation": "Build score to at least 992,834 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Tales of the Arabian Nights – Easy Score (992,834+)"
+        "explanation": "Build score to at least 750,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Tales of the Arabian Nights - Easy Score (750,000+)"
       },
       {
         "title": "Collect a jewel award",
@@ -596,10 +596,10 @@
         "source_location": "Tales of the Arabian Nights – Collect 1 tale and light lock"
       },
       {
-        "title": "Medium Score (2,872,762+)",
+        "title": "Medium Score (2,200,000+)",
         "type": "score",
-        "explanation": "Build score to at least 2,872,762 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Tales of the Arabian Nights – Medium Score (2,872,762+)"
+        "explanation": "Build score to at least 2,200,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Tales of the Arabian Nights - Medium Score (2,200,000+)"
       },
       {
         "title": "Complete 1 tale",
@@ -634,10 +634,10 @@
         "source_location": "Tales of the Arabian Nights – Lock 2 balls and start Multiball at the Genie"
       },
       {
-        "title": "Hard Score (6,432,610+)",
+        "title": "Hard Score (4,900,000+)",
         "type": "score",
-        "explanation": "Build score to at least 6,432,610 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Tales of the Arabian Nights – Hard Score (6,432,610+)"
+        "explanation": "Build score to at least 4,900,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Tales of the Arabian Nights - Hard Score (4,900,000+)"
       },
       {
         "title": "Collect a Harem Multiball jackpot",
@@ -652,10 +652,10 @@
         "source_location": "Tales of the Arabian Nights – Collect 1 tale and light lock"
       },
       {
-        "title": "Complete 1 tale",
+        "title": "Complete 3 Tales in One Game",
         "type": "task",
-        "explanation": "Start a tale at the Genie and finish its required shots once.",
-        "source_location": "Complete 1 tale"
+        "explanation": "Start and finish three separate Tales before the game ends.",
+        "source_location": "Tales of the Arabian Nights - Complete 3 Tales in One Game"
       },
       {
         "title": "Hit the Genie to start a tale (mode)",
@@ -914,14 +914,14 @@
       {
         "title": "Spell C-O-N-G-O once",
         "type": "task",
-        "explanation": "Complete one full C-O-N-G-O progression through the lit shots/targets.",
+        "explanation": "Spell C-O-N-G-O by collecting the lit C, O, N, G, and O letters from the CONGO letter shots, lanes, or rollovers. Finish the full five-letter sequence once.",
         "source_location": "Spell C-O-N-G-O once"
       },
       {
-        "title": "Start Multiball",
+        "title": "Collect a lit map award",
         "type": "task",
-        "explanation": "",
-        "source_location": "Congo – Start Multiball"
+        "explanation": "Advance the map/award features until a map award is lit, then shoot the lit award shot once.",
+        "source_location": "Congo - Collect a lit map award"
       },
       {
         "title": "Advance 1 map destination",
@@ -956,15 +956,15 @@
         "source_location": "Advance 1 map destination"
       },
       {
-        "title": "Start any map/mode objective",
+        "title": "Lock 1 Ball for Multiball",
         "type": "task",
-        "explanation": "",
-        "source_location": "Congo – Start any map/mode objective"
+        "explanation": "Qualify Congo Multiball and lock one ball. Full Multiball still needs three locked balls or enough Gray Attack progress.",
+        "source_location": "Congo - Lock 1 Ball for Multiball"
       },
       {
         "title": "Spell C-O-N-G-O once",
         "type": "task",
-        "explanation": "Complete one full C-O-N-G-O progression through the lit shots/targets.",
+        "explanation": "Spell C-O-N-G-O by collecting the lit C, O, N, G, and O letters from the CONGO letter shots, lanes, or rollovers. Finish the full five-letter sequence once.",
         "source_location": "Spell C-O-N-G-O once"
       },
       {
@@ -1858,10 +1858,10 @@
         "source_location": "Light 5x bonus twice"
       },
       {
-        "title": "Light the spinner to 2,000 and rip it",
+        "title": "Rip the spinner 3 times",
         "type": "task",
-        "explanation": "",
-        "source_location": "Light the spinner to 2,000 and rip it"
+        "explanation": "Send the ball through the spinner lane three times. The spinner value does not need to be built to 2,000.",
+        "source_location": "Harlem Globetrotters - Rip the spinner 3 times"
       }
     ],
     "Medium": [
@@ -1896,18 +1896,18 @@
         "source_location": "Make 3 clean orbit/spinner feeds"
       },
       {
-        "title": "Light the spinner to 2,000 and rip it",
+        "title": "Rip the spinner 3 times",
         "type": "task",
-        "explanation": "",
-        "source_location": "Light the spinner to 2,000 and rip it"
+        "explanation": "Send the ball through the spinner lane three times. The spinner value does not need to be built to 2,000.",
+        "source_location": "Harlem Globetrotters - Rip the spinner 3 times"
       }
     ],
     "Hard": [
       {
-        "title": "Light the spinner to 2,000 and rip it",
+        "title": "Rip the spinner 3 times",
         "type": "task",
-        "explanation": "",
-        "source_location": "Harlem Globetrotters – Light the spinner to 2,000 and rip it"
+        "explanation": "Send the ball through the spinner lane three times. The spinner value does not need to be built to 2,000.",
+        "source_location": "Harlem Globetrotters - Rip the spinner 3 times"
       },
       {
         "title": "Hard Score (262,375+)",
@@ -1928,10 +1928,10 @@
         "source_location": "Harlem Globetrotters – Complete G-L-O-B-E"
       },
       {
-        "title": "Light 5x bonus twice",
+        "title": "Light 5x bonus once",
         "type": "task",
-        "explanation": "Work the inlane/drop-target path until 5x bonus is lit two times total.",
-        "source_location": "Light 5x bonus twice"
+        "explanation": "Work the inlane/drop-target path until 5x bonus is lit one time.",
+        "source_location": "Harlem Globetrotters - Light 5x bonus once"
       },
       {
         "title": "Complete inlane drop targets for 5x bonus",
@@ -2148,10 +2148,10 @@
         "source_location": "Paragon – Hard Score (138,838+)"
       },
       {
-        "title": "Collect a huge end-of-ball bonus",
+        "title": "Collect the static 20000+ end-of-ball bonus",
         "type": "task",
-        "explanation": "Build a very high bonus and then cash it in at ball end.",
-        "source_location": "Collect a huge end-of-ball bonus"
+        "explanation": "Build the static bonus to at least 20,000, then cash it in as the end-of-ball bonus.",
+        "source_location": "Paragon - Collect the static 20000+ end-of-ball bonus"
       },
       {
         "title": "Light and collect a saucer award",
@@ -3466,7 +3466,7 @@
       {
         "title": "Make 1 Freeway",
         "type": "task",
-        "explanation": "",
+        "explanation": "A Freeway is a lit full-orbit award. Make an orbit shot to light that orbit for a short timer, then shoot the lit full orbit before it expires to collect and advance the Freeway value.",
         "source_location": "Make 1 Freeway"
       },
       {
@@ -3478,7 +3478,7 @@
       {
         "title": "Make 3 Freeways on one ball",
         "type": "task",
-        "explanation": "",
+        "explanation": "Collect three Freeway awards on the same ball. Light a Freeway with an orbit or inlane feed, then shoot the lit full orbit before the timer expires; repeat twice more before draining.",
         "source_location": "Make 3 Freeways on one ball"
       },
       {
@@ -3504,7 +3504,7 @@
       {
         "title": "Make 3 Freeways on one ball",
         "type": "task",
-        "explanation": "",
+        "explanation": "Collect three Freeway awards on the same ball. Light a Freeway with an orbit or inlane feed, then shoot the lit full orbit before the timer expires; repeat twice more before draining.",
         "source_location": "Make 3 Freeways on one ball"
       },
       {
@@ -3516,7 +3516,7 @@
       {
         "title": "Make 1 Freeway",
         "type": "task",
-        "explanation": "",
+        "explanation": "A Freeway is a lit full-orbit award. Make an orbit shot to light that orbit for a short timer, then shoot the lit full orbit before it expires to collect and advance the Freeway value.",
         "source_location": "Make 1 Freeway"
       },
       {
@@ -3554,7 +3554,7 @@
       {
         "title": "Make 3 Freeways on one ball",
         "type": "task",
-        "explanation": "",
+        "explanation": "Collect three Freeway awards on the same ball. Light a Freeway with an orbit or inlane feed, then shoot the lit full orbit before the timer expires; repeat twice more before draining.",
         "source_location": "Make 3 Freeways on one ball"
       },
       {
@@ -4502,15 +4502,15 @@
         "source_location": "Complete any Tale"
       },
       {
-        "title": "Easy Score (1,150,918+)",
+        "title": "Easy Score (950,000+)",
         "type": "score",
-        "explanation": "Build score to at least 1,150,918 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Scared Stiff - Easy Score (1,150,918+)"
+        "explanation": "Build score to at least 950,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Scared Stiff - Easy Score (950,000+)"
       },
       {
         "title": "Collect a Spider wheel award",
         "type": "task",
-        "explanation": "",
+        "explanation": "Light and collect any one award from the Spider Wheel.",
         "source_location": "Collect a Spider wheel award"
       },
       {
@@ -4540,10 +4540,10 @@
         "source_location": "Start Crate Multiball"
       },
       {
-        "title": "Medium Score (3,037,440+)",
+        "title": "Medium Score (2,500,000+)",
         "type": "score",
-        "explanation": "Build score to at least 3,037,440 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Scared Stiff - Medium Score (3,037,440+)"
+        "explanation": "Build score to at least 2,500,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Scared Stiff - Medium Score (2,500,000+)"
       },
       {
         "title": "Complete Return of the Dead Heads",
@@ -4558,10 +4558,10 @@
         "source_location": "Complete any Tale"
       },
       {
-        "title": "Collect a Spider wheel award",
+        "title": "Collect 3 Spider Wheel awards in one game",
         "type": "task",
-        "explanation": "",
-        "source_location": "Collect a Spider wheel award"
+        "explanation": "Collect three separate Spider Wheel awards before the game ends.",
+        "source_location": "Scared Stiff - Collect 3 Spider Wheel awards in one game"
       },
       {
         "title": "Light Scared Stiff",
@@ -4572,10 +4572,10 @@
     ],
     "Hard": [
       {
-        "title": "Hard Score (6,335,998+)",
+        "title": "Hard Score (5,200,000+)",
         "type": "score",
-        "explanation": "Build score to at least 6,335,998 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Scared Stiff - Hard Score (6,335,998+)"
+        "explanation": "Build score to at least 5,200,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Scared Stiff - Hard Score (5,200,000+)"
       },
       {
         "title": "Start Spider Mania",
@@ -4680,10 +4680,10 @@
         "source_location": "Start Mist Multiball"
       },
       {
-        "title": "Collect a jackpot",
+        "title": "Collect any Multiball Award",
         "type": "task",
-        "explanation": "",
-        "source_location": "Collect a jackpot"
+        "explanation": "Start Castle, Coffin, or Mist Multiball and collect any lit multiball award or jackpot.",
+        "source_location": "Bram Stoker's Dracula - Collect any Multiball Award"
       }
     ],
     "Hard": [
@@ -4700,10 +4700,10 @@
         "source_location": "Bram Stoker's Dracula - Hard Score (96,405,423+)"
       },
       {
-        "title": "Start any multiball and collect a jackpot",
+        "title": "Start any multiball and collect any Multiball Award",
         "type": "task",
-        "explanation": "",
-        "source_location": "Start any multiball and collect a jackpot"
+        "explanation": "Start any Dracula multiball, then collect one lit multiball award or jackpot before multiball ends.",
+        "source_location": "Bram Stoker's Dracula - Start any multiball and collect any Multiball Award"
       },
       {
         "title": "Collect a Super Jackpot",
@@ -4960,10 +4960,10 @@
   "Cirqus Voltaire": {
     "Easy": [
       {
-        "title": "Hit Ringmaster 3 times",
+        "title": "Defeat Ringmaster once",
         "type": "task",
-        "explanation": "",
-        "source_location": "Hit Ringmaster 3 times"
+        "explanation": "Raise and hit the Ringmaster enough times to finish one full Ringmaster battle.",
+        "source_location": "Cirqus Voltaire - Defeat Ringmaster once"
       },
       {
         "title": "Easy Score (4,288,742+)",
@@ -4990,10 +4990,10 @@
         "source_location": "Shoot the left ramp 3 times"
       },
       {
-        "title": "Collect a Side Show award",
+        "title": "Complete 1 Marvel",
         "type": "task",
-        "explanation": "",
-        "source_location": "Collect a Side Show award"
+        "explanation": "Complete any one lit Marvel objective.",
+        "source_location": "Cirqus Voltaire - Complete 1 Marvel"
       }
     ],
     "Medium": [
@@ -5016,10 +5016,10 @@
         "source_location": "Start Multiball"
       },
       {
-        "title": "Defeat Ringmaster once",
+        "title": "Defeat Ringmaster twice",
         "type": "task",
-        "explanation": "",
-        "source_location": "Defeat Ringmaster once"
+        "explanation": "Finish two full Ringmaster battles in the same game.",
+        "source_location": "Cirqus Voltaire - Defeat Ringmaster twice"
       },
       {
         "title": "Start Juggler",
@@ -5048,16 +5048,16 @@
         "source_location": "Cirqus Voltaire - Hard Score (14,921,006+)"
       },
       {
-        "title": "Defeat Ringmaster twice",
+        "title": "Defeat Ringmaster 3 times in one game",
         "type": "task",
-        "explanation": "",
-        "source_location": "Defeat Ringmaster twice"
+        "explanation": "Finish three full Ringmaster battles before the game ends.",
+        "source_location": "Cirqus Voltaire - Defeat Ringmaster 3 times in one game"
       },
       {
-        "title": "Complete 1 Wonder",
+        "title": "Complete 4 Marvels in one game",
         "type": "task",
-        "explanation": "",
-        "source_location": "Complete 1 Wonder"
+        "explanation": "Complete four separate Marvel objectives before the game ends.",
+        "source_location": "Cirqus Voltaire - Complete 4 Marvels in one game"
       },
       {
         "title": "Start Multiball and collect a jackpot",

@@ -6,18 +6,46 @@ This repository is intentionally kept to the runnable Home Edition Electron laun
 
 ## Release
 
-The current stable release is **Home Edition 1.1**:
+The current stable release is **Home Edition 1.1.1**:
 
-https://github.com/AshodinVenteal/Flippermizer/releases/tag/home-edition-v1.1.0
+https://github.com/AshodinVenteal/Flippermizer/releases/tag/flippermizer-v1.1.1-2026-06-03
 
-Release asset:
+Release assets:
 
-- `Flippermizer-Home-Edition-1.1.0-portable.exe`
+- `Flippermizer-Home-Edition-1.1.1-portable.exe`
+- `Flippermizer-Home-Edition-1.1.1-win-unpacked.zip`
+
+### Home Edition 1.1.1 Task + Boss Hotfix - 2026-06-03
+
+- Retuned table goals and score targets for Attack from Mars, Harlem Globetrotters, Scared Stiff, Congo, Tales of the Arabian Nights, Cirqus Voltaire, Paragon, High Speed, and Bram Stoker's Dracula.
+- Boss table setup now emits table-specific boss task checks and score checks, and Away With You can be cleared through gated Dev Tools if AP check reconciliation misses it.
+- Curated worlds now carry their banner presentation into Tower and Checks, with improved world label/name sizing and per-world curated-by signatures in the YAML Builder.
+- YAML Builder dropdowns now use dark option backgrounds with light text for readability.
+
+### Home Edition 1.1.1 Checks + Counter Hotfix - 2026-05-29
+
+- Darkened the Checks by World banner bubbles, enlarged the world names, and restored each table's own banner on Checks table sections, including City Slicker.
+- Kept the Boss Table section on the Boss Table banner while the boss world bubble uses the boss world banner treatment.
+- Fixed Item Counters so full AP inventory snapshots rebuild Junk Redeems from the given/used ledger instead of minting fresh charges after reconnecting.
+- Added an Easy + Medium fusion animation that visibly transforms both ready redeems into a combined HARD redeem before targeting Hard checks.
+- Refreshed the Toccata Terror and Tabletop Rumblespot banner art across Home Edition and Stream Edition assets.
+- Rebuilt and refreshed the portable EXE and win-unpacked release copy with these fixes.
+
+### Home Edition 1.1.1 Incremental - 2026-05-28
+
+- Added curated table list generation and the mixed-era Well-Made Tables preset.
+- Added a fullscreen control to the app chrome.
+- Updated relic cards to show what each relic does, how to acquire it, and card-level Details/Equip controls.
+- Added relic double-click behavior: double-click an unfocused relic to focus it, or double-click the focused relic to equip or unequip it.
+- Updated Tilted Compass progression behavior so it marks one table per world with an uncollected Progressive Ball or Boss Key when spoiler truth is loaded.
+- Updated AP hint handling so hint commands stay on Status unless they return a real hit, and AP worlds can emit Hint: Progressive Ball rewards with Boss Key/Progressive Ball hint groups.
+- Removed Skateball's hard score target from the random Hard task pool; its separate score check remains available.
 
 ### Home Edition 1.1 Hotfix - 2026-05-26
 
 - Fixed vertical 1080x1920 orientation so the top HUD, Overview, and controls stack within the Electron window without right-edge overhang.
-- Updated portrait sizing so smaller vertical windows, including the saved 968x1356 window size, use the actual Electron content bounds instead of shrinking a fixed canvas.
+- Updated the portrait layout to use the actual Electron viewport, including smaller saved vertical windows such as 968x1356.
+- Refreshed the portable EXE and win-unpacked ZIP so both release downloads include the vertical viewport fix.
 
 ## Home Edition Player Options
 

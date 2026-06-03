@@ -325,7 +325,7 @@
         "requires": "|Progressive Ball - Tales of the Arabian Nights:1|"
     },
     {
-        "name": "Tales of the Arabian Nights - Easy Score (992,834+)",
+        "name": "Tales of the Arabian Nights - Easy Score (750,000+)",
         "region": "Ball 1 Sphere",
         "category": [
             "TalesoftheArabianNights",
@@ -346,7 +346,7 @@
         "requires": "|Progressive Ball - Tales of the Arabian Nights:2|"
     },
     {
-        "name": "Tales of the Arabian Nights - Medium Score (2,872,762+)",
+        "name": "Tales of the Arabian Nights - Medium Score (2,200,000+)",
         "region": "Ball 2 Sphere",
         "category": [
             "TalesoftheArabianNights",
@@ -367,7 +367,7 @@
         "requires": "|Progressive Ball - Tales of the Arabian Nights:3|"
     },
     {
-        "name": "Tales of the Arabian Nights - Hard Score (6,432,610+)",
+        "name": "Tales of the Arabian Nights - Hard Score (4,900,000+)",
         "region": "Ball 3 Sphere",
         "category": [
             "TalesoftheArabianNights",
@@ -2467,7 +2467,7 @@
         "requires": "|Progressive Ball - Scared Stiff:1|"
     },
     {
-        "name": "Scared Stiff - Easy Score (1,150,918+)",
+        "name": "Scared Stiff - Easy Score (950,000+)",
         "region": "Ball 1 Sphere",
         "category": [
             "ScaredStiff",
@@ -2488,7 +2488,7 @@
         "requires": "|Progressive Ball - Scared Stiff:2|"
     },
     {
-        "name": "Scared Stiff - Medium Score (3,037,440+)",
+        "name": "Scared Stiff - Medium Score (2,500,000+)",
         "region": "Ball 2 Sphere",
         "category": [
             "ScaredStiff",
@@ -2509,7 +2509,7 @@
         "requires": "|Progressive Ball - Scared Stiff:3|"
     },
     {
-        "name": "Scared Stiff - Hard Score (6,335,998+)",
+        "name": "Scared Stiff - Hard Score (5,200,000+)",
         "region": "Ball 3 Sphere",
         "category": [
             "ScaredStiff",
