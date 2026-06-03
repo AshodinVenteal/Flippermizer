@@ -6978,7 +6978,8 @@
           got = bossKeysState.reduce((n, key)=> n + (key?.acquired ? 1 : 0), 0);
         }else{
           got = Math.max(0, Math.round(Number(window.__apBossKeyCount || 0)));
-          total = Math.max(1, Math.round(Number(ap?.slotData?.boss_keys_total || ap?.slotData?.boss_keys_required || 3)));
+          const totalRaw = Number(ap?.slotData?.boss_keys_total ?? ap?.slotData?.boss_keys_required_for_boss_table_open ?? ap?.slotData?.boss_keys_required ?? 3);
+          total = Math.max(1, Math.round(Number.isFinite(totalRaw) ? (totalRaw <= 0 ? 1 : totalRaw) : 3));
         }
       }catch(_){}
       keyEl.textContent = ap?.inherentSeedActive || ap?.connected ? `${got} / ${total}` : "Searching";

@@ -116,6 +116,18 @@ BOSS_TABLE_TASK_LOCATION_NAMES = [
     "Boss Table - Complete a Target Bank",
     "Boss Table - Start Any Multiball",
 ]
+BOSS_TABLE_SCORE_LOCATION_NAMES = [
+    "Boss Table - Obtain a score of 100,000+",
+    "Boss Table - Obtain a score of 250,000+",
+    "Boss Table - Obtain a score of 500,000+",
+    "Boss Table - Obtain a score of 1,000,000+",
+    "Boss Table - Obtain a score of 2,500,000+",
+    "Boss Table - Obtain a score of 5,000,000+",
+    "Boss Table - Obtain a score of 10,000,000+",
+    "Boss Table - Obtain a score of 25,000,000+",
+    "Boss Table - Obtain a score of 50,000,000+",
+    "Boss Table - Obtain a score of 100,000,000+",
+]
 
 
 def _normalize_boss_keys_required(value: Any) -> int:
@@ -900,6 +912,53 @@ def _metasizer_player_display_name(multiworld: MultiWorld, player: int) -> str:
     return f"Player {player}"
 
 
+def _parse_metasizer_world_curators(raw_selection: Any) -> list[str]:
+    text = str(raw_selection or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    if not text or text.lower() in {"auto", "default", "random", "none", "0", "1"}:
+        return []
+    pieces = text.split("\n") if "\n" in text else text.split("|" if "|" in text else ",")
+    curators: list[str] = []
+    for index, piece in enumerate(pieces, start=1):
+        clean = str(piece or "").strip()
+        if clean.startswith(("-", "*")):
+            clean = clean[1:].strip()
+        if ":" in clean:
+            label, value = clean.split(":", 1)
+            normalized_label = " ".join(str(label or "").strip().lower().split())
+            if normalized_label == f"world {index}" or (
+                normalized_label.startswith("world ")
+                and normalized_label[6:].strip().isdigit()
+            ):
+                clean = value.strip()
+        curators.append(clean)
+    while curators and not curators[-1]:
+        curators.pop()
+    return curators
+
+
+def _apply_metasizer_world_curators(
+    world_layout: dict[str, Any],
+    world_curators: list[str],
+    fallback_curated_by: str,
+) -> dict[str, Any]:
+    worlds = world_layout.get("worlds")
+    if not isinstance(worlds, list):
+        return world_layout
+    fallback = str(fallback_curated_by or "").strip()
+    resolved: list[str] = []
+    for index, entry in enumerate(worlds):
+        if not isinstance(entry, dict):
+            continue
+        curator = str(world_curators[index] if index < len(world_curators) else "").strip()
+        if not curator:
+            curator = str(entry.get("curated_by") or fallback).strip()
+        if curator:
+            entry["curated_by"] = curator
+        resolved.append(curator)
+    world_layout["world_curators"] = resolved
+    return world_layout
+
+
 def _metasizer_curated_world_theme(world_chunk: list[dict[str, Any]], world_num: int) -> tuple[str, dict[str, str], str]:
     text = " ".join(
         [
@@ -1251,6 +1310,8 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
     curated_world_groups_raw = get_option_value(multiworld, player, "base_game_curated_world_groups")
     curated_tables_raw = get_option_value(multiworld, player, "base_game_curated_tables")
     custom_world_sets_raw = get_option_value(multiworld, player, "base_game_custom_world_sets")
+    world_curators_raw = get_option_value(multiworld, player, "base_game_world_curators")
+    world_curators = _parse_metasizer_world_curators(world_curators_raw)
     group_size = 5
     desired_world_count = max(1, min(len(catalog_groups), requested_count // group_size if requested_count > 0 else len(catalog_groups)))
     seed_name = str(getattr(multiworld, "seed_name", ""))
@@ -1297,6 +1358,10 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
             opening_tables = [str(entry.get("name") or "").strip() for entry in opening_entries]
             curated_by = _metasizer_player_display_name(multiworld, player)
             world_layout = _build_metasizer_custom_world_set_layout(active_world_sets, opening_tables, curated_by)
+            world_layout = _apply_metasizer_world_curators(world_layout, world_curators, curated_by)
+            boss_table_entry = _select_metasizer_boss_table_entry(active_entries, seed_name, numeric_seed, player)
+            boss_table_name = str(boss_table_entry.get("name") or "").strip()
+            boss_table_checks = _build_boss_table_checks_payload(boss_table_name, seed_name, numeric_seed, player)
             active_world_groups = []
             for entry in world_layout.get("worlds", []) or []:
                 active_world_groups.append({
@@ -1338,6 +1403,8 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
                 "curated_tables_resolved": active_tables,
                 "curated_tables_unresolved": [],
                 "custom_world_sets_input": custom_world_sets_raw,
+                "world_curators_input": world_curators_raw,
+                "world_curators_resolved": list(world_layout.get("world_curators") or []),
                 "custom_world_sets_resolved": [
                     {
                         "name": str(world.get("name") or "").strip(),
@@ -1359,6 +1426,11 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
                 "starting_open_tables": opening_tables,
                 "starting_open_entries": opening_entries,
                 "starting_open_count": len(opening_tables),
+                "boss_table": boss_table_name,
+                "boss_table_name": boss_table_name,
+                "boss_table_code": str(boss_table_entry.get("code") or "").strip(),
+                "boss_table_entry": boss_table_entry,
+                "boss_table_checks": boss_table_checks,
                 "table_pool": table_pool,
                 "table_entries": table_entries,
                 "catalog_groups": catalog_groups,
@@ -1409,6 +1481,7 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
             opening_tables = [str(entry.get("name") or "").strip() for entry in opening_entries]
             curated_by = _metasizer_player_display_name(multiworld, player)
             world_layout = _build_metasizer_curated_table_world_layout(active_entries, opening_tables, curated_by)
+            world_layout = _apply_metasizer_world_curators(world_layout, world_curators, curated_by)
             boss_table_entry = _select_metasizer_boss_table_entry(active_entries, seed_name, numeric_seed, player)
             boss_table_name = str(boss_table_entry.get("name") or "").strip()
             boss_table_checks = _build_boss_table_checks_payload(boss_table_name, seed_name, numeric_seed, player)
@@ -1451,6 +1524,8 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
                 "curated_tables_input": curated_tables_raw,
                 "curated_tables_resolved": active_tables,
                 "curated_tables_unresolved": unresolved_curated_tables,
+                "world_curators_input": world_curators_raw,
+                "world_curators_resolved": list(world_layout.get("world_curators") or []),
                 "curated_by": curated_by,
                 "group_selection_fallback_reason": curated_table_fallback_reason,
                 "manual_pick_scaffold": True,
@@ -2306,30 +2381,56 @@ def _build_boss_table_checks_payload(
             entry["difficulty"] = difficulty
             candidates.append(entry)
 
-    if not candidates:
-        return payload
-
     rng = random.Random(f"{seed_name}|{numeric_seed}|{player}|boss_table_checks_v1|{table_name}")
     rng.shuffle(candidates)
 
     entries: list[dict[str, Any]] = []
     by_location: dict[str, dict[str, Any]] = {}
-    for idx, location_name in enumerate(BOSS_TABLE_TASK_LOCATION_NAMES):
-        pick = candidates[idx % len(candidates)]
-        title = str(pick.get("title") or "").strip() or str(pick.get("source_location") or "").strip() or "Boss Task"
+    if candidates:
+        for idx, location_name in enumerate(BOSS_TABLE_TASK_LOCATION_NAMES):
+            pick = candidates[idx % len(candidates)]
+            title = str(pick.get("title") or "").strip() or str(pick.get("source_location") or "").strip() or "Boss Task"
+            entry = {
+                "location": location_name,
+                "table": table_name,
+                "target_table": table_name,
+                "source_table": table_name,
+                "kind": "task",
+                "task_type": "task",
+                "difficulty": str(pick.get("difficulty") or "").strip(),
+                "display_name": title,
+                "objective": title,
+                "explanation": str(pick.get("explanation") or "").strip(),
+                "source_location": str(pick.get("source_location") or "").strip(),
+                "randomized": True,
+                "slot_index": idx,
+            }
+            entries.append(entry)
+            by_location[location_name] = entry
+
+    score_targets = _boss_table_score_targets(table_pool)
+    for score_idx, location_name in enumerate(BOSS_TABLE_SCORE_LOCATION_NAMES):
+        target_value = score_targets[score_idx % len(score_targets)]
+        target_text = f"{target_value:,}+"
+        difficulty = "Easy" if score_idx < 3 else "Medium" if score_idx < 7 else "Hard"
+        objective = f"Obtain a score of {target_text}"
         entry = {
             "location": location_name,
             "table": table_name,
             "target_table": table_name,
-            "kind": "task",
-            "task_type": "task",
-            "difficulty": str(pick.get("difficulty") or "").strip(),
-            "display_name": title,
-            "objective": title,
-            "explanation": str(pick.get("explanation") or "").strip(),
-            "source_location": str(pick.get("source_location") or "").strip(),
+            "source_table": table_name,
+            "kind": "score",
+            "task_type": "score",
+            "type": "score",
+            "difficulty": difficulty,
+            "display_name": objective,
+            "objective": objective,
+            "score_target": target_value,
+            "score_target_text": target_text,
+            "explanation": f"Build score to at least {target_text} on {table_name} before drain.",
+            "source_location": f"{table_name} - Boss Score ({target_text})",
             "randomized": True,
-            "slot_index": idx,
+            "slot_index": len(BOSS_TABLE_TASK_LOCATION_NAMES) + score_idx,
         }
         entries.append(entry)
         by_location[location_name] = entry
@@ -2338,6 +2439,80 @@ def _build_boss_table_checks_payload(
     payload["entries"] = entries
     payload["by_location"] = by_location
     return payload
+
+
+def _boss_table_score_targets(table_pool: dict[str, Any]) -> list[int]:
+    anchors: list[int] = []
+    for difficulty in ("Easy", "Medium", "Hard"):
+        for raw_entry in table_pool.get(difficulty, []) or []:
+            if not isinstance(raw_entry, dict):
+                continue
+            if str(raw_entry.get("type", "")).strip().lower() != "score":
+                continue
+            value = _extract_score_value(raw_entry.get("title"))
+            if value > 0:
+                anchors.append(value)
+                break
+    anchors = sorted(set(anchors))
+    if not anchors:
+        return [100000, 250000, 500000, 1000000, 2500000, 5000000, 10000000, 25000000, 50000000, 100000000]
+    if len(anchors) == 1:
+        easy = anchors[0]
+        medium = max(easy + 1, int(easy * 2.4))
+        hard = max(medium + 1, int(easy * 5.2))
+    elif len(anchors) == 2:
+        easy, medium = anchors[0], anchors[1]
+        hard = max(medium + 1, int(medium + (medium - easy) * 1.65))
+    else:
+        easy, medium, hard = anchors[0], anchors[len(anchors) // 2], anchors[-1]
+    raw_targets = [
+        easy * 0.55,
+        easy * 0.80,
+        easy,
+        easy + (medium - easy) * 0.50,
+        medium,
+        medium + (hard - medium) * 0.35,
+        medium + (hard - medium) * 0.70,
+        hard,
+        hard * 1.18,
+        hard * 1.35,
+    ]
+    targets: list[int] = []
+    for raw_target in raw_targets:
+        target = _round_boss_score_target(raw_target)
+        if targets:
+            while target <= targets[-1]:
+                target = _round_boss_score_target(targets[-1] + _boss_score_rounding_step(targets[-1]))
+        targets.append(target)
+    return targets
+
+
+def _extract_score_value(value: Any) -> int:
+    match = re.search(r"([\d,]+)\s*\+", str(value or ""))
+    if not match:
+        return 0
+    try:
+        return int(match.group(1).replace(",", ""))
+    except ValueError:
+        return 0
+
+
+def _boss_score_rounding_step(value: float) -> int:
+    amount = abs(float(value or 0))
+    if amount >= 100_000_000:
+        return 5_000_000
+    if amount >= 10_000_000:
+        return 1_000_000
+    if amount >= 1_000_000:
+        return 100_000
+    if amount >= 100_000:
+        return 10_000
+    return 5_000
+
+
+def _round_boss_score_target(value: float) -> int:
+    step = _boss_score_rounding_step(value)
+    return max(step, int(round(float(value or 0) / step) * step))
 
 
 def _get_generic_checks_payload(world: World, multiworld: MultiWorld, player: int) -> dict[str, Any]:
@@ -2588,6 +2763,11 @@ def after_fill_slot_data(slot_data: dict, world: World, multiworld: MultiWorld, 
         slot_data["start_inventory_from_pool"] = next_start_inventory
     slot_data[BASE_GAME_TABLE_SET_SLOT_KEY] = metasizer_payload
     slot_data[LEGACY_METASIZER_TABLE_SET_SLOT_KEY] = metasizer_payload
+    if isinstance(metasizer_payload.get("boss_table_checks"), dict):
+        slot_data["boss_table_checks"] = metasizer_payload.get("boss_table_checks")
+    if str(metasizer_payload.get("boss_table") or "").strip():
+        slot_data["boss_table"] = str(metasizer_payload.get("boss_table") or "").strip()
+        slot_data["boss_table_name"] = str(metasizer_payload.get("boss_table_name") or metasizer_payload.get("boss_table") or "").strip()
     slot_data[GENERIC_CHECKS_SLOT_KEY] = generic_checks_payload
     slot_data[TASK_SHUFFLE_SLOT_KEY] = task_shuffle_payload
     slot_data[PROGRESSIVE_BALL_STARTS_SLOT_KEY] = _get_progressive_ball_start_payload(world)

@@ -15,12 +15,19 @@ This repository keeps the Home Edition source, Stream Edition source, and viewab
 
 The current stable release is **Home Edition 1.1.1**:
 
-https://github.com/AshodinVenteal/Flippermizer/releases/tag/flippermizer-v1.1.1-2026-05-27
+https://github.com/AshodinVenteal/Flippermizer/releases/tag/flippermizer-v1.1.1-2026-06-03
 
 Release assets:
 
 - `Flippermizer-Home-Edition-1.1.1-portable.exe`
 - `Flippermizer-Home-Edition-1.1.1-win-unpacked.zip`
+
+### Home / Stream Edition Task + Boss Hotfix - 2026-06-03
+
+- Retuned table goals and score targets for Attack from Mars, Harlem Globetrotters, Scared Stiff, Congo, Tales of the Arabian Nights, Cirqus Voltaire, Paragon, High Speed, and Bram Stoker's Dracula.
+- Boss table setup now emits table-specific boss task checks and score checks, and Away With You can be cleared through gated Dev Tools if AP check reconciliation misses it.
+- Curated worlds now carry their banner presentation into Tower and Checks, with improved world label/name sizing and per-world curated-by signatures in the YAML Builder.
+- YAML Builder dropdowns now use dark option backgrounds with light text for readability.
 
 ### Home / Stream Edition YAML + Preset Update - 2026-06-02
 
@@ -29,13 +36,24 @@ Release assets:
 - Stream Edition shows custom named worlds with generic named banners instead of table-art world banners.
 - Well-Made Tables now follows the VPX creator-tier preference list, removes Original VPX entries, and avoids Stern 2016+ tables.
 
-### Home Edition 1.1.1 Incremental - 2026-05-27
+### Home Edition 1.1.1 Checks + Counter Hotfix - 2026-05-29
 
-- Rebuilt Home Edition as 1.1.1 portable and win-unpacked packages.
-- Added app chrome controls for fullscreen and a themed exit confirmation.
-- Fixed the System Exit Request dialog so it appears above panels and controls.
-- Added soft splash feedback for non-clickable clicks.
-- Added curated table list options and updated the Well-Made Tables preset to a mixed-era VPX maker-tier list.
+- Darkened the Checks by World banner bubbles, enlarged the world names, and restored each table's own banner on Checks table sections, including City Slicker.
+- Kept the Boss Table section on the Boss Table banner while the boss world bubble uses the boss world banner treatment.
+- Fixed Item Counters so full AP inventory snapshots rebuild Junk Redeems from the given/used ledger instead of minting fresh charges after reconnecting.
+- Added an Easy + Medium fusion animation that visibly transforms both ready redeems into a combined HARD redeem before targeting Hard checks.
+- Refreshed the Toccata Terror and Tabletop Rumblespot banner art across Home Edition and Stream Edition assets.
+- Rebuilt and refreshed the portable EXE and win-unpacked release copy with these fixes.
+
+### Home Edition 1.1.1 Incremental - 2026-05-28
+
+- Added curated table list generation and the mixed-era Well-Made Tables preset.
+- Added a fullscreen control to the app chrome.
+- Updated relic cards to show what each relic does, how to acquire it, and card-level Details/Equip controls.
+- Added relic double-click behavior: double-click an unfocused relic to focus it, or double-click the focused relic to equip or unequip it.
+- Updated Tilted Compass progression behavior so it marks one table per world with an uncollected Progressive Ball or Boss Key when spoiler truth is loaded.
+- Updated AP hint handling so hint commands stay on Status unless they return a real hit, and AP worlds can emit Hint: Progressive Ball rewards with Boss Key/Progressive Ball hint groups.
+- Removed Skateball's hard score target from the random Hard task pool; its separate score check remains available.
 
 ### Home Edition 1.1 Hotfix - 2026-05-26
 
@@ -92,6 +110,10 @@ npm run dist:portable
 ```
 
 The unpacked app and portable launcher are written to `dist/`. Build output is intentionally ignored by git; publish launcher binaries through GitHub Releases.
+
+## Maintenance Notes
+
+When gameplay-facing or settings-facing behavior changes, update the latest patch notes in this README and the launch popup patch notes in `Flippermizer Home Edition/flippermizer_overlay_tower_v3.html` as part of the same work. Sync shared overlay changes into Stream Edition's `app-assets` copy. Keep patch notes player-facing: include gameplay, AP generation, task behavior, table presets, and player options; leave out build-only, packaging-only, and internal implementation details unless they change player-facing settings.
 
 ## Run Stream Edition From Source
 

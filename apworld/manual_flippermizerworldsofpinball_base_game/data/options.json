@@ -143,10 +143,10 @@
         },
         "base_game_active_table_count": {
             "display_name": "Base Game Active Table Count",
-            "description": "How many tables from the larger Base Game pool should exist in this seed's active graph. Curated table-list worlds are packaged in five-table slots and can grow beyond the original 25-table episode size.",
+            "description": "How many tables from the larger Base Game pool should exist in this seed's active graph. For the current episode contract, this stays at 25 so the seed is built from five 5-table worlds.",
             "type": "Range",
             "range_start": 5,
-            "range_end": 90,
+            "range_end": 25,
             "default": 25,
             "group": "Base Game Options",
             "visibility": [
@@ -220,6 +220,25 @@
                 "Named table chunks to use when Base Game Selection Mode is Curated Table List.",
                 "Each line can be formatted as World Name: Table A | Table B | Table C | Table D | Table E.",
                 "When set, custom world sets preserve your grouping and world names instead of shuffling the curated table list into generated worlds."
+            ],
+            "type": "Choice",
+            "values": {
+                "auto": 1
+            },
+            "default": 1,
+            "allow_custom_value": true,
+            "group": "Base Game Options",
+            "visibility": [
+                "simple_ui",
+                "complex_ui",
+                "template"
+            ]
+        },
+        "base_game_world_curators": {
+            "display_name": "Base Game World Curators",
+            "description": [
+                "Optional per-world curator bylines for named or curated Base Game worlds.",
+                "Use one line per world slot in world order. Blank or missing lines fall back to the player name."
             ],
             "type": "Choice",
             "values": {

@@ -204,6 +204,15 @@
     opacity:.78;
   }
   select{ cursor:pointer; }
+  select option,
+  select optgroup{
+    background:#020d16;
+    color:#e8faff;
+  }
+  select option:checked{
+    background:#0b2b20;
+    color:#ffffff;
+  }
   input[type="range"]{ width:100%; accent-color:var(--green); }
 
   .toggle{
@@ -344,6 +353,20 @@
   .worldSlotCount{
     color:var(--gold);
     font:700 11px/1.2 var(--fontUi);
+  }
+  .worldSlotFields{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+  .worldSlotField{
+    display:grid;
+    gap:4px;
+  }
+  .worldSlotField span{
+    color:rgba(232,250,255,.72);
+    font:700 10px/1.2 var(--fontUi);
+    text-transform:uppercase;
   }
   .worldSlotTables{
     margin:8px 0 0;
@@ -661,6 +684,7 @@
         <div class="curatedTableGrid" id="metasizerCuratedTableGrid"></div>
         <textarea id="metasizerCuratedTables" style="min-height:76px;" spellcheck="false"></textarea>
         <textarea id="metasizerCustomWorldSets" class="machineField" spellcheck="false"></textarea>
+        <textarea id="metasizerWorldCurators" class="machineField" spellcheck="false"></textarea>
       </div>
       <div class="actions" style="margin-top:8px;">
         <button id="btnCuratedWellMade" type="button">Preset: Well-Made Tables</button>
@@ -894,6 +918,7 @@
     base_game_curated_world_groups: "auto",
     base_game_curated_tables: "auto",
     base_game_custom_world_sets: "auto",
+    base_game_world_curators: "auto",
     base_game_random_one_featured_designer_only: false,
     base_game_starting_open_table_count: 5,
     start_inventory_from_pool: {}
@@ -1033,6 +1058,29 @@
     });
     return lines.length ? lines.join("\n") : "auto";
   }
+  function parseWorldCurators(raw){
+    const text = String(raw || "").replace(/\r\n?/g, "\n").trim();
+    if(!text || ["auto", "default", "random", "none", "0", "1"].includes(text.toLowerCase())) return [];
+    const pieces = text.includes("\n") ? text.split("\n") : text.split(/[|,]+/);
+    const out = pieces.map((part, index) => {
+      let clean = String(part || "").replace(/^\s*[-*]\s*/, "").trim();
+      const colon = clean.indexOf(":");
+      if(colon >= 0){
+        const label = clean.slice(0, colon).trim().toLowerCase();
+        if(label === `world ${index + 1}` || /^world\s+\d+$/.test(label)){
+          clean = clean.slice(colon + 1).trim();
+        }
+      }
+      return clean;
+    });
+    while(out.length && !out[out.length - 1]) out.pop();
+    return out;
+  }
+  function serializeWorldCurators(curators){
+    const out = (curators || []).map(value => String(value || "").trim());
+    while(out.length && !out[out.length - 1]) out.pop();
+    return out.length ? out.join("\n") : "auto";
+  }
   function customWorldSetsFromTables(tables, names){
     const list = [];
     const cleanTables = [];
@@ -1081,6 +1129,7 @@
   function curatedWorldSlotsFromState(){
     const tables = parseCuratedTableList(state.base_game_curated_tables);
     const existing = parseCustomWorldSets(state.base_game_custom_world_sets);
+    const curators = parseWorldCurators(state.base_game_world_curators);
     const bySignature = new Map(existing.map(world => [
       (world.tables || []).map(canonicalTableName).filter(Boolean).join("|"),
       String(world.name || "").trim()
@@ -1093,6 +1142,7 @@
       return {
         name: indexedName || matchedName || sampleName,
         sampleName,
+        curator: String(curators[index] || "").trim(),
         tables: chunk
       };
     });
@@ -1104,6 +1154,7 @@
     state.base_game_curated_world_groups = "auto";
     state.base_game_curated_tables = tables.length ? tables.join(", ") : "auto";
     state.base_game_custom_world_sets = worldSlots.length ? serializeCustomWorldSets(worldSlots) : "auto";
+    state.base_game_world_curators = worldSlots.length ? serializeWorldCurators(worldSlots.map(world => world.curator || "")) : "auto";
     if(tables.length){
       state.base_game_active_table_count = activeTableCountForCuratedSelection(tables.length);
     }
@@ -1113,6 +1164,7 @@
       if(q("metasizerCuratedGroups")) q("metasizerCuratedGroups").value = state.base_game_curated_world_groups;
       if(q("metasizerCuratedTables")) q("metasizerCuratedTables").value = state.base_game_curated_tables;
       if(q("metasizerCustomWorldSets")) q("metasizerCustomWorldSets").value = state.base_game_custom_world_sets;
+      if(q("metasizerWorldCurators")) q("metasizerWorldCurators").value = state.base_game_world_curators;
     }
   }
   function syncCuratedWorldSlotsFromSelection(options = {}){
@@ -1140,7 +1192,16 @@
           <div class="worldSlotLabel">World Slot ${index + 1}</div>
           <div class="worldSlotCount">${world.tables.length}/${METASIZER_WORLD_SLOT_SIZE}</div>
         </div>
-        <input type="text" data-world-slot-name="${index}" value="${quoteAttr(world.name)}" placeholder="${quoteAttr(world.sampleName)}" />
+        <div class="worldSlotFields">
+          <label class="worldSlotField">
+            <span>World Name</span>
+            <input type="text" data-world-slot-name="${index}" value="${quoteAttr(world.name)}" placeholder="${quoteAttr(world.sampleName)}" />
+          </label>
+          <label class="worldSlotField">
+            <span>Curated by</span>
+            <input type="text" data-world-slot-curator="${index}" value="${quoteAttr(world.curator)}" placeholder="${quoteAttr(state.name || "Curator")}" />
+          </label>
+        </div>
         <ul class="worldSlotTables">${tableItems}</ul>
       </div>`;
     }).join("");
@@ -1368,6 +1429,7 @@
     q("metasizerCuratedGroups").value = state.base_game_curated_world_groups;
     q("metasizerCuratedTables").value = state.base_game_curated_tables;
     q("metasizerCustomWorldSets").value = state.base_game_custom_world_sets;
+    q("metasizerWorldCurators").value = state.base_game_world_curators;
     q("metasizerOneFeaturedDesignerOnly").checked = state.base_game_random_one_featured_designer_only;
     q("metasizerStartingOpenTableCount").value = String(state.base_game_starting_open_table_count);
     buildStartEditors();
@@ -1400,6 +1462,7 @@
     state.base_game_curated_world_groups = "auto";
     state.base_game_curated_tables = "auto";
     state.base_game_custom_world_sets = "auto";
+    state.base_game_world_curators = "auto";
     state.base_game_random_one_featured_designer_only = false;
     state.base_game_starting_open_table_count = 5;
     state.start_inventory_from_pool = {};
@@ -1614,13 +1677,16 @@
     });
     q("metasizerWorldSlots").addEventListener("input", (ev) => {
       const input = ev.target && ev.target.matches ? ev.target : null;
-      if(!input || !input.matches("input[data-world-slot-name]")) return;
-      const index = asInt(input.getAttribute("data-world-slot-name"), -1);
+      if(!input || (!input.matches("input[data-world-slot-name]") && !input.matches("input[data-world-slot-curator]"))) return;
+      const isCurator = input.matches("input[data-world-slot-curator]");
+      const index = asInt(input.getAttribute(isCurator ? "data-world-slot-curator" : "data-world-slot-name"), -1);
       const slots = curatedWorldSlotsFromState();
       if(index < 0 || index >= slots.length) return;
-      slots[index].name = String(input.value || "").trim() || slots[index].sampleName || `World ${index + 1}`;
+      if(isCurator) slots[index].curator = String(input.value || "").trim();
+      else slots[index].name = String(input.value || "").trim() || slots[index].sampleName || `World ${index + 1}`;
       applyCuratedWorldSlotsToState(slots, { updateInputs:false });
       if(q("metasizerCustomWorldSets")) q("metasizerCustomWorldSets").value = state.base_game_custom_world_sets;
+      if(q("metasizerWorldCurators")) q("metasizerWorldCurators").value = state.base_game_world_curators;
       updateMetasizerCuratedInfo();
       renderYaml();
     });
@@ -1721,6 +1787,7 @@
       lines.push(`  base_game_curated_world_groups: ${quoteYaml(state.base_game_curated_world_groups)}`);
       lines.push(`  base_game_curated_tables: ${quoteYaml(state.base_game_curated_tables)}`);
       pushYamlTextOption(lines, "base_game_custom_world_sets", state.base_game_custom_world_sets);
+      pushYamlTextOption(lines, "base_game_world_curators", state.base_game_world_curators);
       lines.push(`  base_game_random_one_featured_designer_only: ${state.base_game_random_one_featured_designer_only ? "true" : "false"}`);
       lines.push(`  base_game_starting_open_table_count: ${state.base_game_starting_open_table_count}`);
       lines.push(`  base_game_enabled: ${state.base_game_enabled ? "true" : "false"}`);
