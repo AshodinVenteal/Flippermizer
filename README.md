@@ -2,12 +2,11 @@
 
 Flippermizer! Pinball Randomized! is a pinball randomizer client for Archipelago and singleplayer Home Edition runs.
 
-This repository keeps the Home Edition source, Stream Edition source, and viewable APWorld source folders together so the code can be browsed directly on GitHub. Generated release bundles, dependency folders, and packaged APWorld archives stay out of Git.
+This repository keeps the Home Edition source and viewable APWorld source folders together so the code can be browsed directly on GitHub. Stream Edition is kept out of the public repository. Generated release bundles, dependency folders, and packaged APWorld archives stay out of Git.
 
 ## Repository Layout
 
 - `Flippermizer Home Edition/` - Home Edition Electron launcher, basic HTML overlay, hosted player options page, and Home assets.
-- `Flippermizer Stream Edition/` - Stream Edition launcher source and stream overlay assets.
 - `apworld/manual_flippermizerworldsofpinball_base_game/` - extracted Manual APWorld source package.
 - `apworld/FlippermizerWorldsofPinball/` - extracted FlippermizerWorldsofPinball APWorld source package.
 
@@ -22,18 +21,17 @@ Release assets:
 - `Flippermizer-Home-Edition-1.1.1-portable.exe`
 - `Flippermizer-Home-Edition-1.1.1-win-unpacked.zip`
 
-### Home / Stream Edition Task + Boss Hotfix - 2026-06-03
+### Home Edition Task + Boss Hotfix - 2026-06-03
 
 - Retuned table goals and score targets for Attack from Mars, Harlem Globetrotters, Scared Stiff, Congo, Tales of the Arabian Nights, Cirqus Voltaire, Paragon, High Speed, and Bram Stoker's Dracula.
 - Boss table setup now emits table-specific boss task checks and score checks, and Away With You can be cleared through gated Dev Tools if AP check reconciliation misses it.
 - Curated worlds now carry their banner presentation into Tower and Checks, with improved world label/name sizing and per-world curated-by signatures in the YAML Builder.
 - YAML Builder dropdowns now use dark option backgrounds with light text for readability.
 
-### Home / Stream Edition YAML + Preset Update - 2026-06-02
+### Home Edition YAML + Preset Update - 2026-06-02
 
-- YAML Builder now supports Home Edition and Stream Edition from one page, including a Stream starter preset.
+- YAML Builder now supports the refreshed Home Edition options from one page.
 - Curated seeds can now use custom named world sets that keep your chosen world names and table groupings.
-- Stream Edition shows custom named worlds with generic named banners instead of table-art world banners.
 - Well-Made Tables now follows the VPX creator-tier preference list, removes Original VPX entries, and avoids Stern 2016+ tables.
 
 ### Home Edition 1.1.1 Checks + Counter Hotfix - 2026-05-29
@@ -42,7 +40,7 @@ Release assets:
 - Kept the Boss Table section on the Boss Table banner while the boss world bubble uses the boss world banner treatment.
 - Fixed Item Counters so full AP inventory snapshots rebuild Junk Redeems from the given/used ledger instead of minting fresh charges after reconnecting.
 - Added an Easy + Medium fusion animation that visibly transforms both ready redeems into a combined HARD redeem before targeting Hard checks.
-- Refreshed the Toccata Terror and Tabletop Rumblespot banner art across Home Edition and Stream Edition assets.
+- Refreshed the Toccata Terror and Tabletop Rumblespot banner art.
 - Rebuilt and refreshed the portable EXE and win-unpacked release copy with these fixes.
 
 ### Home Edition 1.1.1 Incremental - 2026-05-28
@@ -69,7 +67,7 @@ https://ashodinventeal.github.io/Flippermizer/player-options.html
 
 ## Hosted Task Updates
 
-Home Edition and Stream Edition can check GitHub Pages for a stable task repository override pack when an online Archipelago run connects. The hosted manifest lives at:
+Home Edition can check GitHub Pages for a stable task repository override pack when an online Archipelago run connects. The hosted manifest lives at:
 
 https://ashodinventeal.github.io/Flippermizer/tasks/manifest.json
 
@@ -113,15 +111,7 @@ The unpacked app and portable launcher are written to `dist/`. Build output is i
 
 ## Maintenance Notes
 
-When gameplay-facing or settings-facing behavior changes, update the latest patch notes in this README and the launch popup patch notes in `Flippermizer Home Edition/flippermizer_overlay_tower_v3.html` as part of the same work. Sync shared overlay changes into Stream Edition's `app-assets` copy. Keep patch notes player-facing: include gameplay, AP generation, task behavior, table presets, and player options; leave out build-only, packaging-only, and internal implementation details unless they change player-facing settings.
-
-## Run Stream Edition From Source
-
-```powershell
-cd "Flippermizer Stream Edition"
-npm install
-npm start
-```
+When gameplay-facing or settings-facing behavior changes, update the latest patch notes in this README and the launch popup patch notes in `Flippermizer Home Edition/flippermizer_overlay_tower_v3.html` as part of the same work. Keep patch notes player-facing: include gameplay, AP generation, task behavior, table presets, and player options; leave out build-only, packaging-only, and internal implementation details unless they change player-facing settings.
 
 ## Basic HTML Version
 

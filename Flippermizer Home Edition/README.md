@@ -28,7 +28,7 @@ Release assets:
 - Kept the Boss Table section on the Boss Table banner while the boss world bubble uses the boss world banner treatment.
 - Fixed Item Counters so full AP inventory snapshots rebuild Junk Redeems from the given/used ledger instead of minting fresh charges after reconnecting.
 - Added an Easy + Medium fusion animation that visibly transforms both ready redeems into a combined HARD redeem before targeting Hard checks.
-- Refreshed the Toccata Terror and Tabletop Rumblespot banner art across Home Edition and Stream Edition assets.
+- Refreshed the Toccata Terror and Tabletop Rumblespot banner art.
 - Rebuilt and refreshed the portable EXE and win-unpacked release copy with these fixes.
 
 ### Home Edition 1.1.1 Incremental - 2026-05-28

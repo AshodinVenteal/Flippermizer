@@ -118,7 +118,6 @@
     font:10px/1 var(--fontPixel);
     text-shadow:0 0 10px rgba(255,214,122,.34);
   }
-  body[data-edition="stream"] header::before{ content:"STREAM EDITION"; }
   header::after{
     content:"";
     position:absolute;
@@ -484,7 +483,7 @@
   <div class="wrap">
     <header>
       <h1>Flippermizer YAML Options Builder</h1>
-      <div class="sub">Build a YAML for Home Edition or Stream Edition AP worlds. Game key: <span class="pill" id="gameKeyPill">FlippermizerWorldsofPinball</span></div>
+      <div class="sub">Build a YAML for Home Edition AP worlds. Game key: <span class="pill" id="gameKeyPill">FlippermizerWorldsofPinball</span></div>
     </header>
 
     <div class="grid">
@@ -500,13 +499,11 @@
           <div style="width:260px;">
             <select id="worldVariant">
               <option value="home">Home Edition</option>
-              <option value="stream">Stream Edition</option>
             </select>
           </div>
         </div>
         <div class="inlineInfo">
-          Stream Edition exports under <code>Manual_FlippermizerBaseGame_Ashodin</code> and can use a traps-enabled run starter.
-          <div class="actions"><button id="btnStreamStarter" type="button">Preset: Stream Edition Run</button></div>
+          Home Edition exports under <code>FlippermizerWorldsofPinball</code> and includes the curated table/world options used by the current release.
         </div>
 
         <div class="row">
@@ -741,27 +738,16 @@
       fileName: "FlippermizerWorldsofPinball.yaml",
       description: "Flippermizer Home Edition trapless AP world.",
       defaultName: "FlippermizerWorldsofPinball"
-    },
-    stream: {
-      editionLabel: "Stream Edition",
-      gameKey: "Manual_FlippermizerBaseGame_Ashodin",
-      fileName: "Manual_FlippermizerBaseGame_Ashodin.yaml",
-      description: "Flippermizer Stream Edition AP world.",
-      defaultName: "Ashodin_Stream"
     }
   };
   const BASE_GAME_META = EDITION_META.home;
   function detectDefaultEdition(){
-    try{
-      const href = decodeURIComponent(String(location?.href || "")).toLowerCase();
-      if(href.includes("flippermizer stream edition")) return "stream";
-    }catch(_){}
     return "home";
   }
   function getVariantMeta(){
     return EDITION_META[state.worldVariant] || BASE_GAME_META;
   }
-  function isBaseGameVariant(){ return state.worldVariant === "home" || state.worldVariant === "stream" || state.worldVariant === "base"; }
+  function isBaseGameVariant(){ return state.worldVariant === "home" || state.worldVariant === "base"; }
 
   const BASE_TABLES = [
     "Attack from Mars","Bad Cats","Baywatch","Bride of Pinbot","Congo","Dolly Parton","Fathom","Grand Lizard",
@@ -797,14 +783,6 @@
     "Fathom","Skateball","Vector","Space Invaders","Q*bert's Quest",
     "Bram Stoker's Dracula","Creature from the Black Lagoon","Phantom of the Opera","Jurassic Park","Demolition Man",
     "Lord of the Rings","Star Trek Stern 2013","Iron Man Vault Edition","Game of Thrones","The Walking Dead"
-  ];
-  const STREAM_EDITION_TABLES_PRESET = WELL_MADE_TABLES_PRESET.slice();
-  const STREAM_EDITION_WORLD_SET_PRESET = [
-    { name:"Workshop Velocity", tables:["High Speed","No Fear: Dangerous Sports","AC/DC","Cirqus Voltaire","White Water"] },
-    { name:"Bally Williams Crown", tables:["Medieval Madness","Attack from Mars","Tales of the Arabian Nights","Theatre of Magic","Monster Bash"] },
-    { name:"Retro Skill Shot", tables:["Fathom","Skateball","Vector","Space Invaders","Q*bert's Quest"] },
-    { name:"Cinema Arcades", tables:["Bram Stoker's Dracula","Creature from the Black Lagoon","Phantom of the Opera","Jurassic Park","Demolition Man"] },
-    { name:"Stern Before Dawn", tables:["Lord of the Rings","Star Trek Stern 2013","Iron Man Vault Edition","Game of Thrones","The Walking Dead"] }
   ];
   const METASIZER_WORLD_SLOT_SIZE = 5;
   const METASIZER_MAX_ACTIVE_TABLES = 90;
@@ -943,7 +921,7 @@
   function quoteAttr(s){ return escapeHtml(s); }
   function syncVariantUi(){
     const meta = getVariantMeta();
-    document.body.dataset.edition = state.worldVariant === "stream" ? "stream" : "home";
+    document.body.dataset.edition = "home";
     const pill = q("gameKeyPill");
     const foot = q("gameKeyFoot");
     if(pill) pill.textContent = meta.gameKey;
@@ -1468,18 +1446,6 @@
     state.start_inventory_from_pool = {};
   }
 
-  function applyStreamEditionStarter(){
-    resetStateForEdition("stream");
-    state.description = "Flippermizer Stream Edition AP world with traps and task shuffle enabled.";
-    state.filter_mode_trap_enabled = true;
-    state.task_shuffle_enabled = true;
-    state.trapMode = "recommended";
-    state.base_game_selection_mode = "curated_table_list";
-    state.base_game_curated_tables = STREAM_EDITION_TABLES_PRESET.join(", ");
-    state.base_game_custom_world_sets = serializeCustomWorldSets(STREAM_EDITION_WORLD_SET_PRESET);
-    syncUiFromState();
-  }
-
   function syncStartEditors(){
     document.querySelectorAll("input[data-start-key]").forEach(inp => {
       const key = inp.getAttribute("data-start-key");
@@ -1571,7 +1537,6 @@
     });
 
     q("accessibility").addEventListener("change", () => { state.accessibility = q("accessibility").value; renderYaml(); });
-    q("btnStreamStarter").addEventListener("click", applyStreamEditionStarter);
     q("worldVariant").addEventListener("change", () => {
       state.worldVariant = q("worldVariant").value;
       const meta = getVariantMeta();
