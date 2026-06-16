@@ -382,6 +382,22 @@
     padding:5px 7px;
     font:600 11px/1.25 var(--fontUi);
   }
+  .generatedWorldCreatorPanel{
+    margin-top:10px;
+    border:1px solid rgba(0,217,255,.34);
+    border-radius:8px;
+    background:linear-gradient(180deg, rgba(8,28,45,.82), rgba(3,18,30,.82));
+    padding:10px;
+    box-shadow:0 0 0 1px rgba(0,217,255,.08) inset;
+  }
+  .generatedWorldCreatorGrid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    margin-top:8px;
+  }
+  @media (min-width:760px){ .generatedWorldCreatorGrid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+  @media (min-width:1160px){ .generatedWorldCreatorGrid{ grid-template-columns:repeat(5,minmax(0,1fr)); } }
   .machineField{ display:none; }
   .collapsibleCard{
     margin-top:12px;
@@ -659,6 +675,11 @@
             </div>
             <div style="width:90px;"><input id="metasizerStartingOpenTableCount" type="number" min="1" max="10" step="1" value="5" /></div>
           </div>
+          <div id="generatedWorldCreatorPanel" class="generatedWorldCreatorPanel hidden">
+            <div class="label">Generated World Creator Names</div>
+            <div class="small">One creator per generated world, exported in order through <code>base_game_world_curators</code>.</div>
+            <div id="generatedWorldCreatorGrid" class="generatedWorldCreatorGrid"></div>
+          </div>
           <textarea id="metasizerCuratedGroups" class="machineField" spellcheck="false"></textarea>
         </div>
 
@@ -669,7 +690,7 @@
       <div class="curatedPanelHead">
         <div>
           <h2>Curated Table List</h2>
-          <div class="desc">Pick exact tables, then name each filled table group and assign an owner/player. Groups package into <code>base_game_custom_world_sets</code>, while owners export through <code>base_game_world_curators</code>.</div>
+          <div class="desc">Pick exact tables, then name each filled table group and assign a creator name. Groups package into <code>base_game_custom_world_sets</code>, while creators export through <code>base_game_world_curators</code>.</div>
         </div>
         <div class="curatedPanelStats">
           <span class="slotBadge" id="curatedTableCountBadge">0 tables</span>
@@ -946,6 +967,7 @@
     updateMetasizerCuratedInfo();
     renderCuratedTablePicker();
     renderCuratedWorldSlots();
+    renderGeneratedWorldCreators();
   }
   function currentTableList(){
     return METASIZER_TABLES;
@@ -958,6 +980,10 @@
     if(count <= 0) return clamp(asInt(state.base_game_active_table_count, 25), 5, maxActiveTableCount());
     const rounded = Math.ceil(count / METASIZER_WORLD_SLOT_SIZE) * METASIZER_WORLD_SLOT_SIZE;
     return clamp(rounded, 5, maxActiveTableCount());
+  }
+  function expectedGeneratedWorldCount(){
+    const activeCount = clamp(asInt(state.base_game_active_table_count, 25), 5, maxActiveTableCount());
+    return Math.max(1, Math.ceil(activeCount / METASIZER_WORLD_SLOT_SIZE));
   }
   function normalizeBaseGameSelectionMode(){
     const allowed = new Set(["random_catalog_pool", "curated_table_list"]);
@@ -1176,12 +1202,43 @@
             <input type="text" data-world-slot-name="${index}" value="${quoteAttr(world.name)}" placeholder="${quoteAttr(world.sampleName)}" />
           </label>
           <label class="worldSlotField">
-            <span>Owner / Player</span>
-            <input type="text" data-world-slot-curator="${index}" value="${quoteAttr(world.curator)}" placeholder="${quoteAttr(state.name || "Owner")}" />
+            <span>Creator Name</span>
+            <input type="text" data-world-slot-curator="${index}" value="${quoteAttr(world.curator)}" placeholder="${quoteAttr(state.name || "Creator")}" />
           </label>
         </div>
         <ul class="worldSlotTables">${tableItems}</ul>
       </div>`;
+    }).join("");
+  }
+  function generatedWorldCreatorCount(){
+    if(!isBaseGameVariant()) return 0;
+    if(state.base_game_selection_mode === "curated_table_list") return 0;
+    return expectedGeneratedWorldCount();
+  }
+  function trimGeneratedWorldCreatorsToCount(){
+    const count = generatedWorldCreatorCount();
+    if(count <= 0) return;
+    const curators = parseWorldCurators(state.base_game_world_curators);
+    state.base_game_world_curators = serializeWorldCurators(curators.slice(0, count));
+    if(q("metasizerWorldCurators")) q("metasizerWorldCurators").value = state.base_game_world_curators;
+  }
+  function renderGeneratedWorldCreators(){
+    const panel = q("generatedWorldCreatorPanel");
+    const grid = q("generatedWorldCreatorGrid");
+    if(!panel || !grid) return;
+    const count = generatedWorldCreatorCount();
+    panel.classList.toggle("hidden", count <= 0);
+    if(count <= 0){
+      grid.innerHTML = "";
+      return;
+    }
+    const curators = parseWorldCurators(state.base_game_world_curators);
+    grid.innerHTML = Array.from({ length: count }, (_, index) => {
+      const value = String(curators[index] || "").trim();
+      return `<label class="worldSlotField">
+        <span>World ${index + 1} Creator</span>
+        <input type="text" data-generated-world-curator="${index}" value="${quoteAttr(value)}" placeholder="${quoteAttr(state.name || "Creator")}" />
+      </label>`;
     }).join("");
   }
   function setCuratedTableSelection(tables){
@@ -1246,8 +1303,7 @@
       .split(",")
       .map(part => part.trim())
       .filter(Boolean);
-    const activeCount = clamp(asInt(state.base_game_active_table_count, 25), 5, maxActiveTableCount());
-    const expectedWorlds = Math.max(1, Math.ceil(activeCount / METASIZER_WORLD_SLOT_SIZE));
+    const expectedWorlds = expectedGeneratedWorldCount();
     const prefix = `Expected table groups: ${expectedWorlds}.`;
     const featuredCapNote = state.base_game_random_one_featured_designer_only ? " Random cap: one Featured Designer world." : "";
     if(mode === "curated_table_list"){
@@ -1557,6 +1613,8 @@
     q("playerName").addEventListener("input", () => {
       state.name = String(q("playerName").value || "").trim() || getVariantMeta().defaultName;
       q("playerName").value = state.name;
+      renderGeneratedWorldCreators();
+      renderCuratedWorldSlots();
       renderYaml();
     });
     q("bossKeysRequired").addEventListener("input", () => {
@@ -1596,6 +1654,8 @@
       state.base_game_active_table_count = clamp(asInt(q("metasizerActiveTableCount").value, 25), 5, maxActiveTableCount());
       q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
       updateMetasizerCuratedInfo();
+      trimGeneratedWorldCreatorsToCount();
+      renderGeneratedWorldCreators();
       renderYaml();
     });
     q("metasizerSelectionMode").addEventListener("change", () => {
@@ -1603,6 +1663,8 @@
       normalizeBaseGameSelectionMode();
       q("metasizerSelectionMode").value = state.base_game_selection_mode;
       updateMetasizerCuratedInfo();
+      trimGeneratedWorldCreatorsToCount();
+      renderGeneratedWorldCreators();
       renderYaml();
     });
     q("metasizerOneFeaturedDesignerOnly").addEventListener("change", () => {
@@ -1639,6 +1701,19 @@
       const next = selected.filter(name => name !== table);
       if(box.checked && table && !next.includes(table)) next.push(table);
       setCuratedTableSelection(next);
+    });
+    q("generatedWorldCreatorGrid").addEventListener("input", (ev) => {
+      const input = ev.target && ev.target.matches ? ev.target : null;
+      if(!input || !input.matches("input[data-generated-world-curator]")) return;
+      const index = asInt(input.getAttribute("data-generated-world-curator"), -1);
+      const count = generatedWorldCreatorCount();
+      if(index < 0 || index >= count) return;
+      const curators = parseWorldCurators(state.base_game_world_curators);
+      while(curators.length < count) curators.push("");
+      curators[index] = String(input.value || "").trim();
+      state.base_game_world_curators = serializeWorldCurators(curators.slice(0, count));
+      if(q("metasizerWorldCurators")) q("metasizerWorldCurators").value = state.base_game_world_curators;
+      renderYaml();
     });
     q("metasizerWorldSlots").addEventListener("input", (ev) => {
       const input = ev.target && ev.target.matches ? ev.target : null;
