@@ -348,7 +348,7 @@ html.launcherStreamPerformance .controls .achCustomItem{
   inset:0;
   pointer-events:none;
   overflow:hidden;
-  z-index:2490;
+  z-index:2147483600;
 }
 .spark{
   position:absolute; width:10px; height:3px;
@@ -823,6 +823,9 @@ body.controlsLayoutDragging *{
   background:linear-gradient(180deg,#071021,#06101b);
   box-shadow: 0 10px 22px var(--shadow);
   height:75px;
+  flex:0 0 75px;
+  min-height:75px;
+  max-height:75px;
 }
 
 .headerBanner{
@@ -846,7 +849,8 @@ body.controlsLayoutDragging *{
   align-items:flex-start;
   justify-content:space-between;
   gap: 14px;
-  height:75px;
+  height:100%;
+  min-height:0;
   align-items:center;
 }
 .flprAppChromeControls{
@@ -1642,7 +1646,7 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   height: 100%;
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: minmax(0, 60%) minmax(236px, 1fr);
+  grid-template-rows: minmax(0, 3fr) minmax(150px, 1fr);
   gap: 12px;
 }
 .hintCard{
@@ -1664,6 +1668,17 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 }
 .hintCard.hintSecondary{
   min-height: 0;
+}
+.hintCard.hintSecondary .hintCardHd{
+  padding: 8px 10px 7px;
+}
+.hintCard.hintSecondary .hintCardTitle{
+  font-size: 10px;
+  line-height: 1.25;
+}
+.hintCard.hintSecondary .hintPill{
+  padding: 4px 8px;
+  font-size: 8px;
 }
 .hintCardHd{
   padding: 12px 12px 10px 12px;
@@ -1916,6 +1931,8 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 }
 .hintReveal.hangman{
   border-color: rgba(255,210,96,.70);
+  justify-content: flex-start;
+  padding: 22px 18px 18px;
   background:
     radial-gradient(circle at 78% 12%, rgba(255,210,96,.18), rgba(0,0,0,0) 44%),
     linear-gradient(132deg, rgba(255,210,96,.12), rgba(0,0,0,0) 34%),
@@ -1928,12 +1945,21 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
     0 0 28px rgba(255,210,96,.20),
     0 0 24px rgba(0,217,255,.14);
 }
+.hintReveal.hangman .hintPrelude{
+  flex: 0 0 auto;
+}
+.hintReveal.hangman .hintText{
+  align-items: stretch;
+  overflow: hidden;
+}
 .hintHangmanCard{
   position: relative;
   z-index: 2;
   display: grid;
-  gap: 10px;
+  align-content: center;
+  gap: 12px;
   width: 100%;
+  min-height: 100%;
 }
 .hintHangmanKicker{
   font-size: clamp(8px, .9vw, 11px);
@@ -1950,24 +1976,24 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 .hintHangmanWord{
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 7px;
+  gap: 10px 9px;
   align-items: center;
   justify-content: center;
-  min-height: 68px;
-  padding: 10px;
+  min-height: 92px;
+  padding: 14px 12px;
   border-radius: 12px;
   background: rgba(0,0,0,.30);
   border: 1px solid rgba(255,226,142,.26);
 }
 .hintHangmanLetter{
-  min-width: 24px;
-  height: 34px;
+  min-width: 30px;
+  height: 42px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-bottom: 3px solid rgba(255,226,142,.78);
   color: rgba(255,246,216,.98);
-  font-size: clamp(18px, 2vw, 28px);
+  font-size: clamp(22px, 2.55vw, 36px);
   text-shadow: 0 0 12px rgba(255,210,96,.24);
 }
 .hintHangmanLetter.space{
@@ -2106,8 +2132,8 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   50%{ transform: translateY(-1px) scale(1.035); }
 }
 .hintHangmanChat{
-  font-size: clamp(19px, 2.16vw, 24px);
-  line-height: 1.22;
+  font-size: clamp(20px, 2.25vw, 27px);
+  line-height: 1.18;
   color: rgba(216,244,252,.92);
 }
 .hintHangmanChat strong{
@@ -2115,20 +2141,20 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 }
 .hintHangmanDirect{
   display: grid;
-  grid-template-columns: minmax(0, 128px) auto;
-  gap: 8px;
+  grid-template-columns: minmax(0, 150px) auto;
+  gap: 10px;
   align-items: center;
   justify-content: start;
 }
 .hintHangmanLetterInput{
   width: 100%;
-  min-height: 34px;
+  min-height: 42px;
   border: 1px solid rgba(255,226,142,.42);
   border-radius: 10px;
   background: rgba(0,0,0,.34);
   color: rgba(255,246,216,.98);
   font-family:var(--flprUiFontFamily);
-  font-size: 14px;
+  font-size: 18px;
   text-align: center;
   text-transform: uppercase;
   outline: none;
@@ -2138,14 +2164,14 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   box-shadow: 0 0 0 2px rgba(255,226,142,.16), 0 0 14px rgba(255,226,142,.18);
 }
 .hintHangmanLetterBtn{
-  min-height: 34px;
+  min-height: 42px;
   border: 1px solid rgba(255,226,142,.62);
   border-radius: 10px;
   background: linear-gradient(180deg, rgba(255,210,96,.30), rgba(112,72,12,.24));
   color: rgba(255,246,216,.98);
   font-family:var(--flprUiFontFamily);
-  font-size: 8px;
-  padding: 8px 10px;
+  font-size: 10px;
+  padding: 10px 12px;
   cursor: pointer;
 }
 .hintHangmanLetterBtn:hover{
@@ -2684,6 +2710,14 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
+.hintCard.hintSecondary .hintCardBody{
+  padding: 9px 10px;
+  gap: 7px;
+  overflow: auto;
+}
+.hintCard.hintSecondary .hintRouteSummary{
+  gap: 7px;
+}
 .hintRouteStat{
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 10px;
@@ -2694,20 +2728,35 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   gap: 5px;
   min-width: 0;
 }
+.hintCard.hintSecondary .hintRouteStat{
+  padding: 7px 8px;
+  gap: 2px;
+}
 .hintRouteStat .k{
   font-size: 9px;
   line-height: 1.35;
   color: rgba(232,250,255,.78);
+}
+.hintCard.hintSecondary .hintRouteStat .k{
+  font-size: 8px;
+  line-height: 1.25;
 }
 .hintRouteStat .v{
   font-size: 16px;
   color: rgba(34,255,136,.95);
   text-shadow: 0 0 10px rgba(34,255,136,.24);
 }
+.hintCard.hintSecondary .hintRouteStat .v{
+  font-size: 13px;
+}
 .hintRouteList{
   display: grid;
   gap: 8px;
   min-height: 54px;
+}
+.hintCard.hintSecondary .hintRouteList{
+  gap: 6px;
+  min-height: 0;
 }
 .hintRouteItem{
   border: 1px solid rgba(255,255,255,.12);
@@ -2716,6 +2765,10 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   padding: 9px 10px;
   display: grid;
   gap: 5px;
+}
+.hintCard.hintSecondary .hintRouteItem{
+  padding: 7px 8px;
+  gap: 3px;
 }
 .hintRouteMain{
   display: flex;
@@ -2726,6 +2779,10 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   color: rgba(232,250,255,.94);
   font-size: 10px;
   line-height: 1.35;
+}
+.hintCard.hintSecondary .hintRouteMain{
+  font-size: 9px;
+  line-height: 1.2;
 }
 .hintRouteMain .name{
   overflow: hidden;
@@ -2746,6 +2803,15 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   font-size: 9px;
   line-height: 1.45;
   color: rgba(198,236,224,.78);
+}
+.hintCard.hintSecondary .hintRouteMeta,
+.hintCard.hintSecondary .hintRouteEmpty{
+  font-size: 8px;
+  line-height: 1.25;
+}
+.hintCard.hintSecondary .hintLog{
+  min-height: 42px;
+  max-height: 72px;
 }
 .hintPoolList{
   display: grid;
@@ -3543,6 +3609,16 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   grid-template-rows: repeat(5, minmax(0, 1fr));
   gap: 12px;
 }
+.grid.overviewTables15{
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.grid.overviewTables20{
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
 
 .tile{
   position:relative;
@@ -3558,12 +3634,48 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   transition: transform 140ms ease, border-color 140ms ease, filter 140ms ease, opacity 140ms ease;
   overflow:hidden;
 }
+.grid.overviewTables15 .tile{
+  padding:12px;
+}
+.grid.overviewTables20 .tile{
+  padding:7px;
+  border-radius:14px;
+}
 .tile .tileContent{
   position:relative;
   z-index:2;
   transform-origin: top center;
   transition: transform 160ms ease;
 }
+.grid.overviewTables15 .tile .tileContent{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:10px;
+}
+.grid.overviewTables20 .tile .tileContent{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:4px;
+}
+.grid.overviewTables20 .topRow{ min-height:15px; gap:5px; }
+.grid.overviewTables20 .badge{ font-size:6.5px; padding:3px 5px; border-radius:6px; }
+.grid.overviewTables20 .icon{ font-size:12px; }
+.grid.overviewTables20 .ballsMini{ gap:5px; }
+.grid.overviewTables20 .ballsMini .ball{ width:24px; height:24px; font-size:10px; }
+.grid.overviewTables20 .nameAlways{
+  font-size:10px;
+  line-height:1.04;
+  max-height:2.15em;
+  overflow:hidden;
+}
+.grid.overviewTables20 .checksLeft .hdr{ font-size:4.8px; }
+.grid.overviewTables20 .checksLeft .row{ gap:3px; }
+.grid.overviewTables20 .chkIcon{ width:10px; height:10px; font-size:5px; border-radius:4px; }
+.grid.overviewTables20 .tileBanner{ opacity:.28; filter:saturate(1.08) contrast(1.06) brightness(.82); }
 .tileBanner{
   position:absolute; inset:0;
   background-size:cover; background-position:center;
@@ -3800,6 +3912,175 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 }
 .tile.inactive:hover{ transform:none; border-color: rgba(0,166,255,0.28); }
 .tile.inactive:hover::before{ opacity:0; }
+.tile.featureGateOverview{
+  --featureGatePrimary: #22ffd2;
+  --featureGateSecondary: #00a6ff;
+  --featureGateGlow: rgba(34,255,210,.30);
+  --featureGateSoftGlow: rgba(34,255,210,.16);
+  --featureGateGradient: linear-gradient(90deg, #22ffd2, #00a6ff);
+}
+.tile.featureGateOverview.inactive{
+  opacity:.58;
+}
+.tile.featureGateLockedOverview{
+  border-color:var(--featureGatePrimary, rgba(34,255,210,.85));
+  box-shadow:
+    0 0 0 2px var(--featureGateSoftGlow, rgba(34,255,210,.18)),
+    0 0 22px var(--featureGateGlow, rgba(34,255,210,.24)),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+}
+.tile.featureGateLockedOverview .tileBanner{
+  opacity:.18;
+  filter:saturate(.72) contrast(1.08) brightness(.52);
+}
+.tile.featureGateLockedOverview .lockChainsOverlay.active{
+  opacity:.88;
+  filter:
+    drop-shadow(0 0 8px var(--featureGatePrimary, rgba(34,255,210,.85)))
+    drop-shadow(0 0 18px var(--featureGateSoftGlow, rgba(34,255,210,.24)));
+}
+.tile.featureGateLockedOverview .lockBadgeOverlay.active{
+  border-color:var(--featureGatePrimary, rgba(34,255,210,.88));
+  color:rgba(247,253,255,.96);
+  background:
+    linear-gradient(180deg, rgba(5,19,28,.94), rgba(0,0,0,.82)),
+    radial-gradient(80px 28px at 50% 0%, var(--featureGateSoftGlow, rgba(34,255,210,.20)), transparent 76%);
+  box-shadow:0 0 14px var(--featureGateSoftGlow, rgba(34,255,210,.22));
+}
+.tile.featureGateOverview .featureGateTileBorder{
+  position:absolute;
+  inset:4px;
+  z-index:10;
+  border-radius:14px;
+  padding:2px;
+  pointer-events:none;
+  background:var(--featureGateGradient);
+  filter:
+    drop-shadow(0 0 8px var(--featureGateGlow))
+    drop-shadow(0 0 18px var(--featureGateSoftGlow));
+  opacity:.96;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+}
+.tile.featureGateOverview .featureGateTag{
+  position:absolute;
+  top:7px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:11;
+  max-width:calc(100% - 76px);
+  min-height:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:4px 6px 3px;
+  border-radius:999px;
+  border:1px solid var(--featureGatePrimary);
+  background:
+    linear-gradient(180deg, rgba(4,16,24,.94), rgba(2,8,16,.90)),
+    radial-gradient(90px 28px at 50% 0%, var(--featureGateSoftGlow), transparent 70%);
+  box-shadow:
+    0 0 12px var(--featureGateSoftGlow),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+  color:rgba(245,252,255,.96);
+  font-family:var(--flprUiFontFamily);
+  font-size:7px;
+  line-height:1;
+  letter-spacing:.06em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  pointer-events:none;
+}
+.featureGateSwatches{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  flex:0 0 auto;
+}
+.featureGateSwatch{
+  width:7px;
+  height:7px;
+  border-radius:3px;
+  background:var(--featureGatePrimary);
+  box-shadow:0 0 8px currentColor;
+}
+.featureGateTagText{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.tile.featureGateLockedOverview .featureGateTag{
+  top:auto;
+  left:8px;
+  right:8px;
+  bottom:8px;
+  transform:none;
+  max-width:none;
+  min-height:26px;
+  border-radius:10px;
+  padding:5px 7px 4px;
+  font-size:7.4px;
+  line-height:1.1;
+  white-space:normal;
+  text-align:center;
+}
+.featureGateLockLabel{
+  position:absolute;
+  left:7px;
+  right:7px;
+  top:38%;
+  transform:translateY(-50%);
+  z-index:12;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:28px;
+  padding:5px 7px 4px;
+  border-radius:11px;
+  border:1px solid var(--featureGatePrimary, rgba(34,255,210,.88));
+  background:
+    linear-gradient(180deg, rgba(6,18,28,.95), rgba(0,0,0,.86)),
+    radial-gradient(120px 42px at 50% 0%, var(--featureGateSoftGlow, rgba(34,255,210,.18)), transparent 72%);
+  color:rgba(247,253,255,.98);
+  font-family:var(--flprUiFontFamily);
+  font-size:9px;
+  line-height:1.08;
+  letter-spacing:.04em;
+  text-align:center;
+  text-shadow:0 2px 0 rgba(0,0,0,.68), 0 0 10px var(--featureGateGlow, rgba(34,255,210,.25));
+  pointer-events:none;
+  box-shadow:0 0 18px var(--featureGateSoftGlow, rgba(34,255,210,.18));
+}
+.grid.overviewTables20 .tile.featureGateLockedOverview .featureGateTag{
+  left:6px;
+  right:6px;
+  bottom:6px;
+  min-height:22px;
+  padding:4px 5px 3px;
+  font-size:5.8px;
+}
+.grid.overviewTables20 .featureGateLockLabel{
+  left:6px;
+  right:6px;
+  min-height:24px;
+  font-size:7px;
+}
+.pentaCard.featureGateLockedOverview .lockChainsOverlay.active{
+  filter:
+    drop-shadow(0 0 7px var(--featureGatePrimary, rgba(34,255,210,.85)))
+    drop-shadow(0 0 16px var(--featureGateSoftGlow, rgba(34,255,210,.22)));
+}
+.pentaCard.featureGateLockedOverview .lockBadgeOverlay.active{
+  border-color:var(--featureGatePrimary, rgba(34,255,210,.88));
+  background:
+    linear-gradient(180deg, rgba(5,19,28,.94), rgba(0,0,0,.82)),
+    radial-gradient(80px 28px at 50% 0%, var(--featureGateSoftGlow, rgba(34,255,210,.20)), transparent 76%);
+}
 
 #grid.focusMode .tile{
   opacity: .24;
@@ -5465,6 +5746,7 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 }
 .toast.apItem-progression{ --ap-item-color:#c77dff; --ap-item-glow:rgba(199,125,255,.42); border-color:rgba(199,125,255,.95); }
 .toast.apItem-useful{ --ap-item-color:#53b7ff; --ap-item-glow:rgba(83,183,255,.38); border-color:rgba(83,183,255,.9); }
+.toast.apItem-feature-key{ --ap-item-color:#22ffd2; --ap-item-glow:rgba(34,255,210,.42); border-color:rgba(34,255,210,.95); }
 .toast.apItem-trap{ --ap-item-color:#ff4d6d; --ap-item-glow:rgba(255,77,109,.38); border-color:rgba(255,77,109,.95); }
 .toast.apItem-filler{ --ap-item-color:#c7d0d8; --ap-item-glow:rgba(199,208,216,.22); border-color:rgba(199,208,216,.64); }
 .toast.besiegedToast{
@@ -6564,6 +6846,7 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 .recvText{ color:rgba(232,250,255,0.94); line-height:1.25; min-width:0; padding-left:2px; }
 .recvRow.apItem-progression{ border-color:rgba(199,125,255,.48); box-shadow:inset 4px 0 0 rgba(199,125,255,.72); }
 .recvRow.apItem-useful{ border-color:rgba(83,183,255,.42); box-shadow:inset 4px 0 0 rgba(83,183,255,.68); }
+.recvRow.apItem-feature-key{ border-color:rgba(34,255,210,.48); box-shadow:inset 4px 0 0 rgba(34,255,210,.72); }
 .recvRow.apItem-trap{ border-color:rgba(255,77,109,.48); box-shadow:inset 4px 0 0 rgba(255,77,109,.72); }
 .recvRow.apItem-filler{ border-color:rgba(199,208,216,.24); box-shadow:inset 4px 0 0 rgba(199,208,216,.38); }
 .recvBadge{
@@ -6577,6 +6860,7 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 }
 .recvBadge.apItem-progression{ color:#c77dff; }
 .recvBadge.apItem-useful{ color:#53b7ff; }
+.recvBadge.apItem-feature-key{ color:#22ffd2; }
 .recvBadge.apItem-trap{ color:#ff4d6d; }
 .recvBadge.apItem-filler{ color:#c7d0d8; }
 .nodeBtn.pending{ outline:2px solid rgba(255,201,84,0.7); }
@@ -7224,6 +7508,130 @@ body.chromaBlue .bossKeyCard .bkSquare{
 }
 body.chromaBlue .bossKeyCard::before{
   opacity: .45 !important;
+}
+
+/* Feature Keys Dock (Deep Run only) */
+.featureDock{
+  width: 100%;
+  flex: 0 0 auto;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding: 4px 0 2px;
+}
+.featureDock.enabled{
+  display:flex;
+}
+.featureDock[hidden]{
+  display:none !important;
+}
+.featureDockInner{
+  width: 100%;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding: 8px 10px;
+  border:1px solid rgba(34,255,210,.28);
+  border-radius:12px;
+  background:
+    linear-gradient(180deg, rgba(3,28,32,.78), rgba(5,15,24,.70)),
+    radial-gradient(520px 80px at 50% 0%, rgba(34,255,210,.13), transparent 68%);
+  box-shadow:
+    inset 0 0 0 1px rgba(190,255,247,.06),
+    0 0 20px rgba(0,255,213,.08);
+}
+.featureKeysTitle{
+  font-family: var(--font-pixel);
+  font-size:10px;
+  line-height:1;
+  color:#9effef;
+  text-align:center;
+  letter-spacing:0;
+  text-shadow:0 0 8px rgba(34,255,210,.42);
+}
+.featureKeysRow{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(var(--featureKeyCount, 5), minmax(0, 1fr));
+  gap:8px;
+}
+.featureKeyCard{
+  position:relative;
+  min-height:64px;
+  border-radius:10px;
+  --featureKeyCardPrimary:#22ffd2;
+  --featureKeyCardSecondary:#00a6ff;
+  --featureKeyCardGlow:rgba(34,255,210,.20);
+  --featureKeyCardSoftGlow:rgba(34,255,210,.13);
+  border:1px solid var(--featureKeyCardBorder, rgba(34,255,210,.34));
+  background:
+    linear-gradient(180deg, rgba(12,34,42,.88), rgba(5,15,24,.86)),
+    radial-gradient(180px 90px at 50% 0%, var(--featureKeyCardSoftGlow), transparent 70%);
+  opacity:.38;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:58px minmax(0, 1fr);
+  align-items:center;
+  gap:8px;
+  padding:7px 9px;
+  user-select:none;
+  transition:opacity .28s ease, transform .16s ease, border-color .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+.featureDock:hover .featureKeyCard,
+.featureDock:focus-within .featureKeyCard,
+.featureKeyCard.fxReveal{
+  opacity:1 !important;
+}
+.featureKeyCard:hover,
+.featureKeyCard:focus-visible{
+  opacity:1 !important;
+  transform:translateY(-1px);
+  border-color:var(--featureKeyCardPrimary);
+  box-shadow:0 0 16px var(--featureKeyCardGlow), inset 0 0 0 1px rgba(190,255,247,.10);
+  outline:none;
+}
+.featureKeyCard.acquired{
+  opacity:1;
+  border-color:var(--featureKeyCardPrimary);
+  box-shadow:0 0 20px var(--featureKeyCardGlow), inset 0 0 0 1px rgba(190,255,247,.12);
+}
+.featureKeyCard .bossKeyFrame{
+  width:52px;
+  height:52px;
+  border-radius:12px;
+  padding:6px;
+}
+.featureKeyCard .bossKeySquare{
+  width:40px;
+  height:40px;
+  border-radius:10px;
+}
+.featureKeyBody{
+  position:relative;
+  z-index:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  justify-content:center;
+}
+.featureKeyLabel{
+  font-family:var(--font-pixel);
+  font-size:14px;
+  line-height:1;
+  color:#e8fff9;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.featureKeyStatus{
+  font-family:var(--font-pixel);
+  font-size:8px;
+  line-height:1;
+  color:rgba(232,255,249,.68);
+}
+.featureKeyCard.acquired .featureKeyStatus{
+  color:var(--featureKeyCardPrimary);
 }
 
 /* Boss Keys Dock (integrated) */
@@ -9246,16 +9654,19 @@ body.chromaBlue .bossKeyCard::before{
   box-shadow:0 0 11px rgba(255,238,170,.72), 0 0 22px rgba(0,255,213,.48);
   animation: bossKeyCinematicSparkKF var(--spark-dur, 760ms) ease-out forwards;
 }
-.bossDock.bossKeySectionCharge .bossDockInner{
+.bossDock.bossKeySectionCharge .bossDockInner,
+.featureDock.bossKeySectionCharge .featureDockInner{
   animation: bossKeyDockQuakeKF 90ms steps(2, end) infinite;
   filter:
     drop-shadow(0 0 10px rgba(0,255,213,.32))
     drop-shadow(0 0 24px rgba(29,214,255,.20));
 }
-.bossDock.bossKeySectionCharge .bossKeyCard{
+.bossDock.bossKeySectionCharge .bossKeyCard,
+.featureDock.bossKeySectionCharge .featureKeyCard{
   opacity:1 !important;
 }
-.bossKeyCard.bossKeyReceivingSlot{
+.bossKeyCard.bossKeyReceivingSlot,
+.featureKeyCard.bossKeyReceivingSlot{
   opacity:1 !important;
   border-color:rgba(180,255,244,.96);
   box-shadow:
@@ -9263,18 +9674,24 @@ body.chromaBlue .bossKeyCard::before{
     0 0 26px rgba(0,255,213,.42),
     0 0 62px rgba(29,214,255,.28);
 }
-.bossKeyCard.bossKeyReceivingSlot .bossKeyFrame{
+.bossKeyCard.bossKeyReceivingSlot .bossKeyFrame,
+.featureKeyCard.bossKeyReceivingSlot .bossKeyFrame{
   animation: bossKeySlotChargeKF 130ms steps(2, end) infinite;
 }
 .bossKeyCard.bossKeyAwaitingSlam .bossKeyImg,
-.bossKeyCard.bossKeyAwaitingSlam .bossKeyGlyph{
+.bossKeyCard.bossKeyAwaitingSlam .bossKeyGlyph,
+.featureKeyCard.bossKeyAwaitingSlam .bossKeyImg,
+.featureKeyCard.bossKeyAwaitingSlam .bossKeyGlyph{
   opacity:0;
 }
-.bossKeyCard.bossKeyImpact{
+.bossKeyCard.bossKeyImpact,
+.featureKeyCard.bossKeyImpact{
   animation: bossKeySlotImpactKF 560ms cubic-bezier(.18,.9,.18,1) 1;
 }
 .bossKeyCard.bossKeyImpact .bossKeyImg,
-.bossKeyCard.bossKeyImpact .bossKeyGlyph{
+.bossKeyCard.bossKeyImpact .bossKeyGlyph,
+.featureKeyCard.bossKeyImpact .bossKeyImg,
+.featureKeyCard.bossKeyImpact .bossKeyGlyph{
   opacity:1;
   animation: bossKeySlotKeyImpactKF 560ms cubic-bezier(.18,.9,.18,1) 1;
 }
@@ -14249,6 +14666,11 @@ body.chromaBlue .bossKeyCard::before{
   margin-top: 0px !important;
   padding-top: 4px !important;
   padding-bottom: 8px !important;
+}
+
+body.deepRunFeatureKeysEnabled .viewport{
+  height: calc((var(--captureH) - 75px - 14px - 22px - 450px) * 1.10) !important;
+  max-height: calc((var(--captureH) - 75px - 14px - 22px - 450px) * 1.10) !important;
 }
 </style>
 
@@ -20352,10 +20774,12 @@ body.flprShopCursorPinball *{
   top:0;
   width:0;
   height:0;
-  z-index:20050;
+  z-index:2147483646;
   pointer-events:none;
   opacity:0;
   transition:opacity 140ms ease;
+  isolation:isolate;
+  contain:layout style;
 }
 .flprCursorFollower.on{
   opacity:1;
@@ -20370,6 +20794,7 @@ body.flprShopCursorPinball *{
   white-space:nowrap;
   user-select:none;
   filter: drop-shadow(0 3px 10px rgba(0,0,0,.42));
+  will-change:transform;
 }
 .flprCursorFollower .cursorLeader{
   font-size:28px;
@@ -21557,6 +21982,240 @@ body.flprShopSparksSlime .spark{
   color:#001018;
   line-height: 1;
 }
+.keyDockSplit{
+  width:100%;
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  min-height:0;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit{
+  flex:0 0 clamp(172px, 19vh, 214px);
+  display:grid;
+  grid-template-rows:clamp(74px, 8vh, 92px) minmax(84px, 1fr);
+  gap:6px;
+  margin-top:0;
+  min-height:0;
+}
+body.deepRunFeatureKeysEnabled .viewport{
+  height: calc((var(--captureH) - 75px - 14px - 22px - 392px) * 1.10) !important;
+  max-height: calc((var(--captureH) - 75px - 14px - 22px - 392px) * 1.10) !important;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureDock,
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossDock{
+  height:100%;
+  min-height:0;
+  padding:0 !important;
+  margin:0 !important;
+  align-items:stretch;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureDockInner,
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossDockInner{
+  height:100%;
+  min-height:0;
+  box-sizing:border-box;
+  padding:6px 8px !important;
+  gap:5px;
+  align-items:stretch;
+  justify-content:center;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureKeysTitle{
+  font-size:9px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureKeysRow{
+  height:100%;
+  min-height:0;
+  gap:6px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyCard{
+  min-height:0;
+  height:100%;
+  grid-template-columns:34px minmax(0, 1fr);
+  gap:6px;
+  padding:5px 7px;
+  border-radius:10px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyCard .bossKeyFrame{
+  width:34px;
+  height:34px;
+  padding:3px;
+  border-radius:8px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyCard .bossKeySquare{
+  width:26px;
+  height:26px;
+  border-radius:7px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyLabel{
+  font-size:9.5px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyStatus{
+  font-size:6.5px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysRow{
+  height:100%;
+  min-height:0;
+  align-items:stretch;
+  gap:6px !important;
+  --bossKeyGap:6px !important;
+  --bossKeyCardMinH:0px !important;
+  --bossKeySquareSize:34px !important;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeyCard{
+  min-height:0 !important;
+  height:100%;
+  padding:4px 6px 18px;
+  border-radius:9px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeyFrame{
+  width:44px;
+  height:44px;
+  padding:5px;
+  border-radius:10px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeySquare{
+  width:34px;
+  height:34px;
+  border-radius:8px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeyPlate{
+  left:5px;
+  right:5px;
+  bottom:3px;
+  gap:4px;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeyIndex,
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeyStatus{
+  font-size:6px;
+  padding:2px 4px;
+  letter-spacing:0;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysHint{
+  display:none;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks{
+  min-height: min(430px, calc(100vh - 220px));
+  max-height: none;
+  overflow: hidden;
+  display:flex;
+  flex-direction:column;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeGrid.deepRunSplitGrid{
+  flex:1 1 auto;
+  min-height:0;
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+  padding:6px;
+  max-height: none;
+  overflow: hidden;
+  align-items:stretch;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunCheckSection{
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border-radius:12px;
+  border:1px solid rgba(0,217,255,.24);
+  background:linear-gradient(180deg, rgba(3,23,34,.58), rgba(0,0,0,.20));
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunScoreSection{
+  border-color:rgba(255,210,92,.28);
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionTitle{
+  flex:0 0 auto;
+  min-height:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-pixel);
+  font-size:8px;
+  line-height:1;
+  color:rgba(224,251,255,.92);
+  background:linear-gradient(90deg, rgba(0,217,255,.08), rgba(0,255,213,.18), rgba(0,217,255,.08));
+  border-bottom:1px solid rgba(0,217,255,.18);
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunScoreSection .deepRunSectionTitle{
+  background:linear-gradient(90deg, rgba(255,190,72,.08), rgba(255,210,92,.20), rgba(255,190,72,.08));
+  border-bottom-color:rgba(255,210,92,.18);
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionGrid{
+  flex:0 0 auto;
+  min-height:0;
+  max-height:188px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  display:grid;
+  grid-template-columns:minmax(0, 1fr);
+  gap:5px;
+  padding:5px;
+  align-content:start;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(0,217,255,.45) rgba(0,0,0,.18);
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionGrid::-webkit-scrollbar{
+  width:6px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionGrid::-webkit-scrollbar-track{
+  background:rgba(0,0,0,.18);
+  border-radius:999px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionGrid::-webkit-scrollbar-thumb{
+  background:rgba(0,217,255,.46);
+  border-radius:999px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunScoreSection .deepRunSectionGrid{
+  scrollbar-color:rgba(255,210,92,.48) rgba(0,0,0,.18);
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunScoreSection .deepRunSectionGrid::-webkit-scrollbar-thumb{
+  background:rgba(255,210,92,.48);
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionGrid .nodeCell{
+  min-height:0;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn{
+  min-height: 54px;
+  font-size: 7px !important;
+  line-height: 1.12 !important;
+  padding: 5px 6px 5px !important;
+  border-radius: 10px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .tierBadge{
+  height: 16px;
+  border-radius: 10px 10px 7px 7px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .tierBadge::after{
+  font-size: 8px;
+  letter-spacing: 0;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .nodeTitle{
+  margin-top: 17px;
+  font-size: 8px;
+  line-height: 1.02;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.taskNode .nodeTitle{
+  font-size: 8.5px;
+  line-height: 1.02;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.scoreNode .nodeTitle{
+  gap: 2px;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.scoreNode .nodeTitle .scoreLead{
+  font-size: 5.5px;
+  letter-spacing: 0;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.scoreNode .nodeTitle .scoreValue{
+  font-size: 10.5px;
+  line-height: 1.02;
+}
+#viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .small{
+  margin-top: 1px;
+  font-size: 5px;
+  line-height: 1;
+}
 #viewChecks .checksBody:not(.bossMode) .tableBlock.checksSwapOut{
   animation: checksSwapOutKF 360ms cubic-bezier(.2,.92,.22,1);
 }
@@ -22362,12 +23021,22 @@ body.flprShopSparksSlime .spark{
 
     </div>
 
+<div class="keyDockSplit" id="keyDockSplit">
+    <!-- Feature Keys Dock (Deep Run only) -->
+<div class="featureDock" id="featureDock" hidden>
+  <div class="featureDockInner">
+    <div class="featureKeysTitle">FEATURE KEYS</div>
+    <div class="featureKeysRow" id="featureKeysRow"></div>
+  </div>
+</div>
+
     <!-- Boss Keys Dock (under the overlay panel) -->
 <div class="bossDock" id="bossDock" data-hover-bound="1">
   <div class="bossDockInner">
     <div class="bossKeysRow" id="bossKeysRow"><div class="bossKeyCard" style="--bkIdleOpacity: 0.1;" data-bk-bound="1"><div class="bossKeySquare"><img class="bossKeyImg" src="Flippermizer Images/flippermizerkey2.png" alt="Boss Key" draggable="false"></div></div></div>
     <div class="bossKeysHint">Click to toggle; Shift+Click to upload/replace; Ctrl/Cmd+Click to clear</div>
   </div>
+</div>
 </div>
 
 <div id="bossOffscreenTray" style="position:absolute;left:-10000px;top:-10000px;width:1px;height:1px;overflow:hidden" aria-hidden="true"><input type="file" accept="image/*" id="bossKeyFile_0"><input type="file" accept="image/*" id="bossKeyFile_1"><input type="file" accept="image/*" id="bossKeyFile_2"></div>
@@ -28051,8 +28720,9 @@ function processBonusPinballBossAssist(data){
       username
     });
     bossApplyDamagePct(pct, "bonus-assist:" + nonce, {
-      fromCheck: true,
+      fromCheck: false,
       isAssist: true,
+      canDefeat: false,
       assistUser: username,
       attackInfo,
       sourceLabel: attackInfo.sourceLabel
@@ -28419,7 +29089,8 @@ const ap = {
   recentRewards: [],
   lastReceivedIndex: (parseInt(localStorage.getItem("flpr_ap_last_received_index")||"0",10) || 0),
   // Dedupe + deferral for ReceivedItems snapshots:
-  receivedSeen: new Set(),   // keys derived from (index|item|location|player)
+  receivedSeen: new Set(),   // legacy index keys from ReceivedItems packets
+  receivedPacketSeen: new Set(), // exact packet keys: index + item + location + source
   receivedByIndex: new Map(),
   receivedDeferred: [],      // received items seen before DataPackage names were loaded
   sentToastSeen: new Set(),
@@ -30480,6 +31151,19 @@ function apKnownItemNameFor(itemId, playerId){
   }catch(_){}
   return "";
 }
+function apReceivedItemNameFor(it){
+  const id = Number(it?.item);
+  if(!Number.isFinite(id)) return "";
+  try{
+    const ownName = ap.itemNameById?.get?.(id);
+    if(ownName) return String(ownName);
+  }catch(_){}
+  try{
+    const ownPkgName = apDataPackageForGame(ap.cfg?.game)?.itemNameById?.get?.(id);
+    if(ownPkgName) return String(ownPkgName);
+  }catch(_){}
+  return apKnownItemNameFor(id, it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender);
+}
 function apLocationNameFor(locationId, playerId, fallback){
   const id = Number(locationId);
   if(Number.isFinite(id)){
@@ -30493,6 +31177,9 @@ function apLocationNameFor(locationId, playerId, fallback){
 }
 function apItemClassFromFlags(flags, itemName){
   const f = Number(flags || 0);
+  if(typeof isFeatureKeyItemName === "function" && isFeatureKeyItemName(itemName)){
+    return { key:"feature-key", label:"FEATURE KEY", title:"FEATURE KEY", kind:"good" };
+  }
   const trap = !!(f & 0b100) || isTrapItem(itemName);
   if(trap) return { key:"trap", label:"TRAP", title:"TRAP ITEM", kind:"bad" };
   if(f & 0b001) return { key:"progression", label:"PROGRESSION", title:"PROGRESSION ITEM", kind:"good" };
@@ -30504,6 +31191,24 @@ function apReceivedSourceMeta(it){
   const player = apPlayerName(sourcePlayerId, ap.cfg?.player || "Player");
   const game = apPlayerGame(sourcePlayerId, ap.cfg?.game || "Archipelago");
   return { sourcePlayerId, player, game };
+}
+function apReceivedPacketDedupeKey(itemIndex, it, locId){
+  try{
+    const idx = Number(itemIndex);
+    const itemId = Number(it?.item ?? it?.item_id);
+    const locationId = Number(locId ?? it?.location ?? it?.location_id ?? it?.loc);
+    const sourcePlayerId = Number(it?.player ?? it?.player_id ?? it?.source_player ?? it?.sender ?? 0);
+    const flags = Number(it?.flags ?? 0);
+    return [
+      Number.isFinite(idx) ? `idx:${Math.round(idx)}` : "idx:",
+      Number.isFinite(itemId) ? `item:${Math.round(itemId)}` : "item:",
+      Number.isFinite(locationId) ? `loc:${Math.round(locationId)}` : "loc:",
+      Number.isFinite(sourcePlayerId) ? `src:${Math.round(sourcePlayerId)}` : "src:",
+      Number.isFinite(flags) ? `flags:${Math.round(flags)}` : "flags:"
+    ].join("|");
+  }catch(_){
+    return "";
+  }
 }
 function showApReceivedItemToast(itemName, it, locId, opts){
   opts = opts || {};
@@ -32137,15 +32842,20 @@ function achEnsureCursorFollower(){
   if(!window.__flprCursorFollowerBound){
     window.__flprCursorFollowerBound = true;
     const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999 });
-    window.addEventListener("mousemove", (ev)=>{
+    const onMove = (ev)=>{
       if(!st.active) return;
       st.tx = Number(ev.clientX || 0);
       st.ty = Number(ev.clientY || 0);
+      st.x = st.tx;
+      st.y = st.ty;
       if(st.meta?.trail) achSpawnCursorTrail(st.tx, st.ty, st.meta);
       const follower = document.getElementById("flprCursorFollower");
       if(follower) follower.classList.add("on");
+      try{ achApplyCursorFollowerTransforms(st); }catch(_){}
       if(!st.raf) st.raf = requestAnimationFrame(achCursorFollowerTick);
-    }, { passive:true });
+    };
+    window.addEventListener("pointermove", onMove, { passive:true });
+    window.addEventListener("mousemove", onMove, { passive:true });
     document.addEventListener("mouseleave", ()=>{
       const follower = document.getElementById("flprCursorFollower");
       if(follower) follower.classList.remove("on");
@@ -32153,20 +32863,29 @@ function achEnsureCursorFollower(){
   }
   return el;
 }
+function achApplyCursorFollowerTransforms(st){
+  if(!st || !st.meta) return;
+  const el = achEnsureCursorFollower();
+  const leader = el.querySelector(".cursorLeader");
+  const pointer = el.querySelector(".cursorPointer");
+  if(pointer){
+    pointer.style.transform = `translate3d(${Math.round(st.x + (st.meta.pointerDx || 0))}px, ${Math.round(st.y + (st.meta.pointerDy || 0))}px, 0) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.pointerRotate || 0))}deg) scaleX(${Number(st.meta.pointerScaleX || 1)})`;
+  }
+  if(leader){
+    leader.style.transform = `translate3d(${Math.round(st.lx + (st.meta.leaderDx || 0))}px, ${Math.round(st.ly + (st.meta.leaderDy || 0))}px, 0) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.leaderRotate || 0))}deg)`;
+  }
+}
 function achCursorFollowerTick(){
   const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999 });
   st.raf = 0;
   if(!st.active || !st.meta) return;
-  const el = achEnsureCursorFollower();
-  const leader = el.querySelector(".cursorLeader");
-  const pointer = el.querySelector(".cursorPointer");
-  st.x += (st.tx - st.x) * 0.46;
-  st.y += (st.ty - st.y) * 0.46;
-  st.lx += (st.x - st.lx) * 0.22;
-  st.ly += (st.y - st.ly) * 0.22;
-  pointer.style.transform = `translate(${Math.round(st.x + (st.meta.pointerDx || 0))}px, ${Math.round(st.y + (st.meta.pointerDy || 0))}px) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.pointerRotate || 0))}deg) scaleX(${Number(st.meta.pointerScaleX || 1)})`;
-  leader.style.transform = `translate(${Math.round(st.lx + (st.meta.leaderDx || 0))}px, ${Math.round(st.ly + (st.meta.leaderDy || 0))}px) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.leaderRotate || 0))}deg)`;
-  if(Math.abs(st.tx - st.x) > 0.35 || Math.abs(st.ty - st.y) > 0.35 || Math.abs(st.x - st.lx) > 0.35 || Math.abs(st.y - st.ly) > 0.35){
+  st.x = st.tx;
+  st.y = st.ty;
+  const leaderEase = st.meta.fingerOnly ? 1 : Number(st.meta.leaderEase || 0.42);
+  st.lx += (st.x - st.lx) * Math.max(0.18, Math.min(1, leaderEase));
+  st.ly += (st.y - st.ly) * Math.max(0.18, Math.min(1, leaderEase));
+  achApplyCursorFollowerTransforms(st);
+  if(Math.abs(st.x - st.lx) > 0.35 || Math.abs(st.y - st.ly) > 0.35){
     st.raf = requestAnimationFrame(achCursorFollowerTick);
   }
 }
@@ -40539,6 +41258,31 @@ function getPreferredGenericObjective(taskEntry, genericEntry){
   if(shuffled) return shuffled;
   return "";
 }
+function getDeepRunSlotDifficultyFromIndex(index){
+  const i = Number(index);
+  if(!Number.isFinite(i) || i < 1) return "";
+  if(i <= 4) return "easy";
+  if(i <= 8) return "medium";
+  return "hard";
+}
+function getDeepRunSlotMeta(locationName){
+  try{
+    const raw = String(locationName || "").trim();
+    const split = splitLocName(raw);
+    const table = String(split?.table || "").trim();
+    const rest = String(split?.rest || "").trim();
+    if(!table || !rest) return null;
+    const deepMatch = rest.match(/^deep\s+(task|score)\s+(\d{1,2})\b/i);
+    if(!deepMatch) return null;
+    return {
+      table,
+      difficulty: getDeepRunSlotDifficultyFromIndex(deepMatch[2]),
+      kind: String(deepMatch[1] || "").toLowerCase(),
+      index: Number(deepMatch[2]) || 0
+    };
+  }catch(_){}
+  return null;
+}
 function extractGenericSlotMeta(locationName){
   const raw = String(locationName || "").trim();
   if(!raw) return null;
@@ -40554,6 +41298,8 @@ function extractGenericSlotMeta(locationName){
   if(scoreMatch){
     return { table, difficulty: scoreMatch[1].toLowerCase(), kind: "score" };
   }
+  const deepMeta = getDeepRunSlotMeta(raw);
+  if(deepMeta) return { table: deepMeta.table, difficulty: deepMeta.difficulty, kind: deepMeta.kind };
   return null;
 }
 function resolveGenericSlotLookupTableName(tableName){
@@ -40939,6 +41685,10 @@ function setGenericCheckPayload(slotData){
   const payload = normalizedSlotData?.generic_checks;
   const taskPayload = normalizedSlotData?.task_shuffle;
   ap.slotData = normalizedSlotData;
+  try{
+    featureKeysConfigureFromSlotData(ap.slotData, { render:true });
+    featureKeysSyncFromReceived(loadReceivedList());
+  }catch(_){}
   try{
     const designatedBossTable = getBossTableFromSlotData(ap.slotData);
     if(designatedBossTable){
@@ -41827,6 +42577,7 @@ function clearReceivedFeedHistory(opts){
   try{ ap.receivedKeySet = new Set(); }catch(_){}
   try{ ap.receivedSemanticKeySet = new Set(); }catch(_){}
   try{ ap.receivedByIndex = new Map(); }catch(_){}
+  try{ ap.receivedPacketSeen = new Set(); }catch(_){}
   saveReceivedList([]);
   if(opts.render !== false){
     try{ renderReceivedList([]); }catch(_){}
@@ -41966,7 +42717,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
 
   const receiptSource = apReceivedSourceMeta(it || {});
   const itemIdNum = Number(it?.item);
-  const name = (typeof apKnownItemNameFor === "function" ? apKnownItemNameFor(it?.item, it?.player) : "")
+  const name = (typeof apReceivedItemNameFor === "function" ? apReceivedItemNameFor(it) : "")
     || ap.itemNameById.get(it.item)
     || (Number.isFinite(itemIdNum) ? (apDataPackageForGame(ap.cfg?.game)?.itemNameById?.get?.(itemIdNum) || "") : "")
     || "";
@@ -42039,6 +42790,9 @@ function processReceivedItem(it, itemIndex, locId, opts){
 // If we receive a Boss Key item, light up the next key in the Boss Keys dock.
   if(isBossKeyItemName(effectiveName)){
     try{ bossKeysGrantOne(effectiveName, { isSnapshot:!!opts.isSnapshot, isFlush:!!opts.isFlush, itemIndex, locId }); }catch(e){}
+  }
+  if(isFeatureKeyItemName(effectiveName)){
+    try{ featureKeysGrantOne(effectiveName, { isSnapshot:!!opts.isSnapshot, isFlush:!!opts.isFlush, itemIndex, locId }); }catch(e){}
   }
 
   if(!name){
@@ -42133,7 +42887,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
     }else{
       // Progressive Ball items have their own flow (modal; then apply ball after), handled later.
       // Boss Key items have their own dock-slot cinematic, so skip the generic reward popup.
-      if(!isProgressiveBallItem && !isBossSegmentItem && !isBossKeyItemName(effectiveName)){
+      if(!isProgressiveBallItem && !isBossSegmentItem && !isBossKeyItemName(effectiveName) && !isFeatureKeyItemName(effectiveName)){
         playSfx("receive");
         const holdMs = 3000;
         const modalMeta = (paired && paired.locationName ? ("CHECK; " + paired.locationName) : "");
@@ -42486,7 +43240,7 @@ function flushDeferredReceived(){
     const locId = (d.locId != null) ? d.locId : (d.paired && d.paired.locId != null ? d.paired.locId : null);
     const pairedOverride = d.paired || null;
 
-    const nameNow = (typeof apKnownItemNameFor === "function" ? apKnownItemNameFor(it?.item, it?.player) : "")
+    const nameNow = (typeof apReceivedItemNameFor === "function" ? apReceivedItemNameFor(it) : "")
       || (ap.itemNameById && ap.itemNameById.get(it.item));
     if(!nameNow){
       stillDeferred.push(d);
@@ -43039,6 +43793,7 @@ function apConnect(){
             if(actualSeedChanged){
               // Real seed rollover: clear snapshot/runtime state so the new seed starts fresh.
               ap.receivedSeen = new Set();
+              ap.receivedPacketSeen = new Set();
               ap.receivedByIndex = new Map();
               ap.receivedDeferred = [];
               ap.lastReceivedIndex = 0;
@@ -43285,6 +44040,7 @@ function apConnect(){
 
           const locId = (it.location ?? it.location_id ?? it.loc ?? null);
           const key = "idx:" + itemIndex;
+          const packetKey = (typeof apReceivedPacketDedupeKey === "function") ? apReceivedPacketDedupeKey(itemIndex, it, locId) : "";
           const pendingPair = apPeekPendingPairingForLoc(locId);
           const isSnapshotPacket = (baseIndex === 0);
           const isPendingRedeem = Number(locId) > 0 && !!pendingPair;
@@ -43293,9 +44049,17 @@ function apConnect(){
 
           // Dedupe: server may resend full snapshots or overlapping chunks.
           ap.receivedSeen = ap.receivedSeen || new Set();
-          if(ap.receivedSeen.has(key) || alreadyAppliedSnapshotItem){
+          ap.receivedPacketSeen = ap.receivedPacketSeen || new Set();
+          const duplicateIndex = ap.receivedSeen.has(key);
+          const duplicatePacket = !!(packetKey && ap.receivedPacketSeen.has(packetKey));
+          if(duplicatePacket || (((duplicateIndex || alreadyAppliedSnapshotItem) && !isPendingRedeem))){
             try{ ap.receivedByIndex.set(itemIndex, { ...it, location: locId }); }catch(_){}
             ap.receivedSeen.add(key);
+            if(packetKey) ap.receivedPacketSeen.add(packetKey);
+            if(duplicatePacket && isPendingRedeem){
+              try{ apConsumePendingPairingForLoc(locId); }catch(_){}
+              try{ apLog(`ReceivedItems duplicate matched pending check ${locId}; reward packet was already processed.`, { tab:"status" }); }catch(_){}
+            }
             if(treatAsSnapshot){
               processReceivedItem(it, itemIndex, locId, {
                 noPopup: true,
@@ -43307,6 +44071,7 @@ function apConnect(){
             continue;
           }
           ap.receivedSeen.add(key);
+          if(packetKey) ap.receivedPacketSeen.add(packetKey);
           ap.receivedByIndex.set(itemIndex, { ...it, location: locId });
 
           // Always process via the unified handler, which will defer safely if DataPackage isn't ready yet.
@@ -43782,6 +44547,8 @@ function isGenericJunkName(nm){
 }
 
 function inferLocationDifficulty(node){
+  const meta = extractGenericSlotMeta(node?.full || node?.baseFull || node?.short || "");
+  if(meta?.difficulty) return String(meta.difficulty || "").trim().toLowerCase();
   const s = `${node?.short || ""} ${node?.full || ""}`.toLowerCase();
   if(/\beasy\b/.test(s)) return "easy";
   if(/\bmedium\b/.test(s) || /\bmed\b/.test(s)) return "medium";
@@ -44204,6 +44971,7 @@ function apReconcileWorldStateFromReceived(){
     bossKeyCount = Math.max(0, Math.min(BOSS_KEYS_COUNT, bossKeyCountRaw));
     window.__apBossKeyCount = bossKeyCount;
     try{ flprStatsRecordBossKeyCount(bossKeyCountRaw); }catch(_){}
+    try{ featureKeysConfigureFromSlotData(ap?.slotData, { render:false }); featureKeysSyncFromReceived(received); }catch(_){}
 for(const r of (received || [])){
       const displayName = String(r.itemName || r.baseItemName || "");
       const rawName = String(r.baseItemName || r.itemName || "");
@@ -45094,6 +45862,8 @@ function setNowPlayingFromTableKey(tableKey, opts){
     if(!opts.allowLocked){
       const level = (typeof getBallLevelByTableKey === "function") ? Number(getBallLevelByTableKey(`${wk}|${idx}`)) : 0;
       if(!(level > 0)) return false;
+      const tableName = String(state?.worlds?.[wk]?.tables?.[idx] || "").trim();
+      if(tableName && isTableFeatureLocked(tableName, ap?.slotData)) return false;
     }
     const alreadyNowPlaying = (typeof getNowPlayingIndex === "function") && getNowPlayingIndex(wk) === idx;
     if(typeof setNowPlayingIndex === "function" && !alreadyNowPlaying){
@@ -46809,6 +47579,11 @@ function renderTableBlock(parent, tableName, nodes, opts){
   block.className = "tableBlock";
   const tableKey = String(opts.tableKey || "").trim();
   const isBossTableBlock = tableKey.startsWith("boss|");
+  const deepRunNodeCount = (Array.isArray(nodes) ? nodes : []).reduce((count, node)=>{
+    return count + (getDeepRunSlotMeta(node?.full || node?.baseFull || node?.short || "") ? 1 : 0);
+  }, 0);
+  const isDeepRunCheckBlock = !isBossTableBlock && (deepRunNodeCount >= 12 || isDeepRunSeed(ap?.slotData));
+  if(isDeepRunCheckBlock) block.classList.add("deepRunChecks");
   if(tableKey) block.setAttribute("data-tablekey", tableKey);
   const getTableBallLevel = ()=>{
     try{
@@ -46853,7 +47628,9 @@ function renderTableBlock(parent, tableName, nodes, opts){
   const junkTargetDiff = getActiveJunkRedeemDifficulty();
   const relicFinalLocked = relicIsFinalLockedTable(tableKey);
   const besiegedLockedOut = besiegedLocksTable(tableKey);
-  const tableSealed = !tableUnlocked || relicFinalLocked || besiegedLockedOut;
+  const featureLockedOut = !isBossTableBlock && tableUnlocked && isTableFeatureLocked(tableName, ap?.slotData);
+  const featureLockMissingText = featureLockedOut ? tableFeatureGateMissingText(tableName, ap?.slotData) : "";
+  const tableSealed = !tableUnlocked || featureLockedOut || relicFinalLocked || besiegedLockedOut;
   if(tableSealed) block.classList.add("lockedTable");
   if(trapLockFxMode) block.classList.add(trapLockFxMode === "locking" ? "trapLocking" : "trapUnlocking");
   if(awayWithYouClearMode && !isBossTableBlock && tableUnlocked && !tableSealed) block.classList.add("awayWithYouClearTarget");
@@ -46863,6 +47640,10 @@ function renderTableBlock(parent, tableName, nodes, opts){
     if(!tableKey) return;
     if(tryHandleExtraBallPlacementSelection(tableKey, tableName)) return;
     if(!tableUnlocked) return;
+    if(featureLockedOut){
+      toast("warn", "FEATURE LOCK", `${tableName} needs ${featureLockMissingText || "Feature Key pieces"}.`, 2600);
+      return;
+    }
     if(besiegedLockedOut){
       toast("warn", "TOWER LOCKDOWN", besiegedGetLockMessage(tableKey), 2400);
       return;
@@ -46908,8 +47689,10 @@ function renderTableBlock(parent, tableName, nodes, opts){
     }
   }catch(_){}
   if(tableKey && !tableKey.startsWith("boss|") && !relicFinalLocked){
-    head.style.cursor = extraBallPlacementArmed ? "copy" : (tableUnlocked ? "pointer" : "default");
-    head.title = extraBallPlacementArmed ? "Place Extra Ball on this table" : (besiegedLockedOut ? "Tower lockdown active" : (tableUnlocked ? "Set this table as Now Playing" : "Locked table"));
+    head.style.cursor = extraBallPlacementArmed ? "copy" : ((tableUnlocked && !featureLockedOut) ? "pointer" : "default");
+    head.title = extraBallPlacementArmed
+      ? "Place Extra Ball on this table"
+      : (featureLockedOut ? `Feature Key required: ${featureLockMissingText || "locked"}` : (besiegedLockedOut ? "Tower lockdown active" : (tableUnlocked ? "Set this table as Now Playing" : "Locked table")));
     head.onclick = ()=>{ markNowPlaying(); };
     block.style.cursor = "pointer";
     block.onclick = (ev)=>{
@@ -46928,7 +47711,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
   name.className = "tableName";
   const nameText = document.createElement("span");
   nameText.className = "tableNameText";
-  setTableLabelWithBadge(nameText, tableName, { locked: !tableUnlocked });
+  setTableLabelWithBadge(nameText, tableName, { locked: !tableUnlocked || featureLockedOut });
   name.appendChild(nameText);
   const extraBallBtn = buildExtraBallTableButton(tableKey, { tableName });
   if(extraBallBtn) name.appendChild(extraBallBtn);
@@ -46975,7 +47758,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
   const headStatus = document.createElement("div");
   headStatus.className = "tableHeadStatus";
   let scorePanel = null;
-  if(tableUnlocked && !isBossTableBlock && scoreCheckEntries.length > 0){
+  if(tableUnlocked && !featureLockedOut && !isBossTableBlock && scoreCheckEntries.length > 0){
     scorePanel = document.createElement("form");
     scorePanel.className = "checksScorePanel";
     scorePanel.classList.add("scoreMode", getScoreAdjustmentModeClass(ap?.slotData));
@@ -47004,10 +47787,29 @@ function renderTableBlock(parent, tableName, nodes, opts){
   }
   const grid = document.createElement("div");
   grid.className = "nodeGrid";
+  let deepRunTaskColumn = null;
+  let deepRunScoreColumn = null;
   let bossTaskColumn = null;
   let bossScoreColumn = null;
   let bossVictoryColumn = null;
-  if(isBossTableBlock){
+  const makeDeepRunSection = (kind, label)=>{
+    const section = document.createElement("div");
+    section.className = `deepRunCheckSection deepRun${kind}Section`;
+    const title = document.createElement("div");
+    title.className = "deepRunSectionTitle";
+    title.textContent = label;
+    const inner = document.createElement("div");
+    inner.className = "deepRunSectionGrid";
+    section.appendChild(title);
+    section.appendChild(inner);
+    grid.appendChild(section);
+    return inner;
+  };
+  if(isDeepRunCheckBlock){
+    grid.classList.add("deepRunSplitGrid");
+    deepRunTaskColumn = makeDeepRunSection("Task", "TABLE TASKS");
+    deepRunScoreColumn = makeDeepRunSection("Score", "SCORE TASKS");
+  }else if(isBossTableBlock){
     grid.classList.add("bossSplitGrid");
     bossTaskColumn = document.createElement("div");
     bossTaskColumn.className = "bossCheckColumn bossTaskColumn";
@@ -47021,7 +47823,15 @@ function renderTableBlock(parent, tableName, nodes, opts){
   }
   const appendCheckCellToGrid = (cell, layoutKind)=>{
     if(!isBossTableBlock){
-      grid.appendChild(cell);
+      if(isDeepRunCheckBlock){
+        if(layoutKind === "score" && deepRunScoreColumn){
+          deepRunScoreColumn.appendChild(cell);
+        }else{
+          (deepRunTaskColumn || grid).appendChild(cell);
+        }
+      }else{
+        grid.appendChild(cell);
+      }
       return;
     }
     if(layoutKind === "score" && bossScoreColumn){
@@ -47036,7 +47846,10 @@ function renderTableBlock(parent, tableName, nodes, opts){
   };
   const sendCheckLocation = (n, sourceTag, redeemOpts)=>{
     redeemOpts = redeemOpts || {};
-    if(!ap.connected) return false;
+    if(!ap.connected){
+      try{ apLog("CHECK BLOCKED; AP not connected", { tab:"errors" }); }catch(_){}
+      return false;
+    }
     const isBossNode = !!(isBossTableBlock || isBossPercentHpLocationNode(n) || bossIsVictoryLocationNode(n));
     const pendTableName = isBossNode
       ? String(getUnifiedBossTableName({ includePlaceholder:true }) || state?.bossTable || "Boss Table").trim()
@@ -47064,6 +47877,10 @@ function renderTableBlock(parent, tableName, nodes, opts){
       scoreTarget: redeemOpts.scoreTarget ?? null,
       scoreValue: redeemOpts.scoreValue ?? null
     });
+    if(!apSendLocationCheckWithMetadata(n.id, redeemMeta)){
+      try{ apLog("CHECK SEND FAILED; " + n.id + (sourceTag ? `; ${sourceTag}` : "") + `; ${redeemMeta.task_type}; ${redeemMeta.task_name}`, { tab:"errors", mirrorTabs:["status"] }); }catch(_){}
+      return false;
+    }
     pend.taskName = redeemMeta.task_name;
     pend.taskType = redeemMeta.task_type;
     pend.difficulty = redeemMeta.difficulty;
@@ -47077,7 +47894,6 @@ function renderTableBlock(parent, tableName, nodes, opts){
     }
     playSfx("redeem");
     apLog("CHECK SENT; " + n.id + (sourceTag ? `; ${sourceTag}` : "") + `; ${redeemMeta.task_type}; ${redeemMeta.task_name}`, { tab:"chat", mirrorTabs:["status"] });
-    apSendLocationCheckWithMetadata(n.id, redeemMeta);
     apRequestSyncAfterCheck(sourceTag || "check");
     if(shouldShowCheckSentNotification()) toast("warn","CHECK SENT", (n.short||"") + " ; ID " + n.id, 2200);
     try{ besiegedMaybeClearPenaltyLockForTask(opts.tableKey, n); }catch(_){}
@@ -47179,14 +47995,16 @@ function renderTableBlock(parent, tableName, nodes, opts){
     locked.className = "tableLockedHint";
     locked.textContent = besiegedLockedOut
       ? besiegedGetLockMessage(tableKey)
-      : (relicFinalLocked
+      : (featureLockedOut
+        ? `Feature Key required: ${featureLockMissingText || "collect the required Feature Key pieces"}.`
+        : (relicFinalLocked
         ? "Final Lock sealed this table until the boss is defeated."
-        : "Table locked. Unlock Ball 1 to reveal checks.");
+        : "Table locked. Unlock Ball 1 to reveal checks."));
     const chain = document.createElement("div");
     chain.className = "lockChainsOverlay active" + (besiegedShowsSiegeLock(tableKey) ? " siegeLockChains" : "");
     const lockBadge = document.createElement("div");
     lockBadge.className = "lockBadgeOverlay active" + (besiegedShowsSiegeLock(tableKey) ? " siegeLockBadge" : "");
-    lockBadge.textContent = besiegedLockedOut ? besiegedGetLockBadge(tableKey) : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
+    lockBadge.textContent = besiegedLockedOut ? besiegedGetLockBadge(tableKey) : (featureLockedOut ? "FEATURE KEY" : (relicFinalLocked ? "FINAL LOCK" : "LOCK"));
     block.appendChild(head);
     block.appendChild(locked);
     block.appendChild(chain);
@@ -47254,21 +48072,36 @@ function renderTableBlock(parent, tableName, nodes, opts){
     const bossTaskCategory = isBossTableBlock ? achClassifyTaskName(bossTaskName || n.short || n.full || "") : "";
     const scoreTargetMeta = (!bossVictoryNode) ? getScoreTargetMetaForTask(displayTaskName) : null;
     const scoreTitleMatch = scoreTargetMeta ? [displayTaskName, scoreTargetMeta.label] : null;
+    const deepRunSlotMeta = isDeepRunCheckBlock ? getDeepRunSlotMeta(n.full || n.baseFull || n.short || "") : null;
+    const nodeEntryKind = String(
+      n?.genericEntry?.kind ||
+      n?.genericEntry?.task_type ||
+      n?.genericEntry?.type ||
+      n?.taskShuffleEntry?.kind ||
+      n?.taskShuffleEntry?.task_type ||
+      n?.taskShuffleEntry?.type ||
+      n?.genericTaskType ||
+      ""
+    ).trim().toLowerCase();
+    const isScoreNode = !!(!bossVictoryNode && (scoreTitleMatch || deepRunSlotMeta?.kind === "score" || nodeEntryKind === "score"));
     const baseTitleText = bossVictoryNode ? "Boss Victory" : (isBossTableBlock ? bossAttackTitleForCategory(bossTaskCategory, bossTaskName || n.short || n.full || "") : displayTaskName);
-    const bossLayoutKind = bossVictoryNode ? "victory" : (scoreTitleMatch ? "score" : "task");
+    const checkLayoutKind = bossVictoryNode ? "victory" : (isScoreNode ? "score" : "task");
     if(isBossTableBlock){
-      cell.classList.add(bossLayoutKind === "score" ? "bossScoreCell" : (bossLayoutKind === "victory" ? "bossVictoryCell" : "bossTaskCell"));
+      cell.classList.add(checkLayoutKind === "score" ? "bossScoreCell" : (checkLayoutKind === "victory" ? "bossVictoryCell" : "bossTaskCell"));
     }
-    if(scoreTitleMatch){
+    if(isScoreNode){
+      const scoreLabel = scoreTitleMatch
+        ? String(scoreTitleMatch[1] || "").trim()
+        : String(n?.genericEntry?.score_target_text || n?.taskShuffleEntry?.score_target_text || "").trim();
       btn.classList.add("scoreNode");
       btn.classList.add("scoreMode", getScoreAdjustmentModeClass(ap?.slotData));
-      title.innerHTML = `<span class="scoreLead">SCORE TARGET</span><span class="scoreValue">${escapeHtml(String(scoreTitleMatch[1] || "").trim())}</span>`;
+      title.innerHTML = `<span class="scoreLead">SCORE TARGET</span><span class="scoreValue">${escapeHtml(scoreLabel || displayTaskName)}</span>`;
     }else{
       if(!bossVictoryNode) btn.classList.add("taskNode");
       title.textContent = baseTitleText;
     }
     const renderCounterTitle = (value)=>{
-      if(!taskCounterMeta || scoreTitleMatch) return Math.max(0, Math.min(counterTarget, Math.round(Number(value) || 0)));
+      if(!taskCounterMeta || isScoreNode) return Math.max(0, Math.min(counterTarget, Math.round(Number(value) || 0)));
       const clamped = Math.max(0, Math.min(counterTarget, Math.round(Number(value) || 0)));
       const verb = getTaskCounterProgressVerb(displayTaskName, taskCounterMeta);
       title.textContent = `${baseTitleText} (${clamped} of ${counterTarget} ${verb})`;
@@ -47288,7 +48121,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
     }else{
       small.textContent = "ID; " + n.id + (checked ? " ; CHECKED" : "");
     }
-    if(taskCounterMeta && !scoreTitleMatch){
+    if(taskCounterMeta && !isScoreNode){
       renderCounterTitle(checked ? counterTarget : getTaskProgressValue(n.id));
     }
     btn.appendChild(tierBadge); btn.appendChild(title); btn.appendChild(small);
@@ -47316,7 +48149,8 @@ function renderTableBlock(parent, tableName, nodes, opts){
       else btn.classList.add("junkRedeemFiltered");
     }
     if(nodeTrapLocked) btn.classList.add("trapLockedNode");
-    btn.onclick = ()=>{
+    btn.onclick = (ev)=>{
+      try{ ev?.preventDefault?.(); ev?.stopPropagation?.(); }catch(_){}
       markNowPlaying();
       if(checked || pending) return;
       const refreshChecksAfterSend = ()=>{
@@ -47386,12 +48220,20 @@ function renderTableBlock(parent, tableName, nodes, opts){
         refreshChecksAfterSend();
         return;
       }
-      if(!ap.connected) return;
-      if(sendCheckLocation(n, "manual", {
+      if(!ap.connected){
+        toast("warn","AP DISCONNECTED", "Reconnect to AP before redeeming checks.", 2200);
+        return;
+      }
+      const sent = sendCheckLocation(n, "manual", {
         difficulty: tier,
         counterTarget: taskCounterMeta?.target || null,
         counterValue: taskCounterMeta ? getTaskProgressValue(n.id) : null
-      })){
+      });
+      if(!sent){
+        toast("warn","REDEEM FAILED", "Could not send the check to AP.", 2400);
+        return;
+      }
+      if(sent){
         if(String(opts.tableKey || "") === "boss|0"){
           try{ applyChecksNowPlayingHighlight(); }catch(_){}
         }else{
@@ -47450,7 +48292,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
       counterBar.appendChild(plusBtn);
       cell.appendChild(counterBar);
     }
-    appendCheckCellToGrid(cell, bossLayoutKind);
+    appendCheckCellToGrid(cell, checkLayoutKind);
   });
 
   if(!nodes || nodes.length === 0){
@@ -50809,6 +51651,10 @@ function renderTowerPentagon(container, worldObj, worldKey){
         window.__suppressPentaAnim = false;
         if(worldObj.locked) return;
         if(!isRevealed(worldKey, idx)) return;
+        if(isTableFeatureLocked(tableName, ap?.slotData)){
+          try{ toast("warn", "FEATURE LOCK", `${tableName || "That table"} needs ${tableFeatureGateMissingText(tableName, ap?.slotData) || "Feature Key pieces"}.`, 2400); }catch(_){}
+          return;
+        }
         if(relicIsFinalLockedTable(tableKey)){
           try{
             const lockedName = String(tableName || "That table");
@@ -50985,12 +51831,26 @@ function renderTowerPentagon(container, worldObj, worldKey){
     // Name + emoji
     const revealed = isRevealed(worldKey, idx);
     const lockedByBall = !revealed;
+    const featureLockedOut = revealed && isTableFeatureLocked(tName, ap?.slotData);
+    const featureLockMissingText = featureLockedOut ? tableFeatureGateMissingText(tName, ap?.slotData) : "";
+    try{
+      if(featureLockedOut){
+        const defs = tableFeatureGateDefsForOverview(tName, ap?.slotData);
+        const primary = defs?.[0]?.color || "#22ffd2";
+        card.style.setProperty("--featureGatePrimary", primary);
+        card.style.setProperty("--featureGateSoftGlow", featureGateHexToRgba(primary, .20));
+      }else{
+        card.style.removeProperty("--featureGatePrimary");
+        card.style.removeProperty("--featureGateSoftGlow");
+      }
+    }catch(_){}
     const checksComplete = isTableChecksCompleteVisual(tName, tableKey, { unlocked: revealed, revealed });
     // Classes
     card.className = "pentaCard"
       + (idx===now ? " isNowPlaying" : " isDim")
       + (slot===0 ? " isTopSlot" : "")
-      + (lockedByBall ? " isLockedTable" : "")
+      + ((lockedByBall || featureLockedOut) ? " isLockedTable" : "")
+      + (featureLockedOut ? " featureGateOverview featureGateLockedOverview" : "")
       + (checksComplete ? " checksCompleteTower" : "")
       + (relicFinalLocked ? " relicFinalLock" : "")
       + (besiegedTarget ? " besiegedTarget" : "")
@@ -51003,7 +51863,7 @@ function renderTowerPentagon(container, worldObj, worldKey){
     const nameEl = card.querySelector(".pentaTitle .name");
     const badgeEl = card.querySelector(".pentaTitle .badgeIcon");
     const titleEl = card.querySelector(".pentaTitle");
-    setTableLabelWithBadge(nameEl, tName, { locked: !revealed });
+    setTableLabelWithBadge(nameEl, tName, { locked: !revealed || featureLockedOut });
     titleEl?.querySelectorAll(".besiegedTitleGoal").forEach((el)=>el.remove());
     nameEl.classList.remove("nameLong", "nameXL");
     if(revealed){
@@ -51024,26 +51884,26 @@ function renderTowerPentagon(container, worldObj, worldKey){
     const chainOverlay = card.querySelector(".lockChainsOverlay");
     const showTowerSiegeLock = besiegedShowsTowerSiegeLock(tableKey);
     if(chainOverlay){
-      chainOverlay.classList.toggle("active", lockedByBall || relicFinalLocked || showTowerSiegeLock);
+      chainOverlay.classList.toggle("active", lockedByBall || featureLockedOut || relicFinalLocked || showTowerSiegeLock);
       chainOverlay.classList.toggle("siegeLockChains", showTowerSiegeLock);
-      if(lockedByBall || relicFinalLocked || showTowerSiegeLock) chainOverlay.classList.remove("unlockDrop");
+      if(lockedByBall || featureLockedOut || relicFinalLocked || showTowerSiegeLock) chainOverlay.classList.remove("unlockDrop");
     }
     const lockBadgeOverlay = card.querySelector(".lockBadgeOverlay");
     if(lockBadgeOverlay){
-      const lockActive = lockedByBall || relicFinalLocked || showTowerSiegeLock;
+      const lockActive = lockedByBall || featureLockedOut || relicFinalLocked || showTowerSiegeLock;
       lockBadgeOverlay.classList.toggle("active", lockActive);
       lockBadgeOverlay.classList.toggle("siegeLockBadge", showTowerSiegeLock);
-      lockBadgeOverlay.textContent = showTowerSiegeLock ? besiegedGetLockBadge(tableKey) : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
+      lockBadgeOverlay.textContent = showTowerSiegeLock ? besiegedGetLockBadge(tableKey) : (featureLockedOut ? "FEATURE KEY" : (relicFinalLocked ? "FINAL LOCK" : "LOCK"));
       if(lockActive) lockBadgeOverlay.classList.remove("unlockDrop");
     }
     card.style.cursor = extraBallPlacementArmed
       ? (relicFinalLocked ? "not-allowed" : "copy")
-      : ((lockedByBall || relicFinalLocked || besiegedLockedOut) ? "not-allowed" : "pointer");
+      : ((lockedByBall || featureLockedOut || relicFinalLocked || besiegedLockedOut) ? "not-allowed" : "pointer");
     card.title = extraBallPlacementArmed
       ? "Place Extra Ball on this table"
       : (besiegedLockedOut
         ? besiegedGetLockMessage(tableKey)
-        : (lockedByBall ? "Locked; unlock Ball 1 to select this table" : (relicFinalLocked ? "Final Lock sealed this table" : "Set this table as Now Playing")));
+        : (featureLockedOut ? `Feature Key required: ${featureLockMissingText || "locked"}` : (lockedByBall ? "Locked; unlock Ball 1 to select this table" : (relicFinalLocked ? "Final Lock sealed this table" : "Set this table as Now Playing"))));
     const featuredDesigner = getFeaturedDesignerForWorld(worldKey);
     const designerBtn = card.querySelector(".designerInfoBtn");
     const showDesignerBtn = !!(revealed && featuredDesigner && isTableCreditedToDesigner(tName, featuredDesigner));
@@ -51486,7 +52346,7 @@ function getChecksLeftMarkup(tableName, hintTargets){
 }
 
 /* Overview */
-function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, banner, revealed, isBossTable}){
+function tileEl({name, worldKey, worldIndex, tableIndex, locked, featureLocked, ballState, banner, revealed, isBossTable}){
   const t = document.createElement("div");
   const tableKey = `${worldKey}|${tableIndex-1}`;
   const balls = (ballState && typeof ballState === "object") ? ballState : getDisplayBallStateForTableKey(tableKey);
@@ -51495,13 +52355,15 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
   const b3 = !!balls.b3;
   const relicFinalLocked = relicIsFinalLockedTable(tableKey);
   const besiegedLockedOut = besiegedLocksTable(tableKey);
+  const featureLockedOut = !!featureLocked || (!isBossTable && !!(b1 || b2 || b3) && isTableFeatureLocked(name, ap?.slotData));
+  const featureLockMissingText = featureLockedOut ? tableFeatureGateMissingText(name, ap?.slotData) : "";
   const hintTargets = relicGetCombinedHintTargetsForTable(tableKey);
   const hintOnThisTable = hintTargets.length > 0;
   const hintBossKeyOnThisTable = hintTargets.some((h)=>hintIsBossTypeLabel(h?.typeLabel));
   const checksComplete = isTableChecksCompleteVisual(name, tableKey, { unlocked: !!(b1 || b2 || b3), revealed });
   t.className = "tile";
   t.setAttribute("data-tablekey", tableKey);
-  if(locked || relicFinalLocked || besiegedLockedOut) t.classList.add("inactive");
+  if(locked || featureLockedOut || relicFinalLocked || besiegedLockedOut) t.classList.add("inactive");
   if(b1 || b2 || b3) t.classList.add("activeAny");
   if(revealed) t.classList.add("revealed");
   if(checksComplete) t.classList.add("checksCompleteOverview");
@@ -51521,6 +52383,7 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
   bannerDiv.className = "tileBanner";
   bannerDiv.style.backgroundImage = banner ? `url("${banner}")` : "none";
   t.appendChild(bannerDiv);
+  try{ applyFeatureGateOverviewStyle(t, name, ap?.slotData); }catch(_){}
 
   const content = document.createElement("div");
   content.className = "tileContent";
@@ -51584,20 +52447,21 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
     wm.textContent = "\u{1F511}";
     t.appendChild(wm);
   }
-  if(locked || relicFinalLocked || besiegedLockedOut){
+  if(locked || featureLockedOut || relicFinalLocked || besiegedLockedOut){
     const chain = document.createElement("div");
     chain.className = "lockChainsOverlay active" + (besiegedShowsSiegeLock(tableKey) ? " siegeLockChains" : "");
     t.appendChild(chain);
     const lockBadge = document.createElement("div");
     lockBadge.className = "lockBadgeOverlay active" + (besiegedShowsSiegeLock(tableKey) ? " siegeLockBadge" : "");
-    lockBadge.textContent = besiegedLockedOut ? besiegedGetLockBadge(tableKey) : (relicFinalLocked ? "FINAL LOCK" : "LOCK");
+    lockBadge.textContent = besiegedLockedOut ? besiegedGetLockBadge(tableKey) : (featureLockedOut ? "FEATURE KEY" : (relicFinalLocked ? "FINAL LOCK" : "LOCK"));
     t.appendChild(lockBadge);
   }
 
   t.onclick = ()=>{
     if(tryHandleExtraBallPlacementSelection(tableKey, name)) return;
-    if(locked || relicFinalLocked || besiegedLockedOut){
+    if(locked || featureLockedOut || relicFinalLocked || besiegedLockedOut){
       if(besiegedLockedOut) toast("warn", "TOWER LOCKDOWN", besiegedGetLockMessage(tableKey), 2200);
+      if(featureLockedOut) toast("warn", "FEATURE LOCK", `${name} needs ${featureLockMissingText || "Feature Key pieces"}.`, 2400);
       if(relicFinalLocked) toast("warn", "FINAL LOCK", `${name} is sealed shut.`, 2200);
       return;
     }
@@ -51635,9 +52499,12 @@ function tileEl({name, worldKey, worldIndex, tableIndex, locked, ballState, bann
 function renderOverviewGrid(){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
+  grid.classList.remove("overviewTables15", "overviewTables20");
+  grid.removeAttribute("data-table-count");
 
   const worlds = state.worlds;
   const keys = getOverviewWorldOrder();
+  let renderedCount = 0;
   let bossTableKey = "";
   try{
     const revealReady = (typeof isBossTableRevealReady === "function") ? !!isBossTableRevealReady() : false;
@@ -51659,6 +52526,7 @@ function renderOverviewGrid(){
       const hasAnyBall = !!(b1 || b2 || b3);
       const banner = getTableBannerUrl(wk, tableName);
       const revealed = hasAnyBall;
+      const featureLocked = hasAnyBall && isTableFeatureLocked(tableName, ap?.slotData);
       const travelLocked = !!locked || !hasAnyBall;
       const isBossTable = !!bossTableKey && String(bossTableKey) === String(tableKey);
 
@@ -51667,10 +52535,14 @@ function renderOverviewGrid(){
         worldKey: wk,
         worldIndex: wi+1,
         tableIndex: idx+1,
-        locked: travelLocked, ballState, banner, revealed, isBossTable
+        locked: travelLocked, featureLocked, ballState, banner, revealed, isBossTable
       }));
+      renderedCount += 1;
     });
   });
+  grid.dataset.tableCount = String(renderedCount);
+  grid.classList.toggle("overviewTables15", renderedCount === 15);
+  grid.classList.toggle("overviewTables20", renderedCount === 20);
   applyOverviewTableFocus();
   applyOverviewNowPlayingHighlight();
   try{ applyExtraBallSelectionUi(); }catch(_){}
@@ -53169,8 +54041,58 @@ function hintProgressiveEntryTargetsBossKeyTable(entry, bossKeyTableKeys){
   }catch(_){}
   return false;
 }
+function hintGetFeatureKeyTableKeys(){
+  const out = new Set();
+  const remember = (entry)=>{
+    try{
+      const itemName = String(entry?.itemName || "").trim();
+      if(!isFeatureKeyItemName(itemName)) return;
+      const tableName = String(entry?.tableName || "").trim();
+      if(!tableName || !isActiveSeedTableName(tableName)) return;
+      const tableKey = getTableKeyForName(tableName) || "";
+      if(tableKey) out.add(tableKey);
+    }catch(_){}
+  };
+  try{ (hintState?.rewardEntries || []).forEach(remember); }catch(_){}
+  try{ (hintState?.all || []).forEach(remember); }catch(_){}
+  return out;
+}
+function hintProgressiveEntryTargetsFeatureKeyTable(entry, featureKeyTableKeys){
+  try{
+    const targetTable = parseProgressiveBallTarget(entry?.itemName);
+    if(!targetTable) return false;
+    const targetKey = getTableKeyForName(targetTable) || "";
+    return !!targetKey && featureKeyTableKeys.has(targetKey);
+  }catch(_){}
+  return false;
+}
+function hintProgressiveEntryAddsUnlockedDeepRunBall(entry){
+  try{
+    const targetTable = parseProgressiveBallTarget(entry?.itemName);
+    if(!targetTable) return false;
+    const targetKey = getTableKeyForName(targetTable) || "";
+    if(!targetKey) return false;
+    const parts = String(targetKey).split("|");
+    const worldKey = String(parts[0] || "").trim();
+    const world = state?.worlds?.[worldKey];
+    if(!world || world.locked) return false;
+    const current = Number(getDisplayedBallLevelByTableKey(targetKey) || 0);
+    return current >= 1 && current < 3;
+  }catch(_){}
+  return false;
+}
 function hintProgressiveEntryPriority(entry, bossKeyTableKeys){
   try{
+    if(isDeepRunSeed(ap?.slotData)){
+      const featureKeyTableKeys = hintGetFeatureKeyTableKeys();
+      const targetsFeatureKeyTable = !!(featureKeyTableKeys?.size && hintProgressiveEntryTargetsFeatureKeyTable(entry, featureKeyTableKeys));
+      const addsUnlockedBall = hintProgressiveEntryAddsUnlockedDeepRunBall(entry);
+      const sourceOpenForFeature = hintIsSourceTableOpen(entry);
+      if(targetsFeatureKeyTable && sourceOpenForFeature && addsUnlockedBall) return -3;
+      if(targetsFeatureKeyTable && sourceOpenForFeature) return -2;
+      if(targetsFeatureKeyTable && addsUnlockedBall) return -1;
+      if(sourceOpenForFeature && addsUnlockedBall) return 0;
+    }
     const targetsBossKeyTable = !!(bossKeyTableKeys?.size && hintProgressiveEntryTargetsBossKeyTable(entry, bossKeyTableKeys));
     const sourceOpen = hintIsSourceTableOpen(entry);
     if(targetsBossKeyTable && sourceOpen) return 0;
@@ -54884,6 +55806,7 @@ async function loadInherentTestSeed(){
   ap.pendingQueue = [];
   ap.validCheckLocIds = new Set();
   ap.receivedSeen = new Set();
+  ap.receivedPacketSeen = new Set();
   ap.receivedByIndex = new Map();
   ap.receivedDeferred = [];
   ap.lastReceivedIndex = 0;
@@ -58590,6 +59513,7 @@ if(btnCR) btnCR.onclick = ()=>{
   playSfx("click");
   ap.receivedAll = [];
   ap.receivedSeen = new Set();
+  ap.receivedPacketSeen = new Set();
   ap.receivedByIndex = new Map();
   ap.receivedDeferred = [];
   ap.receivedKeySet = new Set();
@@ -59687,6 +60611,7 @@ const BOSS_KEY_CINEMATIC_WORDS_AT_MS = 1740;
 const BOSS_KEY_CINEMATIC_FLY_AT_MS = 3660;
 const BOSS_KEY_CINEMATIC_IMPACT_AT_MS = 4360;
 const BOSS_KEY_CINEMATIC_CHAIN_STEP_MS = 5750;
+const FEATURE_KEYS_STATE_LS = "flpr_overlay_feature_keys_v1_state";
 
 let bossKeysState = Array.from({length:BOSS_KEYS_COUNT}, ()=>({acquired:false, img:BOSS_KEY_DEFAULT_IMG}));
 let bossKeyRevealUntil = Array.from({length:BOSS_KEYS_COUNT}, ()=>0);
@@ -59696,6 +60621,513 @@ let bossKeyRedeemFadeTimer = null;
 let bossKeyHintHoverTimer = null;
 let bossKeyRedeemLastSig = "";
 let bossKeyRedeemLastAt = 0;
+let featureKeysDefinitions = [];
+let featureKeysState = [];
+
+function isFeatureKeyItemName(nm){
+  const item = String(nm || "").trim();
+  return /^Feature Key\s*-\s*/i.test(item);
+}
+function featureKeyNormalizeItemName(nm){
+  return String(nm || "").trim().toLowerCase();
+}
+function getFeatureUnlockPayload(slotData){
+  try{
+    const src = normalizeSlotDataPayload(slotData || ap?.slotData || {});
+    const tableSet = src?.base_game_table_set || src?.metasizer_table_set || {};
+    const payload = src?.feature_unlock || tableSet?.feature_unlock || {};
+    return (payload && typeof payload === "object") ? payload : {};
+  }catch(_){ return {}; }
+}
+function isDeepRunSeed(slotData){
+  try{
+    const src = normalizeSlotDataPayload(slotData || ap?.slotData || {});
+    const tableSet = src?.base_game_table_set || src?.metasizer_table_set || {};
+    const seedType = String(src?.base_game_seed_type || tableSet?.seed_type || "").trim().toLowerCase();
+    const featurePayload = getFeatureUnlockPayload(src);
+    return seedType === "deep_run" || seedType === "deeprun" || !!tableSet?.deep_run || !!featurePayload?.enabled;
+  }catch(_){ return false; }
+}
+const FEATURE_GATE_COLORS = Object.freeze({
+  dmd_screen_games: { primary:"#25d7ff", secondary:"#2a7bff", label:"DMD" },
+  upper_playfield_games: { primary:"#b878ff", secondary:"#6b57ff", label:"UPPER" },
+  extra_flipper_games: { primary:"#ff4f9a", secondary:"#ff355e", label:"FLIPPER" },
+  spinner_games: { primary:"#ffd64f", secondary:"#ff9f1c", label:"SPIN" },
+  ramp_games: { primary:"#34ff88", secondary:"#15c7a1", label:"RAMP" }
+});
+const FEATURE_GATE_FALLBACK_COLORS = Object.freeze([
+  { primary:"#22ffd2", secondary:"#00a6ff", label:"KEY" },
+  { primary:"#ffda64", secondary:"#ff8f3d", label:"KEY" },
+  { primary:"#ff68b4", secondary:"#ad6bff", label:"KEY" },
+  { primary:"#72ff8a", secondary:"#1ec8ff", label:"KEY" }
+]);
+function featureGateNormalizeId(id){
+  return String(id || "").trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+}
+function featureGateColorForId(id, idx){
+  const key = featureGateNormalizeId(id);
+  if(FEATURE_GATE_COLORS[key]) return FEATURE_GATE_COLORS[key];
+  const fallback = FEATURE_GATE_FALLBACK_COLORS[Math.abs(Number(idx) || 0) % FEATURE_GATE_FALLBACK_COLORS.length];
+  return fallback || FEATURE_GATE_FALLBACK_COLORS[0];
+}
+function featureGateHexToRgba(hex, alpha){
+  try{
+    let h = String(hex || "").trim().replace(/^#/, "");
+    if(h.length === 3) h = h.split("").map((ch)=> ch + ch).join("");
+    if(!/^[0-9a-f]{6}$/i.test(h)) return `rgba(34,255,210,${Number(alpha) || 0})`;
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return `rgba(${r},${g},${b},${Math.max(0, Math.min(1, Number(alpha) || 0))})`;
+  }catch(_){
+    return `rgba(34,255,210,${Number(alpha) || 0})`;
+  }
+}
+function featureGateTableLookupKey(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  try{
+    const canonical = String(getRepoCanonicalTableName(raw) || raw).trim();
+    const key = canonicalTableMapKey(canonical || raw);
+    if(key) return key;
+  }catch(_){}
+  try{
+    const key = normKey(raw);
+    if(key) return key;
+  }catch(_){}
+  return raw.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+function featureGateUniqueIds(gates){
+  const out = [];
+  const seen = new Set();
+  (Array.isArray(gates) ? gates : []).forEach((gate)=>{
+    const id = featureGateNormalizeId(gate);
+    if(!id || seen.has(id)) return;
+    seen.add(id);
+    out.push(id);
+  });
+  return out;
+}
+function tableFeatureGateIdsForOverview(tableName, slotData){
+  try{
+    const payload = getFeatureUnlockPayload(slotData);
+    if(!payload?.enabled || !isDeepRunSeed(slotData)) return [];
+    const map = (payload.table_feature_gates && typeof payload.table_feature_gates === "object") ? payload.table_feature_gates : {};
+    const raw = String(tableName || "").trim();
+    const candidates = [];
+    const pushCandidate = (value)=>{
+      const v = String(value || "").trim();
+      if(v && !candidates.includes(v)) candidates.push(v);
+    };
+    pushCandidate(raw);
+    try{ pushCandidate(getRepoCanonicalTableName(raw)); }catch(_){}
+    try{ pushCandidate(getRepoDisplayTableName(raw)); }catch(_){}
+    for(const candidate of candidates){
+      if(Array.isArray(map[candidate])) return featureGateUniqueIds(map[candidate]);
+    }
+    const wanted = new Set(candidates.map(featureGateTableLookupKey).filter(Boolean));
+    for(const [entryName, gates] of Object.entries(map)){
+      if(!Array.isArray(gates)) continue;
+      if(wanted.has(featureGateTableLookupKey(entryName))) return featureGateUniqueIds(gates);
+    }
+  }catch(_){}
+  return [];
+}
+function tableFeatureGateDefsForOverview(tableName, slotData){
+  const ids = tableFeatureGateIdsForOverview(tableName, slotData);
+  if(!ids.length) return [];
+  const payload = getFeatureUnlockPayload(slotData);
+  const defs = normalizeFeatureKeyDefinitions(payload.used_feature_keys && payload.used_feature_keys.length ? payload.used_feature_keys : payload.feature_keys);
+  const byId = new Map();
+  defs.forEach((def)=> byId.set(featureGateNormalizeId(def.id), def));
+  return ids.map((id, idx)=>{
+    const base = byId.get(id) || {};
+    const colors = featureGateColorForId(id, idx);
+    return {
+      id,
+      item: String(base.item || `Feature Key - ${String(colors.label || id).replace(/_/g, " ")}`).trim(),
+      label: String(base.label || colors.label || id).trim(),
+      fullLabel: String(base.fullLabel || base.label || colors.label || id).trim(),
+      piecesRequired: featureKeyRequiredPiecesForDef(base),
+      color: colors.primary,
+      color2: colors.secondary
+    };
+  });
+}
+function featureGateGradientForDefs(defs){
+  const colors = (Array.isArray(defs) ? defs : []).map((def)=> String(def?.color || "").trim()).filter(Boolean);
+  if(colors.length <= 1){
+    const def = defs && defs[0] ? defs[0] : {};
+    return `linear-gradient(135deg, ${def.color || "#22ffd2"}, ${def.color2 || "#00a6ff"})`;
+  }
+  const step = 100 / colors.length;
+  const stops = colors.map((color, idx)=> `${color} ${(idx * step).toFixed(2)}% ${((idx + 1) * step).toFixed(2)}%`);
+  return `linear-gradient(90deg, ${stops.join(", ")})`;
+}
+function clearFeatureGateOverviewStyle(tile){
+  if(!tile) return;
+  tile.classList.remove("featureGateOverview");
+  tile.classList.remove("featureGateLockedOverview");
+  delete tile.dataset.featureGates;
+  ["--featureGatePrimary", "--featureGateSecondary", "--featureGateGlow", "--featureGateSoftGlow", "--featureGateGradient"].forEach((prop)=>{
+    try{ tile.style.removeProperty(prop); }catch(_){}
+  });
+  try{
+    Array.from(tile.children || []).forEach((node)=>{
+      if(
+        node?.classList?.contains("featureGateTileBorder")
+        || node?.classList?.contains("featureGateTag")
+        || node?.classList?.contains("featureGateLockLabel")
+      ) node.remove();
+    });
+  }catch(_){}
+}
+function applyFeatureGateOverviewStyle(tile, tableName, slotData){
+  clearFeatureGateOverviewStyle(tile);
+  const defs = tableFeatureGateDefsForOverview(tableName, slotData);
+  if(!tile || !defs.length) return false;
+  const missingDefs = tableMissingFeatureGateDefs(tableName, slotData, defs);
+  const isFeatureLocked = missingDefs.length > 0;
+  const primary = defs[0].color || "#22ffd2";
+  const secondary = defs[0].color2 || "#00a6ff";
+  tile.classList.add("featureGateOverview");
+  if(isFeatureLocked) tile.classList.add("featureGateLockedOverview");
+  tile.dataset.featureGates = defs.map((def)=> def.id).join("|");
+  tile.style.setProperty("--featureGatePrimary", primary);
+  tile.style.setProperty("--featureGateSecondary", secondary);
+  tile.style.setProperty("--featureGateGlow", featureGateHexToRgba(primary, .34));
+  tile.style.setProperty("--featureGateSoftGlow", featureGateHexToRgba(primary, .18));
+  tile.style.setProperty("--featureGateGradient", featureGateGradientForDefs(defs));
+
+  const border = document.createElement("div");
+  border.className = "featureGateTileBorder";
+  tile.appendChild(border);
+
+  const tag = document.createElement("div");
+  tag.className = "featureGateTag";
+  const title = defs.map((def)=> `Requires ${def.fullLabel || def.label || def.id} (${featureKeyStatusTextForDef(def)})`).join(" / ");
+  tag.title = title;
+  tag.setAttribute("aria-label", title);
+
+  const swatches = document.createElement("div");
+  swatches.className = "featureGateSwatches";
+  defs.slice(0, 5).forEach((def)=>{
+    const swatch = document.createElement("span");
+    swatch.className = "featureGateSwatch";
+    swatch.style.background = def.color || primary;
+    swatch.style.color = def.color || primary;
+    swatches.appendChild(swatch);
+  });
+  const text = document.createElement("span");
+  text.className = "featureGateTagText";
+  text.textContent = isFeatureLocked
+    ? missingDefs.map((def)=>featureKeyCompactStatusTextForDef(def)).join(" + ")
+    : (defs.length === 1 ? `${defs[0].label || "FEATURE"} READY` : `${defs.length} GATES READY`);
+  tag.appendChild(swatches);
+  tag.appendChild(text);
+  tile.appendChild(tag);
+  if(isFeatureLocked){
+    const lockLabel = document.createElement("div");
+    lockLabel.className = "featureGateLockLabel";
+    lockLabel.textContent = `FEATURE LOCK: ${missingDefs.map((def)=>featureKeyCompactStatusTextForDef(def)).join(" + ")}`;
+    lockLabel.title = title;
+    tile.appendChild(lockLabel);
+  }
+  return true;
+}
+function normalizeFeatureKeyDefinitions(defs){
+  const out = [];
+  const seen = new Set();
+  (Array.isArray(defs) ? defs : []).forEach((raw, idx)=>{
+    if(!raw || typeof raw !== "object") return;
+    const item = String(raw.item || raw.name || "").trim();
+    if(!item || seen.has(featureKeyNormalizeItemName(item))) return;
+    seen.add(featureKeyNormalizeItemName(item));
+    const id = String(raw.id || item).trim();
+    const label = String(raw.short_label || raw.shortLabel || raw.label || item.replace(/^Feature Key\s*-\s*/i, "") || `KEY ${idx + 1}`).trim();
+    const fullLabel = String(raw.label || label).trim();
+    const piecesRequiredRaw = Number(raw.pieces_required ?? raw.piecesRequired ?? raw.required ?? raw.count ?? 0);
+    const piecesRequired = Math.max(1, Number.isFinite(piecesRequiredRaw) && piecesRequiredRaw > 0 ? piecesRequiredRaw : featureKeyDefaultPiecesRequired());
+    const colors = featureGateColorForId(id, idx);
+    out.push({ id, item, label, fullLabel, piecesRequired, color:colors.primary, color2:colors.secondary });
+  });
+  return out;
+}
+function featureKeyDefaultPiecesRequired(){
+  try{
+    const payload = getFeatureUnlockPayload(ap?.slotData);
+    const raw = Number(payload?.feature_key_pieces_required ?? payload?.pieces_required ?? 1);
+    return Math.max(1, Number.isFinite(raw) ? raw : 1);
+  }catch(_){ return 1; }
+}
+function featureKeyRequiredPiecesForDef(def){
+  const raw = Number(def?.piecesRequired ?? def?.pieces_required ?? 0);
+  return Math.max(1, Number.isFinite(raw) && raw > 0 ? raw : featureKeyDefaultPiecesRequired());
+}
+function featureKeyStateForItem(itemName){
+  const wanted = featureKeyNormalizeItemName(itemName);
+  if(!wanted) return null;
+  try{
+    if(!featureKeysState.length) featureKeysConfigureFromSlotData(ap?.slotData, { render:false });
+  }catch(_){}
+  return (featureKeysState || []).find((row)=>featureKeyNormalizeItemName(row?.item) === wanted) || null;
+}
+function featureKeyCountForItem(itemName){
+  const row = featureKeyStateForItem(itemName);
+  return Math.max(0, Number(row?.count) || 0);
+}
+function featureKeyIsComplete(itemName){
+  const row = featureKeyStateForItem(itemName);
+  if(!row) return false;
+  const required = featureKeyRequiredPiecesForDef(row);
+  return !!row.acquired || featureKeyCountForItem(itemName) >= required;
+}
+function featureKeyStatusTextForDef(def){
+  const required = featureKeyRequiredPiecesForDef(def);
+  const count = Math.min(required, featureKeyCountForItem(def?.item));
+  return count >= required ? "SECURED" : `${count}/${required} PIECES`;
+}
+function featureKeyCompactStatusTextForDef(def){
+  const label = String(def?.label || def?.fullLabel || "KEY").trim();
+  const required = featureKeyRequiredPiecesForDef(def);
+  const count = Math.min(required, featureKeyCountForItem(def?.item));
+  return count >= required ? `${label} READY` : `${label} ${count}/${required}`;
+}
+function tableMissingFeatureGateDefs(tableName, slotData, defsOverride){
+  const defs = Array.isArray(defsOverride) ? defsOverride : tableFeatureGateDefsForOverview(tableName, slotData);
+  return defs.filter((def)=>!featureKeyIsComplete(def.item));
+}
+function isTableFeatureLocked(tableName, slotData){
+  return tableMissingFeatureGateDefs(tableName, slotData).length > 0;
+}
+function tableFeatureGateMissingText(tableName, slotData){
+  const missing = tableMissingFeatureGateDefs(tableName, slotData);
+  return missing.map((def)=>featureKeyCompactStatusTextForDef(def)).join(", ");
+}
+function featureKeysRefreshLockViews(){
+  try{
+    clearTimeout(window.__flprFeatureKeyLockRefreshTimer || 0);
+    window.__flprFeatureKeyLockRefreshTimer = setTimeout(()=>{
+      try{ if(activeView === "overview") renderOverviewGrid(); else applyOverviewNowPlayingHighlight(); }catch(_){}
+      try{ if(activeView === "checks") renderChecks(); }catch(_){}
+      try{
+        if(activeView === "tower"){
+          const body = document.getElementById("selectedBody");
+          const wk = state?.selected;
+          if(body && wk && state?.worlds?.[wk]) renderTowerPentagon(body, state.worlds[wk], wk);
+        }
+      }catch(_){}
+    }, 40);
+  }catch(_){}
+}
+function featureKeysLoadSaved(){
+  try{
+    const raw = localStorage.getItem(FEATURE_KEYS_STATE_LS);
+    const parsed = raw ? JSON.parse(raw) : {};
+    if(parsed && typeof parsed === "object"){
+      return {
+        acquired: (parsed.acquired && typeof parsed.acquired === "object") ? parsed.acquired : {},
+        counts: (parsed.counts && typeof parsed.counts === "object") ? parsed.counts : {}
+      };
+    }
+  }catch(_){}
+  return { acquired:{}, counts:{} };
+}
+function featureKeysSave(){
+  try{
+    const acquired = {};
+    const counts = {};
+    (featureKeysState || []).forEach((row)=>{
+      const key = featureKeyNormalizeItemName(row?.item);
+      if(key){
+        acquired[key] = !!row?.acquired;
+        counts[key] = Math.max(0, Number(row?.count) || 0);
+      }
+    });
+    localStorage.setItem(FEATURE_KEYS_STATE_LS, JSON.stringify({ acquired, counts }));
+  }catch(_){}
+}
+function featureKeysConfigureFromSlotData(slotData, opts){
+  opts = opts || {};
+  const payload = getFeatureUnlockPayload(slotData);
+  const enabled = !!payload?.enabled && isDeepRunSeed(slotData);
+  const dock = document.getElementById("featureDock");
+  try{ document.body.classList.toggle("deepRunFeatureKeysEnabled", enabled); }catch(_){}
+  if(!enabled){
+    featureKeysDefinitions = [];
+    featureKeysState = [];
+    if(dock){
+      dock.hidden = true;
+      dock.classList.remove("enabled");
+    }
+    return false;
+  }
+  const defs = normalizeFeatureKeyDefinitions(payload.used_feature_keys && payload.used_feature_keys.length ? payload.used_feature_keys : payload.feature_keys);
+  featureKeysDefinitions = defs;
+  const saved = featureKeysLoadSaved();
+  featureKeysState = defs.map((def)=>({
+    ...def,
+    piecesRequired: featureKeyRequiredPiecesForDef(def),
+    count: (() => {
+      const key = featureKeyNormalizeItemName(def.item);
+      const savedCount = Number(saved.counts?.[key]);
+      if(Number.isFinite(savedCount) && savedCount > 0) return Math.max(0, Math.floor(savedCount));
+      return saved.acquired?.[key] ? featureKeyRequiredPiecesForDef(def) : 0;
+    })(),
+    acquired: (() => {
+      const key = featureKeyNormalizeItemName(def.item);
+      const savedCount = Number(saved.counts?.[key]);
+      if(Number.isFinite(savedCount)) return savedCount >= featureKeyRequiredPiecesForDef(def);
+      return !!saved.acquired?.[key];
+    })()
+  }));
+  if(dock){
+    dock.hidden = false;
+    dock.classList.add("enabled");
+  }
+  if(opts.render !== false) featureKeysRender();
+  return true;
+}
+function featureKeysRender(){
+  const row = document.getElementById("featureKeysRow");
+  const dock = document.getElementById("featureDock");
+  if(!row || !dock) return;
+  if(!featureKeysState.length){
+    dock.hidden = true;
+    dock.classList.remove("enabled");
+    try{ document.body.classList.remove("deepRunFeatureKeysEnabled"); }catch(_){}
+    row.innerHTML = "";
+    return;
+  }
+  dock.hidden = false;
+  dock.classList.add("enabled");
+  row.style.setProperty("--featureKeyCount", String(Math.max(1, featureKeysState.length)));
+  row.innerHTML = "";
+  featureKeysState.forEach((key, idx)=>{
+    const card = document.createElement("div");
+    card.className = "featureKeyCard" + (key.acquired ? " acquired" : "");
+    card.tabIndex = 0;
+    card.dataset.featureKeySlot = String(idx + 1);
+    try{
+      const colors = featureGateColorForId(key.id, idx);
+      card.style.setProperty("--featureKeyCardPrimary", colors.primary);
+      card.style.setProperty("--featureKeyCardSecondary", colors.secondary);
+      card.style.setProperty("--featureKeyCardBorder", featureGateHexToRgba(colors.primary, key.acquired ? .82 : .34));
+      card.style.setProperty("--featureKeyCardGlow", featureGateHexToRgba(colors.primary, key.acquired ? .22 : .16));
+      card.style.setProperty("--featureKeyCardSoftGlow", featureGateHexToRgba(colors.primary, .13));
+    }catch(_){}
+    const frame = document.createElement("div");
+    frame.className = "bossKeyFrame";
+    const sq = document.createElement("div");
+    sq.className = "bossKeySquare";
+    const img = document.createElement("img");
+    img.className = "bossKeyImg";
+    img.src = BOSS_KEY_DEFAULT_IMG;
+    img.alt = key.fullLabel || key.label || "Feature Key";
+    img.draggable = false;
+    sq.appendChild(img);
+    frame.appendChild(sq);
+    card.appendChild(frame);
+    const body = document.createElement("div");
+    body.className = "featureKeyBody";
+    const label = document.createElement("div");
+    label.className = "featureKeyLabel";
+    label.textContent = key.label || `KEY ${idx + 1}`;
+    const status = document.createElement("div");
+    status.className = "featureKeyStatus";
+    status.textContent = key.acquired ? "SECURED" : `${Math.min(featureKeyRequiredPiecesForDef(key), Math.max(0, Number(key.count) || 0))}/${featureKeyRequiredPiecesForDef(key)} PIECES`;
+    body.appendChild(label);
+    body.appendChild(status);
+    card.appendChild(body);
+    card.addEventListener("click", ()=>{
+      if(key.acquired) featureKeysAnimate(idx, true);
+    });
+    row.appendChild(card);
+  });
+}
+function featureKeyCardAt(idx){
+  try{
+    const cards = Array.from(document.querySelectorAll(".featureKeyCard"));
+    return cards[Math.max(0, Number(idx) || 0)] || null;
+  }catch(_){ return null; }
+}
+function featureKeysApplyAcquiredItems(itemNames, opts){
+  opts = opts || {};
+  if(!featureKeysState.length && !featureKeysConfigureFromSlotData(ap?.slotData, { render:false })) return 0;
+  const counts = new Map();
+  (Array.isArray(itemNames) ? itemNames : []).forEach((itemName)=>{
+    const key = featureKeyNormalizeItemName(itemName);
+    if(key) counts.set(key, (counts.get(key) || 0) + 1);
+  });
+  let count = 0;
+  let changed = false;
+  featureKeysState.forEach((row)=>{
+    const key = featureKeyNormalizeItemName(row.item);
+    const nextCount = counts.get(key) || 0;
+    const required = featureKeyRequiredPiecesForDef(row);
+    const has = nextCount >= required;
+    if(has) count++;
+    if((Math.max(0, Number(row.count) || 0) !== nextCount) || row.acquired !== has){
+      row.count = nextCount;
+      row.acquired = has;
+      changed = true;
+    }
+  });
+  if(changed || opts.render !== false){
+    featureKeysSave();
+    featureKeysRender();
+    featureKeysRefreshLockViews();
+  }
+  return count;
+}
+function featureKeysSyncFromReceived(received){
+  const names = [];
+  try{
+    for(const row of (received || [])){
+      const itemName = String(row.itemName || row.baseItemName || "").trim();
+      if(isFeatureKeyItemName(itemName)) names.push(itemName);
+    }
+  }catch(_){}
+  return featureKeysApplyAcquiredItems(names, { render:true });
+}
+function featureKeysGrantOne(itemName, opts){
+  opts = opts || {};
+  if(!isFeatureKeyItemName(itemName)) return false;
+  if(!featureKeysState.length && !featureKeysConfigureFromSlotData(ap?.slotData, { render:false })) return false;
+  const wanted = featureKeyNormalizeItemName(itemName);
+  const idx = featureKeysState.findIndex(row => featureKeyNormalizeItemName(row?.item) === wanted);
+  if(idx < 0) return false;
+  const wasAcquired = !!featureKeysState[idx].acquired;
+  const required = featureKeyRequiredPiecesForDef(featureKeysState[idx]);
+  featureKeysState[idx].count = Math.min(required, Math.max(0, Number(featureKeysState[idx].count) || 0) + 1);
+  featureKeysState[idx].acquired = featureKeysState[idx].count >= required;
+  featureKeysSave();
+  featureKeysRender();
+  featureKeysRefreshLockViews();
+  if(!opts.isSnapshot && !opts.isFlush && !wasAcquired && featureKeysState[idx].acquired){
+    featureKeysAnimate(idx, true);
+  }
+  return true;
+}
+function featureKeysAnimate(idx, force){
+  try{
+    if(window.__suppressBossKeyFx && !force) return;
+    const card = featureKeyCardAt(idx);
+    if(card) bossKeyApplyRevealClass(card, BOSS_KEY_COLLECTED_FADE_MS);
+    if(typeof playBossKeyReceiveCinematic === "function"){
+      playBossKeyReceiveCinematic(idx, {
+        force:true,
+        card,
+        slotCount: Math.max(1, featureKeysState.length),
+        topText:"FEATURE KEY",
+        bottomText:"ACQUIRED",
+        dockId:"featureDock",
+        core: featureKeyCinematicMakeKeyCore(idx),
+        skipBossReveal:true
+      });
+    }
+  }catch(_){}
+}
 function clampBossKeysCount(value, fallback){
   const raw = Number(value);
   const base = Number.isFinite(raw) ? raw : Number(fallback);
@@ -59955,6 +61387,7 @@ function bossKeyClearCinematic(){
     });
   }catch(_){}
   try{ document.getElementById("bossDock")?.classList.remove("bossKeySectionCharge"); }catch(_){}
+  try{ document.getElementById("featureDock")?.classList.remove("bossKeySectionCharge"); }catch(_){}
   try{ document.querySelector(".capture")?.classList.remove("bossKeyScreenShake"); }catch(_){}
 }
 function bossKeyFindCard(idx){
@@ -60083,6 +61516,12 @@ function bossKeyCinematicMakeKeyCore(idx){
     }
   }catch(_){}
   core.appendChild(bossKeyCinematicMakeRevealSvg(src));
+  return core;
+}
+function featureKeyCinematicMakeKeyCore(idx){
+  const core = document.createElement("div");
+  core.className = "bossKeyCinematicKeyCore";
+  core.appendChild(bossKeyCinematicMakeRevealSvg(BOSS_KEY_DEFAULT_IMG));
   return core;
 }
 function bossKeyCinematicSpawnLightning(layer, count){
@@ -60262,13 +61701,14 @@ function playBossKeyReceiveCinematic(idx, opts){
   const hostH = Math.max(240, Number(hostRect.height) || window.innerHeight || 720);
   const centerX = hostW * 0.5;
   const centerY = hostH * 0.43;
-  const card = bossKeyFindCard(idx);
+  const card = opts.card || bossKeyFindCard(idx);
   const square = card ? (card.querySelector(".bossKeySquare") || card) : null;
   const targetRectRaw = square && square.getBoundingClientRect ? square.getBoundingClientRect() : null;
   const hasTarget = !!(targetRectRaw && targetRectRaw.width > 6 && targetRectRaw.height > 6);
+  const slotCount = Math.max(1, Number(opts.slotCount) || BOSS_KEYS_COUNT);
   const targetX = hasTarget
     ? (targetRectRaw.left + targetRectRaw.width * 0.5 - hostRect.left)
-    : (hostW * ((Math.max(0, Number(idx)||0) + 0.5) / Math.max(1, BOSS_KEYS_COUNT)));
+    : (hostW * ((Math.max(0, Number(idx)||0) + 0.5) / slotCount));
   const targetY = hasTarget
     ? (targetRectRaw.top + targetRectRaw.height * 0.5 - hostRect.top)
     : (hostH - 78);
@@ -60278,7 +61718,7 @@ function playBossKeyReceiveCinematic(idx, opts){
 
   if(card){
     card.classList.add("bossKeyReceivingSlot", "bossKeyAwaitingSlam");
-    bossKeyHoldReveal(idx, BOSS_KEY_CINEMATIC_TOTAL_MS + 900);
+    if(!opts.skipBossReveal) bossKeyHoldReveal(idx, BOSS_KEY_CINEMATIC_TOTAL_MS + 900);
     bossKeyApplyRevealClass(card, BOSS_KEY_CINEMATIC_TOTAL_MS + 900);
   }
 
@@ -60314,12 +61754,12 @@ function playBossKeyReceiveCinematic(idx, opts){
 
   const top = document.createElement("div");
   top.className = "bossKeyCinematicTitle top";
-  top.textContent = "BOSS KEY";
+  top.textContent = String(opts.topText || "BOSS KEY");
   wrap.appendChild(top);
 
   const bottom = document.createElement("div");
   bottom.className = "bossKeyCinematicTitle bottom";
-  bottom.textContent = "ACQUIRED";
+  bottom.textContent = String(opts.bottomText || "ACQUIRED");
   wrap.appendChild(bottom);
 
   const flyer = document.createElement("div");
@@ -60328,7 +61768,7 @@ function playBossKeyReceiveCinematic(idx, opts){
   flyer.style.setProperty("--bk-fly-y", `${(targetY - centerY).toFixed(1)}px`);
   flyer.style.setProperty("--bk-slot-scale", slotScale.toFixed(3));
   flyer.style.setProperty("--bk-slot-scale-pop", slotScalePop.toFixed(3));
-  flyer.appendChild(bossKeyCinematicMakeKeyCore(idx));
+  flyer.appendChild(opts.core || bossKeyCinematicMakeKeyCore(idx));
   stage.appendChild(flyer);
 
   const sparks = document.createElement("div");
@@ -60357,7 +61797,7 @@ function playBossKeyReceiveCinematic(idx, opts){
   bossKeyCinematicLater(()=>{ try{ playSfx("bossKeyAcquiredDing"); }catch(_){ } }, BOSS_KEY_CINEMATIC_WORDS_AT_MS);
   bossKeyCinematicLater(()=>{
     try{ wrap.classList.add("charging"); }catch(_){}
-    try{ document.getElementById("bossDock")?.classList.add("bossKeySectionCharge"); }catch(_){}
+    try{ document.getElementById(String(opts.dockId || "bossDock"))?.classList.add("bossKeySectionCharge"); }catch(_){}
   }, 3040);
   bossKeyCinematicLater(()=>{
     try{ wrap.classList.add("flying"); }catch(_){}
@@ -60379,7 +61819,7 @@ function playBossKeyReceiveCinematic(idx, opts){
   }, BOSS_KEY_CINEMATIC_IMPACT_AT_MS);
   bossKeyCinematicLater(()=>{
     try{ wrap.classList.add("hide"); }catch(_){}
-    try{ document.getElementById("bossDock")?.classList.remove("bossKeySectionCharge"); }catch(_){}
+    try{ document.getElementById(String(opts.dockId || "bossDock"))?.classList.remove("bossKeySectionCharge"); }catch(_){}
     try{ host.classList.remove("bossKeyScreenShake"); }catch(_){}
   }, BOSS_KEY_CINEMATIC_TOTAL_MS - 520);
   bossKeyCinematicLater(()=>{
@@ -60637,6 +62077,7 @@ window.__suppressBossKeyFx = true;
   bossKeysEnsureInputs();
   bossKeysBindDockHover();
   bossKeysRender();
+  try{ featureKeysConfigureFromSlotData(ap?.slotData, { render:true }); }catch(_){}
   syncFlprBotBossKeys(true);
   try{ syncFlprBotBossStatus(true); }catch(_){}
 })();
@@ -62664,14 +64105,34 @@ function bossApplyDamagePct(pct, sourceKey, opts){
     recvIndex: k.startsWith("boss-item:") ? Number(k.slice("boss-item:".length)) : null,
     locId: Number.isFinite(Number(opts?.locId)) ? Number(opts.locId) : null,
     sourceLabel: String(opts?.sourceLabel || "").trim(),
+    nonLethal: opts.canDefeat === false,
     updatedAt: Date.now()
   };
 
   const dmg = Math.round(state.bossHpLive.max * (pct/100));
-  const prev = state.bossHpLive.cur;
+  const prev = Math.max(0, Number(state.bossHpLive.cur) || 0);
   const prevPct = Math.max(0, Math.min(100, Math.round((Math.max(0, Number(prev) || 0) / Math.max(1, Number(state.bossHpLive.max) || 1)) * 100)));
-  state.bossHpLive.cur = Math.max(0, prev - Math.max(1, dmg));
-  const attackInfo = opts.attackInfo || bossBuildAttackInfo({ sourceLabel:String(opts.sourceLabel || "CHECK"), pct, assist:!!opts.isAssist, username:opts.assistUser });
+  const rawNextCur = Math.max(0, prev - Math.max(1, dmg));
+  const nonLethalDamage = !!(opts.canDefeat === false);
+  const preventedDefeat = !!(nonLethalDamage && prev > 0 && rawNextCur <= 0);
+  state.bossHpLive.cur = preventedDefeat ? 1 : rawNextCur;
+  const nextPct = Math.max(0, Math.min(100, Math.round((Math.max(0, Number(state.bossHpLive.cur) || 0) / Math.max(1, Number(state.bossHpLive.max) || 1)) * 100)));
+  if(state.bossDamageLedger?.[k]){
+    state.bossDamageLedger[k].preventedDefeat = preventedDefeat;
+    state.bossDamageLedger[k].appliedPct = Math.max(0, prevPct - nextPct);
+    state.bossDamageLedger[k].hpAfter = state.bossHpLive.cur;
+  }
+  let attackInfo = opts.attackInfo || bossBuildAttackInfo({ sourceLabel:String(opts.sourceLabel || "CHECK"), pct, assist:!!opts.isAssist, username:opts.assistUser });
+  if(preventedDefeat && attackInfo){
+    const bossName = String(attackInfo.bossName || getUnifiedBossTableName({ includePlaceholder:false }) || state?.bossHpLive?.name || "Boss Table").trim() || "Boss Table";
+    attackInfo = {
+      ...attackInfo,
+      pct: Math.max(0, prevPct - nextPct),
+      nonLethal: true,
+      headline: `Bonus Pinball drove ${bossName} to the brink!`,
+      sub: `${String(attackInfo.sub || opts.sourceLabel || "BONUS PINBALL")}; final blow must come from the Boss Table`
+    };
+  }
   window.__bossLastAttackLabel = String(attackInfo.action || opts.attackLabel || "");
   window.__bossLastAttackInfo = attackInfo;
 
@@ -62717,7 +64178,8 @@ function bossApplyDamagePct(pct, sourceKey, opts){
       bossPlayHitSoundOnly();
     }
   }catch(_){}
-  if(state.bossHpLive.cur === 0){
+  const reachedZeroFromThisHit = !!(prev > 0 && state.bossHpLive.cur === 0);
+  if(reachedZeroFromThisHit){
     try{ episodeMarkBossComplete(); }catch(_){}
     try{ flprStatsQueueVictorySummary(BOSS_VICTORY_CELEBRATION_MS + BOSS_VICTORY_STATS_CLEAR_MS); }catch(_){}
     try{ bossMaybeAutoClaimVictory(opts.fromCheck ? "Boss HP reached 0 from redeemed check" : "Boss HP reached 0"); }catch(_){}

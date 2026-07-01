@@ -649,7 +649,7 @@
               <div class="label">Active Table Count</div>
               <div class="small">Curated table groups update this automatically. Random mode can still use a manual count.</div>
             </div>
-            <div style="width:90px;"><input id="metasizerActiveTableCount" type="number" min="5" max="90" step="5" value="25" /></div>
+            <div style="width:90px;"><input id="metasizerActiveTableCount" type="number" min="5" max="90" step="5" value="20" /></div>
           </div>
 
           <div class="row">
@@ -933,7 +933,7 @@
     random_start_tables_selection: [],
     random_start_revealed: false,
     base_game_enabled: true,
-    base_game_active_table_count: 25,
+    base_game_active_table_count: 20,
     base_game_selection_mode: "random_catalog_pool",
     base_game_curated_world_groups: "auto",
     base_game_curated_tables: "auto",
@@ -998,12 +998,12 @@
   }
   function activeTableCountForCuratedSelection(tableCount){
     const count = Math.max(0, asInt(tableCount, 0));
-    if(count <= 0) return clamp(asInt(state.base_game_active_table_count, 25), 5, maxActiveTableCount());
+    if(count <= 0) return clamp(asInt(state.base_game_active_table_count, 20), 5, maxActiveTableCount());
     const rounded = Math.ceil(count / METASIZER_WORLD_SLOT_SIZE) * METASIZER_WORLD_SLOT_SIZE;
     return clamp(rounded, 5, maxActiveTableCount());
   }
   function expectedGeneratedWorldCount(){
-    const activeCount = clamp(asInt(state.base_game_active_table_count, 25), 5, maxActiveTableCount());
+    const activeCount = clamp(asInt(state.base_game_active_table_count, 20), 5, maxActiveTableCount());
     return Math.max(1, Math.ceil(activeCount / METASIZER_WORLD_SLOT_SIZE));
   }
   function normalizeBaseGameSelectionMode(){
@@ -1463,7 +1463,7 @@
 
   function syncUiFromState(){
     normalizeBaseGameSelectionMode();
-    state.base_game_active_table_count = clamp(asInt(state.base_game_active_table_count, 25), 5, maxActiveTableCount());
+    state.base_game_active_table_count = clamp(asInt(state.base_game_active_table_count, 20), 5, maxActiveTableCount());
     q("progression").value = String(state.progression_balancing);
     q("progressionRange").value = String(state.progression_balancing);
     q("accessibility").value = state.accessibility;
@@ -1512,7 +1512,7 @@
     state.random_start_tables_selection = [];
     state.random_start_revealed = false;
     state.base_game_enabled = true;
-    state.base_game_active_table_count = 25;
+    state.base_game_active_table_count = 20;
     state.base_game_selection_mode = "random_catalog_pool";
     state.base_game_curated_world_groups = "auto";
     state.base_game_curated_tables = "auto";
@@ -1768,8 +1768,8 @@
     q("btnCuratedWellMade").addEventListener("click", () => {
       state.base_game_selection_mode = "curated_table_list";
       q("metasizerSelectionMode").value = "curated_table_list";
-      state.base_game_active_table_count = 25;
-      q("metasizerActiveTableCount").value = "25";
+      state.base_game_active_table_count = 20;
+      q("metasizerActiveTableCount").value = "20";
       state.base_game_custom_world_sets = "auto";
       q("metasizerCustomWorldSets").value = "auto";
       setCuratedTableSelection(WELL_MADE_TABLES_PRESET);

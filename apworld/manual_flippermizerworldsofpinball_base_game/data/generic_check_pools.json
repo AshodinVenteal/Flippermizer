@@ -938,10 +938,10 @@
     ],
     "Medium": [
       {
-        "title": "Start Multiball",
+        "title": "Lock 1 Ball for Multiball",
         "type": "task",
-        "explanation": "",
-        "source_location": "Congo – Start Multiball"
+        "explanation": "Qualify Congo Multiball and lock one ball. Full Multiball still needs three locked balls or enough Gray Attack progress.",
+        "source_location": "Congo - Lock 1 Ball for Multiball"
       },
       {
         "title": "Medium Score (246,246,985+)",
@@ -956,10 +956,10 @@
         "source_location": "Advance 1 map destination"
       },
       {
-        "title": "Lock 1 Ball for Multiball",
+        "title": "Start any map/mode objective",
         "type": "task",
-        "explanation": "Qualify Congo Multiball and lock one ball. Full Multiball still needs three locked balls or enough Gray Attack progress.",
-        "source_location": "Congo - Lock 1 Ball for Multiball"
+        "explanation": "",
+        "source_location": "Congo – Start any map/mode objective"
       },
       {
         "title": "Spell C-O-N-G-O once",
@@ -4050,30 +4050,24 @@
         "source_location": "Collect the 50000 Door Prize"
       },
       {
-        "title": "Complete PIG-OUT and collect a Toadstool award",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Complete PIG-OUT and collect a Toadstool award"
-      },
-      {
         "title": "Collect a Party Animal! letter",
         "type": "task",
         "explanation": "",
         "source_location": "Collect a Party Animal! letter"
       },
       {
-        "title": "Spell Party Animal! and start multiball",
+        "title": "Shoot either ramp twice",
         "type": "task",
-        "explanation": "",
-        "source_location": "Spell Party Animal! and start multiball"
+        "explanation": "Make two clean ramp shots on either Party Animal ramp before the game ends.",
+        "source_location": "Shoot either ramp twice"
       }
     ],
     "Medium": [
       {
-        "title": "Complete PIG-OUT and collect a Toadstool award",
+        "title": "Collect 3 Party Animal! letters",
         "type": "task",
-        "explanation": "",
-        "source_location": "Complete PIG-OUT and collect a Toadstool award"
+        "explanation": "Collect any three letters toward PARTY ANIMAL! before the game ends.",
+        "source_location": "Collect 3 Party Animal! letters"
       },
       {
         "title": "Medium Score (564,459+)",
@@ -4082,36 +4076,30 @@
         "source_location": "Party Animal - Medium Score (564,459+)"
       },
       {
-        "title": "Collect a Party Animal! letter",
+        "title": "Complete PIG-OUT twice",
         "type": "task",
-        "explanation": "",
-        "source_location": "Collect a Party Animal! letter"
+        "explanation": "Complete the PIG-OUT target sequence two times in one game.",
+        "source_location": "Complete PIG-OUT twice"
       },
       {
-        "title": "Complete the Jukebox targets",
+        "title": "Shoot both ramps in one game",
         "type": "task",
-        "explanation": "",
-        "source_location": "Complete the Jukebox targets"
-      },
-      {
-        "title": "Collect the 50000 Door Prize",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Collect the 50000 Door Prize"
+        "explanation": "Make at least one clean shot to each of Party Animal's two ramps in one game.",
+        "source_location": "Shoot both ramps in one game"
       },
       {
         "title": "Spell Party Animal! and start multiball",
         "type": "task",
-        "explanation": "",
+        "explanation": "Complete the PARTY ANIMAL! letters to start multiball.",
         "source_location": "Spell Party Animal! and start multiball"
       }
     ],
     "Hard": [
       {
-        "title": "Spell Party Animal! and start multiball",
+        "title": "Collect the Party Bonus (Multiball Jackpot)",
         "type": "task",
-        "explanation": "",
-        "source_location": "Spell Party Animal! and start multiball"
+        "explanation": "Start multiball, then collect the Party Bonus / multiball jackpot award.",
+        "source_location": "Collect the Party Bonus (Multiball Jackpot)"
       },
       {
         "title": "Hard Score (1,019,262+)",
@@ -4120,28 +4108,10 @@
         "source_location": "Party Animal - Hard Score (1,019,262+)"
       },
       {
-        "title": "Collect the Party Bonus (Multiball Jackpot)",
+        "title": "Start multiball and collect 2 jackpot awards",
         "type": "task",
-        "explanation": "",
-        "source_location": "Collect the Party Bonus (Multiball Jackpot)"
-      },
-      {
-        "title": "Complete PIG-OUT and collect a Toadstool award",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Complete PIG-OUT and collect a Toadstool award"
-      },
-      {
-        "title": "Collect a Party Animal! letter",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Collect a Party Animal! letter"
-      },
-      {
-        "title": "Complete the Jukebox targets",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Complete the Jukebox targets"
+        "explanation": "Start Party Animal multiball, then collect two jackpot or Party Bonus awards before the game ends.",
+        "source_location": "Start multiball and collect 2 jackpot awards"
       }
     ]
   },
@@ -4502,15 +4472,15 @@
         "source_location": "Complete any Tale"
       },
       {
-        "title": "Easy Score (950,000+)",
+        "title": "Easy Score (1,150,918+)",
         "type": "score",
-        "explanation": "Build score to at least 950,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Scared Stiff - Easy Score (950,000+)"
+        "explanation": "Build score to at least 1,150,918 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Scared Stiff - Easy Score (1,150,918+)"
       },
       {
         "title": "Collect a Spider wheel award",
         "type": "task",
-        "explanation": "Light and collect any one award from the Spider Wheel.",
+        "explanation": "",
         "source_location": "Collect a Spider wheel award"
       },
       {
@@ -4540,10 +4510,10 @@
         "source_location": "Start Crate Multiball"
       },
       {
-        "title": "Medium Score (2,500,000+)",
+        "title": "Medium Score (3,037,440+)",
         "type": "score",
-        "explanation": "Build score to at least 2,500,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Scared Stiff - Medium Score (2,500,000+)"
+        "explanation": "Build score to at least 3,037,440 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Scared Stiff - Medium Score (3,037,440+)"
       },
       {
         "title": "Complete Return of the Dead Heads",
@@ -4558,10 +4528,10 @@
         "source_location": "Complete any Tale"
       },
       {
-        "title": "Collect 3 Spider Wheel awards in one game",
+        "title": "Collect a Spider wheel award",
         "type": "task",
-        "explanation": "Collect three separate Spider Wheel awards before the game ends.",
-        "source_location": "Scared Stiff - Collect 3 Spider Wheel awards in one game"
+        "explanation": "",
+        "source_location": "Collect a Spider wheel award"
       },
       {
         "title": "Light Scared Stiff",
@@ -4572,10 +4542,10 @@
     ],
     "Hard": [
       {
-        "title": "Hard Score (5,200,000+)",
+        "title": "Hard Score (6,335,998+)",
         "type": "score",
-        "explanation": "Build score to at least 5,200,000 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Scared Stiff - Hard Score (5,200,000+)"
+        "explanation": "Build score to at least 6,335,998 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Scared Stiff - Hard Score (6,335,998+)"
       },
       {
         "title": "Start Spider Mania",
@@ -4668,10 +4638,10 @@
         "source_location": "Start Coffin Multiball"
       },
       {
-        "title": "Lock 2 Castle Multiball Balls",
+        "title": "Start Castle Multiball",
         "type": "task",
         "explanation": "",
-        "source_location": "Lock 2 Castle Multiball Balls"
+        "source_location": "Start Castle Multiball"
       },
       {
         "title": "Start Mist Multiball",
@@ -4680,10 +4650,10 @@
         "source_location": "Start Mist Multiball"
       },
       {
-        "title": "Collect any Multiball Award",
+        "title": "Collect a jackpot",
         "type": "task",
-        "explanation": "Start Castle, Coffin, or Mist Multiball and collect any lit multiball award or jackpot.",
-        "source_location": "Bram Stoker's Dracula - Collect any Multiball Award"
+        "explanation": "",
+        "source_location": "Collect a jackpot"
       }
     ],
     "Hard": [
@@ -4700,10 +4670,10 @@
         "source_location": "Bram Stoker's Dracula - Hard Score (96,405,423+)"
       },
       {
-        "title": "Start any multiball and collect any Multiball Award",
+        "title": "Start any multiball and collect a jackpot",
         "type": "task",
-        "explanation": "Start any Dracula multiball, then collect one lit multiball award or jackpot before multiball ends.",
-        "source_location": "Bram Stoker's Dracula - Start any multiball and collect any Multiball Award"
+        "explanation": "",
+        "source_location": "Start any multiball and collect a jackpot"
       },
       {
         "title": "Collect a Super Jackpot",
@@ -4728,10 +4698,10 @@
   "Creature from the Black Lagoon": {
     "Easy": [
       {
-        "title": "Collect the Slide or KISS Letters",
+        "title": "Start Creature Feature",
         "type": "task",
         "explanation": "",
-        "source_location": "Collect the Slide or KISS Letters"
+        "source_location": "Start Creature Feature"
       },
       {
         "title": "Easy Score (16,586,729+)",
@@ -4778,10 +4748,10 @@
         "source_location": "Creature from the Black Lagoon - Medium Score (38,828,192+)"
       },
       {
-        "title": "Start Move Your Car and Shoot It Twice",
+        "title": "Lock 1 ball for multiball",
         "type": "task",
         "explanation": "",
-        "source_location": "Start Move Your Car and Shoot It Twice"
+        "source_location": "Lock 1 ball for multiball"
       },
       {
         "title": "Start multiball",
@@ -4960,10 +4930,10 @@
   "Cirqus Voltaire": {
     "Easy": [
       {
-        "title": "Defeat Ringmaster once",
+        "title": "Hit Ringmaster 3 times",
         "type": "task",
-        "explanation": "Raise and hit the Ringmaster enough times to finish one full Ringmaster battle.",
-        "source_location": "Cirqus Voltaire - Defeat Ringmaster once"
+        "explanation": "",
+        "source_location": "Hit Ringmaster 3 times"
       },
       {
         "title": "Easy Score (4,288,742+)",
@@ -4990,10 +4960,10 @@
         "source_location": "Shoot the left ramp 3 times"
       },
       {
-        "title": "Complete 1 Marvel",
+        "title": "Collect a Side Show award",
         "type": "task",
-        "explanation": "Complete any one lit Marvel objective.",
-        "source_location": "Cirqus Voltaire - Complete 1 Marvel"
+        "explanation": "",
+        "source_location": "Collect a Side Show award"
       }
     ],
     "Medium": [
@@ -5016,10 +4986,10 @@
         "source_location": "Start Multiball"
       },
       {
-        "title": "Defeat Ringmaster twice",
+        "title": "Defeat Ringmaster once",
         "type": "task",
-        "explanation": "Finish two full Ringmaster battles in the same game.",
-        "source_location": "Cirqus Voltaire - Defeat Ringmaster twice"
+        "explanation": "",
+        "source_location": "Defeat Ringmaster once"
       },
       {
         "title": "Start Juggler",
@@ -5048,16 +5018,16 @@
         "source_location": "Cirqus Voltaire - Hard Score (14,921,006+)"
       },
       {
-        "title": "Defeat Ringmaster 3 times in one game",
+        "title": "Defeat Ringmaster twice",
         "type": "task",
-        "explanation": "Finish three full Ringmaster battles before the game ends.",
-        "source_location": "Cirqus Voltaire - Defeat Ringmaster 3 times in one game"
+        "explanation": "",
+        "source_location": "Defeat Ringmaster twice"
       },
       {
-        "title": "Complete 4 Marvels in one game",
+        "title": "Complete 1 Wonder",
         "type": "task",
-        "explanation": "Complete four separate Marvel objectives before the game ends.",
-        "source_location": "Cirqus Voltaire - Complete 4 Marvels in one game"
+        "explanation": "",
+        "source_location": "Complete 1 Wonder"
       },
       {
         "title": "Start Multiball and collect a jackpot",
@@ -5756,10 +5726,10 @@
         "source_location": "Collect a Super Jackpot"
       },
       {
-        "title": "Start 2 Modes in One Game",
+        "title": "Complete 2 modes in one game",
         "type": "task",
         "explanation": "",
-        "source_location": "Start 2 Modes in One Game"
+        "source_location": "Complete 2 modes in one game"
       },
       {
         "title": "Collect 2 Cryo-Claw awards in one game",
@@ -5848,10 +5818,10 @@
     ],
     "Hard": [
       {
-        "title": "Start Q's Pen Mode",
+        "title": "Complete Q's Pen mode",
         "type": "task",
         "explanation": "",
-        "source_location": "Start Q's Pen Mode"
+        "source_location": "Complete Q's Pen mode"
       },
       {
         "title": "Hard Score (758,635,943+)",
@@ -6126,10 +6096,10 @@
         "source_location": "Start any pyramid mode"
       },
       {
-        "title": "Easy Score (43,765,545+)",
+        "title": "Easy Score (58,354,060+)",
         "type": "score",
-        "explanation": "Build score to at least 43,765,545 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Stargate - Easy Score (43,765,545+)"
+        "explanation": "Build score to at least 58,354,060 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Stargate - Easy Score (58,354,060+)"
       },
       {
         "title": "Raise either guardian once",
@@ -6164,10 +6134,10 @@
         "source_location": "Complete any pyramid mode"
       },
       {
-        "title": "Medium Score (90,778,715+)",
+        "title": "Medium Score (121,038,286+)",
         "type": "score",
-        "explanation": "Build score to at least 90,778,715 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Stargate - Medium Score (90,778,715+)"
+        "explanation": "Build score to at least 121,038,286 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Stargate - Medium Score (121,038,286+)"
       },
       {
         "title": "Open the Stargate once",
@@ -6202,10 +6172,10 @@
         "source_location": "Lock 2 balls toward multiball"
       },
       {
-        "title": "Hard Score (158,643,983+)",
+        "title": "Hard Score (211,525,310+)",
         "type": "score",
-        "explanation": "Build score to at least 158,643,983 before drain. Focus lit modes, jackpots, and bonus multipliers.",
-        "source_location": "Stargate - Hard Score (158,643,983+)"
+        "explanation": "Build score to at least 211,525,310 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "source_location": "Stargate - Hard Score (211,525,310+)"
       },
       {
         "title": "Start multiball and collect a jackpot",
@@ -6932,122 +6902,86 @@
   "Rolling Stones": {
     "Easy": [
       {
-        "title": "Start any song mode",
+        "title": "Collect 1 ROCK letter",
         "type": "task",
-        "explanation": "",
-        "source_location": "Start any song mode"
+        "explanation": "Collect any R-O-C-K letter from the top lanes, the lit #5 target, or the Satisfaction saucer feed.",
+        "source_location": "Collect 1 ROCK letter"
       },
       {
         "title": "Easy Score (37,687+)",
         "type": "score",
-        "explanation": "Build score to at least 37,687 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "explanation": "Build score to at least 37,687 before drain. Focus ROCK letters, the Satisfaction saucer, target banks, and horseshoe shots.",
         "source_location": "Rolling Stones - Easy Score (37,687+)"
       },
       {
-        "title": "Complete one target bank",
+        "title": "Knock down the Satisfaction target",
         "type": "task",
-        "explanation": "",
-        "source_location": "Complete one target bank"
+        "explanation": "Hit the standup target guarding the saucer to expose the Satisfaction saucer opening.",
+        "source_location": "Knock down the Satisfaction target"
       },
       {
-        "title": "Light lock for multiball",
+        "title": "Complete the 1-2-3-4-5 targets once",
         "type": "task",
-        "explanation": "",
-        "source_location": "Light lock for multiball"
+        "explanation": "Finish the numbered 1-2-3-4-5 target sequence once to advance the super bonus.",
+        "source_location": "Complete the 1-2-3-4-5 targets once"
       },
       {
-        "title": "Collect a mystery award",
+        "title": "Make 2 horseshoe shots",
         "type": "task",
-        "explanation": "",
-        "source_location": "Collect a mystery award"
-      },
-      {
-        "title": "Shoot the main ramp 3 times",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Shoot the main ramp 3 times"
+        "explanation": "Shoot either side horseshoe twice. Horseshoes score the current value and build future horseshoe value.",
+        "source_location": "Make 2 horseshoe shots"
       }
     ],
     "Medium": [
       {
-        "title": "Complete any song mode",
+        "title": "Spell ROCK once",
         "type": "task",
-        "explanation": "",
-        "source_location": "Complete any song mode"
+        "explanation": "Complete the R-O-C-K letter set once. ROCK lanes advance the bonus multiplier.",
+        "source_location": "Spell ROCK once"
       },
       {
         "title": "Medium Score (104,843+)",
         "type": "score",
-        "explanation": "Build score to at least 104,843 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "explanation": "Build score to at least 104,843 before drain. Focus ROCK letters, the Satisfaction saucer, target banks, and horseshoe shots.",
         "source_location": "Rolling Stones - Medium Score (104,843+)"
       },
       {
-        "title": "Lock 1 ball for multiball",
+        "title": "Collect the Satisfaction saucer bonus",
         "type": "task",
-        "explanation": "",
-        "source_location": "Lock 1 ball for multiball"
+        "explanation": "Knock down the Satisfaction target, then shoot the saucer to collect the current bonus value.",
+        "source_location": "Collect the Satisfaction saucer bonus"
       },
       {
-        "title": "Start multiball",
+        "title": "Complete the right drop target bank",
         "type": "task",
-        "explanation": "",
-        "source_location": "Start multiball"
+        "explanation": "Clear the upper-right drop target bank. Its award value cycles, so finishing it at a higher lit value is better.",
+        "source_location": "Complete the right drop target bank"
       },
       {
-        "title": "Collect a jackpot",
+        "title": "Advance super bonus to 20K",
         "type": "task",
-        "explanation": "",
-        "source_location": "Collect a jackpot"
-      },
-      {
-        "title": "Collect a song award",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Collect a song award"
+        "explanation": "Complete the 1-2-3-4-5 target sequence enough times to light or advance the 20K super bonus.",
+        "source_location": "Advance super bonus to 20K"
       }
     ],
     "Hard": [
       {
-        "title": "Lock 2 balls toward multiball",
+        "title": "Collect the Satisfaction saucer bonus at 3X or higher",
         "type": "task",
-        "explanation": "",
-        "source_location": "Lock 2 balls toward multiball"
+        "explanation": "Complete ROCK letters to build bonus multiplier to at least 3X, then collect bonus from the Satisfaction saucer.",
+        "source_location": "Collect the Satisfaction saucer bonus at 3X or higher"
       },
       {
         "title": "Hard Score (237,815+)",
         "type": "score",
-        "explanation": "Build score to at least 237,815 before drain. Focus lit modes, jackpots, and bonus multipliers.",
+        "explanation": "Build score to at least 237,815 before drain. Focus ROCK letters, the Satisfaction saucer, target banks, and horseshoe shots.",
         "source_location": "Rolling Stones - Hard Score (237,815+)"
       },
       {
-        "title": "Start multiball and collect a jackpot",
+        "title": "Advance super bonus to 60K",
         "type": "task",
-        "explanation": "",
-        "source_location": "Start multiball and collect a jackpot"
-      },
-      {
-        "title": "Complete 2 song modes in one game",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Complete 2 song modes in one game"
-      },
-      {
-        "title": "Collect a Super Jackpot",
-        "type": "task",
-        "explanation": "",
-        "source_location": "Collect a Super Jackpot"
-      },
-      {
-        "title": "Collect 2 song awards in one game",
-        "type": "task",
-        "explanation": "Start song play and collect two separate song awards before the game ends.",
-        "source_location": "Collect 2 song awards in one game"
-      },
-      {
-        "title": "Start Multiball",
-        "type": "task",
-        "explanation": "Light lock, lock the required ball(s), then start multiball.",
-        "source_location": "Start Multiball"
+        "explanation": "Complete the 1-2-3-4-5 target sequence enough times to build the held super bonus to 60K.",
+        "source_location": "Advance super bonus to 60K"
       }
     ]
   },
@@ -7078,10 +7012,10 @@
         "source_location": "Light lock for multiball"
       },
       {
-        "title": "Shoot Either Loop 3 Times",
+        "title": "Shoot the ramp 3 times",
         "type": "task",
         "explanation": "",
-        "source_location": "Shoot Either Loop 3 Times"
+        "source_location": "Shoot the ramp 3 times"
       },
       {
         "title": "Collect a mystery award",
@@ -7104,10 +7038,10 @@
         "source_location": "Freddy: A Nightmare on Elm Street - Medium Score (50,298,526+)"
       },
       {
-        "title": "Reach 2 Nightmares in One Ball",
+        "title": "Lock 1 ball for multiball",
         "type": "task",
         "explanation": "",
-        "source_location": "Reach 2 Nightmares in One Ball"
+        "source_location": "Lock 1 ball for multiball"
       },
       {
         "title": "Start multiball",
@@ -7618,10 +7552,10 @@
         "source_location": "Start Destroy the Ring"
       },
       {
-        "title": "Collect a Jackpot in Any Main Multiball",
+        "title": "Destroy the Ring",
         "type": "task",
         "explanation": "",
-        "source_location": "Collect a Jackpot in Any Main Multiball"
+        "source_location": "Destroy the Ring"
       },
       {
         "title": "Start Two Towers Multiball",
@@ -8740,7 +8674,7 @@
         "source_location": "Collect a 50,000 P-L-A-Y award"
       },
       {
-        "title": "Collect the 100,000 1-2-3 award",
+        "title": "Score the 100,000 1-2-3 award",
         "type": "task",
         "explanation": "Complete 1-2-3 enough times on one ball to collect the 100,000 award.",
         "source_location": "Score the 100,000 1-2-3 award"
@@ -8778,7 +8712,7 @@
         "source_location": "Collect a 3X golden-ball bonus"
       },
       {
-        "title": "Collect two 100,000 1-2-3 awards in one game",
+        "title": "Score two 100,000 1-2-3 awards in one game",
         "type": "task",
         "explanation": "Repeat the upper-right target-bank award cycle for two 100,000 collections.",
         "source_location": "Score two 100,000 1-2-3 awards in one game"
