@@ -493,6 +493,18 @@ class ManualWorld(World):
 
         if extras > 0:
             trap_percent = get_option_value(self.multiworld, self.player, "filler_traps")
+            seed_type_value = get_option_value(self.multiworld, self.player, "base_game_seed_type")
+            deep_run_enabled = False
+            try:
+                deep_run_enabled = int(seed_type_value) == 1
+            except (TypeError, ValueError):
+                seed_type_text = str(seed_type_value or "").strip().lower().replace(" ", "_").replace("-", "_")
+                deep_run_enabled = seed_type_text in {"deep_run", "deeprun", "deep"}
+            if deep_run_enabled:
+                try:
+                    trap_percent = min(int(trap_percent or 0), 8)
+                except (TypeError, ValueError):
+                    trap_percent = 0
             enabled_traps = [
                 trap_name for trap_name in traps
                 if is_item_enabled(self.multiworld, self.player, self.item_name_to_item.get(trap_name, {}))
@@ -501,7 +513,7 @@ class ManualWorld(World):
                 trap_percent = 0
 
             trap_count = extras * trap_percent // 100
-            if trap_percent > 0 and enabled_traps:
+            if trap_percent > 0 and enabled_traps and not deep_run_enabled:
                 trap_count = max(1, trap_count)
             trap_count = min(extras, trap_count)
             filler_count = extras - trap_count

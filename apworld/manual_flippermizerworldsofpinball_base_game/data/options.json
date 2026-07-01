@@ -141,13 +141,42 @@
                 "template"
             ]
         },
+        "base_game_seed_type": {
+            "display_name": "Base Game Seed Type",
+            "description": "Standard keeps the normal six checks per table. Deep Run builds 20 checks per selected table: 10 score checks and 10 table-specific task checks.",
+            "type": "Choice",
+            "values": {
+                "standard": 0,
+                "deep_run": 1
+            },
+            "default": 0,
+            "allow_custom_value": false,
+            "group": "Base Game Options",
+            "visibility": [
+                "simple_ui",
+                "complex_ui",
+                "template"
+            ]
+        },
+        "base_game_feature_unlock_enabled": {
+            "display_name": "Feature Unlock Gating",
+            "description": "Lock feature-heavy tables behind Feature Keys. Deep Run enables this automatically.",
+            "type": "Toggle",
+            "default": false,
+            "group": "Base Game Options",
+            "visibility": [
+                "simple_ui",
+                "complex_ui",
+                "template"
+            ]
+        },
         "base_game_active_table_count": {
             "display_name": "Base Game Active Table Count",
-            "description": "How many tables from the larger Base Game pool should exist in this seed's active graph. For the current episode contract, this stays at 25 so the seed is built from five 5-table worlds.",
+            "description": "How many tables from the larger Base Game pool should exist in this seed's active graph. Deep Run currently targets 20 tables: five starter tables, then five each behind one, two, and three Feature Keys.",
             "type": "Range",
             "range_start": 5,
             "range_end": 25,
-            "default": 25,
+            "default": 20,
             "group": "Base Game Options",
             "visibility": [
                 "simple_ui",
