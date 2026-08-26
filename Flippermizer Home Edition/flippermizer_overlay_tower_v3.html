@@ -18261,9 +18261,15 @@ body.flprStandaloneOriginalClient #flprLauncherRendererDock{
 .apConnectionToolsGrid .inherentSeedUtilityWrap .cRow{
   flex:1 1 auto;
   display:grid;
-  grid-template-columns:1fr;
   align-items:stretch;
   margin:0;
+}
+.apConnectionToolsGrid .flprBotRunUtilityWrap .cRow{
+  grid-template-columns:1fr;
+}
+.apConnectionToolsGrid .inherentSeedUtilityWrap .cRow{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
 }
 .apConnectionToolsGrid .cNote{
   margin:0;
@@ -18271,6 +18277,7 @@ body.flprStandaloneOriginalClient #flprLauncherRendererDock{
   line-height:1.4;
 }
 .apConnectionToolsGrid #flprBotRunUtilityBtn,
+.apConnectionToolsGrid #hintLoadOriginalInherentBtn,
 .apConnectionToolsGrid #hintLoadInherentBtn{
   width:100%;
   height:100%;
@@ -18291,6 +18298,7 @@ body.flprStandaloneOriginalClient #flprLauncherRendererDock{
     linear-gradient(180deg, rgba(8,34,52,.96), rgba(4,18,28,.96));
   box-shadow:0 0 0 1px rgba(88,196,255,.26), 0 0 18px rgba(72,182,255,.24), 0 8px 16px rgba(0,0,0,.34);
 }
+.apConnectionToolsGrid #hintLoadOriginalInherentBtn,
 .apConnectionToolsGrid #hintLoadInherentBtn{
   border-color:rgba(34,255,136,.88);
   color:rgba(218,255,235,.98);
@@ -18300,6 +18308,7 @@ body.flprStandaloneOriginalClient #flprLauncherRendererDock{
   box-shadow:0 0 0 1px rgba(34,255,136,.28), 0 0 18px rgba(34,255,136,.22), 0 8px 16px rgba(0,0,0,.34);
 }
 .apConnectionToolsGrid #flprBotRunUtilityBtn:hover,
+.apConnectionToolsGrid #hintLoadOriginalInherentBtn:hover,
 .apConnectionToolsGrid #hintLoadInherentBtn:hover{
   filter:brightness(1.08) saturate(1.08);
 }
@@ -24240,6 +24249,7 @@ body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChec
         </label>
         <button class="cBtn" id="hintLoadBtn" disabled="">LOAD LOCATION FILE</button>
         <button class="cBtn" id="hintLoadLastBtn">LOAD LAST</button>
+        <button class="cBtn testPrimary" id="hintLoadOriginalInherentBtn">LOAD ORIGINAL TEST SEED</button>
         <button class="cBtn testPrimary" id="hintLoadInherentBtn">LOAD DEEP RUN TEST SEED</button>
         <button class="cBtn danger" id="hintResetBtn">RESET HINTS</button>
         <button class="cBtn" id="hintDemoBtn">DEMO</button>
@@ -25486,8 +25496,8 @@ const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown")
 const FLPR_PATCH_NOTES_RELEASE_LABEL = "August 26 Deep Run Test Update";
 const FLPR_PATCH_NOTES_ITEMS_SHARED = [
   {
-    k: "Built-in Deep Run test seed",
-    d: "Dev Tools can now load an AP-free 15-table Deep Run with three starters, 20 checks per table, feature gates, and staged progression."
+    k: "Two built-in test seeds",
+    d: "Dev Tools can independently load the restored original randomized fixture or the AP-free 15-table Deep Run fixture."
   },
   {
     k: "Ten Boss Key routes",
@@ -57636,9 +57646,11 @@ const HINT_DEMO_SPOILER = [
   "Playthrough:",
   "0: {}"
 ].join("\n");
-const INHERENT_TEST_SEED_NAME = "FLPR_INHERENT_DEEP_RUN_TEST_SEED";
-const INHERENT_TEST_SPOILER_SOURCE = "FLPR_Inherent_Deep_Run_Test_Spoiler.txt";
-const INHERENT_TEST_SEED_ALIASES = new Set([INHERENT_TEST_SEED_NAME, "FLPR_INHERENT_TEST_SEED"]);
+const INHERENT_ORIGINAL_TEST_SEED_NAME = "FLPR_INHERENT_TEST_SEED";
+const INHERENT_ORIGINAL_TEST_SPOILER_SOURCE = "FLPR_Inherent_Test_Spoiler.txt";
+const INHERENT_DEEP_RUN_TEST_SEED_NAME = "FLPR_INHERENT_DEEP_RUN_TEST_SEED";
+const INHERENT_DEEP_RUN_TEST_SPOILER_SOURCE = "FLPR_Inherent_Deep_Run_Test_Spoiler.txt";
+const INHERENT_TEST_SEED_ALIASES = new Set([INHERENT_ORIGINAL_TEST_SEED_NAME, INHERENT_DEEP_RUN_TEST_SEED_NAME]);
 const INHERENT_DEEP_RUN_BOSS_KEYS = 4;
 const INHERENT_DEEP_RUN_BOSS_KEYS_SEEDED = 10;
 const INHERENT_DEEP_RUN_FEATURE_DEFS = Object.freeze([
@@ -58003,7 +58015,7 @@ function inherentRewardFor(tableIndex, taskIndex, tableName, tables, overrides, 
   if(j%5===0) return "Pinball Fragment";
   return (i+j)%3===0 ? "Medium Junk Item" : "Easy Junk Item";
 }
-function buildInherentTestSeedFixture(){
+function buildInherentDeepRunTestSeedFixture(){
   const worlds = inherentCloneWorlds();
   const tables = inherentSeedTables(worlds);
   const startingTables = inherentPickStartingTables(tables, 3);
@@ -58101,7 +58113,7 @@ function buildInherentTestSeedFixture(){
     locationItemByLocId,
     spoilerText: spoilerLines.join("\n"),
     slotData: {
-      seed_name: INHERENT_TEST_SEED_NAME,
+      seed_name: INHERENT_DEEP_RUN_TEST_SEED_NAME,
       base_game_seed_type: "deep_run",
       deep_run: true,
       deep_run_enabled: true,
@@ -58124,6 +58136,153 @@ function buildInherentTestSeedFixture(){
       },
       generic_checks: { enabled:true, entries, by_location:Object.fromEntries(entries.map((entry)=>[entry.location, entry])) },
       task_shuffle: { enabled:true, entries, by_location:Object.fromEntries(entries.map((entry)=>[entry.location, entry])) }
+    }
+  };
+}
+function inherentOriginalCloneWorlds(){
+  const worlds = clone(buildDefaultWorldsFromRepo());
+  Object.entries(worlds || {}).forEach(([worldKey, world])=>{
+    if(!world || typeof world !== "object") return;
+    world.locked = worldKey === "boss";
+    if(worldKey === "boss") world.tables = ["(Boss Table)"];
+  });
+  return worlds;
+}
+function inherentOriginalSeedTables(worlds){
+  const out = [];
+  for(const [worldKey, world] of Object.entries(worlds || {})){
+    if(!worldKey || worldKey === "boss") continue;
+    const tables = Array.isArray(world?.tables) ? world.tables : [];
+    tables.forEach((tableName, index)=>{
+      const name = String(tableName || "").trim();
+      if(name) out.push({ worldKey, tableKey:`${worldKey}|${index}`, tableName:name, index:out.length });
+    });
+  }
+  return out.slice(0, 25);
+}
+function inherentOriginalPickStartingTables(tables, count){
+  const pool = Array.isArray(tables) ? tables.filter(Boolean) : [];
+  const want = Math.max(1, Math.min(pool.length, Math.round(Number(count) || 5)));
+  return inherentShuffle(pool).slice(0, want);
+}
+function inherentOriginalTaskSpecs(tableName, tableIndex){
+  const entry = inherentCatalogEntryForTable(tableName);
+  const tasks = entry?.tasksByDifficulty || {};
+  const fallbackScores = inherentFallbackScores(tableIndex);
+  const scores = entry?.scoreTargets || fallbackScores;
+  return [
+    { name:inherentPick(tasks.easy, tableIndex, 0, "Make a Skill Shot"), difficulty:"easy", kind:"task" },
+    { name:`Easy Score (${inherentPick(scores.easy, tableIndex, 1, fallbackScores.easy[0])})`, difficulty:"easy", kind:"score" },
+    { name:inherentPick(tasks.medium, tableIndex, 2, "Start Multiball"), difficulty:"medium", kind:"task" },
+    { name:`Medium Score (${inherentPick(scores.medium, tableIndex, 3, fallbackScores.medium[0])})`, difficulty:"medium", kind:"score" },
+    { name:inherentPick(tasks.hard, tableIndex, 4, "Collect a Super Jackpot"), difficulty:"hard", kind:"task" },
+    { name:`Hard Score (${inherentPick(scores.hard, tableIndex, 5, fallbackScores.hard[0])})`, difficulty:"hard", kind:"score" }
+  ];
+}
+function inherentOriginalRewardFor(tableIndex, taskIndex, tableName, tables){
+  const i = Math.max(0, Number(tableIndex) || 0);
+  const j = Math.max(0, Number(taskIndex) || 0);
+  const next = tables.length ? String(tables[(i + 1) % tables.length]?.tableName || tableName || "").trim() : String(tableName || "").trim();
+  if(j === 0) return `Progressive Ball - ${next}`;
+  if(j === 1) return (i % 3 === 0) ? "Hint: Progressive Ball" : "Easy Junk Item";
+  if(j === 2) return ([4, 12, 20].includes(i)) ? "Boss Key" : ((i % 4 === 1) ? "Hint: Boss Key" : "Medium Junk Item");
+  if(j === 3) return (i % 5 === 2) ? "Pinball Fragment" : "Hint: Progressive Ball";
+  if(j === 4) return `Progressive Ball - ${tableName}`;
+  return (i % 6 === 0) ? "Medium Junk Item" : "Easy Junk Item";
+}
+function buildOriginalInherentTestSeedFixture(){
+  const worlds = inherentOriginalCloneWorlds();
+  const tables = inherentOriginalSeedTables(worlds);
+  const startingTables = inherentOriginalPickStartingTables(tables, 5);
+  const itemNameToId = {};
+  const locNameToId = {};
+  const locationItemByLocId = {};
+  const entries = [];
+  const spoilerLines = ["FLPR Original Inherent Test Spoiler", "", "Locations:"];
+  let nextItemId = 910000;
+  let nextLocId = 900000;
+  const ensureItem = (name)=>{
+    const key = String(name || "").trim() || "Nothing";
+    if(!itemNameToId[key]) itemNameToId[key] = nextItemId++;
+    return itemNameToId[key];
+  };
+  tables.forEach((table, tableIndex)=>{
+    inherentOriginalTaskSpecs(table.tableName, tableIndex).forEach((task, taskIndex)=>{
+      const locationName = `${table.tableName} - ${task.name}`;
+      const itemName = inherentOriginalRewardFor(tableIndex, taskIndex, table.tableName, tables);
+      const locId = nextLocId++;
+      const itemId = ensureItem(itemName);
+      locNameToId[locationName] = locId;
+      locationItemByLocId[locId] = { itemId, itemName, flags:isTrapItem(itemName) ? 4 : 0 };
+      entries.push({
+        location:locationName,
+        table:table.tableName,
+        target_table:table.tableName,
+        source_table:table.tableName,
+        source_location:locationName,
+        difficulty:task.difficulty,
+        kind:task.kind,
+        task_type:task.kind,
+        objective:task.name,
+        display_name:task.name,
+        title:task.name,
+        explanation:inherentTaskExplanationFor(table.tableName, task.name)
+      });
+      spoilerLines.push(`${locationName}: ${itemName}`);
+    });
+  });
+  const bossDamageObjectives = [
+    "Rip a Spinner",
+    "Make a 2-Shot Combo",
+    "Make a 3-Shot Combo",
+    "Shoot Left Orbit/Loop/Lane",
+    "Shoot Right Orbit/Loop/Lane",
+    "Shoot Any Ramp",
+    "Hit Any Scoop or Saucer",
+    "Complete Top Lanes",
+    "Complete a Target Bank",
+    "Start Any Multiball",
+    "Obtain a score of 100,000+",
+    "Obtain a score of 250,000+",
+    "Obtain a score of 500,000+",
+    "Obtain a score of 1,000,000+",
+    "Obtain a score of 2,500,000+",
+    "Obtain a score of 5,000,000+",
+    "Obtain a score of 10,000,000+",
+    "Obtain a score of 25,000,000+",
+    "Obtain a score of 50,000,000+",
+    "Obtain a score of 100,000,000+"
+  ];
+  [
+    ...bossDamageObjectives.map((objective)=>[`Boss Table - ${objective}`, "Boss Damage 16%"]),
+    ["Boss Table - Boss Victory", "Victory"]
+  ].forEach(([locationName, itemName])=>{
+    const locId = nextLocId++;
+    const itemId = ensureItem(itemName);
+    locNameToId[locationName] = locId;
+    locationItemByLocId[locId] = { itemId, itemName, flags:0 };
+    spoilerLines.push(`${locationName}: ${itemName}`);
+  });
+  spoilerLines.push("", "Playthrough:", "0: {}");
+  return {
+    worlds,
+    tables,
+    startingTables,
+    itemNameToId,
+    locNameToId,
+    locationItemByLocId,
+    spoilerText:spoilerLines.join("\n"),
+    slotData:{
+      seed_name:INHERENT_ORIGINAL_TEST_SEED_NAME,
+      boss_keys_required:3,
+      boss_keys_total:3,
+      progressive_ball_starts:startingTables.map((table)=>({
+        table:table.tableName,
+        item:`Progressive Ball - ${table.tableName}`,
+        count:1
+      })),
+      generic_checks:{ enabled:true, entries, by_location:Object.fromEntries(entries.map((entry)=>[entry.location, entry])) },
+      task_shuffle:{ enabled:true, entries, by_location:Object.fromEntries(entries.map((entry)=>[entry.location, entry])) }
     }
   };
 }
@@ -58185,13 +58344,18 @@ function inherentSeedHandleSend(obj){
   }catch(_){}
   return false;
 }
-async function loadInherentTestSeed(){
-  const fixture = buildInherentTestSeedFixture();
+async function loadInherentSeedFixture(fixture, options){
+  const opts = options || {};
+  const seedName = String(opts.seedName || fixture?.slotData?.seed_name || INHERENT_ORIGINAL_TEST_SEED_NAME).trim();
+  const spoilerSource = String(opts.spoilerSource || INHERENT_ORIGINAL_TEST_SPOILER_SOURCE).trim();
+  const indicatorLabel = String(opts.indicatorLabel || "INHERENT TEST SEED").trim();
+  const bossKeysRequired = Math.max(1, Math.round(Number(opts.bossKeysRequired || fixture?.slotData?.boss_keys_required) || 3));
   try{ apDisconnect({ manual:false }); }catch(_){}
   window.__manualDisconnect = true;
   ap.inherentSeedActive = true;
+  ap.inherentSeedKind = String(opts.kind || "original");
   ap.connected = true;
-  ap.seedName = INHERENT_TEST_SEED_NAME;
+  ap.seedName = seedName;
   ap.cfg = { ...(ap.cfg || {}), player: ap.cfg?.player || "FlippermizerWorldsofPinball", game: AP_FLIPPERMIZER_GAME_NAME };
   ap.slot = 1;
   ap.team = 0;
@@ -58227,13 +58391,13 @@ async function loadInherentTestSeed(){
   state.selected = firstStart?.worldKey || "w1";
   state.lastSelected = state.selected;
   state.bossTable = "";
-  state.bossTableSeed = INHERENT_TEST_SEED_NAME;
+  state.bossTableSeed = seedName;
   state.bossVictorySent = false;
   state.bossVictoryPending = false;
   state.bossVictoryFinalizing = false;
   state.bossHpLive = { max:100, cur:100, name:"Boss Table", inited:false };
   state.bossHpTest = { ...(state.bossHpTest || {}), show:false, name:"Boss Table", cur:100, max:100, _pulse:0, forceShowCard:false };
-  try{ bossKeysConfigureCount(INHERENT_DEEP_RUN_BOSS_KEYS, { persist:false, inputs:true, render:false }); }catch(_){}
+  try{ bossKeysConfigureCount(bossKeysRequired, { persist:false, inputs:true, render:false }); }catch(_){}
   try{
     if(Array.isArray(bossKeysState)) bossKeysState.forEach((key)=>{ if(key) key.acquired = false; });
     bossKeysSyncLegacyMirror(0);
@@ -58254,22 +58418,47 @@ async function loadInherentTestSeed(){
   }catch(_){}
   inherentSeedPopulateLocationMaps(fixture);
   ap.inherentLocationItems = new Map(Object.entries(fixture.locationItemByLocId || {}).map(([locId, reward])=>[Number(locId), reward]));
-  try{ relicBeginRun(INHERENT_TEST_SEED_NAME, "inherent-test"); }catch(_){}
+  try{ relicBeginRun(seedName, "inherent-test"); }catch(_){}
   try{ syncTableBannerCodeMapFromSlots(state); hydrateTableBannerSlotsFromCodeMap(state, { overwrite:true }); }catch(_){}
   try{ saveState(); }catch(_){}
-  setApIndicator("green", "DEEP RUN TEST SEED");
+  setApIndicator("green", indicatorLabel);
   const hEl = document.getElementById("apConnectedHost");
-  if(hEl) hEl.textContent = `INHERENT; ${INHERENT_TEST_SEED_NAME}`;
+  if(hEl) hEl.textContent = `INHERENT; ${seedName}`;
   updateApConnectButtons("connected");
-  try{ flprStatsStartRun(INHERENT_TEST_SEED_NAME, "inherent-test"); }catch(_){}
+  try{ flprStatsStartRun(seedName, "inherent-test"); }catch(_){}
   try{ achBuildTableCatalogFromAp(); achRecomputeProgress(); achSaveStore(); renderAchievementsControlsPanel(); }catch(_){}
-  try{ await hintApplySpoilerText(fixture.spoilerText, INHERENT_TEST_SPOILER_SOURCE, { persist:true }); }catch(err){ try{ hintLog(`Inherent spoiler load failed: ${err?.message || err}`); }catch(_){} }
+  try{ await hintApplySpoilerText(fixture.spoilerText, spoilerSource, { persist:true }); }catch(err){ try{ hintLog(`Inherent spoiler load failed: ${err?.message || err}`); }catch(_){} }
   const startNames = (fixture.startingTables || []).map((table)=>table.tableName).join(", ");
-  apLog(`INHERENT Deep Run seed loaded; starts=${startNames || "none"}; tables=${fixture.tables.length}; locations=${Object.keys(fixture.locNameToId).length}; items=${Object.keys(fixture.itemNameToId).length}`);
+  apLog(`INHERENT ${String(opts.kind || "original")} seed loaded; starts=${startNames || "none"}; tables=${fixture.tables.length}; locations=${Object.keys(fixture.locNameToId).length}; items=${Object.keys(fixture.itemNameToId).length}`);
   try{ renderAll(); renderChecksWorldTabs(); renderChecks(); updateCountCheckUI(); }catch(_){}
   try{ showView("checks"); }catch(_){}
-  toast("good", "DEEP RUN TEST SEED", `${fixture.tables.length} tables, ${Math.max(0, (fixture.startingTables || []).length)} starters, and 20 checks per table.`, 4800);
+  toast("good", String(opts.toastTitle || indicatorLabel), String(opts.toastBody || `${fixture.tables.length} tables and ${Math.max(0, (fixture.startingTables || []).length)} starters.`), Number(opts.toastDuration) || 4400);
   return true;
+}
+async function loadOriginalInherentTestSeed(){
+  const fixture = buildOriginalInherentTestSeedFixture();
+  return loadInherentSeedFixture(fixture, {
+    kind:"original",
+    seedName:INHERENT_ORIGINAL_TEST_SEED_NAME,
+    spoilerSource:INHERENT_ORIGINAL_TEST_SPOILER_SOURCE,
+    indicatorLabel:"ORIGINAL TEST SEED",
+    bossKeysRequired:3,
+    toastTitle:"ORIGINAL TEST SEED",
+    toastBody:`Randomized ${Math.max(0, (fixture.startingTables || []).length)} starting tables with Ball 1 only.`
+  });
+}
+async function loadInherentDeepRunTestSeed(){
+  const fixture = buildInherentDeepRunTestSeedFixture();
+  return loadInherentSeedFixture(fixture, {
+    kind:"deep-run",
+    seedName:INHERENT_DEEP_RUN_TEST_SEED_NAME,
+    spoilerSource:INHERENT_DEEP_RUN_TEST_SPOILER_SOURCE,
+    indicatorLabel:"DEEP RUN TEST SEED",
+    bossKeysRequired:INHERENT_DEEP_RUN_BOSS_KEYS,
+    toastTitle:"DEEP RUN TEST SEED",
+    toastBody:`${fixture.tables.length} tables, ${Math.max(0, (fixture.startingTables || []).length)} starters, and 20 checks per table.`,
+    toastDuration:4800
+  });
 }
 function hintLoadDemo(){
   hintStopTyping();
@@ -58302,6 +58491,7 @@ function initHintsTab(){
   const loadBtn = hintId("hintLoadBtn");
   const loadServerBtn = hintId("hintLoadServerBtn");
   const loadLastBtn = hintId("hintLoadLastBtn");
+  const originalInherentBtn = hintId("hintLoadOriginalInherentBtn");
   const inherentBtn = hintId("hintLoadInherentBtn");
   const resetBtn = hintId("hintResetBtn");
   const demoBtn = hintId("hintDemoBtn");
@@ -58336,7 +58526,8 @@ function initHintsTab(){
       hintLoadLastSavedSpoiler({ silent:false, requireCurrentSeed:false });
     });
   }
-  if(inherentBtn) inherentBtn.addEventListener("click", ()=>{ loadInherentTestSeed(); });
+  if(originalInherentBtn) originalInherentBtn.addEventListener("click", ()=>{ loadOriginalInherentTestSeed(); });
+  if(inherentBtn) inherentBtn.addEventListener("click", ()=>{ loadInherentDeepRunTestSeed(); });
   if(resetBtn) resetBtn.addEventListener("click", hintResetAll);
   if(demoBtn) demoBtn.addEventListener("click", hintLoadDemo);
   if(autoLoadCb){
@@ -59858,10 +60049,18 @@ function ensureInherentSeedUtilityControl(){
     const status = document.createElement("div");
     status.className = "cNote";
     status.id = "inherentSeedUtilityStatus";
-    status.textContent = "Starts the built-in 15-table Deep Run seed for AP-free verification.";
+    status.textContent = "Starts either the original randomized fixture or the 15-table Deep Run fixture for AP-free verification.";
     wrap.appendChild(status);
   }
   const row = wrap.querySelector(":scope > .cRow") || wrap;
+  let originalBtn = document.getElementById("hintLoadOriginalInherentBtn");
+  if(!originalBtn){
+    originalBtn = document.createElement("button");
+    originalBtn.className = "cBtn testPrimary";
+    originalBtn.id = "hintLoadOriginalInherentBtn";
+    originalBtn.type = "button";
+    originalBtn.textContent = "LOAD ORIGINAL TEST SEED";
+  }
   let btn = document.getElementById("hintLoadInherentBtn");
   if(!btn){
     btn = document.createElement("button");
@@ -59870,6 +60069,7 @@ function ensureInherentSeedUtilityControl(){
     btn.type = "button";
     btn.textContent = "LOAD DEEP RUN TEST SEED";
   }
+  row.appendChild(originalBtn);
   row.appendChild(btn);
   return wrap;
 }
