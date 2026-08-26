@@ -43,6 +43,7 @@ BASE_GAME_SEED_TYPE_DEEP_RUN = "deep_run"
 FEATURE_KEY_ITEM_PREFIX = "Feature Key - "
 FEATURE_KEY_PIECES_REQUIRED = 3
 DEEP_RUN_BOSS_KEYS_REQUIRED = 4
+DEEP_RUN_BOSS_KEYS_SEEDED = 10
 DEEP_RUN_DEFAULT_ACTIVE_TABLE_COUNT = 20
 DEEP_RUN_DEFAULT_START_OPEN_COUNT = 5
 DEEP_RUN_15_TABLE_ACTIVE_COUNT = 15
@@ -4067,7 +4068,7 @@ def before_create_items_all(item_config: dict[str, int|dict], world: World, mult
             FEATURE_KEY_PIECES_REQUIRED,
         )
     if deep_run_enabled:
-        filtered_config["Boss Key"] = DEEP_RUN_BOSS_KEYS_REQUIRED
+        filtered_config["Boss Key"] = DEEP_RUN_BOSS_KEYS_SEEDED
         filtered_config["Bagatelle Bonus Game"] = 6
         for item_name, cap in (
             ("Easy Junk Piece (1 of 3)", 3),
@@ -4331,24 +4332,28 @@ def before_generate_basic(world: World, multiworld: MultiWorld, player: int):
                 f"Deep Run progression could only place {placed_feature_pieces}/{expected_feature_pieces} Feature Key pieces"
             )
 
-        # Four Boss Keys pace a 15-table run to roughly three hours. None can
-        # appear on a starter table; one is reserved in each gated tier.
+        # Seed ten Boss Keys across ten different gated tables. Any four open
+        # the boss, so a run has route flexibility without starter-sphere keys.
         boss_index_preferences = {
             1: (5, 6, 7, 8),
             2: (5, 6, 7, 8),
             3: (9, 10),
             4: (9, 10),
         }
+        boss_tier_quotas = {1: 3, 2: 3, 3: 2, 4: 2}
         forced_boss_locations: list[str] = []
         for tier in (1, 2, 3, 4):
-            chosen_name = reserve_deep_item("Boss Key", tier_tables[tier], boss_index_preferences[tier])
-            if not chosen_name:
-                chosen_name = reserve_deep_item("Boss Key", tier_tables[tier], tuple(range(1, 11)))
-            if chosen_name:
-                forced_boss_locations.append(chosen_name)
-        if len(forced_boss_locations) != DEEP_RUN_BOSS_KEYS_REQUIRED:
+            source_tables = list(tier_tables[tier])
+            world.random.shuffle(source_tables)
+            for source_table in source_tables[:boss_tier_quotas[tier]]:
+                chosen_name = reserve_deep_item("Boss Key", [source_table], boss_index_preferences[tier])
+                if not chosen_name:
+                    chosen_name = reserve_deep_item("Boss Key", [source_table], tuple(range(1, 11)))
+                if chosen_name:
+                    forced_boss_locations.append(chosen_name)
+        if len(forced_boss_locations) != DEEP_RUN_BOSS_KEYS_SEEDED:
             raise RuntimeError(
-                f"Deep Run progression could only place {len(forced_boss_locations)}/{DEEP_RUN_BOSS_KEYS_REQUIRED} Boss Keys"
+                f"Deep Run progression could only place {len(forced_boss_locations)}/{DEEP_RUN_BOSS_KEYS_SEEDED} Boss Keys"
             )
         world._forced_easy_boss_key_location = ""
         world._forced_deep_run_boss_key_locations = list(forced_boss_locations)

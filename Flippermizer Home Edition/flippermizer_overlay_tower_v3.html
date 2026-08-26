@@ -24240,7 +24240,7 @@ body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChec
         </label>
         <button class="cBtn" id="hintLoadBtn" disabled="">LOAD LOCATION FILE</button>
         <button class="cBtn" id="hintLoadLastBtn">LOAD LAST</button>
-        <button class="cBtn testPrimary" id="hintLoadInherentBtn">LOAD INHERENT TEST SEED</button>
+        <button class="cBtn testPrimary" id="hintLoadInherentBtn">LOAD DEEP RUN TEST SEED</button>
         <button class="cBtn danger" id="hintResetBtn">RESET HINTS</button>
         <button class="cBtn" id="hintDemoBtn">DEMO</button>
       </div><div class="apHint" id="hintLastSourceTxt" hidden>LAST SOURCE; NONE</div><div class="cRow" style="margin-top:6px; justify-content:flex-start; gap:14px;">
@@ -24382,6 +24382,7 @@ body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChec
         <button class="cBtn testPrimary" id="testBallPopupBtn" data-testtag="Ball">TEST BALL</button>
         <button class="cBtn testFlow" id="testHintBallPopupBtn" data-testtag="Hint Ball">TEST HINT BALL</button>
         <button class="cBtn testFlow" id="testHintBossPopupBtn" data-testtag="Hint Key">TEST HINT KEY</button>
+        <button class="cBtn testPrimary" id="testBagatelleBtn" data-testtag="Bagatelle">TEST BAGATELLE</button>
         <button class="cBtn testFlow" id="testHangmanBtn" data-testtag="Hangman">TEST HANGMAN</button>
         <button class="cBtn" id="testAchievementPopupBtn">TEST ACHIEVEMENT</button>
         <button class="cBtn danger testDanger" id="testBossDamageCheckBtn" data-testtag="Boss">TEST BOSS HIT</button>
@@ -25482,19 +25483,19 @@ const FLPR_OVERLAY_CHANGELOG = computeOverlayRecentChanges();
 const FLPR_PATCH_NOTES_SEEN_LS_KEY = "flpr_changelog_patch_notes_seen_v1";
 const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1";
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
-const FLPR_PATCH_NOTES_RELEASE_LABEL = "June 3 Task + Boss Hotfix";
+const FLPR_PATCH_NOTES_RELEASE_LABEL = "August 26 Deep Run Test Update";
 const FLPR_PATCH_NOTES_ITEMS_SHARED = [
   {
-    k: "Task and score retunes",
-    d: "Table goals and score targets were refreshed for Attack from Mars, Harlem, Scared Stiff, Congo, Tales, Cirqus, Paragon, High Speed, and Dracula."
+    k: "Built-in Deep Run test seed",
+    d: "Dev Tools can now load an AP-free 15-table Deep Run with three starters, 20 checks per table, feature gates, and staged progression."
   },
   {
-    k: "Boss table flow",
-    d: "Boss seeds now publish table-specific boss task and score checks, with an Away With You Dev Tools override and more reliable off-boss check clearing."
+    k: "Ten Boss Key routes",
+    d: "Deep Run places Boss Keys on ten different locked tables, never on starters, while any four keys still open the Boss Table."
   },
   {
-    k: "Curated worlds and YAML",
-    d: "Curated worlds now use their banner styling across Tower and Checks, and YAML Builder dropdowns plus per-world curated-by signatures were cleaned up."
+    k: "Bagatelle testing",
+    d: "Testing controls now include a direct Bagatelle launch button for checking the enhanced bumper course and one-use rewards."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_HOME = [];
@@ -30176,7 +30177,7 @@ function getFlprBotBossStatusSnapshot(){
     const selectedWorld = String(state?.selected || "");
     const bossRevealReady = !!(typeof isBossTableRevealReady === "function" ? isBossTableRevealReady() : false);
     const forceTestBossCard = !!(state?.bossHpTest && state.bossHpTest.forceShowCard);
-    const inherentBossSeed = !!(ap?.inherentSeedActive || String(ap?.seedName || state?.bossTableSeed || "") === "FLPR_INHERENT_TEST_SEED");
+    const inherentBossSeed = !!(ap?.inherentSeedActive || isInherentTestSeedName(ap?.seedName || state?.bossTableSeed || ""));
     const bossSelected = !!(
       selectedWorld === "boss" ||
       selectedWorld === bossWorldKey ||
@@ -33222,7 +33223,7 @@ function relicGetSimpleDef(id){
 }
 function relicCanTrackCurrentRun(){
   try{ if(ap?.inherentSeedActive) return true; }catch(_){}
-  try{ if(String(ap?.seedName || "") === "FLPR_INHERENT_TEST_SEED") return true; }catch(_){}
+  try{ if(isInherentTestSeedName(ap?.seedName || "")) return true; }catch(_){}
   try{ return !!episodeCanTrack(); }catch(_){}
   return false;
 }
@@ -57635,18 +57636,41 @@ const HINT_DEMO_SPOILER = [
   "Playthrough:",
   "0: {}"
 ].join("\n");
-const INHERENT_TEST_SEED_NAME = "FLPR_INHERENT_TEST_SEED";
-const INHERENT_TEST_SPOILER_SOURCE = "FLPR_Inherent_Test_Spoiler.txt";
+const INHERENT_TEST_SEED_NAME = "FLPR_INHERENT_DEEP_RUN_TEST_SEED";
+const INHERENT_TEST_SPOILER_SOURCE = "FLPR_Inherent_Deep_Run_Test_Spoiler.txt";
+const INHERENT_TEST_SEED_ALIASES = new Set([INHERENT_TEST_SEED_NAME, "FLPR_INHERENT_TEST_SEED"]);
+const INHERENT_DEEP_RUN_BOSS_KEYS = 4;
+const INHERENT_DEEP_RUN_BOSS_KEYS_SEEDED = 10;
+const INHERENT_DEEP_RUN_FEATURE_DEFS = Object.freeze([
+  { id:"dmd_screen_games", label:"DMD Screen Games", item:"Feature Key - DMD Screen Games", short_label:"DMD", pieces_required:3 },
+  { id:"upper_playfield_games", label:"Upper Playfield Games", item:"Feature Key - Upper Playfield Games", short_label:"UPPER", pieces_required:3 },
+  { id:"extra_flipper_games", label:"Extra Flipper Games", item:"Feature Key - Extra Flipper Games", short_label:"FLIPPER", pieces_required:3 },
+  { id:"spinner_games", label:"Spinner Games", item:"Feature Key - Spinner Games", short_label:"SPIN", pieces_required:3 },
+  { id:"ramp_games", label:"Ramp Games", item:"Feature Key - Ramp Games", short_label:"RAMP", pieces_required:3 }
+]);
+function isInherentTestSeedName(value){
+  return INHERENT_TEST_SEED_ALIASES.has(String(value || "").trim());
+}
 function inherentFormatScore(value){
   return `${Math.max(0, Math.round(Number(value) || 0)).toLocaleString("en-US")}+`;
 }
 function inherentCloneWorlds(){
-  const worlds = clone(buildDefaultWorldsFromRepo());
-  Object.entries(worlds || {}).forEach(([wk, world])=>{
-    if(!world || typeof world !== "object") return;
-    world.locked = (wk === "boss");
-    if(wk === "boss") world.tables = ["(Boss Table)"];
+  const source = clone(buildDefaultWorldsFromRepo());
+  const worlds = {};
+  const regular = Object.entries(source || {}).filter(([wk])=>wk && wk !== "boss").slice(0, 3);
+  regular.forEach(([wk, rawWorld], index)=>{
+    const world = (rawWorld && typeof rawWorld === "object") ? rawWorld : {};
+    worlds[wk] = {
+      ...world,
+      name:`Deep Run Test ${index + 1}`,
+      curatedName:`Deep Run Test ${index + 1}`,
+      curator:"FLPR Dev Tools",
+      locked:false,
+      tables:(Array.isArray(world.tables) ? world.tables : []).slice(0, 5)
+    };
   });
+  const boss = (source?.boss && typeof source.boss === "object") ? source.boss : {};
+  worlds.boss = { ...boss, name:"Boss Test", locked:true, tables:["(Boss Table)"] };
   return worlds;
 }
 function inherentSeedTables(worlds){
@@ -57659,17 +57683,27 @@ function inherentSeedTables(worlds){
       if(name) out.push({ worldKey:wk, tableKey:`${wk}|${idx}`, tableName:name, index:out.length });
     });
   }
-  return out.slice(0, 25);
+  return out.slice(0, 15);
 }
 function inherentPickStartingTables(tables, count){
   const pool = Array.isArray(tables) ? tables.filter(Boolean) : [];
-  const want = Math.max(1, Math.min(pool.length, Math.round(Number(count) || 5)));
-  const shuffled = pool.slice();
-  for(let i = shuffled.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  const want = Math.max(1, Math.min(pool.length, Math.round(Number(count) || 3)));
+  const byWorld = new Map();
+  pool.forEach((table)=>{
+    const key = String(table?.worldKey || "");
+    if(!byWorld.has(key)) byWorld.set(key, []);
+    byWorld.get(key).push(table);
+  });
+  const picked = [];
+  for(const worldTables of byWorld.values()){
+    if(!worldTables.length || picked.length >= want) break;
+    picked.push(worldTables[Math.floor(Math.random() * worldTables.length)]);
   }
-  return shuffled.slice(0, want);
+  const remaining = pool.filter((table)=>!picked.includes(table));
+  while(picked.length < want && remaining.length){
+    picked.push(remaining.splice(Math.floor(Math.random() * remaining.length), 1)[0]);
+  }
+  return picked;
 }
 function inherentNormalizeTableKey(value){
   try{
@@ -57739,6 +57773,69 @@ function inherentTaskExplanationFor(tableName, objective){
   }catch(_){}
   return "";
 }
+function inherentUniqueLabels(values){
+  const out = [];
+  const seen = new Set();
+  (Array.isArray(values) ? values : []).forEach((value)=>{
+    const label = String(value || "").trim();
+    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    if(label && key && !seen.has(key)){
+      seen.add(key);
+      out.push(label);
+    }
+  });
+  return out;
+}
+function inherentScoreNumber(value){
+  const match = String(value || "").replace(/,/g, "").match(/\d+(?:\.\d+)?/);
+  return match ? Math.max(0, Math.round(Number(match[0]) || 0)) : 0;
+}
+function inherentNiceScore(value){
+  const n = Math.max(1000, Number(value) || 0);
+  const step = n >= 100000000 ? 5000000 : (n >= 10000000 ? 500000 : (n >= 1000000 ? 50000 : (n >= 100000 ? 5000 : 1000)));
+  return Math.max(step, Math.round(n / step) * step);
+}
+function inherentDeepRunScoreLadder(entry, tableIndex){
+  const fallback = inherentFallbackScores(tableIndex);
+  const source = entry?.scoreTargets || fallback;
+  const numbers = {};
+  ["easy", "medium", "hard"].forEach((difficulty)=>{
+    numbers[difficulty] = (Array.isArray(source?.[difficulty]) ? source[difficulty] : fallback[difficulty])
+      .map(inherentScoreNumber)
+      .filter((value)=>value > 0)
+      .sort((a,b)=>a-b);
+    if(!numbers[difficulty].length){
+      numbers[difficulty] = fallback[difficulty].map(inherentScoreNumber).filter((value)=>value > 0).sort((a,b)=>a-b);
+    }
+  });
+  const low = (list, fallbackValue)=>list[0] || fallbackValue;
+  const high = (list, fallbackValue)=>list[list.length - 1] || fallbackValue;
+  const easyLow = low(numbers.easy, 500000);
+  const easyHigh = Math.max(easyLow, high(numbers.easy, easyLow*1.8));
+  const mediumLow = Math.max(easyHigh*1.2, low(numbers.medium, easyHigh*2.4));
+  const mediumHigh = Math.max(mediumLow, high(numbers.medium, mediumLow*1.8));
+  const hardLow = Math.max(mediumHigh*1.2, low(numbers.hard, mediumHigh*1.8));
+  const hardHigh = Math.max(hardLow, high(numbers.hard, hardLow*1.7));
+  const raw = [
+    easyLow*.62,
+    easyLow,
+    easyLow + ((easyHigh-easyLow)*.52),
+    easyHigh,
+    mediumLow*.78,
+    mediumLow,
+    mediumLow + ((mediumHigh-mediumLow)*.52),
+    mediumHigh,
+    hardLow,
+    hardHigh
+  ];
+  const values = [];
+  raw.forEach((value)=>{
+    const nice = inherentNiceScore(value);
+    const prev = values.length ? values[values.length - 1] : 0;
+    values.push(nice > prev ? nice : inherentNiceScore(prev * 1.22));
+  });
+  return values;
+}
 function inherentTaskSpecs(tableName, tableIndex){
   if(arguments.length === 1){
     tableIndex = tableName;
@@ -57746,32 +57843,172 @@ function inherentTaskSpecs(tableName, tableIndex){
   }
   const entry = inherentCatalogEntryForTable(tableName);
   const tasks = entry?.tasksByDifficulty || {};
-  const fallbackScores = inherentFallbackScores(tableIndex);
-  const scores = entry?.scoreTargets || fallbackScores;
-  return [
-    { name:inherentPick(tasks.easy, tableIndex, 0, "Make a Skill Shot"), difficulty:"easy", kind:"task" },
-    { name:`Easy Score (${inherentPick(scores.easy, tableIndex, 1, fallbackScores.easy[0])})`, difficulty:"easy", kind:"score" },
-    { name:inherentPick(tasks.medium, tableIndex, 2, "Start Multiball"), difficulty:"medium", kind:"task" },
-    { name:`Medium Score (${inherentPick(scores.medium, tableIndex, 3, fallbackScores.medium[0])})`, difficulty:"medium", kind:"score" },
-    { name:inherentPick(tasks.hard, tableIndex, 4, "Collect a Super Jackpot"), difficulty:"hard", kind:"task" },
-    { name:`Hard Score (${inherentPick(scores.hard, tableIndex, 5, fallbackScores.hard[0])})`, difficulty:"hard", kind:"score" }
+  const allTasks = inherentUniqueLabels([...(tasks.easy || []), ...(tasks.medium || []), ...(tasks.hard || [])]);
+  const used = new Set();
+  const takeTasks = (difficulty, count)=>{
+    const primary = inherentUniqueLabels(tasks[difficulty] || []);
+    const picked = [];
+    [...primary, ...allTasks].forEach((label)=>{
+      const key = label.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      if(picked.length >= count || !key || used.has(key)) return;
+      used.add(key);
+      picked.push(label);
+    });
+    while(picked.length < count){
+      const number = used.size + 1;
+      const label = `${String(tableName || "Table").trim()} ${difficulty} test objective ${number}`;
+      used.add(label.toLowerCase());
+      picked.push(label);
+    }
+    return picked.map((name)=>({ name, difficulty, kind:"task" }));
+  };
+  const tableTasks = [
+    ...takeTasks("easy", 4),
+    ...takeTasks("medium", 4),
+    ...takeTasks("hard", 2)
   ];
+  const ladder = inherentDeepRunScoreLadder(entry, tableIndex);
+  const scoreTasks = ladder.map((value, index)=>{
+    const difficulty = index < 4 ? "easy" : (index < 8 ? "medium" : "hard");
+    const ordinal = index < 4 ? index + 1 : (index < 8 ? index - 3 : index - 7);
+    return {
+      name:`${difficulty.charAt(0).toUpperCase()+difficulty.slice(1)} Score ${ordinal} (${inherentFormatScore(value)})`,
+      difficulty,
+      kind:"score",
+      scoreTarget:value
+    };
+  });
+  return [...tableTasks, ...scoreTasks];
 }
-function inherentRewardFor(tableIndex, taskIndex, tableName, tables){
+function inherentShuffle(values){
+  const out = (Array.isArray(values) ? values : []).slice();
+  for(let i=out.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [out[i],out[j]]=[out[j],out[i]];
+  }
+  return out;
+}
+function inherentBuildFeaturePlan(tables, startingTables){
+  const startingKeys = new Set((startingTables || []).map((table)=>table.tableKey));
+  const gated = inherentShuffle((tables || []).filter((table)=>!startingKeys.has(table.tableKey)));
+  const tierSizes = [4,4,2,2];
+  const tiers = [];
+  let cursor = 0;
+  tierSizes.forEach((size, index)=>{
+    tiers[index+1] = gated.slice(cursor,cursor+size);
+    cursor += size;
+  });
+  const ids = INHERENT_DEEP_RUN_FEATURE_DEFS.map((def)=>def.id);
+  const tableFeatureGates = {};
+  (startingTables || []).forEach((table)=>{ tableFeatureGates[table.tableName]=[]; });
+  const tierGatePatterns = {
+    1:[[ids[0]],[ids[1]],[ids[2]],[ids[3]]],
+    2:[[ids[1],ids[2]],[ids[0],ids[1]],[ids[2],ids[3]],[ids[0],ids[4]]],
+    3:[[ids[1],ids[2],ids[3]],[ids[0],ids[2],ids[4]]],
+    4:[[ids[0],ids[1],ids[2],ids[4]],[ids[0],ids[1],ids[3],ids[4]]]
+  };
+  const tierByTable = {};
+  tiers.slice(1).forEach((tierTables,tierIndex)=>{
+    const tier = tierIndex + 1;
+    (tierTables || []).forEach((table,index)=>{
+      tableFeatureGates[table.tableName]=(tierGatePatterns[tier] || [ids.slice(0,tier)])[index % (tierGatePatterns[tier] || [ids]).length].slice();
+      tierByTable[table.tableKey]=tier;
+    });
+  });
+  const byId = Object.fromEntries(INHERENT_DEEP_RUN_FEATURE_DEFS.map((def)=>[def.id,def]));
+  const tableFeatureLabels = {};
+  const tableFeatureItems = {};
+  const tableLockCounts = {};
+  const featureGateTables = Object.fromEntries(ids.map((id)=>[id,[]]));
+  (tables || []).forEach((table)=>{
+    const gates = tableFeatureGates[table.tableName] || [];
+    tableFeatureLabels[table.tableName]=gates.map((id)=>byId[id]?.label || id);
+    tableFeatureItems[table.tableName]=gates.map((id)=>byId[id]?.item).filter(Boolean);
+    tableLockCounts[table.tableName]=gates.length;
+    gates.forEach((id)=>featureGateTables[id]?.push(table.tableName));
+  });
+  const featureUnlock = {
+    enabled:true,
+    version:1,
+    mode:"feature_unlock",
+    feature_key_pieces_required:3,
+    feature_keys:INHERENT_DEEP_RUN_FEATURE_DEFS.map((def)=>({...def})),
+    used_feature_keys:INHERENT_DEEP_RUN_FEATURE_DEFS.map((def)=>({...def})),
+    feature_key_items:INHERENT_DEEP_RUN_FEATURE_DEFS.map((def)=>def.item),
+    feature_key_item_counts:Object.fromEntries(INHERENT_DEEP_RUN_FEATURE_DEFS.map((def)=>[def.item,3])),
+    table_feature_gates:tableFeatureGates,
+    table_feature_labels:tableFeatureLabels,
+    table_feature_items:tableFeatureItems,
+    table_lock_counts:tableLockCounts,
+    feature_gate_tables:featureGateTables,
+    starting_open_tables:(startingTables || []).map((table)=>table.tableName),
+    deep_run_key_order:ids.slice(),
+    deep_run_key_tier_rewards:{ "0":1, "1":2, "2":1, "3":1 }
+  };
+  return { tiers, tierByTable, featureUnlock };
+}
+function inherentBuildRewardOverrides(tables, startingTables, featurePlan){
+  const overrides = new Map();
+  const cursors = new Map();
+  const reserve = (sourceTable,itemName)=>{
+    if(!sourceTable || !itemName) return false;
+    let cursor = Math.max(0,Number(cursors.get(sourceTable.tableKey)) || 0);
+    while(cursor<20 && overrides.has(`${sourceTable.tableKey}|${cursor}`)) cursor += 1;
+    if(cursor>=20) return false;
+    overrides.set(`${sourceTable.tableKey}|${cursor}`,itemName);
+    cursors.set(sourceTable.tableKey,cursor+1);
+    return true;
+  };
+  const distribute = (sources,itemName,count)=>{
+    const pool=(Array.isArray(sources)?sources:[]).filter(Boolean);
+    for(let i=0;i<count && pool.length;i++) reserve(pool[i%pool.length],itemName);
+  };
+  const tiers=featurePlan.tiers || [];
+  const defs=INHERENT_DEEP_RUN_FEATURE_DEFS;
+  distribute(startingTables,defs[0].item,3);
+  distribute([tiers[1]?.[0]],defs[1].item,3);
+  distribute([tiers[1]?.[0]],defs[2].item,3);
+  distribute([tiers[2]?.[0]],defs[3].item,3);
+  distribute([tiers[3]?.[0]],defs[4].item,3);
+  const bossTierQuotas = { 1:3, 2:3, 3:2, 4:2 };
+  [1,2,3,4].forEach((tier)=>{
+    inherentShuffle(tiers[tier] || []).slice(0,bossTierQuotas[tier]).forEach((table)=>reserve(table,"Boss Key"));
+  });
+  const seededBossKeys = Array.from(overrides.values()).filter((itemName)=>itemName === "Boss Key").length;
+  if(seededBossKeys !== INHERENT_DEEP_RUN_BOSS_KEYS_SEEDED){
+    throw new Error(`Inherent Deep Run could only place ${seededBossKeys}/${INHERENT_DEEP_RUN_BOSS_KEYS_SEEDED} Boss Keys`);
+  }
+  const placeBalls = (sources,targets)=>{
+    (targets || []).forEach((target)=>distribute(sources,`Progressive Ball - ${target.tableName}`,2));
+  };
+  placeBalls(startingTables,tiers[1]);
+  placeBalls([tiers[1]?.[0]],tiers[2]);
+  placeBalls([tiers[2]?.[0]],tiers[3]);
+  placeBalls([tiers[3]?.[0]],tiers[4]);
+  placeBalls([...(startingTables || []),...(tiers[1] || [])],startingTables);
+  const bagatelleSources=[...(startingTables || []),...(tiers[1] || []),...(tiers[2] || []),...(tiers[3] || [])];
+  bagatelleSources.slice(0,8).forEach((table)=>reserve(table,"Bagatelle Bonus Game"));
+  return overrides;
+}
+function inherentRewardFor(tableIndex, taskIndex, tableName, tables, overrides, tableKey){
+  const override = overrides?.get?.(`${tableKey}|${taskIndex}`);
+  if(override) return override;
   const i = Math.max(0, Number(tableIndex) || 0);
   const j = Math.max(0, Number(taskIndex) || 0);
   const next = tables.length ? String(tables[(i + 1) % tables.length]?.tableName || tableName || "").trim() : String(tableName || "").trim();
-  if(j === 0) return `Progressive Ball - ${next}`;
-  if(j === 1) return (i % 3 === 0) ? "Hint: Progressive Ball" : "Easy Junk Item";
-  if(j === 2) return ([4, 12, 20].includes(i)) ? "Boss Key" : ((i % 4 === 1) ? "Hint: Boss Key" : "Medium Junk Item");
-  if(j === 3) return (i % 5 === 2) ? "Pinball Fragment" : "Hint: Progressive Ball";
-  if(j === 4) return `Progressive Ball - ${tableName}`;
-  return (i % 6 === 0) ? "Medium Junk Item" : "Easy Junk Item";
+  if((i+j)%17===0) return "Filter Trap";
+  if((i+j)%13===0) return "Bagatelle Bonus Game";
+  if(j%9===0) return `Hint: Progressive Ball - ${next}`;
+  if(j%7===0) return "Hint: Feature Key";
+  if(j%5===0) return "Pinball Fragment";
+  return (i+j)%3===0 ? "Medium Junk Item" : "Easy Junk Item";
 }
 function buildInherentTestSeedFixture(){
   const worlds = inherentCloneWorlds();
   const tables = inherentSeedTables(worlds);
-  const startingTables = inherentPickStartingTables(tables, 5);
+  const startingTables = inherentPickStartingTables(tables, 3);
+  const featurePlan = inherentBuildFeaturePlan(tables, startingTables);
+  const rewardOverrides = inherentBuildRewardOverrides(tables, startingTables, featurePlan);
   const itemNameToId = {};
   const locNameToId = {};
   const locationItemByLocId = {};
@@ -57787,7 +58024,7 @@ function buildInherentTestSeedFixture(){
   tables.forEach((table, tableIndex)=>{
     inherentTaskSpecs(table.tableName, tableIndex).forEach((task, taskIndex)=>{
       const locationName = `${table.tableName} - ${task.name}`;
-      const itemName = inherentRewardFor(tableIndex, taskIndex, table.tableName, tables);
+      const itemName = inherentRewardFor(tableIndex, taskIndex, table.tableName, tables, rewardOverrides, table.tableKey);
       const locId = nextLocId++;
       const itemId = ensureItem(itemName);
       locNameToId[locationName] = locId;
@@ -57803,6 +58040,11 @@ function buildInherentTestSeedFixture(){
         difficulty,
         kind,
         task_type: kind,
+        deep_run: true,
+        deep_run_index: taskIndex + 1,
+        deep_run_kind_index: kind === "score" ? taskIndex - 9 : taskIndex + 1,
+        objective_family: `${inherentNormalizeTableKey(table.tableName)}_${kind}_${kind === "score" ? taskIndex - 9 : taskIndex + 1}`,
+        score_target: kind === "score" ? Math.max(0, Number(task?.scoreTarget) || 0) : 0,
         objective: task.name,
         display_name: task.name,
         title: task.name,
@@ -57847,23 +58089,39 @@ function buildInherentTestSeedFixture(){
     spoilerLines.push(`${locationName}: ${itemName}`);
   });
   spoilerLines.push("", "Playthrough:", "0: {}");
+  const activeTableNames = tables.map((table)=>table.tableName);
+  const featureUnlock = featurePlan.featureUnlock;
   return {
     worlds,
     tables,
     startingTables,
+    featurePlan,
     itemNameToId,
     locNameToId,
     locationItemByLocId,
     spoilerText: spoilerLines.join("\n"),
     slotData: {
       seed_name: INHERENT_TEST_SEED_NAME,
-      boss_keys_required: 3,
-      boss_keys_total: 3,
+      base_game_seed_type: "deep_run",
+      deep_run: true,
+      deep_run_enabled: true,
+      boss_keys_required: INHERENT_DEEP_RUN_BOSS_KEYS,
+      boss_keys_total: INHERENT_DEEP_RUN_BOSS_KEYS,
+      boss_keys_required_for_boss_table_open: INHERENT_DEEP_RUN_BOSS_KEYS,
+      deep_run_boss_keys_required: INHERENT_DEEP_RUN_BOSS_KEYS,
       progressive_ball_starts: startingTables.map((table)=>({
         table: table.tableName,
         item: `Progressive Ball - ${table.tableName}`,
         count: 1
       })),
+      feature_unlock: featureUnlock,
+      base_game_table_set: {
+        seed_type: "deep_run",
+        deep_run: true,
+        active_tables: activeTableNames,
+        starting_open_tables: startingTables.map((table)=>table.tableName),
+        feature_unlock: featureUnlock
+      },
       generic_checks: { enabled:true, entries, by_location:Object.fromEntries(entries.map((entry)=>[entry.location, entry])) },
       task_shuffle: { enabled:true, entries, by_location:Object.fromEntries(entries.map((entry)=>[entry.location, entry])) }
     }
@@ -57975,7 +58233,7 @@ async function loadInherentTestSeed(){
   state.bossVictoryFinalizing = false;
   state.bossHpLive = { max:100, cur:100, name:"Boss Table", inited:false };
   state.bossHpTest = { ...(state.bossHpTest || {}), show:false, name:"Boss Table", cur:100, max:100, _pulse:0, forceShowCard:false };
-  try{ bossKeysConfigureCount(3, { persist:false, inputs:true, render:false }); }catch(_){}
+  try{ bossKeysConfigureCount(INHERENT_DEEP_RUN_BOSS_KEYS, { persist:false, inputs:true, render:false }); }catch(_){}
   try{
     if(Array.isArray(bossKeysState)) bossKeysState.forEach((key)=>{ if(key) key.acquired = false; });
     bossKeysSyncLegacyMirror(0);
@@ -57984,12 +58242,22 @@ async function loadInherentTestSeed(){
     bossKeysSave();
   }catch(_){}
   try{ setGenericCheckPayload(fixture.slotData); }catch(_){ ap.slotData = fixture.slotData; }
+  try{
+    featureKeysConfigureFromSlotData(fixture.slotData, { render:false });
+    if(Array.isArray(featureKeysState)) featureKeysState.forEach((key)=>{
+      if(!key) return;
+      key.count = 0;
+      key.acquired = false;
+    });
+    featureKeysSave();
+    featureKeysRender();
+  }catch(_){}
   inherentSeedPopulateLocationMaps(fixture);
   ap.inherentLocationItems = new Map(Object.entries(fixture.locationItemByLocId || {}).map(([locId, reward])=>[Number(locId), reward]));
   try{ relicBeginRun(INHERENT_TEST_SEED_NAME, "inherent-test"); }catch(_){}
   try{ syncTableBannerCodeMapFromSlots(state); hydrateTableBannerSlotsFromCodeMap(state, { overwrite:true }); }catch(_){}
   try{ saveState(); }catch(_){}
-  setApIndicator("green", "INHERENT TEST SEED");
+  setApIndicator("green", "DEEP RUN TEST SEED");
   const hEl = document.getElementById("apConnectedHost");
   if(hEl) hEl.textContent = `INHERENT; ${INHERENT_TEST_SEED_NAME}`;
   updateApConnectButtons("connected");
@@ -57997,10 +58265,10 @@ async function loadInherentTestSeed(){
   try{ achBuildTableCatalogFromAp(); achRecomputeProgress(); achSaveStore(); renderAchievementsControlsPanel(); }catch(_){}
   try{ await hintApplySpoilerText(fixture.spoilerText, INHERENT_TEST_SPOILER_SOURCE, { persist:true }); }catch(err){ try{ hintLog(`Inherent spoiler load failed: ${err?.message || err}`); }catch(_){} }
   const startNames = (fixture.startingTables || []).map((table)=>table.tableName).join(", ");
-  apLog(`INHERENT seed loaded; starts=${startNames || "none"}; locations=${Object.keys(fixture.locNameToId).length}; items=${Object.keys(fixture.itemNameToId).length}`);
+  apLog(`INHERENT Deep Run seed loaded; starts=${startNames || "none"}; tables=${fixture.tables.length}; locations=${Object.keys(fixture.locNameToId).length}; items=${Object.keys(fixture.itemNameToId).length}`);
   try{ renderAll(); renderChecksWorldTabs(); renderChecks(); updateCountCheckUI(); }catch(_){}
   try{ showView("checks"); }catch(_){}
-  toast("good", "INHERENT TEST SEED", `Randomized ${Math.max(0, (fixture.startingTables || []).length)} starting tables with Ball 1 only.`, 4200);
+  toast("good", "DEEP RUN TEST SEED", `${fixture.tables.length} tables, ${Math.max(0, (fixture.startingTables || []).length)} starters, and 20 checks per table.`, 4800);
   return true;
 }
 function hintLoadDemo(){
@@ -59590,7 +59858,7 @@ function ensureInherentSeedUtilityControl(){
     const status = document.createElement("div");
     status.className = "cNote";
     status.id = "inherentSeedUtilityStatus";
-    status.textContent = "Starts the built-in randomized test seed for AP-free verification.";
+    status.textContent = "Starts the built-in 15-table Deep Run seed for AP-free verification.";
     wrap.appendChild(status);
   }
   const row = wrap.querySelector(":scope > .cRow") || wrap;
@@ -59600,7 +59868,7 @@ function ensureInherentSeedUtilityControl(){
     btn.className = "cBtn testPrimary";
     btn.id = "hintLoadInherentBtn";
     btn.type = "button";
-    btn.textContent = "LOAD INHERENT TEST SEED";
+    btn.textContent = "LOAD DEEP RUN TEST SEED";
   }
   row.appendChild(btn);
   return wrap;
@@ -60679,6 +60947,7 @@ function compactTestingControlsLayout(panelTesting){
     "testFragmentPopupBtn",
     "testJunkGenericPopupBtn",
     "testBallPopupBtn",
+    "testBagatelleBtn",
     "testAchievementPopupBtn"
   ]);
   const hintFlowGrid = buildTestingButtonGrid([
@@ -62429,6 +62698,11 @@ restartTimer();
   bind("testBallPopupBtn", ()=>{ playSfx("click"); uiLog("test ball"); runProgressiveBallTestFlow(); }, { lockMs:1600 });
   bind("testHintBallPopupBtn", ()=>{ playSfx("click"); runHintReceiveTest("ball"); }, { lockMs:1800 });
   bind("testHintBossPopupBtn", ()=>{ playSfx("click"); runHintReceiveTest("boss"); }, { lockMs:1800 });
+  bind("testBagatelleBtn", ()=>{
+    playSfx("click");
+    uiLog("test bagatelle");
+    openBagatelle({ itemName:"Bagatelle Bonus Game", locationName:"DEV TOOLS TEST" });
+  }, { lockMs:1200 });
   bind("testAchievementPopupBtn", ()=>{ playSfx("click"); runAchievementTestFlow(); }, { lockMs:1200 });
   bind("testBossDamageCheckBtn", ()=>{ playSfx("click"); uiLog("test boss hit"); runBossDamageCheckTest(); }, { lockMs:1200 });
   bind("testForceBossVictoryBtn", ()=>{
