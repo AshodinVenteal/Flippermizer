@@ -1650,9 +1650,12 @@ body.flprFontHubot .checksTitle{
 
 /* Bagatelle bonus game */
 .bagatelleOverlay{
-  position:fixed;
-  inset:0;
-  z-index:12000;
+  position:absolute;
+  left:0;
+  top:0;
+  width:var(--captureW);
+  height:var(--captureH);
+  z-index:2147483500;
   display:grid;
   place-items:center;
   padding:24px;
@@ -25505,7 +25508,7 @@ const FLPR_PATCH_NOTES_ITEMS_SHARED = [
   },
   {
     k: "Bagatelle testing",
-    d: "Testing controls now include a direct Bagatelle launch button for checking the enhanced bumper course and one-use rewards."
+    d: "Testing now launches Bagatelle directly over the OBS capture, in the same presentation area used by integrated Bonus Pinball."
   }
 ];
 const FLPR_PATCH_NOTES_ITEMS_HOME = [];
@@ -39818,7 +39821,7 @@ function openBagatelle(opts){
     return false;
   }
   if(bagatelleRuntime) closeBagatelle();
-  const host = document.body;
+  const host = document.querySelector(".capture") || document.body;
   const overlay = document.createElement("div");
   overlay.className = "bagatelleOverlay";
   overlay.setAttribute("role", "dialog");
