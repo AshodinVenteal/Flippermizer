@@ -172,10 +172,10 @@
         },
         "base_game_active_table_count": {
             "display_name": "Base Game Active Table Count",
-            "description": "How many tables from the larger Base Game pool should exist in this seed's active graph. Deep Run currently targets 20 tables: five starter tables, then five each behind one, two, and three Feature Keys.",
+            "description": "How many tables from the larger Base Game pool should exist in this seed's active graph. A 15-table Deep Run uses three starter tables, then four one-lock tables, four two-lock tables, two three-lock tables, and two four-lock tables. Higher counts continue the one/two/three/four-lock pattern.",
             "type": "Range",
             "range_start": 5,
-            "range_end": 25,
+            "range_end": 50,
             "default": 20,
             "group": "Base Game Options",
             "visibility": [

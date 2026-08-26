@@ -10,11 +10,21 @@
     const params = new URLSearchParams(window.location.search || "");
     const mode = String(params.get("launcherGraphicsMode") || "").trim();
     const streamPerformance = params.get("launcherStreamPerformance") === "1";
+    const lowLatencyCursor = params.get("launcherLowLatencyCursor") !== "0" && (streamPerformance || params.get("launcherLowLatencyCursor") === "1");
+    const nativeFlipperCursor = params.get("launcherNativeFlipperCursor") !== "0" && (lowLatencyCursor || params.get("launcherNativeFlipperCursor") === "1");
     const twitchAutoload = params.get("launcherTwitchVideoAutoload") === "1";
     if (streamPerformance) {
       window.__flprStreamPerformanceMode = true;
       window.__flprTwitchVideoAutoload = twitchAutoload;
       document.documentElement.classList.add("launcherStreamPerformance");
+    }
+    if (lowLatencyCursor) {
+      window.__flprLowLatencyCursor = true;
+      document.documentElement.classList.add("flprLowLatencyCursor");
+    }
+    if (nativeFlipperCursor) {
+      window.__flprNativeFlipperCursor = true;
+      document.documentElement.classList.add("flprNativeFlipperCursor");
     }
     if (!mode) return;
     const muteUntil = Date.now() + 5000;
@@ -349,6 +359,9 @@ html.launcherStreamPerformance .controls .achCustomItem{
   pointer-events:none;
   overflow:hidden;
   z-index:2147483600;
+  contain:layout style paint;
+  transform:translateZ(0);
+  will-change:contents;
 }
 .spark{
   position:absolute; width:10px; height:3px;
@@ -364,6 +377,8 @@ html.launcherStreamPerformance .controls .achCustomItem{
   white-space:nowrap;
   color:var(--sparkText, #ffffff);
   animation:spark var(--sparkDur, 450ms) ease-out forwards;
+  contain:layout style paint;
+  will-change:transform, opacity;
 }
 .spark.textual{
   width:auto;
@@ -1624,6 +1639,105 @@ body.flprFontHubot .checksTitle{
 }
 .view.active{ opacity:1; transform: translateX(0); pointer-events:auto; }
 .view.exitLeft{ opacity:0; transform: translateX(-20px); }
+.view:not(.active),
+.view[aria-hidden="true"]{
+  pointer-events:none !important;
+  visibility:hidden;
+}
+.view:not(.active) *{
+  pointer-events:none !important;
+}
+
+/* Bagatelle bonus game */
+.bagatelleOverlay{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:rgba(0,4,10,.88);
+  backdrop-filter:blur(5px) brightness(.48);
+  pointer-events:auto;
+}
+.bagatelleOverlay[aria-hidden="true"]{ display:none; }
+.bagatelleCard{
+  width:min(790px, 94%);
+  height:min(1040px, 94%);
+  min-height:650px;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  gap:10px;
+  padding:16px;
+  border:3px solid rgba(255,82,120,.88);
+  border-radius:8px;
+  background:linear-gradient(180deg, rgba(24,8,18,.98), rgba(3,14,23,.99));
+  box-shadow:0 0 0 3px rgba(0,217,255,.24) inset, 0 0 40px rgba(255,55,98,.28);
+}
+.bagatelleHead{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:16px;
+}
+.bagatelleTitle{ font-size:28px; color:#ff6f99; text-shadow:0 0 14px rgba(255,72,120,.38); }
+.bagatelleSub{ font-size:10px; color:rgba(220,246,255,.78); text-align:right; }
+.bagatelleBoardWrap{
+  position:relative;
+  min-height:0;
+  overflow:hidden;
+  border:2px solid rgba(0,217,255,.56);
+  border-radius:6px;
+  background:rgba(1,8,14,.94);
+}
+.bagatelleCanvas{ width:100%; height:100%; display:block; touch-action:none; }
+.bagatellePlunger{
+  position:absolute;
+  right:12px;
+  bottom:84px;
+  width:78px;
+  height:210px;
+  border:2px solid rgba(255,235,166,.68);
+  border-radius:6px;
+  background:linear-gradient(180deg,rgba(255,86,124,.30),rgba(40,7,18,.92));
+  color:#fff1bc;
+  font:inherit;
+  font-size:10px;
+  cursor:pointer;
+  user-select:none;
+  touch-action:none;
+}
+.bagatellePlunger::after{
+  content:"";
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:14px;
+  height:calc(20px + 140px * var(--charge, 0));
+  border-radius:4px;
+  background:linear-gradient(180deg,#fff,#ff7ba1 52%,#00d9ff);
+  box-shadow:0 0 16px rgba(255,85,125,.42);
+}
+.bagatellePlunger span{ position:relative; z-index:2; writing-mode:vertical-rl; transform:rotate(180deg); }
+.bagatelleFoot{
+  min-height:46px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.bagatelleStatus{ font-size:12px; color:rgba(225,248,255,.92); }
+.bagatelleClose{
+  min-width:110px;
+  min-height:38px;
+  border:1px solid rgba(0,217,255,.62);
+  border-radius:5px;
+  background:rgba(0,90,116,.28);
+  color:#eaffff;
+  font:inherit;
+  font-size:10px;
+  cursor:pointer;
+}
 
 /* Dim main overlay while Bonus Pinball field is actively running in OBS. */
 .capture{
@@ -2132,12 +2246,17 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   50%{ transform: translateY(-1px) scale(1.035); }
 }
 .hintHangmanChat{
-  font-size: clamp(20px, 2.25vw, 27px);
+  font-size: clamp(14px, 1.58vw, 19px);
   line-height: 1.18;
   color: rgba(216,244,252,.92);
 }
 .hintHangmanChat strong{
   color: rgba(255,226,142,.98);
+}
+.hintHangmanChat .hintHangmanCommand{
+  display:inline-block;
+  font-size:1.43em;
+  line-height:1;
 }
 .hintHangmanDirect{
   display: grid;
@@ -3051,13 +3170,20 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   right:42px;
   top:50%;
   transform:translateY(-50%);
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
   opacity:.96;
   font-size:25px;
   z-index:5;
+  line-height:1;
   filter: drop-shadow(0 0 10px rgba(0,217,255,.34));
 }
 .world.curatedWorld.compact .worldEmoji{
   right:32px;
+  width:32px;
+  height:32px;
   font-size:18px;
   opacity:.86;
 }
@@ -7563,11 +7689,16 @@ body.chromaBlue .bossKeyCard::before{
   --featureKeyCardSecondary:#00a6ff;
   --featureKeyCardGlow:rgba(34,255,210,.20);
   --featureKeyCardSoftGlow:rgba(34,255,210,.13);
+  --featureKeyCardFill:rgba(34,255,210,.18);
+  --featureKeyCardFillStrong:rgba(34,255,210,.34);
+  --featureKeyCardOpacity:.38;
+  --featureKeyFillPct:0%;
+  --featureKeyFillOpacity:.12;
   border:1px solid var(--featureKeyCardBorder, rgba(34,255,210,.34));
   background:
     linear-gradient(180deg, rgba(12,34,42,.88), rgba(5,15,24,.86)),
     radial-gradient(180px 90px at 50% 0%, var(--featureKeyCardSoftGlow), transparent 70%);
-  opacity:.38;
+  opacity:var(--featureKeyCardOpacity, .38);
   overflow:hidden;
   display:grid;
   grid-template-columns:58px minmax(0, 1fr);
@@ -7576,6 +7707,31 @@ body.chromaBlue .bossKeyCard::before{
   padding:7px 9px;
   user-select:none;
   transition:opacity .28s ease, transform .16s ease, border-color .16s ease, box-shadow .16s ease, filter .16s ease;
+}
+.featureKeyCard::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:var(--featureKeyFillPct, 0%);
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, var(--featureKeyCardFillStrong), var(--featureKeyCardFill)),
+    radial-gradient(120px 80px at 50% 0%, rgba(255,255,255,.16), transparent 72%);
+  opacity:var(--featureKeyFillOpacity, .12);
+  box-shadow:0 0 18px var(--featureKeyCardGlow);
+  transition:width 920ms cubic-bezier(.18,.84,.18,1), opacity 920ms ease;
+}
+.featureKeyCard::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.10) 50%, transparent);
+  opacity:.10;
+  transform:translateX(calc(var(--featureKeyFillPct, 0%) - 100%));
+  transition:transform 920ms cubic-bezier(.18,.84,.18,1);
 }
 .featureDock:hover .featureKeyCard,
 .featureDock:focus-within .featureKeyCard,
@@ -7596,6 +7752,8 @@ body.chromaBlue .bossKeyCard::before{
   box-shadow:0 0 20px var(--featureKeyCardGlow), inset 0 0 0 1px rgba(190,255,247,.12);
 }
 .featureKeyCard .bossKeyFrame{
+  position:relative;
+  z-index:1;
   width:52px;
   height:52px;
   border-radius:12px;
@@ -9654,6 +9812,215 @@ body.chromaBlue .bossKeyCard::before{
   box-shadow:0 0 11px rgba(255,238,170,.72), 0 0 22px rgba(0,255,213,.48);
   animation: bossKeyCinematicSparkKF var(--spark-dur, 760ms) ease-out forwards;
 }
+.bossKeyCinematic.featureKeyCinematic{
+  --bossKeyFxPrimary:#ff355e;
+  --bossKeyFxSecondary:#ff9f1c;
+  --bossKeyFxPrimaryRgba:rgba(255,53,94,.82);
+  --bossKeyFxSecondaryRgba:rgba(255,159,28,.74);
+  --bossKeyFxGlow:rgba(255,53,94,.54);
+  --bossKeyFxStrongGlow:rgba(255,53,94,.82);
+  --bossKeyFxSoftGlow:rgba(255,53,94,.24);
+  --bossKeyFxMist:rgba(255,53,94,.34);
+  --bossKeyFxTransparent:rgba(255,53,94,0);
+  --bossKeyFxLight:rgba(255,255,255,.98);
+  background:
+    radial-gradient(82% 58% at 50% 42%, var(--bossKeyFxSoftGlow), rgba(0,0,0,.12) 44%, rgba(0,0,0,.76) 100%),
+    linear-gradient(180deg, rgba(30,0,8,.78), rgba(9,1,7,.88));
+}
+.bossKeyCinematic.featureKeyCinematic::before{
+  background:
+    radial-gradient(58% 42% at 50% 40%, var(--bossKeyFxMist), transparent 62%),
+    repeating-linear-gradient(180deg, rgba(255,210,210,.042) 0 2px, transparent 2px 7px);
+}
+.bossKeyCinematic.featureKeyCinematic::after{
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,.22), transparent 0 17%, var(--bossKeyFxSoftGlow) 18%, transparent 36%),
+    radial-gradient(circle at 50% 42%, var(--bossKeyFxSecondaryRgba), transparent 0 34%, rgba(0,0,0,0) 56%);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicBackdrop{
+  background:
+    radial-gradient(120% 84% at 50% 44%, var(--bossKeyFxSoftGlow), rgba(0,0,0,.60) 58%, rgba(0,0,0,.90) 100%);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicLightning{
+  filter: drop-shadow(0 0 10px var(--bossKeyFxStrongGlow));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicBolt{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0), var(--bossKeyFxLight) 8%, var(--bossKeyFxPrimaryRgba) 42%, var(--bossKeyFxSecondaryRgba) 60%, var(--bossKeyFxTransparent));
+  box-shadow:
+    0 0 8px rgba(255,255,255,.76),
+    0 0 20px var(--bossKeyFxStrongGlow),
+    0 0 38px var(--bossKeyFxGlow);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicFlyer{
+  filter:
+    drop-shadow(0 0 18px var(--bossKeyFxGlow))
+    drop-shadow(0 0 52px var(--bossKeyFxSecondaryRgba));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicKeyCore::before{
+  background:
+    radial-gradient(circle, rgba(255,255,255,.30), var(--bossKeyFxMist) 28%, var(--bossKeyFxSoftGlow) 46%, transparent 68%);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicRevealSvg,
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicKeyCore img,
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicGlyph{
+  filter:
+    saturate(1.8) brightness(1.10) contrast(1.10)
+    drop-shadow(0 0 12px rgba(0,0,0,.58))
+    drop-shadow(0 0 24px var(--bossKeyFxGlow))
+    drop-shadow(0 0 42px var(--bossKeyFxSecondaryRgba));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicShard{
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,238,224,.98), var(--bossKeyFxPrimaryRgba), rgba(255,255,255,0));
+  box-shadow:0 0 12px var(--bossKeyFxStrongGlow), 0 0 26px var(--bossKeyFxSecondaryRgba);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicAetherSpiral{
+  filter:
+    drop-shadow(0 0 16px var(--bossKeyFxGlow))
+    drop-shadow(0 0 44px var(--bossKeyFxMist));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicAetherSpiral::before{
+  background:
+    radial-gradient(circle, rgba(255,255,255,.98), var(--bossKeyFxSecondaryRgba) 21%, var(--bossKeyFxMist) 44%, transparent 72%);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicAetherArm{
+  stroke:rgba(255,230,220,.94);
+  filter:
+    blur(var(--arm-blur, 0px))
+    drop-shadow(0 0 9px rgba(255,230,220,.52))
+    drop-shadow(0 0 28px var(--bossKeyFxMist));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicAetherArm.mist{
+  stroke:var(--bossKeyFxMist);
+  filter:blur(var(--arm-mist-blur, 8px)) drop-shadow(0 0 28px var(--bossKeyFxMist));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicAetherArm.hot{
+  stroke:rgba(255,255,255,.98);
+  filter:
+    blur(.2px)
+    drop-shadow(0 0 7px rgba(255,255,255,.78))
+    drop-shadow(0 0 22px var(--bossKeyFxGlow));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicSpiralMote{
+  background:radial-gradient(circle, rgba(255,255,255,.98), var(--bossKeyFxSecondaryRgba) 35%, var(--bossKeyFxMist) 100%);
+  box-shadow:
+    0 0 10px rgba(255,255,255,.76),
+    0 0 26px var(--bossKeyFxGlow);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicSpiralMote::after{
+  background:linear-gradient(90deg, transparent, var(--bossKeyFxSecondaryRgba), rgba(255,255,255,.94));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicEnergySnap::before{
+  background:
+    radial-gradient(circle, rgba(255,255,255,.98) 0 4%, var(--bossKeyFxSecondaryRgba) 8%, var(--bossKeyFxMist) 21%, transparent 48%),
+    conic-gradient(from 12deg, transparent 0 20deg, rgba(255,255,255,.92) 28deg, var(--bossKeyFxGlow) 38deg, transparent 54deg 88deg, var(--bossKeyFxSecondaryRgba) 98deg, transparent 118deg 360deg);
+  filter:blur(1px) drop-shadow(0 0 18px rgba(255,255,255,.62)) drop-shadow(0 0 40px var(--bossKeyFxGlow));
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicEnergySnap::after{
+  border-color:rgba(255,224,212,.94);
+  box-shadow:
+    0 0 18px rgba(255,255,255,.58),
+    0 0 38px var(--bossKeyFxGlow),
+    inset 0 0 24px var(--bossKeyFxSoftGlow);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicTitle{
+  color:rgba(255,244,238,.98);
+  text-shadow:
+    0 0 12px rgba(255,255,255,.70),
+    0 0 30px var(--bossKeyFxStrongGlow),
+    0 4px 0 rgba(0,0,0,.74);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicTitle.bottom{
+  color:rgba(255,238,228,.98);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicRing{
+  border-color:rgba(255,196,176,.68);
+  box-shadow:
+    0 0 18px var(--bossKeyFxGlow),
+    0 0 58px var(--bossKeyFxSecondaryRgba),
+    inset 0 0 34px var(--bossKeyFxSoftGlow);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicSpark{
+  background:radial-gradient(circle, rgba(255,255,255,.98), var(--bossKeyFxSecondaryRgba) 38%, var(--bossKeyFxMist) 100%);
+  box-shadow:0 0 11px var(--bossKeyFxSecondaryRgba), 0 0 24px var(--bossKeyFxGlow);
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicFlyer{
+  animation: featureKeyExplosiveCoreKF 780ms cubic-bezier(.08,1.12,.16,1) 70ms forwards;
+}
+.bossKeyCinematic.featureKeyCinematic.charging .bossKeyCinematicFlyer{
+  animation:
+    featureKeyExplosiveChargeKF 70ms steps(2, end) infinite,
+    bossKeyChargeGlowKF 420ms ease-in-out infinite;
+  opacity:1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.bossKeyCinematic.featureKeyCinematic.flying .bossKeyCinematicFlyer{
+  animation: bossKeyFlyToSlotKF 440ms cubic-bezier(.12,1,.16,1) forwards;
+  opacity:1;
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicAetherSpiral{
+  width:min(64vw, 720px);
+  animation: featureKeyExplosionShellKF 900ms cubic-bezier(.08,.92,.14,1) 36ms both;
+}
+.bossKeyCinematic.featureKeyCinematic.snapped .bossKeyCinematicAetherSpiral{
+  animation: featureKeyExplosionAbsorbKF 210ms cubic-bezier(.12,1,.16,1) both;
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicAetherSvg{
+  animation: featureKeyExplosionSvgKF 920ms cubic-bezier(.08,.92,.14,1) both;
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicRevealPath{
+  animation: bossKeySpiralRevealPathKF 620ms cubic-bezier(.12,1,.18,1) 80ms forwards;
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicShard{
+  animation-duration:480ms;
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicBolt{
+  animation-duration:430ms;
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicTitle{
+  animation: featureKeyWordsKF 1180ms ease-in-out 610ms both;
+}
+.bossKeyCinematic.featureKeyCinematic .bossKeyCinematicRing{
+  animation: featureKeyBlastRingKF 760ms ease-out 70ms both;
+}
+@keyframes featureKeyExplosiveCoreKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.08) rotate(-18deg); filter:brightness(2.4) blur(10px); }
+  14%{ opacity:1; transform:translate(-50%, -50%) scale(1.38) rotate(5deg); filter:brightness(2.1) blur(1px); }
+  31%{ opacity:1; transform:translate(-50%, -50%) scale(.82) rotate(-3deg); filter:brightness(1.38) blur(0); }
+  56%{ opacity:1; transform:translate(-50%, -50%) scale(1.12) rotate(2deg); filter:brightness(1.14) blur(0); }
+  100%{ opacity:1; transform:translate(-50%, -50%) scale(1) rotate(0deg); filter:brightness(1) blur(0); }
+}
+@keyframes featureKeyExplosiveChargeKF{
+  0%,100%{ transform:translate(-50%, -50%) scale(1.02) rotate(-1deg); filter:brightness(1.12); }
+  50%{ transform:translate(-50%, -50%) scale(1.11) rotate(2deg); filter:brightness(1.56); }
+}
+@keyframes featureKeyExplosionShellKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.10) rotate(-26deg); filter:brightness(2.4) blur(10px); }
+  11%{ opacity:1; transform:translate(-50%, -50%) scale(.92) rotate(-8deg); filter:brightness(1.9) blur(1px); }
+  38%{ opacity:.96; transform:translate(-50%, -50%) scale(1.20) rotate(8deg); filter:brightness(1.35) blur(0); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.58) rotate(28deg); filter:brightness(.92) blur(4px); }
+}
+@keyframes featureKeyExplosionSvgKF{
+  0%{ opacity:0; transform:rotate(-38deg) scale(.18); }
+  13%{ opacity:1; transform:rotate(-12deg) scale(.88); }
+  46%{ opacity:.92; transform:rotate(8deg) scale(1.08); }
+  100%{ opacity:0; transform:rotate(28deg) scale(1.38); }
+}
+@keyframes featureKeyExplosionAbsorbKF{
+  0%{ opacity:.72; transform:translate(-50%, -50%) scale(1.06) rotate(6deg); filter:brightness(1.5); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(.34) rotate(-12deg); filter:brightness(2.2) blur(5px); }
+}
+@keyframes featureKeyWordsKF{
+  0%{ opacity:0; transform:translateX(-50%) translateY(16px) scale(.88); filter:blur(8px); }
+  18%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1.08); filter:blur(0); }
+  62%{ opacity:1; transform:translateX(-50%) translateY(0) scale(1); filter:blur(0); }
+  100%{ opacity:0; transform:translateX(-50%) translateY(-10px) scale(.98); filter:blur(5px); }
+}
+@keyframes featureKeyBlastRingKF{
+  0%{ opacity:0; transform:translate(-50%, -50%) scale(.24); filter:blur(5px); }
+  16%{ opacity:.98; transform:translate(-50%, -50%) scale(.82); filter:blur(0); }
+  100%{ opacity:0; transform:translate(-50%, -50%) scale(1.62); filter:blur(2px); }
+}
 .bossDock.bossKeySectionCharge .bossDockInner,
 .featureDock.bossKeySectionCharge .featureDockInner{
   animation: bossKeyDockQuakeKF 90ms steps(2, end) infinite;
@@ -9673,6 +10040,18 @@ body.chromaBlue .bossKeyCard::before{
     0 0 0 2px rgba(180,255,244,.18) inset,
     0 0 26px rgba(0,255,213,.42),
     0 0 62px rgba(29,214,255,.28);
+}
+.featureDock.bossKeySectionCharge .featureDockInner{
+  filter:
+    drop-shadow(0 0 10px rgba(255,42,70,.42))
+    drop-shadow(0 0 26px rgba(255,132,42,.24));
+}
+.featureKeyCard.bossKeyReceivingSlot{
+  border-color:var(--featureKeyCardPrimary, rgba(255,194,176,.98));
+  box-shadow:
+    0 0 0 2px var(--featureKeyCardFillStrong, rgba(255,104,112,.22)) inset,
+    0 0 28px var(--featureKeyCardGlow, rgba(255,42,70,.52)),
+    0 0 66px var(--featureKeyCardFill, rgba(255,132,42,.32));
 }
 .bossKeyCard.bossKeyReceivingSlot .bossKeyFrame,
 .featureKeyCard.bossKeyReceivingSlot .bossKeyFrame{
@@ -20768,18 +21147,72 @@ body.flprShopCursorPinball,
 body.flprShopCursorPinball *{
   cursor:none !important;
 }
+html.flprLowLatencyCursor body,
+html.flprLowLatencyCursor body *{
+  cursor:auto !important;
+}
+html.flprLowLatencyCursor button:not(:disabled),
+html.flprLowLatencyCursor a[href],
+html.flprLowLatencyCursor [role="button"],
+html.flprLowLatencyCursor [data-loadout-open],
+html.flprLowLatencyCursor [data-shop-buy]:not(:disabled),
+html.flprLowLatencyCursor [data-shop-equip]:not(:disabled),
+html.flprLowLatencyCursor .cBtn:not(:disabled),
+html.flprLowLatencyCursor .tab:not(.disabled),
+html.flprLowLatencyCursor .world:not(.locked),
+html.flprLowLatencyCursor .ball:not(.disabled),
+html.flprLowLatencyCursor .task:not(.checked),
+html.flprLowLatencyCursor .scoreTask:not(.checked),
+html.flprLowLatencyCursor .bossKeyCard,
+html.flprLowLatencyCursor .featureKeyCard{
+  cursor:pointer !important;
+}
+html.flprLowLatencyCursor button:disabled,
+html.flprLowLatencyCursor .disabled,
+html.flprLowLatencyCursor .locked,
+html.flprLowLatencyCursor [aria-disabled="true"]{
+  cursor:not-allowed !important;
+}
+html.flprNativeFlipperCursor body,
+html.flprNativeFlipperCursor body *{
+  cursor:var(--flprNativeCursor, auto) !important;
+}
+html.flprNativeFlipperCursor button:not(:disabled),
+html.flprNativeFlipperCursor a[href],
+html.flprNativeFlipperCursor [role="button"],
+html.flprNativeFlipperCursor [data-loadout-open],
+html.flprNativeFlipperCursor [data-shop-buy]:not(:disabled),
+html.flprNativeFlipperCursor [data-shop-equip]:not(:disabled),
+html.flprNativeFlipperCursor .cBtn:not(:disabled),
+html.flprNativeFlipperCursor .tab:not(.disabled),
+html.flprNativeFlipperCursor .world:not(.locked),
+html.flprNativeFlipperCursor .ball:not(.disabled),
+html.flprNativeFlipperCursor .task:not(.checked),
+html.flprNativeFlipperCursor .scoreTask:not(.checked),
+html.flprNativeFlipperCursor .bossKeyCard,
+html.flprNativeFlipperCursor .featureKeyCard{
+  cursor:var(--flprNativeCursorPointer, var(--flprNativeCursor, pointer)) !important;
+}
+html.flprNativeFlipperCursor button:disabled,
+html.flprNativeFlipperCursor .disabled,
+html.flprNativeFlipperCursor .locked,
+html.flprNativeFlipperCursor [aria-disabled="true"]{
+  cursor:var(--flprNativeCursorDisabled, not-allowed) !important;
+}
 .flprCursorFollower{
   position:fixed;
   left:0;
   top:0;
   width:0;
   height:0;
-  z-index:2147483646;
+  z-index:2147483647;
   pointer-events:none;
   opacity:0;
   transition:opacity 140ms ease;
   isolation:isolate;
   contain:layout style;
+  transform:translateZ(0);
+  will-change:opacity, contents;
 }
 .flprCursorFollower.on{
   opacity:1;
@@ -20801,6 +21234,19 @@ body.flprShopCursorPinball *{
 }
 .flprCursorFollower .cursorPointer{
   font-size:24px;
+}
+html.flprLowLatencyCursor .flprCursorFollower{
+  transition:opacity 80ms linear;
+}
+html.flprLowLatencyCursor .flprCursorFollower .cursorLeader,
+html.flprLowLatencyCursor .flprCursorFollower .cursorPointer{
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.34));
+}
+html.flprLowLatencyCursor .flprCursorFollower .cursorPointer{
+  opacity:.78;
+}
+html.flprLowLatencyCursor .flprCursorFollower .cursorLeader{
+  opacity:.92;
 }
 body.flprShopSparksStarter{
   --sparkA:#d7fbff;
@@ -22729,6 +23175,711 @@ body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysHint{
 }
 </style>
 
+<style>
+/* Deep Run v2 readability pass: Tower names, Overview locks, Checks task rail */
+body.deepRunFeatureKeysEnabled .viewport{
+  margin-bottom:4px !important;
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit{
+  flex-basis:clamp(166px, 17vh, 196px);
+  grid-template-rows:clamp(70px, 7vh, 84px) minmax(78px, 1fr);
+}
+body.deepRunFeatureKeysEnabled .keyDockSplit .featureDockInner,
+body.deepRunFeatureKeysEnabled .keyDockSplit .bossDockInner{
+  padding:6px 8px !important;
+}
+
+body.deepRunFeatureKeysEnabled .world.curatedWorld.selected{
+  min-height:154px;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.selected .worldText{
+  left:24px;
+  right:126px;
+  top:12px;
+  bottom:12px;
+  gap:8px;
+  justify-content:center;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.selected .worldCode{
+  top:8px;
+  min-height:18px;
+  padding:3px 10px 2px;
+  font-size:11px;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.selected .worldSub{
+  font-size:52px;
+  line-height:.84;
+  max-height:none;
+  text-wrap:balance;
+  overflow-wrap:break-word;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.compact{
+  min-height:64px;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.compact .worldText{
+  left:52px;
+  right:92px;
+  top:6px;
+  bottom:6px;
+  gap:3px;
+  transform:none;
+  opacity:.96;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.compact .worldCode{
+  top:2px;
+  min-height:13px;
+  padding:1px 6px 0;
+  font-size:7px;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.compact .worldSub{
+  display:block !important;
+  opacity:1;
+  transform:none;
+  max-height:40px;
+  font-size:28px;
+  line-height:.90;
+  text-wrap:balance;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.compact .worldEmoji{
+  right:22px;
+  font-size:18px;
+  opacity:.90;
+  transform:translateY(-50%);
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.compact .worldCuratedBy{
+  display:none;
+}
+
+.featureGateLockLabel{
+  top:48%;
+  min-height:58px;
+  padding:8px 9px 7px;
+  flex-direction:column;
+  gap:4px;
+  font-size:0;
+  line-height:1;
+  letter-spacing:0;
+}
+.featureGateLockEmoji{
+  display:block;
+  font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif;
+  font-size:19px;
+  line-height:1;
+  filter:drop-shadow(0 0 9px var(--featureGateGlow, rgba(34,255,210,.35)));
+}
+.featureGateLockText{
+  display:block;
+  max-width:100%;
+  color:rgba(248,253,255,.99);
+  font-family:var(--flprUiFontFamily);
+  font-size:10px;
+  line-height:1.22;
+  letter-spacing:.02em;
+  text-align:center;
+  overflow-wrap:break-word;
+  text-shadow:0 2px 0 rgba(0,0,0,.78), 0 0 10px var(--featureGateGlow, rgba(34,255,210,.26));
+}
+.tile.featureGateLockedOverview .featureGateTagProgressOnly{
+  justify-content:center;
+  gap:0;
+}
+.tile.featureGateLockedOverview .featureGateTagProgressOnly .featureGateTagText{
+  display:none !important;
+}
+.tile.featureGateLockedOverview .featureGateTagProgressOnly .featureGateSwatches{
+  gap:5px;
+}
+.tile.featureGateLockedOverview .featureGateTagProgressOnly .featureGateSwatch{
+  width:9px;
+  height:9px;
+  border-radius:4px;
+}
+.grid.overviewTables15 .tile.featureGateLockedOverview .featureGateTag{
+  left:8px;
+  right:8px;
+  bottom:7px;
+  min-height:30px;
+  padding:5px 7px 4px;
+  font-size:8.4px;
+  line-height:1.12;
+}
+.grid.overviewTables15 .featureGateLockLabel{
+  left:7px;
+  right:7px;
+  min-height:62px;
+}
+.grid.overviewTables15 .featureGateLockText{
+  font-size:10.5px;
+}
+.grid.overviewTables20 .tile.featureGateLockedOverview .featureGateTag{
+  font-size:7px;
+  min-height:25px;
+}
+.grid.overviewTables20 .featureGateLockLabel{
+  min-height:50px;
+  padding:6px 6px 5px;
+}
+.grid.overviewTables20 .featureGateLockEmoji{
+  font-size:16px;
+}
+.grid.overviewTables20 .featureGateLockText{
+  font-size:8.5px;
+  line-height:1.14;
+}
+
+body.deepRunFeatureKeysEnabled #viewChecks .checksWrap{
+  justify-content:flex-start !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksWorldTabs{
+  height:194px !important;
+  min-height:194px !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksFancyDivider{
+  margin:4px 0 5px !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode){
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  height:auto !important;
+  display:grid !important;
+  grid-template-columns:minmax(0, 1fr) clamp(176px, 22%, 242px);
+  grid-template-rows:repeat(4, minmax(0, 1fr));
+  grid-auto-rows:minmax(58px, 1fr);
+  gap:10px !important;
+  align-items:stretch !important;
+  justify-items:stretch !important;
+  align-content:stretch !important;
+  justify-content:stretch !important;
+  padding:6px 10px 10px !important;
+  overflow:hidden !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks{
+  grid-column:1;
+  grid-row:1 / -1;
+  width:100%;
+  height:100%;
+  min-height:0;
+  max-height:none;
+  align-self:stretch;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks){
+  grid-column:2;
+  width:100%;
+  height:100%;
+  min-height:0 !important;
+  max-height:none !important;
+  align-self:stretch;
+  border-radius:14px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .tableHead,
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosed .tableHead,
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosing .tableHead,
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerOpening .tableHead{
+  height:100% !important;
+  min-height:0 !important;
+  padding:9px 9px 8px !important;
+  align-items:center !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .tableHead .tableName,
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosed .tableHead .tableName,
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerClosing .tableHead .tableName,
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.checksDrawerOpening .tableHead .tableName{
+  font-size:12px !important;
+  line-height:1.06 !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock:not(.nowPlayingChecks) .checksBallsMini .dot{
+  width:18px;
+  height:18px;
+  min-width:18px;
+  font-size:8px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks{
+  min-height:0;
+  height:100%;
+  overflow:hidden;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .tableHead{
+  flex:0 0 auto;
+  min-height:70px !important;
+  padding:10px 14px 9px !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .tableHead .tableName{
+  font-size:20px !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeGrid.deepRunSplitGrid{
+  flex:1 1 auto;
+  min-height:0;
+  height:auto;
+  gap:10px;
+  padding:8px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionGrid{
+  flex:1 1 auto;
+  max-height:none;
+  height:auto;
+  grid-auto-rows:minmax(82px, auto);
+  gap:8px;
+  padding:8px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn{
+  min-height:82px;
+  padding:8px 10px 7px !important;
+  font-size:9px !important;
+  line-height:1.18 !important;
+  border-radius:12px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .tierBadge{
+  height:21px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .tierBadge::after{
+  font-size:10px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .nodeTitle{
+  margin-top:25px;
+  font-size:10px;
+  line-height:1.10;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.taskNode .nodeTitle{
+  font-size:11px;
+  line-height:1.08;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.scoreNode .nodeTitle .scoreLead{
+  font-size:7px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.scoreNode .nodeTitle .scoreValue{
+  font-size:15px;
+  line-height:1.06;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .small{
+  font-size:6.5px;
+  line-height:1.08;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionTitle{
+  pointer-events:none;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .deepRunSectionGrid{
+  grid-auto-rows:minmax(112px, auto);
+  gap:10px;
+  padding:10px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn{
+  z-index:2;
+  min-height:112px;
+  padding:10px 12px 9px !important;
+  pointer-events:auto;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeCell.hasCounter .nodeBtn{
+  padding-right:58px !important;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeCell.hasCounter .nodeCounterBar{
+  z-index:5;
+  width:46px;
+  pointer-events:auto;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn .nodeTitle{
+  overflow:visible;
+  text-overflow:clip;
+  white-space:normal;
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.taskNode .nodeTitle{
+  font-size:11px;
+  line-height:1.12;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .nodeBtn.scoreNode .nodeTitle .scoreValue{
+  white-space:nowrap;
+}
+.hintHereTag.hintFeatureTag,
+.nodeBtn .hintNodeTag.hintFeatureTag{
+  border-color:rgba(34,255,210,.88);
+  background:linear-gradient(180deg, rgba(10,80,70,.94), rgba(5,26,36,.96));
+  color:rgba(226,255,250,.98);
+  box-shadow:0 0 16px rgba(34,255,210,.24), inset 0 0 0 1px rgba(255,255,255,.10);
+  text-shadow:0 0 9px rgba(34,255,210,.46);
+}
+.nodeBtn.hintTargetNodeFeature{
+  border-color:rgba(34,255,210,.92);
+  box-shadow:0 0 0 1px rgba(34,255,210,.18), 0 0 18px rgba(34,255,210,.18);
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .checksScoreEntryRow{
+  display:grid;
+  grid-template-columns:48px minmax(0, 1fr);
+  gap:8px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .checksScoreModBtn{
+  position:relative;
+  left:auto;
+  top:auto;
+  transform:none;
+  width:48px;
+  min-height:34px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .checksScoreInput{
+  min-width:0;
+  width:100%;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .tableHead .tableName{
+  position:relative;
+  padding-right:48px;
+}
+body.deepRunFeatureKeysEnabled #viewChecks .checksBody:not(.bossMode) .tableBlock.nowPlayingChecks.deepRunChecks .tableHead .tableName .extraBallTableBtn{
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:8;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld .worldEmoji{
+  right:26px;
+  top:50%;
+  transform:translateY(-50%);
+  width:96px;
+  height:96px;
+  display:grid;
+  place-items:center;
+  z-index:3;
+  font-size:76px;
+  line-height:1;
+  opacity:.24;
+  filter:drop-shadow(0 0 18px rgba(0,217,255,.26));
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.selected .worldEmoji{
+  right:28px;
+  width:108px;
+  height:108px;
+  font-size:84px;
+  opacity:.28;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld.compact .worldEmoji{
+  right:18px;
+  width:72px;
+  height:72px;
+  font-size:54px;
+  opacity:.22;
+}
+body.deepRunFeatureKeysEnabled .world.curatedWorld .worldText,
+body.deepRunFeatureKeysEnabled .world.curatedWorld .worldCuratedBy{
+  z-index:5;
+}
+body.deepRunFeatureKeysEnabled .pentagonWrap.besiegedDefenseFocus{
+  height:680px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard.besiegedTarget{
+  width:min(620px, 86vw);
+  height:508px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard.besiegedTarget .pentaTitle{
+  top:14px;
+  min-height:72px;
+  padding:10px 16px 8px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard.besiegedTarget .pentaTitle .name{
+  font-size:26px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedCastleAura{
+  inset:96px 34px 82px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedCastleKeep{
+  top:170px;
+  width:210px;
+  height:192px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedCastleCrown{
+  top:158px;
+  left:126px;
+  right:126px;
+  height:34px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedCastleTower{
+  top:156px;
+  width:76px;
+  height:154px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedCastleTower.left{ left:66px; }
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedCastleTower.right{ right:66px; }
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedCastleGate{
+  bottom:142px;
+  width:98px;
+  height:86px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedCastleWindows{
+  inset:126px 66px 154px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedAttackerBanner{
+  top:76px;
+  right:24px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedArmyField{
+  left:40px;
+  right:40px;
+  bottom:116px;
+  height:72px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedSiegeFx{
+  bottom:148px;
+  height:112px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedStatusRail{
+  bottom:104px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedDefenseHud{
+  bottom:82px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedDefenseHudTop [data-besieged-defense-time]{
+  font-size:29px;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedTargetBtn{
+  bottom:38px;
+  min-height:80px;
+  padding:13px 22px 12px;
+  transform:translateX(-50%) scale(.95);
+  transform-origin:center bottom;
+}
+body.deepRunFeatureKeysEnabled .pentaCard .besiegedTargetBtn:hover{
+  transform:translateX(-50%) translateY(-1px) scale(.95);
+}
+.flprSiegeTableReveal.victory{
+  top:46px;
+  gap:14px;
+}
+.flprSiegeTableReveal.victory .flprSiegeTableRevealKicker{
+  font-size:13px;
+  line-height:1.1;
+}
+.flprSiegeTableReveal.victory .flprSiegeTableRevealName{
+  max-width:min(780px, 90vw);
+  font-size:clamp(24px, 3.2vw, 40px);
+  line-height:1.12;
+}
+.flprStandaloneSiegeVictoryCard{
+  bottom:24px;
+  min-height:132px;
+  padding:22px 32px 20px;
+}
+.flprStandaloneSiegeVictoryTable{
+  margin-top:12px;
+  font-size:32px;
+  line-height:1.12;
+}
+.flprStandaloneSiegeVictoryStatus{
+  top:24px !important;
+  left:26px !important;
+  right:auto !important;
+  bottom:auto !important;
+  transform:none !important;
+  z-index:12 !important;
+  max-width:min(360px, calc(50vw - 44px));
+  padding:8px 12px 7px;
+  border-width:1px;
+  text-align:left;
+  white-space:nowrap;
+  font-size:10px;
+  line-height:1;
+  background:rgba(3,14,24,.82);
+  box-shadow:0 0 18px rgba(255,224,122,.14), 0 0 16px rgba(0,217,255,.16) inset;
+}
+.flprStandaloneSiegeVictoryStatus + .flprSiegeTableReveal.victory{
+  top:42px;
+  width:min(720px, 72%);
+}
+</style>
+
+<style>
+/* Boss Checks focus mode: reserve the normal world-height viewport for HP and redemption. */
+body.bossTableChecksActive #viewChecks .checksWrap{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  justify-content:flex-start !important;
+  gap:2px !important;
+  padding:6px !important;
+}
+body.bossTableChecksActive #viewChecks .checksHeadRow{
+  flex:0 0 18px;
+  min-height:18px;
+  padding:1px 8px 0 !important;
+}
+body.bossTableChecksActive #viewChecks #checksCountersDock{
+  display:none !important;
+}
+body.bossTableChecksActive #viewChecks .extraBallDockChecks,
+body.bossTableChecksActive #viewChecks .extraBallTableBtn{
+  display:none !important;
+}
+body.bossTableChecksActive #viewChecks .checksWorldTabs.bossCompactWorldBar{
+  flex:0 0 28px !important;
+  width:calc(100% - 12px) !important;
+  max-width:none !important;
+  height:28px !important;
+  min-height:28px !important;
+  margin:0 6px !important;
+  overflow:hidden !important;
+}
+body.bossTableChecksActive #viewChecks .checksWorldTabs.bossCompactWorldBar .wTab.tabSlotCompact{
+  min-height:0 !important;
+  height:24px !important;
+  padding:2px 5px !important;
+  border-radius:6px !important;
+  font-size:7px !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+body.bossTableChecksActive #viewChecks .checksWorldTabs.bossCompactWorldBar .wTab.tabSlotCompact.active{
+  font-size:7.5px !important;
+  border-width:2px !important;
+}
+body.bossTableChecksActive #viewChecks .checksWorldTabs.bossCompactWorldBar .wTab.bossHeroTab{
+  height:24px !important;
+  min-height:24px !important;
+  max-height:24px !important;
+  padding-top:2px !important;
+  padding-bottom:2px !important;
+}
+body.bossTableChecksActive #viewChecks .checksFancyDivider{
+  flex:0 0 6px;
+  min-height:6px;
+  margin:0 6px 1px !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode{
+  display:flex !important;
+  flex-direction:column !important;
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  height:auto !important;
+  max-height:none !important;
+  overflow:hidden !important;
+  padding:0 8px 8px !important;
+  align-content:start !important;
+  align-items:stretch !important;
+  justify-content:flex-start !important;
+  justify-items:stretch !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode .bossInfoCard{
+  flex:0 0 auto !important;
+  width:calc(100% - 8px) !important;
+  max-width:none !important;
+  min-width:0 !important;
+  margin:2px auto 4px !important;
+  padding:7px !important;
+  gap:5px !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode .bossInfoPic{
+  min-height:94px !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode .bossRaidBarWrap{
+  height:56px !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig{
+  flex:1 1 auto !important;
+  height:100% !important;
+  min-height:0 !important;
+  max-height:none !important;
+  width:calc(100% - 8px) !important;
+  margin:0 auto !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode .bossChecksScaler{
+  flex:1 1 0 !important;
+  display:flex !important;
+  min-height:0 !important;
+  width:100% !important;
+  margin:0 !important;
+  padding:0 4px 4px !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeGrid{
+  flex:1 1 auto !important;
+  min-height:0 !important;
+  max-height:none !important;
+  overflow-y:auto !important;
+  align-content:start !important;
+}
+body.bossTableChecksActive .viewport{
+  flex:1 1 0 !important;
+  height:auto !important;
+  max-height:none !important;
+}
+body.bossTableChecksActive .keyDockSplit{
+  flex:0 0 0 !important;
+  height:0 !important;
+  min-height:0 !important;
+  display:block !important;
+  overflow:hidden !important;
+  gap:0 !important;
+}
+body.bossTableChecksActive .keyDockSplit .bossDock{
+  display:none !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit{
+  flex:0 0 28px !important;
+  height:28px !important;
+  min-height:28px !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureDock{
+  display:flex !important;
+  height:28px !important;
+  min-height:28px !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureDockInner{
+  display:grid !important;
+  grid-template-columns:56px minmax(0, 1fr);
+  align-items:center !important;
+  gap:4px !important;
+  height:28px !important;
+  min-height:28px !important;
+  padding:2px 5px !important;
+  border-radius:7px !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureKeysTitle{
+  font-size:6px !important;
+  white-space:nowrap;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureKeysRow{
+  height:20px !important;
+  gap:3px !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyCard{
+  height:20px !important;
+  min-height:20px !important;
+  grid-template-columns:16px minmax(0, 1fr) !important;
+  gap:3px !important;
+  padding:1px 3px !important;
+  border-radius:6px !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyCard .bossKeyFrame{
+  width:16px !important;
+  height:16px !important;
+  padding:1px !important;
+  border-radius:4px !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyCard .bossKeySquare{
+  width:12px !important;
+  height:12px !important;
+  border-radius:3px !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyBody{
+  gap:1px !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyLabel{
+  font-size:6.5px !important;
+}
+body.bossTableChecksActive.deepRunFeatureKeysEnabled .keyDockSplit .featureKeyStatus{
+  display:none !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .tableHead.bossTableFlyerHead{
+  min-height:86px !important;
+  background-color:rgba(3,10,18,.88) !important;
+}
+body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .tableHead.bossTableFlyerHead::after{
+  opacity:.58 !important;
+  filter:brightness(.68) saturate(1.02) !important;
+  background-position:center 38% !important;
+}
+</style>
+
 </head>
 
 <body class="flprShopSparksStarter checksBgCircuit flprShopCursorStarter">
@@ -23475,6 +24626,7 @@ body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysHint{
 
 
 <script src="./vendor/jszip.min.js"></script>
+<script src="./vendor/matter.min.js"></script>
 <script src="./flippermizer_table_repository.js"></script>
 <script src="./flippermizer_task_explanations.js"></script>
 <script src="./flippermizer_task_repository_cfg.js"></script>
@@ -24749,8 +25901,29 @@ function getTowerWorldOrder(srcState){
 }
 function resolveBossWorldKeyFromState(srcState){
   try{
-    const worlds = srcState?.worlds || state?.worlds || {};
+    const source = srcState || state || {};
+    const worlds = source?.worlds || {};
+    const explicitKeys = [
+      source?.bossWorldKey,
+      source?.boss_world_key,
+      source?.bossWorldId,
+      source?.boss_world_id
+    ];
+    for(const rawKey of explicitKeys){
+      const explicitKey = String(rawKey || "").trim();
+      if(explicitKey && worlds[explicitKey]) return explicitKey;
+    }
     for(const [wk, world] of Object.entries(worlds)){
+      const bossFlag = world?.isBoss === true || world?.is_boss === true || world?.boss === true;
+      const worldKind = String(world?.type || world?.kind || world?.worldType || world?.world_type || "").trim();
+      if(bossFlag || /^boss(?:[ _-]?world)?$/i.test(worldKind)) return String(wk || "boss");
+
+      const label = String(world?.label || world?.name || world?.title || "").trim();
+      const labelParts = label.split(/[;:|]/).map((part)=>part.trim()).filter(Boolean);
+      if(labelParts.some((part)=> /^boss(?:\s+(?:world|table))?$/i.test(part))){
+        return String(wk || "boss");
+      }
+
       const tables = Array.isArray(world?.tables) ? world.tables : [];
       if(tables.some((tableName)=> /boss table/i.test(String(tableName || "")))) return String(wk || "boss");
     }
@@ -24762,6 +25935,31 @@ function isBossWorldId(worldId, srcState){
   const wk = String(worldId || "").trim();
   if(!wk) return false;
   return wk === String(resolveBossWorldKeyFromState(srcState) || "boss");
+}
+function lockBossWorldForUnconnectedOverlay(srcState, opts){
+  try{
+    const s = srcState || state;
+    if(!s || !s.worlds) return false;
+    const bossWorldKey = resolveBossWorldKeyFromState(s);
+    const bossWorld = s.worlds[bossWorldKey];
+    let changed = false;
+    if(bossWorld && bossWorld.locked !== true){
+      bossWorld.locked = true;
+      changed = true;
+    }
+    if(s.bossOpen){
+      s.bossOpen = false;
+      changed = true;
+    }
+    if(opts?.resetSelection !== false && isBossWorldId(s.selected, s)){
+      const fallback = getFirstPlayableWorldKey(s);
+      s.lastSelected = fallback;
+      s.selected = fallback;
+      changed = true;
+    }
+    return changed;
+  }catch(_){}
+  return false;
 }
 function getFirstPlayableWorldKey(srcState){
   const keys = getLiveWorldOrder(srcState).filter((wk)=> !isBossWorldId(wk, srcState));
@@ -25023,8 +26221,11 @@ const defaultState = {
   },
   besiegedEvent: buildDefaultBesiegedState(),
   besiegedPenaltyLock: buildDefaultBesiegedPenaltyLock(),
+  besiegedLastTriggeredAt:0,
   siegesSuppressedForRun:false,
   extraBallTokens:0,
+  nextScoreBonusPct:0,
+  bagatelleGamesPlayed:0,
   extraBallAssignments:{},
   junkRedeems:{ easy:0, medium:0 },
   junkRedeemSpentByLocation:{},
@@ -25585,6 +26786,10 @@ function normalizeExtraBallState(srcState){
     if(!s || typeof s !== "object") return 0;
     if(!Number.isFinite(Number(s.extraBallTokens))) s.extraBallTokens = 0;
     s.extraBallTokens = Math.max(0, Math.round(Number(s.extraBallTokens) || 0));
+    if(!Number.isFinite(Number(s.nextScoreBonusPct))) s.nextScoreBonusPct = 0;
+    s.nextScoreBonusPct = Math.max(0, Math.min(100, Math.round(Number(s.nextScoreBonusPct) || 0)));
+    if(!Number.isFinite(Number(s.bagatelleGamesPlayed))) s.bagatelleGamesPlayed = 0;
+    s.bagatelleGamesPlayed = Math.max(0, Math.round(Number(s.bagatelleGamesPlayed) || 0));
     if(!s.extraBallAssignments || typeof s.extraBallAssignments !== "object") s.extraBallAssignments = {};
     const next = {};
     let reclaimed = 0;
@@ -25631,6 +26836,7 @@ function loadState(){
         if(musicSnapshot) mergeMusicStateSnapshot(s, musicSnapshot);
       }catch(_){}
       seedWorld1Ball1On(s);
+      lockBossWorldForUnconnectedOverlay(s, { resetSelection:true });
       return s;
     }
     const s = JSON.parse(raw);
@@ -25641,6 +26847,7 @@ function loadState(){
         if(musicSnapshot) mergeMusicStateSnapshot(d, musicSnapshot);
       }catch(_){}
       seedWorld1Ball1On(d);
+      lockBossWorldForUnconnectedOverlay(d, { resetSelection:true });
       return d;
     }
     if(!s.lastSelected) s.lastSelected = s.selected;
@@ -25789,6 +26996,7 @@ function loadState(){
 
     seedWorld1Ball1On(s);
     normalizeExtraBallState(s);
+    lockBossWorldForUnconnectedOverlay(s, { resetSelection:true });
     return s;
   }catch(e){
     const d = clone(defaultState);
@@ -25797,6 +27005,7 @@ function loadState(){
       if(musicSnapshot) mergeMusicStateSnapshot(d, musicSnapshot);
     }catch(_){}
     seedWorld1Ball1On(d);
+    lockBossWorldForUnconnectedOverlay(d, { resetSelection:true });
     return d;
   }
 }
@@ -32677,6 +33886,8 @@ const ACH_CURSOR_FOLLOWER_META = Object.freeze({
     trailStep:8,
     trailSpread:10,
     trailBackOffset:10,
+    trailMinIntervalMs:34,
+    trailActiveLimit:40,
     trailVars:{
       a:"#fff49d",
       b:"#6dd0ff",
@@ -32830,6 +34041,64 @@ function achUnequipShopType(type){
   achApplyShopCustomizationClasses();
   return true;
 }
+function achCursorLowLatencyMode(){
+  try{
+    return !!(
+      window.__flprLowLatencyCursor
+      || window.__flprStreamPerformanceMode
+      || document.documentElement.classList.contains("flprLowLatencyCursor")
+    );
+  }catch(_){ return false; }
+}
+function achNativeFlipperCursorMode(){
+  try{
+    return !!(
+      window.__flprNativeFlipperCursor
+      || document.documentElement.classList.contains("flprNativeFlipperCursor")
+    );
+  }catch(_){ return false; }
+}
+function achEscapeSvgText(value){
+  return String(value || "").replace(/[&<>]/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[ch] || ch));
+}
+function achBuildNativeFlipperCursorValue(meta, fallback){
+  try{
+    const glyph = String(meta?.pointer || "\u25E4");
+    const box = 48;
+    const center = box / 2;
+    const pointerSize = Math.max(18, Math.min(34, Number(meta?.pointerSize || 24) + 4));
+    const pointerDx = Number(meta?.pointerDx || 0);
+    const pointerDy = Number(meta?.pointerDy || 0);
+    const hotX = Math.max(0, Math.min(box - 1, Math.round(center - pointerDx)));
+    const hotY = Math.max(0, Math.min(box - 1, Math.round(center - pointerDy)));
+    const rotate = Number(meta?.pointerRotate || 0);
+    const scaleX = Number(meta?.pointerScaleX || 1);
+    const flip = scaleX < 0 ? `translate(${box} 0) scale(-1 1)` : "";
+    const spin = rotate ? `rotate(${rotate} ${center} ${center})` : "";
+    const transform = [flip, spin].filter(Boolean).join(" ");
+    const transformAttr = transform ? ` transform="${transform}"` : "";
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${box}" height="${box}" viewBox="0 0 ${box} ${box}"><defs><filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity=".55"/></filter></defs><text x="${center}" y="${center + 1}" text-anchor="middle" dominant-baseline="central" font-family="Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji, Arial, sans-serif" font-size="${pointerSize}" fill="#eaffff" stroke="#001a24" stroke-opacity=".65" stroke-width="1.2" paint-order="stroke fill" filter="url(#shadow)"${transformAttr}>${achEscapeSvgText(glyph)}</text></svg>`;
+    return `url("data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}") ${hotX} ${hotY}, ${String(fallback || "auto")}`;
+  }catch(_){
+    return String(fallback || "auto");
+  }
+}
+function achApplyNativeFlipperCursor(meta){
+  try{
+    const root = document.documentElement;
+    if(!root) return;
+    if(!achNativeFlipperCursorMode() || !meta){
+      root.style.removeProperty("--flprNativeCursor");
+      root.style.removeProperty("--flprNativeCursorPointer");
+      root.style.removeProperty("--flprNativeCursorDisabled");
+      return;
+    }
+    root.classList.add("flprNativeFlipperCursor");
+    root.style.setProperty("--flprNativeCursor", achBuildNativeFlipperCursorValue(meta, "auto"));
+    root.style.setProperty("--flprNativeCursorPointer", achBuildNativeFlipperCursorValue(meta, "pointer"));
+    root.style.setProperty("--flprNativeCursorDisabled", achBuildNativeFlipperCursorValue(meta, "not-allowed"));
+  }catch(_){}
+}
 function achEnsureCursorFollower(){
   let el = document.getElementById("flprCursorFollower");
   if(!el){
@@ -32839,23 +34108,37 @@ function achEnsureCursorFollower(){
     el.innerHTML = `<span class="cursorLeader"></span><span class="cursorPointer"></span>`;
     document.body.appendChild(el);
   }
+  const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999, activeTrailCount:0 });
+  st.el = el;
+  st.leader = st.leader || el.querySelector(".cursorLeader");
+  st.pointer = st.pointer || el.querySelector(".cursorPointer");
+  if(!Number.isFinite(Number(st.activeTrailCount))) st.activeTrailCount = 0;
+  try{ el.classList.toggle("lowLatency", achCursorLowLatencyMode()); }catch(_){}
   if(!window.__flprCursorFollowerBound){
     window.__flprCursorFollowerBound = true;
-    const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999 });
     const onMove = (ev)=>{
       if(!st.active) return;
-      st.tx = Number(ev.clientX || 0);
-      st.ty = Number(ev.clientY || 0);
+      const coalesced = (typeof ev.getCoalescedEvents === "function") ? ev.getCoalescedEvents() : null;
+      const src = (coalesced && coalesced.length) ? coalesced[coalesced.length - 1] : ev;
+      st.tx = Number(src.clientX || 0);
+      st.ty = Number(src.clientY || 0);
       st.x = st.tx;
       st.y = st.ty;
+      const lowLatency = achCursorLowLatencyMode();
+      const leaderEase = lowLatency ? 1 : (st.meta?.fingerOnly ? 1 : Number(st.meta?.leaderEase ?? 1));
+      if(leaderEase >= 1){
+        st.lx = st.tx;
+        st.ly = st.ty;
+      }
       if(st.meta?.trail) achSpawnCursorTrail(st.tx, st.ty, st.meta);
       const follower = document.getElementById("flprCursorFollower");
       if(follower) follower.classList.add("on");
       try{ achApplyCursorFollowerTransforms(st); }catch(_){}
-      if(!st.raf) st.raf = requestAnimationFrame(achCursorFollowerTick);
+      if(leaderEase < 1 && !st.raf) st.raf = requestAnimationFrame(achCursorFollowerTick);
     };
-    window.addEventListener("pointermove", onMove, { passive:true });
-    window.addEventListener("mousemove", onMove, { passive:true });
+    const useRawPointer = "onpointerrawupdate" in window;
+    window.addEventListener(useRawPointer ? "pointerrawupdate" : "pointermove", onMove, { passive:true });
+    if(!useRawPointer) window.addEventListener("mousemove", onMove, { passive:true });
     document.addEventListener("mouseleave", ()=>{
       const follower = document.getElementById("flprCursorFollower");
       if(follower) follower.classList.remove("on");
@@ -32865,9 +34148,9 @@ function achEnsureCursorFollower(){
 }
 function achApplyCursorFollowerTransforms(st){
   if(!st || !st.meta) return;
-  const el = achEnsureCursorFollower();
-  const leader = el.querySelector(".cursorLeader");
-  const pointer = el.querySelector(".cursorPointer");
+  const el = st.el || achEnsureCursorFollower();
+  const leader = st.leader || (st.leader = el.querySelector(".cursorLeader"));
+  const pointer = st.pointer || (st.pointer = el.querySelector(".cursorPointer"));
   if(pointer){
     pointer.style.transform = `translate3d(${Math.round(st.x + (st.meta.pointerDx || 0))}px, ${Math.round(st.y + (st.meta.pointerDy || 0))}px, 0) translate(-50%, -50%) rotate(${Math.round(Number(st.meta.pointerRotate || 0))}deg) scaleX(${Number(st.meta.pointerScaleX || 1)})`;
   }
@@ -32876,41 +34159,57 @@ function achApplyCursorFollowerTransforms(st){
   }
 }
 function achCursorFollowerTick(){
-  const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999 });
+  const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999, activeTrailCount:0 });
   st.raf = 0;
   if(!st.active || !st.meta) return;
   st.x = st.tx;
   st.y = st.ty;
-  const leaderEase = st.meta.fingerOnly ? 1 : Number(st.meta.leaderEase || 0.42);
-  st.lx += (st.x - st.lx) * Math.max(0.18, Math.min(1, leaderEase));
-  st.ly += (st.y - st.ly) * Math.max(0.18, Math.min(1, leaderEase));
+  const leaderEase = achCursorLowLatencyMode() ? 1 : (st.meta.fingerOnly ? 1 : Number(st.meta.leaderEase ?? 1));
+  const leaderStep = Math.max(0.18, Math.min(1, leaderEase));
+  if(leaderStep >= 1){
+    st.lx = st.x;
+    st.ly = st.y;
+  }else{
+    st.lx += (st.x - st.lx) * leaderStep;
+    st.ly += (st.y - st.ly) * leaderStep;
+  }
   achApplyCursorFollowerTransforms(st);
   if(Math.abs(st.x - st.lx) > 0.35 || Math.abs(st.y - st.ly) > 0.35){
     st.raf = requestAnimationFrame(achCursorFollowerTick);
   }
 }
 function achSyncCursorFollower(cursorItem){
-  const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null });
+  const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999, activeTrailCount:0 });
   const el = achEnsureCursorFollower();
-  const leader = el.querySelector(".cursorLeader");
-  const pointer = el.querySelector(".cursorPointer");
+  const leader = st.leader || (st.leader = el.querySelector(".cursorLeader"));
+  const pointer = st.pointer || (st.pointer = el.querySelector(".cursorPointer"));
   const meta = ACH_CURSOR_FOLLOWER_META[cursorItem?.className || ""] || null;
   if(!meta){
     st.active = false;
     st.meta = null;
-    leader.textContent = "";
-    pointer.textContent = "";
+    achApplyNativeFlipperCursor(null);
+    if(leader) leader.textContent = "";
+    if(pointer) pointer.textContent = "";
     el.classList.remove("on");
     return;
   }
   st.meta = meta;
   st.active = true;
-  leader.textContent = String(meta.leader || "");
-  pointer.textContent = String(meta.pointer || "");
-  leader.style.fontSize = meta.leaderSize ? `${Math.round(Number(meta.leaderSize || 26))}px` : "";
-  pointer.style.fontSize = meta.pointerSize ? `${Math.round(Number(meta.pointerSize || 24))}px` : "";
+  achApplyNativeFlipperCursor(meta);
+  if(leader) leader.textContent = String(meta.leader || "");
+  if(pointer) pointer.textContent = String(meta.pointer || "");
+  if(leader) leader.style.fontSize = meta.leaderSize ? `${Math.round(Number(meta.leaderSize || 26))}px` : "";
+  if(pointer) pointer.style.fontSize = meta.pointerSize ? `${Math.round(Number(meta.pointerSize || 24))}px` : "";
   el.classList.add("on");
-  if(!st.raf) st.raf = requestAnimationFrame(achCursorFollowerTick);
+  if(achCursorLowLatencyMode()){
+    st.x = st.tx;
+    st.y = st.ty;
+    st.lx = st.tx;
+    st.ly = st.ty;
+    try{ achApplyCursorFollowerTransforms(st); }catch(_){}
+  }else if(!st.raf){
+    st.raf = requestAnimationFrame(achCursorFollowerTick);
+  }
 }
 function achApplyCursorOverride(cursorItem){
   try{
@@ -33046,12 +34345,17 @@ function achEnsureGlobalCursorFxLayer(){
 }
 function achSpawnCursorTrail(x, y, meta){
   try{
-    const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999 });
+    const st = (window.__flprCursorFollowerState ||= { x:-120, y:-120, tx:-120, ty:-120, lx:-140, ly:-140, active:false, raf:0, meta:null, lastTrailAt:0, lastTrailX:-999, lastTrailY:-999, activeTrailCount:0 });
     const now = Date.now();
     const dx = Number(x || 0) - Number(st.lastTrailX || 0);
     const dy = Number(y || 0) - Number(st.lastTrailY || 0);
-    if((now - Number(st.lastTrailAt || 0)) < 18) return;
-    if((dx*dx + dy*dy) < 12) return;
+    const lowLatency = achCursorLowLatencyMode();
+    const minInterval = Math.max(lowLatency ? 34 : 18, Number(meta?.trailMinIntervalMs || 0));
+    const minDistSq = lowLatency ? 30 : 12;
+    const activeLimit = Math.max(10, Number(meta?.trailActiveLimit || (lowLatency ? 38 : 72)));
+    if((now - Number(st.lastTrailAt || 0)) < minInterval) return;
+    if((dx*dx + dy*dy) < minDistSq) return;
+    if(lowLatency && Number(st.activeTrailCount || 0) >= activeLimit) return;
     st.lastTrailAt = now;
     st.lastTrailX = Number(x || 0);
     st.lastTrailY = Number(y || 0);
@@ -33069,6 +34373,7 @@ function achSpawnCursorTrail(x, y, meta){
     const maxMs = Math.max(minMs + 40, Number(meta?.trailMaxMs || 980));
     const fontSize = Number(meta?.trailFontSize || 10);
     const cls = String(meta?.trailClass || "").trim();
+    const frag = document.createDocumentFragment();
     for(let i=0;i<count;i++){
       const s = document.createElement("div");
       s.className = "spark";
@@ -33088,9 +34393,14 @@ function achSpawnCursorTrail(x, y, meta){
       s.style.opacity = `${Math.max(0.16, 0.92 - (i * 0.09))}`;
       achDecorateSparkParticle(s, vars, i);
       s.style.setProperty("--sparkFontSize", `${fontSize}px`);
-      fx.appendChild(s);
-      setTimeout(()=>{ try{ s.remove(); }catch(_){ } }, maxMs + 240);
+      frag.appendChild(s);
+      st.activeTrailCount = Math.max(0, Number(st.activeTrailCount || 0)) + 1;
+      setTimeout(()=>{
+        try{ s.remove(); }catch(_){ }
+        st.activeTrailCount = Math.max(0, Number(st.activeTrailCount || 0) - 1);
+      }, maxMs + 240);
     }
+    fx.appendChild(frag);
   }catch(_){}
 }
 function achDecorateSparkParticle(s, vars, idx){
@@ -36348,15 +37658,19 @@ function musicIsBossTableOpenForPlayback(){
 function musicShouldPlayBossBattle(bossPct){
   try{
     if(!musicIsBossTableOpenForPlayback()) return false;
-    const pct = Number.isFinite(Number(bossPct)) ? Number(bossPct) : musicGetBossBattlePct();
-    const damaged = Number.isFinite(pct) && pct > 0 && pct < 100;
-    return !!(musicIsBossContextActive() || damaged);
+    return !!musicIsBossContextActive();
   }catch(_){}
   return false;
 }
 function musicRefreshScenario(){
   try{
     const mgr = musicEnsureManager();
+    const bossTrackActive = /^boss_battle_/.test(String(mgr.current || ""))
+      || /^boss_battle_/.test(String(mgr.crossfadeTarget || ""));
+    if(bossTrackActive && !musicIsBossContextActive()){
+      musicDisarmBossPhase2Transition();
+      return void musicStop({ clearSrc:false });
+    }
     if(Date.now() < Number(mgr.lockedUntil || 0)) return;
     const intro = document.getElementById("randomizerIntro");
     const endRun = document.getElementById("endRunOverlay");
@@ -38309,10 +39623,14 @@ function showOverviewModalNow({tag="REWARD", title="ITEM RECEIVED", big="", sub=
 // Returns the delay (ms) until the modal is actually shown.
 const AP_POPUP_BUILD_MS = 500;
 const AP_POPUP_SHOW_AFTER_SWITCH_MS = 80;
+let overviewModalQueueUntil = 0;
 
 function showOverviewModal(args){
   if(isBossVictoryFinalizing()) return 0;
   const holdMs = (args && typeof args.holdMs === "number") ? args.holdMs : 2800;
+  const now = Date.now();
+  const queueDelayMs = Math.max(AP_POPUP_BUILD_MS, overviewModalQueueUntil - now);
+  overviewModalQueueUntil = now + queueDelayMs + AP_POPUP_SHOW_AFTER_SWITCH_MS + holdMs + 180;
 
   // First: give a short "build" delay so the viewer sees the UI shift, then we present the reward.
   setTimeout(()=>{
@@ -38353,9 +39671,9 @@ function showOverviewModal(args){
     setTimeout(()=>{
       showOverviewModalNow(args || {});
     }, AP_POPUP_SHOW_AFTER_SWITCH_MS);
-  }, AP_POPUP_BUILD_MS);
+  }, queueDelayMs);
 
-  return AP_POPUP_BUILD_MS + AP_POPUP_SHOW_AFTER_SWITCH_MS;
+  return queueDelayMs + AP_POPUP_SHOW_AFTER_SWITCH_MS;
 }
 
 function junkHashParity(seed){
@@ -38428,6 +39746,240 @@ function closeOverviewModal(){
   if(modal){ modal.classList.add("hidden"); modal.setAttribute("aria-hidden","true"); }
   if(card) card.classList.remove("showFX");
   if(modalTimer) clearTimeout(modalTimer);
+}
+
+let bagatelleRuntime = null;
+function isBagatelleItemName(name){
+  return /\bbagatelle\b/i.test(String(name || ""));
+}
+function bagatelleGrantJunkFragment(tier){
+  try{
+    const medium = String(tier || "").toLowerCase() === "medium";
+    const key = medium ? "med" : "easy";
+    ap.junk = ap.junk || { easy:0, med:0, frag:0 };
+    ap.junk[key] = Math.min(3, Math.max(0, Number(ap.junk[key]) || 0) + 1);
+    if(ap.junk[key] >= 3){
+      ap.junk[key] = 0;
+      ap.junk[key + "Total"] = Math.max(0, Number(ap.junk[key + "Total"]) || 0) + 1;
+      try{ addJunkRedeemBalance(medium ? "medium" : "easy", 1); }catch(_){}
+      toast("good", "JUNK REDEEM BANKED", `${medium ? "MEDIUM" : "EASY"} redeem ready.`, 3200);
+    }
+    try{ updateCounterBarsQuietly(); }catch(_){}
+  }catch(_){}
+}
+function bagatelleApplyReward(reward, statusEl){
+  if(!reward || bagatelleRuntime?.rewarded) return;
+  if(bagatelleRuntime) bagatelleRuntime.rewarded = true;
+  const label = String(reward.label || "BONUS");
+  if(reward.kind === "score"){
+    const current = Math.max(0, Math.round(Number(state.nextScoreBonusPct) || 0));
+    state.nextScoreBonusPct = Math.min(100, current + Math.max(0, Number(reward.value) || 0));
+  }else if(reward.kind === "easy"){
+    bagatelleGrantJunkFragment("easy");
+  }else if(reward.kind === "medium"){
+    bagatelleGrantJunkFragment("medium");
+  }else if(reward.kind === "extra"){
+    state.extraBallTokens = Math.max(0, Math.round(Number(state.extraBallTokens) || 0)) + 1;
+  }
+  state.bagatelleGamesPlayed = Math.max(0, Math.round(Number(state.bagatelleGamesPlayed) || 0)) + 1;
+  try{ saveState({ immediate:true }); }catch(_){ try{ saveState(); }catch(__){} }
+  if(statusEl) statusEl.textContent = `AWARD; ${label}`;
+  try{ playSfx("receive"); }catch(_){}
+  toast("good", "BAGATELLE AWARD", label, 3400);
+  const close = bagatelleRuntime?.overlay?.querySelector?.(".bagatelleClose");
+  if(close){ close.disabled = false; close.textContent = "COLLECT"; }
+}
+function closeBagatelle(){
+  const runtime = bagatelleRuntime;
+  bagatelleRuntime = null;
+  if(!runtime) return;
+  try{ cancelAnimationFrame(runtime.raf); }catch(_){}
+  try{ clearTimeout(runtime.failsafe); }catch(_){}
+  try{ runtime.engine && Matter.World.clear(runtime.engine.world, false); }catch(_){}
+  try{ runtime.engine && Matter.Engine.clear(runtime.engine); }catch(_){}
+  try{ runtime.overlay.remove(); }catch(_){}
+  try{ updateCounterBarsQuietly(); }catch(_){}
+}
+function openBagatelle(opts){
+  opts = opts || {};
+  if(!window.Matter){
+    toast("warn", "BAGATELLE", "Physics engine unavailable.", 3200);
+    return false;
+  }
+  if(bagatelleRuntime) closeBagatelle();
+  const host = document.body;
+  const overlay = document.createElement("div");
+  overlay.className = "bagatelleOverlay";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-label", "Bagatelle bonus game");
+  overlay.innerHTML = `
+    <div class="bagatelleCard">
+      <div class="bagatelleHead">
+        <div class="bagatelleTitle">BAGATELLE</div>
+        <div class="bagatelleSub">ONE BALL; ONE REWARD</div>
+      </div>
+      <div class="bagatelleBoardWrap">
+        <canvas class="bagatelleCanvas" aria-label="Bagatelle board"></canvas>
+        <button class="bagatellePlunger" type="button" aria-label="Hold and release the plunger"><span>PLUNGER</span></button>
+      </div>
+      <div class="bagatelleFoot">
+        <div class="bagatelleStatus">BALL READY</div>
+        <button class="bagatelleClose" type="button">CLOSE</button>
+      </div>
+    </div>`;
+  host.appendChild(overlay);
+  try{ pauseAutoSwap(45000); }catch(_){}
+
+  const canvas = overlay.querySelector(".bagatelleCanvas");
+  const board = overlay.querySelector(".bagatelleBoardWrap");
+  const plunger = overlay.querySelector(".bagatellePlunger");
+  const close = overlay.querySelector(".bagatelleClose");
+  const statusEl = overlay.querySelector(".bagatelleStatus");
+  if(!canvas || !board || !plunger){ overlay.remove(); return false; }
+  const rect = board.getBoundingClientRect();
+  const w = Math.max(600, Math.round(rect.width || 700));
+  const h = Math.max(580, Math.round(rect.height || 820));
+  const dpr = Math.max(1, Math.min(2, Number(window.devicePixelRatio) || 1));
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
+  const ctx = canvas.getContext("2d");
+  const { Engine, Bodies, Body, Composite, Events } = Matter;
+  const engine = Engine.create({ gravity:{ x:0, y:1.05, scale:0.001 } });
+  const playW = w - 104;
+  const pocketW = playW / 6;
+  const rewards = [
+    { kind:"score", value:10, label:"10% NEXT SCORE BONUS", color:"#00d9ff" },
+    { kind:"score", value:20, label:"20% NEXT SCORE BONUS", color:"#ff78b7" },
+    { kind:"easy", value:1, label:"1 EASY JUNK FRAGMENT", color:"#f4f6f8" },
+    { kind:"medium", value:1, label:"1 MEDIUM JUNK FRAGMENT", color:"#ffb14f" },
+    { kind:"extra", value:1, label:"1 EXTRA BALL", color:"#22ff88" },
+    { kind:"score", value:30, label:"30% NEXT SCORE BONUS", color:"#ff4f66" }
+  ];
+  const staticBodies = [
+    Bodies.rectangle(4, h/2, 12, h, { isStatic:true }),
+    Bodies.rectangle(w-4, h/2, 12, h, { isStatic:true }),
+    Bodies.rectangle(w/2, 4, w, 12, { isStatic:true }),
+    Bodies.rectangle(w/2, h-4, w, 12, { isStatic:true }),
+    Bodies.rectangle(playW+5, (h+80)/2, 10, h-80, { isStatic:true }),
+    Bodies.rectangle(w-51, 54, 120, 14, { isStatic:true, angle:-0.68, restitution:.88 })
+  ];
+  const pegs = [];
+  const pegRows = Math.max(7, Math.floor((h - 240) / 62));
+  for(let row=0; row<pegRows; row++){
+    const y = 120 + row * 62;
+    const offset = row % 2 ? 48 : 16;
+    for(let x=offset; x<playW-18; x+=82){
+      const peg = Bodies.circle(x, y, 7, { isStatic:true, restitution:.82, friction:0 });
+      pegs.push(peg);
+      staticBodies.push(peg);
+    }
+  }
+  const separators = [];
+  for(let i=1; i<6; i++){
+    const x = i * pocketW;
+    const separator = Bodies.rectangle(x, h-82, 9, 116, { isStatic:true, angle:(i%2 ? .08 : -.08), restitution:.55 });
+    separators.push(separator);
+    staticBodies.push(separator);
+  }
+  const sensors = rewards.map((reward, index)=>{
+    const sensor = Bodies.rectangle((index+.5)*pocketW, h-31, pocketW-8, 46, { isStatic:true, isSensor:true, label:`bagatelle:${index}` });
+    sensor.plugin.flprBagatelleReward = reward;
+    return sensor;
+  });
+  Composite.add(engine.world, [...staticBodies, ...sensors]);
+  const ball = Bodies.circle(w-51, h-78, 12, { isStatic:true, restitution:.72, friction:.005, frictionAir:.002, density:.008, label:"bagatelle-ball" });
+  Composite.add(engine.world, ball);
+
+  const runtime = bagatelleRuntime = { overlay, engine, ball, raf:0, rewarded:false, launched:false, charging:false, chargeStart:0, awardDeadline:0, failsafe:0 };
+  const resolveStalledBall = ()=>{
+    if(runtime.rewarded || bagatelleRuntime !== runtime) return;
+    const ballX = Number(ball?.position?.x);
+    const safeX = Number.isFinite(ballX) ? Math.max(0, Math.min(playW - 1, ballX)) : (playW / 2);
+    const index = Math.max(0, Math.min(5, Math.floor(safeX / pocketW)));
+    bagatelleApplyReward(rewards[index], statusEl);
+  };
+  Events.on(engine, "collisionStart", (event)=>{
+    if(runtime.rewarded) return;
+    for(const pair of event.pairs || []){
+      const sensor = pair.bodyA?.plugin?.flprBagatelleReward ? pair.bodyA : (pair.bodyB?.plugin?.flprBagatelleReward ? pair.bodyB : null);
+      const other = sensor === pair.bodyA ? pair.bodyB : pair.bodyA;
+      if(sensor && other === ball){
+        bagatelleApplyReward(sensor.plugin.flprBagatelleReward, statusEl);
+        Body.setStatic(ball, true);
+        break;
+      }
+    }
+  });
+  const draw = ()=>{
+    if(bagatelleRuntime !== runtime) return;
+    try{
+      Engine.update(engine, 1000/60);
+      if(runtime.launched && !runtime.rewarded && runtime.awardDeadline > 0 && performance.now() >= runtime.awardDeadline){
+        resolveStalledBall();
+      }
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle="#030b12";
+      ctx.fillRect(0,0,w,h);
+      ctx.strokeStyle="rgba(0,217,255,.20)";
+      ctx.lineWidth=1;
+      for(let y=22;y<h;y+=34){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+      for(const peg of pegs){
+        ctx.beginPath(); ctx.arc(peg.position.x, peg.position.y, 7, 0, Math.PI*2);
+        ctx.fillStyle="#ecfaff"; ctx.shadowColor="#00d9ff"; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
+      }
+      for(const separator of separators){
+        ctx.save(); ctx.translate(separator.position.x,separator.position.y); ctx.rotate(separator.angle);
+        ctx.fillStyle="rgba(255,227,168,.84)"; ctx.fillRect(-4.5,-58,9,116); ctx.restore();
+      }
+      rewards.forEach((reward,index)=>{
+        const x=index*pocketW;
+        ctx.fillStyle=reward.color+"22"; ctx.fillRect(x,h-58,pocketW-2,54);
+        ctx.strokeStyle=reward.color; ctx.strokeRect(x+1,h-57,pocketW-4,52);
+        ctx.fillStyle=reward.color; ctx.font="bold 9px monospace"; ctx.textAlign="center";
+        const words=reward.label.split(" ");
+        const mid=Math.ceil(words.length/2);
+        ctx.fillText(words.slice(0,mid).join(" "),x+pocketW/2,h-36);
+        ctx.fillText(words.slice(mid).join(" "),x+pocketW/2,h-22);
+      });
+      ctx.beginPath(); ctx.arc(ball.position.x,ball.position.y,12,0,Math.PI*2);
+      ctx.fillStyle="#fff"; ctx.shadowColor="#ff4f78"; ctx.shadowBlur=16; ctx.fill(); ctx.shadowBlur=0;
+      ctx.strokeStyle="#ff4f78"; ctx.lineWidth=3; ctx.stroke();
+      if(runtime.charging){
+        const charge=Math.min(1,(performance.now()-runtime.chargeStart)/1800);
+        plunger.style.setProperty("--charge",String(charge));
+      }
+    }catch(_){}
+    runtime.raf=requestAnimationFrame(draw);
+  };
+  const releasePlunger = ()=>{
+    if(!runtime.charging || runtime.launched || runtime.rewarded) return;
+    const charge=Math.min(1,Math.max(.08,(performance.now()-runtime.chargeStart)/1800));
+    runtime.charging=false;
+    runtime.launched=true;
+    plunger.style.setProperty("--charge","0");
+    plunger.disabled=true;
+    if(statusEl) statusEl.textContent="BALL IN PLAY";
+    Body.setStatic(ball,false);
+    Body.setVelocity(ball,{ x:-2.1-(charge*1.6), y:-16-(charge*10) });
+    runtime.awardDeadline = performance.now() + 14000;
+    runtime.failsafe=setTimeout(resolveStalledBall,14000);
+  };
+  plunger.addEventListener("pointerdown",(ev)=>{
+    if(runtime.launched || runtime.rewarded) return;
+    ev.preventDefault();
+    try{ plunger.setPointerCapture(ev.pointerId); }catch(_){}
+    runtime.charging=true;
+    runtime.chargeStart=performance.now();
+    if(statusEl) statusEl.textContent="PLUNGER CHARGING";
+  });
+  plunger.addEventListener("pointerup",releasePlunger);
+  plunger.addEventListener("pointercancel",releasePlunger);
+  plunger.addEventListener("lostpointercapture",releasePlunger);
+  close.addEventListener("click",closeBagatelle);
+  draw();
+  return true;
 }
 
 function renderOverviewFeed(){
@@ -40165,9 +41717,20 @@ function bossMaybeTriggerBesiegedEvent(opts){
     const ids = Array.isArray(opts.list) ? opts.list : [];
     if(!ids.length) return false;
     if(ids.some((id)=> isBossLocationId(id))) return false;
-    const chance = 0.05 + (Math.random() * 0.03);
+    const deepRun = isDeepRunSeed(ap?.slotData);
+    const now = Date.now();
+    if(deepRun){
+      const lastAt = Number(state?.besiegedLastTriggeredAt || 0);
+      if(lastAt > 0 && (now - lastAt) < (8 * 60 * 1000)) return false;
+    }
+    const chance = deepRun ? (0.018 + (Math.random() * 0.012)) : (0.05 + (Math.random() * 0.03));
     if(Math.random() > chance) return false;
-    return besiegedActivate();
+    const spawned = besiegedActivate();
+    if(spawned){
+      state.besiegedLastTriggeredAt = now;
+      try{ saveState({ immediate:true }); }catch(_){}
+    }
+    return spawned;
   }catch(_){}
   return false;
 }
@@ -41299,7 +42862,15 @@ function extractGenericSlotMeta(locationName){
     return { table, difficulty: scoreMatch[1].toLowerCase(), kind: "score" };
   }
   const deepMeta = getDeepRunSlotMeta(raw);
-  if(deepMeta) return { table: deepMeta.table, difficulty: deepMeta.difficulty, kind: deepMeta.kind };
+  if(deepMeta){
+    return {
+      table: deepMeta.table,
+      difficulty: deepMeta.difficulty,
+      kind: deepMeta.kind,
+      index: deepMeta.index,
+      deepRun: true
+    };
+  }
   return null;
 }
 function resolveGenericSlotLookupTableName(tableName){
@@ -41321,6 +42892,10 @@ function getGenericSlotLookupKey(entry, locationName){
   const kindKey = String(entry?.kind || entry?.task_type || entry?.type || locMeta?.kind || "").trim().toLowerCase();
   const tableKey = canonicalTableMapKey(lookupTableName);
   if(!tableKey || !difficultyKey || !kindKey) return "";
+  const deepRunIndex = Number(entry?.deep_run_index || (locMeta?.deepRun ? locMeta?.index : 0));
+  if(Number.isFinite(deepRunIndex) && deepRunIndex > 0){
+    return `${tableKey}|deep|${kindKey}|${String(Math.round(deepRunIndex)).padStart(2, "0")}`;
+  }
   return `${tableKey}|${difficultyKey}|${kindKey}`;
 }
 function getLocationSlotLookupKey(entry, locationName){
@@ -42726,6 +44301,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
   const itemFlags = Number(it?.flags ?? 0);
   const trapByFlag = !!(itemFlags & 0b100);
   const isHintRewardItem = isHintRewardItemName(effectiveName);
+  const isBagatelleRewardItem = isBagatelleItemName(effectiveName);
   const isTrapReward = trapByFlag || isTrapItem(effectiveName);
   let progressiveTarget = parseProgressiveBallTarget(effectiveName);
   const isProgressiveBallItem = !!progressiveTarget;
@@ -42887,7 +44463,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
     }else{
       // Progressive Ball items have their own flow (modal; then apply ball after), handled later.
       // Boss Key items have their own dock-slot cinematic, so skip the generic reward popup.
-      if(!isProgressiveBallItem && !isBossSegmentItem && !isBossKeyItemName(effectiveName) && !isFeatureKeyItemName(effectiveName)){
+      if(!isProgressiveBallItem && !isBossSegmentItem && !isBossKeyItemName(effectiveName) && !isFeatureKeyItemName(effectiveName) && !isBagatelleRewardItem){
         playSfx("receive");
         const holdMs = 3000;
         const modalMeta = (paired && paired.locationName ? ("CHECK; " + paired.locationName) : "");
@@ -42935,6 +44511,17 @@ function processReceivedItem(it, itemIndex, locId, opts){
         }
       }
     }
+  }
+
+  if(isBagatelleRewardItem){
+    const liveReceipt = !opts.isSnapshot && !opts.isFlush && !opts.inventoryReplayOnly && (Number(locId) > 0 || !!paired);
+    if(liveReceipt){
+      setTimeout(()=>{
+        try{ openBagatelle({ itemName:effectiveName, locationName:paired?.locationName || locNm || "" }); }catch(_){}
+      }, 420);
+    }
+    updateCounterBarsQuietly();
+    return;
   }
 
   if(streamCounterRewardDisplayOnly){
@@ -43603,6 +45190,22 @@ function forceReceivedSync(silent){
   }
 }
 
+function applyUnconnectedOverlayBossLock(opts){
+  try{
+    const changed = lockBossWorldForUnconnectedOverlay(state, { resetSelection:true });
+    const checksWorld = String(ap?.currentWorld || "").trim();
+    if(checksWorld === "boss" || isBossWorldId(checksWorld, state)){
+      ap.currentWorld = getFirstPlayableWorldKey(state);
+    }
+    if(opts?.render !== false){
+      try{ renderAll(); }catch(_){}
+      try{ musicRefreshScenario(); }catch(_){}
+    }
+    return changed;
+  }catch(_){}
+  return false;
+}
+
 function apDisconnect(opts){
   opts = opts || {};
   if(opts.manual !== false) window.__manualDisconnect = true;
@@ -43613,6 +45216,7 @@ function apDisconnect(opts){
   try{ if(ap.ws){ ap.ws.onopen = ap.ws.onmessage = ap.ws.onerror = ap.ws.onclose = null; ap.ws.close(1000, "user"); } }catch(_){ }
   ap.ws = null;
   ap.connected = false;
+  applyUnconnectedOverlayBossLock({ render:true });
   clearReceivedFeedHistory();
   setApIndicator("red","AP; OFFLINE");
   updateApConnectButtons("offline");
@@ -44124,6 +45728,7 @@ function apConnect(){
   });
   ap.ws.addEventListener("close", (ev)=>{
     ap.connected = false;
+    applyUnconnectedOverlayBossLock({ render:true });
     clearReceivedFeedHistory();
     try{ if(ap.roomInfoTimer){ clearTimeout(ap.roomInfoTimer); ap.roomInfoTimer = null; } }catch(_){}
     try{ if(ap.unlockReplayTimer){ clearTimeout(ap.unlockReplayTimer); ap.unlockReplayTimer = null; } }catch(_){}
@@ -44154,7 +45759,15 @@ function apConnect(){
     }catch(_){}
     scheduleReconnect();
   });
-  ap.ws.addEventListener("error", (ev)=>{ ap.connected = false; clearReceivedFeedHistory(); stopApPolling(); setApIndicator("yellow","AP; ERROR"); updateApConnectButtons("offline"); apLog("ws error" + (ev?.message ? "; " + ev.message : "")); });
+  ap.ws.addEventListener("error", (ev)=>{
+    ap.connected = false;
+    applyUnconnectedOverlayBossLock({ render:true });
+    clearReceivedFeedHistory();
+    stopApPolling();
+    setApIndicator("yellow","AP; ERROR");
+    updateApConnectButtons("offline");
+    apLog("ws error" + (ev?.message ? "; " + ev.message : ""));
+  });
 }
 
 
@@ -45965,7 +47578,7 @@ function syncTowerSelectionToWorld(worldKey){
   try{
     const wk = String(worldKey || "").trim();
     if(!wk) return null;
-    if(wk === "boss") return syncTowerSelectionToBossWorld();
+    if(isBossWorldId(wk, state)) return syncTowerSelectionToBossWorld();
     if(!state?.worlds?.[wk]) return null;
     if(state.selected !== wk){
       state.lastSelected = state.selected;
@@ -47155,7 +48768,9 @@ function renderChecksWorldTabs(){
   try{ besiegedEnforceBossLockDuringSiege("checks-tabs", { save:false }); }catch(_){}
   syncWorldPageToActiveContext();
   const bossUnlocked = isBossUnlocked();
-  const bossKeyCount = Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(window.__apBossKeyCount ?? getBossKeysAcquiredCount()) || 0));
+  const bossKeyCount = ap?.connected
+    ? Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(window.__apBossKeyCount ?? getBossKeysAcquiredCount()) || 0))
+    : 0;
   const requiredBossKeys = getBossKeysRequiredForOpen();
   const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
   const firstPlayableWorldKey = getFirstPlayableWorldKey();
@@ -47166,6 +48781,7 @@ function renderChecksWorldTabs(){
   const keys = getChecksWorldOrder();
   if(!keys.includes(ap.currentWorld)) ap.currentWorld = firstPlayableWorldKey;
   const activeKey = ap.currentWorld;
+  const bossCompactWorldBar = syncBossTableChecksSpaceMode();
   const prevActiveKey = String(wrap.__lastActiveKey || "");
   if(prevActiveKey && prevActiveKey !== activeKey){
     triggerChecksDividerSnapFx("world");
@@ -47219,6 +48835,11 @@ function renderChecksWorldTabs(){
   const mainW = Math.min(innerW, Math.max(180, Math.floor(topSlotW * 2.35)));
   const topGroupW = (topCount * topW) + (Math.max(0, topCount - 1) * gap);
   const topStartX = Math.max(outerPad, Math.round((width - topGroupW) * 0.5));
+  const compactGap = 4;
+  const compactPad = 4;
+  const compactCount = Math.max(1, keys.length);
+  const compactW = Math.max(44, Math.floor((width - (compactPad * 2) - (compactGap * (compactCount - 1))) / compactCount));
+  const compactH = 24;
 
   const placeTopLeft = (idx)=> Math.round(topStartX + (idx * (topW + gap)));
   const placeTopY = (idx)=>{
@@ -47230,6 +48851,7 @@ function renderChecksWorldTabs(){
     return Math.round(topY + yOffset);
   };
   const placeMainLeft = ()=> Math.round((width - mainW) * 0.5);
+  const placeCompactLeft = (idx)=> Math.round(compactPad + (idx * (compactW + compactGap)));
 
   keys.forEach((wk)=>{
     const btn = wrap.__tabButtons.get(wk);
@@ -47286,7 +48908,7 @@ function renderChecksWorldTabs(){
       const parts = checksTabLabelParts(wk);
       const emoji = String((worldEmojis?.[wk] || "")).trim();
       const mainTxt = `${emoji ? (emoji + " ") : ""}${String(parts.main || checksTabLabel(wk))}`.trim();
-      if(wk === activeKey){
+      if(wk === activeKey && !bossCompactWorldBar){
         const subTxt = String(parts.sub || (wk === "boss" ? "Final Checks" : "Table Checks")).trim();
         btn.innerHTML = `<span class="wTabMainLine">${escapeHtml(mainTxt)}</span><span class="wTabSubLine">${escapeHtml(subTxt)}</span>`;
       }else{
@@ -47317,7 +48939,14 @@ function renderChecksWorldTabs(){
       if(towerOnBossWorld) btn.classList.add("towerNowPlayingTab");
     }
 
-    if(wk === activeKey){
+    if(bossCompactWorldBar){
+      btn.classList.add("tabSlotCompact");
+      const idx = Math.max(0, keys.indexOf(wk));
+      btn.style.setProperty("left", `${placeCompactLeft(idx)}px`, "important");
+      btn.style.setProperty("top", "2px", "important");
+      btn.style.setProperty("width", `${compactW}px`, "important");
+      btn.style.setProperty("height", `${compactH}px`, "important");
+    }else if(wk === activeKey){
       btn.classList.add("tabSlotMain");
       btn.style.setProperty("left", `${placeMainLeft()}px`, "important");
       btn.style.setProperty("top", `${mainY}px`, "important");
@@ -47367,9 +48996,64 @@ function renderChecksWorldTabs(){
   updateBossThreatIndicators();
 }
 
+const deepRunChecksScrollState = new Map();
+
+function rememberDeepRunChecksScroll(grid){
+  try{
+    if(String(grid?.dataset?.deepRunScrollRetired || "") === "1") return;
+    const key = String(grid?.dataset?.deepRunScrollKey || "").trim();
+    if(!key) return;
+    const top = Math.max(0, Number(grid.scrollTop) || 0);
+    const max = Math.max(0, Number(grid.scrollHeight || 0) - Number(grid.clientHeight || 0));
+    deepRunChecksScrollState.set(key, {
+      top,
+      atBottom: max > 0 && (max - top) <= 8
+    });
+  }catch(_){}
+}
+
+function captureDeepRunChecksScroll(root){
+  try{
+    root?.querySelectorAll?.(".deepRunSectionGrid[data-deep-run-scroll-key]").forEach((grid)=>{
+      rememberDeepRunChecksScroll(grid);
+      grid.dataset.deepRunScrollRetired = "1";
+    });
+  }catch(_){}
+}
+
+function restoreDeepRunChecksScroll(grid){
+  try{
+    const key = String(grid?.dataset?.deepRunScrollKey || "").trim();
+    const saved = key ? deepRunChecksScrollState.get(key) : null;
+    if(!saved) return;
+    const token = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    grid.dataset.deepRunScrollRestoreToken = token;
+    const apply = ()=>{
+      if(!grid.isConnected || grid.dataset.deepRunScrollRestoreToken !== token) return null;
+      const max = Math.max(0, Number(grid.scrollHeight || 0) - Number(grid.clientHeight || 0));
+      const target = saved.atBottom ? max : Math.max(0, Math.min(max, Number(saved.top) || 0));
+      grid.scrollTop = target;
+      return target;
+    };
+    const cancel = ()=>{
+      try{
+        if(grid.dataset.deepRunScrollRestoreToken === token) delete grid.dataset.deepRunScrollRestoreToken;
+      }catch(_){}
+    };
+    ["wheel", "pointerdown", "touchstart", "keydown"].forEach((eventName)=>{
+      grid.addEventListener(eventName, cancel, { once:true, passive:eventName !== "keydown" });
+    });
+    apply();
+    requestAnimationFrame(()=>requestAnimationFrame(apply));
+    [80, 180, 360].forEach((delay)=>setTimeout(apply, delay));
+    setTimeout(cancel, 460);
+  }catch(_){}
+}
+
 function renderChecks(){
   const body = document.getElementById("checksBody");
   if(!body) return;
+  captureDeepRunChecksScroll(body);
   try{ besiegedEnforceBossLockDuringSiege("checks-render", { save:false }); }catch(_){}
   hideCheckTaskHoverCard();
   body.innerHTML = "";
@@ -47574,15 +49258,24 @@ function renderChecks(){
 
 function renderTableBlock(parent, tableName, nodes, opts){
   opts = opts || {};
+  const tableKey = String(opts.tableKey || "").trim();
+  const isBossTableBlock = tableKey.startsWith("boss|");
+  const sourceNodes = Array.isArray(nodes) ? nodes : [];
+  const deepRunNodes = sourceNodes.filter((node)=>{
+    return !!getDeepRunSlotMeta(node?.full || node?.baseFull || node?.short || "");
+  });
+  const deepRunNodeCount = deepRunNodes.length;
+  const isDeepRunCheckBlock = !isBossTableBlock && (deepRunNodeCount >= 12 || isDeepRunSeed(ap?.slotData));
+  if(isDeepRunCheckBlock && deepRunNodeCount > 0) nodes = deepRunNodes;
   try{ (nodes||[]).forEach(n=>{ if(n && typeof n.id==="number") ap.validCheckLocIds.add(n.id); }); }catch(_){ }
   const block = document.createElement("div");
   block.className = "tableBlock";
-  const tableKey = String(opts.tableKey || "").trim();
-  const isBossTableBlock = tableKey.startsWith("boss|");
-  const deepRunNodeCount = (Array.isArray(nodes) ? nodes : []).reduce((count, node)=>{
+  const renderedDeepRunNodeCount = (Array.isArray(nodes) ? nodes : []).reduce((count, node)=>{
     return count + (getDeepRunSlotMeta(node?.full || node?.baseFull || node?.short || "") ? 1 : 0);
   }, 0);
-  const isDeepRunCheckBlock = !isBossTableBlock && (deepRunNodeCount >= 12 || isDeepRunSeed(ap?.slotData));
+  if(isDeepRunCheckBlock && renderedDeepRunNodeCount !== 20){
+    block.dataset.deepRunNodeCount = String(renderedDeepRunNodeCount);
+  }
   if(isDeepRunCheckBlock) block.classList.add("deepRunChecks");
   if(tableKey) block.setAttribute("data-tablekey", tableKey);
   const getTableBallLevel = ()=>{
@@ -47610,6 +49303,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
   const hintTargets = relicGetCombinedHintTargetsForTable(tableKey);
   const hintOnThisTable = hintTargets.length > 0;
   const hintBossKeyOnThisTable = hintTargets.some((t)=>hintIsBossTypeLabel(t?.typeLabel));
+  const hintFeatureKeyOnThisTable = hintTargets.some((t)=>hintIsFeatureTypeLabel(t?.typeLabel));
   const hintTargetHasNode = (target)=>{
     try{
       return !!(target && (nodes || []).some((node)=>hintNodeMatchesTarget(node, target)));
@@ -47620,7 +49314,9 @@ function renderTableBlock(parent, tableName, nodes, opts){
   const fallbackHintTargets = hintOnThisTable ? hintTargets.filter((target)=>!hintTargetHasNode(target)) : [];
   const fallbackHintOnThisTable = fallbackHintTargets.length > 0;
   const fallbackBossHintOnThisTable = fallbackHintTargets.some((t)=>hintIsBossTypeLabel(t?.typeLabel));
+  const fallbackFeatureHintOnThisTable = fallbackHintTargets.some((t)=>hintIsFeatureTypeLabel(t?.typeLabel));
   const hasBossHintNode = hintTargetsWithNodes.some((t)=>hintIsBossTypeLabel(t?.typeLabel));
+  const hasFeatureHintNode = hintTargetsWithNodes.some((t)=>hintIsFeatureTypeLabel(t?.typeLabel));
   const trapLocked = isTrapCheckLockActive();
   const awayWithYouClearMode = isBossAwayWithYouTrapActive();
   const trapLocksThisTable = trapLocked && !(awayWithYouClearMode && !isBossTableBlock);
@@ -47665,13 +49361,18 @@ function renderTableBlock(parent, tableName, nodes, opts){
     let bannerUrl = "";
     if(tk.startsWith("boss|")){
       const bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
+      const chosenBossTableName = String(
+        (typeof getUnifiedBossTableName === "function" ? getUnifiedBossTableName({ includePlaceholder:false }) : "")
+        || tableName
+        || state?.bossTable
+        || ""
+      ).trim();
       bannerUrl =
-        (typeof getBossWorldHeaderBannerUrl === "function" ? (getBossWorldHeaderBannerUrl() || "") : "")
-        || (typeof getBossWorldBannerUrl === "function" ? (getBossWorldBannerUrl() || "") : "")
-        || getTowerWorldBannerUrl(bossWorldKey)
-        || getWorldBannerUrl(bossWorldKey)
-        || resolveBannerRef(getDefaultWorldBannerRef("boss") || "")
-        || (typeof getBossTableBannerUrl === "function" ? (getBossTableBannerUrl() || "") : "");
+        (typeof getBossTableBannerUrl === "function" ? (getBossTableBannerUrl() || "") : "")
+        || getTableBannerUrl(bossWorldKey, chosenBossTableName)
+        || resolveBannerRef(getBossBannerRefForTable(chosenBossTableName) || "")
+        || resolveBannerRef(getDefaultTableBannerRef(chosenBossTableName) || "");
+      head.classList.add("bossTableFlyerHead");
     }else if(tk){
       const [wkRaw] = tk.split("|");
       const wk = String(wkRaw || "").trim();
@@ -47766,10 +49467,12 @@ function renderTableBlock(parent, tableName, nodes, opts){
     headStatus.classList.add("hasScorePanel");
     const scoreMultiplier = getManualScoreMultiplierForTable(tableKey, tableName);
     const scoreMultiplierLabel = formatManualScoreMultiplier(scoreMultiplier);
+    const nextScoreBonusPct = Math.max(0, Math.round(Number(state?.nextScoreBonusPct) || 0));
+    const scoreModifierDisplay = nextScoreBonusPct > 0 ? `${scoreMultiplierLabel} +${nextScoreBonusPct}%` : scoreMultiplierLabel;
     scorePanel.innerHTML = `
       <label class="checksScoreLabel" for="scoreInput-${escapeHtml(String(tableKey || tableName).replace(/[^a-z0-9_-]+/gi, "-"))}">SCORE:</label>
       <div class="checksScoreEntryRow">
-        <button class="checksScoreModBtn" type="button" title="Score modifier; future Relics can change this. Current modifier ${escapeHtml(scoreMultiplierLabel)}" aria-label="Score modifier ${escapeHtml(scoreMultiplierLabel)}">${escapeHtml(scoreMultiplierLabel)}</button>
+        <button class="checksScoreModBtn" type="button" title="Current score modifier ${escapeHtml(scoreModifierDisplay)}" aria-label="Score modifier ${escapeHtml(scoreModifierDisplay)}">${escapeHtml(scoreModifierDisplay)}</button>
         <input class="checksScoreInput" id="scoreInput-${escapeHtml(String(tableKey || tableName).replace(/[^a-z0-9_-]+/gi, "-"))}" inputmode="numeric" pattern="[0-9,]*" placeholder="0" aria-label="Score for ${escapeHtml(tableName)}">
       </div>
       <div class="checksScoreHigh">Current High Score: ${escapeHtml(formatManualScoreValue(getTableHighScoreValue(tableKey, tableName)))}</div>
@@ -47800,6 +49503,8 @@ function renderTableBlock(parent, tableName, nodes, opts){
     title.textContent = label;
     const inner = document.createElement("div");
     inner.className = "deepRunSectionGrid";
+    inner.dataset.deepRunScrollKey = `${tableKey || canonicalTableMapKey(tableName)}|${String(kind || "task").toLowerCase()}`;
+    inner.addEventListener("scroll", ()=>rememberDeepRunChecksScroll(inner), { passive:true });
     section.appendChild(title);
     section.appendChild(inner);
     grid.appendChild(section);
@@ -47895,12 +49600,17 @@ function renderTableBlock(parent, tableName, nodes, opts){
     playSfx("redeem");
     apLog("CHECK SENT; " + n.id + (sourceTag ? `; ${sourceTag}` : "") + `; ${redeemMeta.task_type}; ${redeemMeta.task_name}`, { tab:"chat", mirrorTabs:["status"] });
     apRequestSyncAfterCheck(sourceTag || "check");
-    if(shouldShowCheckSentNotification()) toast("warn","CHECK SENT", (n.short||"") + " ; ID " + n.id, 2200);
+    if(!redeemOpts.silent && shouldShowCheckSentNotification()) toast("warn","CHECK SENT", (n.short||"") + " ; ID " + n.id, 2200);
     try{ besiegedMaybeClearPenaltyLockForTask(opts.tableKey, n); }catch(_){}
     return true;
   };
   const getRenderedNodeTier = (node, nodeIdx)=>{
     if(isBossTableBlock) return "boss";
+    if(isDeepRunCheckBlock){
+      const deepMeta = getDeepRunSlotMeta(node?.full || node?.baseFull || node?.short || "");
+      const deepDifficulty = String(deepMeta?.difficulty || "").trim().toLowerCase();
+      if(deepDifficulty === "easy" || deepDifficulty === "medium" || deepDifficulty === "hard") return deepDifficulty;
+    }
     const explicit = String(node?.genericDifficulty || node?.genericEntry?.difficulty || "").trim().toLowerCase();
     if(explicit === "easy") return "easy";
     if(explicit === "medium") return "medium";
@@ -47912,6 +49622,78 @@ function renderTableBlock(parent, tableName, nodes, opts){
       return "hard";
     }
     return (nodeIdx < 2) ? "easy" : (nodeIdx < 4) ? "medium" : "hard";
+  };
+  const getRenderNodeEntryKind = (node)=>{
+    const deepRunSlotMeta = getDeepRunSlotMeta(node?.full || node?.baseFull || node?.short || "");
+    const nodeEntryKind = String(
+      node?.genericEntry?.kind ||
+      node?.genericEntry?.task_type ||
+      node?.genericEntry?.type ||
+      node?.taskShuffleEntry?.kind ||
+      node?.taskShuffleEntry?.task_type ||
+      node?.taskShuffleEntry?.type ||
+      node?.genericTaskType ||
+      ""
+    ).trim().toLowerCase();
+    const titleText = getTaskNameFromLocationNode(node) || String(node?.short || node?.full || "").trim();
+    const scoreTargetMeta = getScoreTargetMetaForTask(titleText);
+    return (scoreTargetMeta || deepRunSlotMeta?.kind === "score" || nodeEntryKind === "score") ? "score" : "task";
+  };
+  const getRenderNodeScoreSortValue = (node)=>{
+    try{
+      const fromMeta = getScoreTargetMetaForNode(node);
+      if(fromMeta && Number.isFinite(Number(fromMeta.value))) return Number(fromMeta.value);
+    }catch(_){}
+    try{
+      const direct = Number(node?.genericEntry?.score_target ?? node?.taskShuffleEntry?.score_target);
+      if(Number.isFinite(direct) && direct > 0) return direct;
+    }catch(_){}
+    try{
+      const text = String(
+        node?.genericEntry?.score_target_text ||
+        node?.taskShuffleEntry?.score_target_text ||
+        node?.full ||
+        node?.short ||
+        ""
+      );
+      const match = text.match(/([0-9][0-9,\s]*)\s*\+/);
+      if(match){
+        const value = Number(String(match[1] || "").replace(/[^\d]/g, ""));
+        if(Number.isFinite(value) && value > 0) return value;
+      }
+    }catch(_){}
+    return Number.POSITIVE_INFINITY;
+  };
+  const normalizeDeepRunObjectiveKey = (value)=>{
+    return String(value || "")
+      .toLowerCase()
+      .replace(/&/g, " and ")
+      .replace(/\bscore\s*target\b/g, "score")
+      .replace(/\s*\([^)]*\)\s*$/g, "")
+      .replace(/[^a-z0-9]+/g, "");
+  };
+  const sendMergedCheckLocations = (primaryNode, duplicateNodes, sourceTag, redeemOpts)=>{
+    const pending = ap?.pendingByLoc;
+    const group = [primaryNode, ...(Array.isArray(duplicateNodes) ? duplicateNodes : [])].filter(Boolean);
+    const sendable = group.filter((node)=>{
+      const id = Number(node?.id);
+      return Number.isFinite(id) && id > 0 && !(ap?.checked && ap.checked.has(id)) && !(pending && pending.has(id));
+    });
+    if(!sendable.length) return false;
+    const sent = sendCheckLocation(sendable[0], sourceTag, redeemOpts);
+    if(!sent) return false;
+    const toSend = sendable.slice(1);
+    if(toSend.length){
+      toSend.forEach((dup, dupIdx)=>{
+        setTimeout(()=>{
+          try{
+            sendCheckLocation(dup, `${sourceTag || "manual"}:merged-duplicate`, { ...(redeemOpts || {}), silent:true });
+          }catch(_){}
+        }, 120 + dupIdx * 140);
+      });
+      try{ apLog(`Merged duplicate Deep Run objective; sent ${toSend.length + 1} location checks from one visible task.`, { tab:"status" }); }catch(_){}
+    }
+    return true;
   };
   if(scorePanel){
     const scoreInput = scorePanel.querySelector(".checksScoreInput");
@@ -47938,38 +49720,55 @@ function renderTableBlock(parent, tableName, nodes, opts){
         return false;
       }
       const scoreMultiplier = getManualScoreMultiplierForTable(tableKey, tableName);
-      const effectiveScore = Math.max(0, Math.round(score * scoreMultiplier));
+      const nextScoreBonusPct = Math.max(0, Math.round(Number(state?.nextScoreBonusPct) || 0));
+      const effectiveScore = Math.max(0, Math.round(score * scoreMultiplier * (1 + nextScoreBonusPct / 100)));
       const eligible = scoreCheckEntries.filter((entry)=>{
         if(effectiveScore < Number(entry.target || 0)) return false;
         if(ap.checked.has(entry.id)) return false;
         if(ap.pendingByLoc && ap.pendingByLoc.has(entry.id)) return false;
         return true;
-      });
+      }).sort((a,b)=>Number(a.target || 0)-Number(b.target || 0));
+      if(nextScoreBonusPct > 0){
+        state.nextScoreBonusPct = 0;
+        try{ saveState({ immediate:true }); }catch(_){ try{ saveState(); }catch(__){} }
+        toast("good", "BAGATELLE BONUS USED", `+${nextScoreBonusPct}% applied; ${formatManualScoreValue(effectiveScore)} check score.`, 2600);
+      }
       if(!eligible.length){
         toast("good", "SCORE RECORDED", `High score now ${formatManualScoreValue(getTableHighScoreValue(tableKey, tableName))}.`, 2000);
         return false;
       }
       if(scoreInput) scoreInput.disabled = true;
-      eligible.forEach((entry, idx)=>{
-        setTimeout(()=>{
+      const wait = (ms)=>new Promise((resolve)=>setTimeout(resolve,ms));
+      const waitForValidation = (entry)=>new Promise((resolve)=>{
+        const started = Date.now();
+        const timer = setInterval(()=>{
+          const checked = !!(ap?.checked && ap.checked.has(Number(entry.id)));
+          const expired = Date.now() - started >= 6500;
+          if(checked || expired){ clearInterval(timer); resolve(checked); }
+        },140);
+      });
+      (async()=>{
+        for(const entry of eligible){
           try{
             const btn = block.querySelector(`.nodeBtn[data-locid="${entry.id}"]`);
             if(btn) btn.classList.add("scoreAutoRedeeming");
           }catch(_){}
           const tier = entry.difficulty || getRenderedNodeTier(entry.node, entry.order);
-          sendCheckLocation(entry.node, "score:manual", {
+          const sent = sendCheckLocation(entry.node, "score:manual", {
             difficulty: tier,
             scoreValue: effectiveScore,
             scoreTarget: entry.target
           });
-          if(idx === eligible.length - 1){
-            setTimeout(()=>{
-              if(scoreInput) scoreInput.disabled = false;
-              renderChecks();
-            }, 380);
+          if(sent){
+            await waitForValidation(entry);
+            await wait(3900);
+          }else{
+            await wait(500);
           }
-        }, idx * 520);
-      });
+        }
+        if(scoreInput) scoreInput.disabled = false;
+        renderChecks();
+      })();
       toast("good", "SCORE CHECKS", `${eligible.length} score check${eligible.length === 1 ? "" : "s"} queued.`, 2200);
       return false;
     };
@@ -48011,11 +49810,11 @@ function renderTableBlock(parent, tableName, nodes, opts){
     block.appendChild(lockBadge);
     if(hintOnThisTable){
       const tag = document.createElement("div");
-      tag.className = "hintHereTag hintChecksTag" + (hintBossKeyOnThisTable ? " hintBossTag" : "");
-      tag.textContent = hintBossKeyOnThisTable ? "BOSS KEY HERE" : "HINT ITEM LOCATED";
+      tag.className = "hintHereTag hintChecksTag" + (hintBossKeyOnThisTable ? " hintBossTag" : (hintFeatureKeyOnThisTable ? " hintFeatureTag" : ""));
+      tag.textContent = hintBossKeyOnThisTable ? "BOSS KEY HERE" : (hintFeatureKeyOnThisTable ? "FEATURE KEY HERE" : "HINT ITEM LOCATED");
       block.appendChild(tag);
     }
-    if(hintBossKeyOnThisTable){
+    if(hintBossKeyOnThisTable || hintFeatureKeyOnThisTable){
       const wm = document.createElement("div");
       wm.className = "hintKeyWatermark hintKeyWatermarkChecks";
       wm.textContent = "\u{1F511}";
@@ -48027,17 +49826,69 @@ function renderTableBlock(parent, tableName, nodes, opts){
     return block;
   }
 
-  (nodes||[]).forEach((n, nodeIdx)=>{
+  let renderNodeEntries = (Array.isArray(nodes) ? nodes : []).map((n, nodeIdx)=>({
+    n,
+    nodeIdx,
+    tier: getRenderedNodeTier(n, nodeIdx),
+    layoutKind: getRenderNodeEntryKind(n),
+    scoreSortValue: getRenderNodeScoreSortValue(n),
+    deepRunSlotMeta: getDeepRunSlotMeta(n?.full || n?.baseFull || n?.short || ""),
+    duplicateNodes: []
+  }));
+  if(isDeepRunCheckBlock){
+    const seenDeepRunObjectives = new Map();
+    const deduped = [];
+    for(const entry of renderNodeEntries){
+      try{
+        const titleText = getTaskNameFromLocationNode(entry.n) || String(entry.n?.short || entry.n?.full || "").trim();
+        const kind = String(entry.layoutKind || "task").toLowerCase();
+        const scoreKey = kind === "score" ? getRenderNodeScoreSortValue(entry.n) : Number.NaN;
+        const objectiveKey = kind === "score" && Number.isFinite(scoreKey)
+          ? `score:${scoreKey}`
+          : normalizeDeepRunObjectiveKey(titleText);
+        const key = `${kind}|${objectiveKey}`;
+        if(objectiveKey && seenDeepRunObjectives.has(key)){
+          const first = seenDeepRunObjectives.get(key);
+          first.duplicateNodes = first.duplicateNodes || [];
+          first.duplicateNodes.push(entry.n);
+          continue;
+        }
+        if(objectiveKey) seenDeepRunObjectives.set(key, entry);
+      }catch(_){}
+      deduped.push(entry);
+    }
+    renderNodeEntries = deduped;
+    const tierOrder = { easy:0, medium:1, hard:2, boss:3 };
+    renderNodeEntries.sort((a,b)=>{
+      if(String(a.layoutKind || "") === "score" && String(b.layoutKind || "") === "score"){
+        const as = Number(a.scoreSortValue);
+        const bs = Number(b.scoreSortValue);
+        if(Number.isFinite(as) && Number.isFinite(bs) && as !== bs) return as - bs;
+      }
+      const at = Object.prototype.hasOwnProperty.call(tierOrder, a.tier) ? tierOrder[a.tier] : 9;
+      const bt = Object.prototype.hasOwnProperty.call(tierOrder, b.tier) ? tierOrder[b.tier] : 9;
+      if(at !== bt) return at - bt;
+      const ai = Number(a.deepRunSlotMeta?.index || 0);
+      const bi = Number(b.deepRunSlotMeta?.index || 0);
+      if(ai && bi && ai !== bi) return ai - bi;
+      return a.nodeIdx - b.nodeIdx;
+    });
+  }
+  renderNodeEntries.forEach(({ n, nodeIdx, duplicateNodes })=>{
+    const duplicateNodeList = Array.isArray(duplicateNodes) ? duplicateNodes : [];
+    const mergedNodeList = [n, ...duplicateNodeList].filter(Boolean);
+    const mergedNodeChecked = (node)=>!!(ap?.checked && ap.checked.has(Number(node?.id)));
+    const mergedNodePending = (node)=>!!(ap?.pendingByLoc && ap.pendingByLoc.has(Number(node?.id)));
     const cell = document.createElement("div");
     cell.className = "nodeCell";
     const btn = document.createElement("button");
     try{ btn.dataset.locid = String(Number(n?.id) || 0); }catch(_){}
-    const checked = ap.checked.has(n.id);
+    const checked = mergedNodeList.length ? mergedNodeList.some(mergedNodeChecked) : ap.checked.has(n.id);
     const bossVictoryNode = isBossTableBlock && bossIsVictoryLocationNode(n);
     const taskCounterMeta = (!bossVictoryNode) ? getTaskCounterMetaForNode(n) : null;
     const pending = bossVictoryNode
       ? (!!state?.bossVictoryPending || (!checked && ap.pendingByLoc && ap.pendingByLoc.has(n.id)))
-      : (!checked && ap.pendingByLoc && ap.pendingByLoc.has(n.id));
+      : (!checked && mergedNodeList.some(mergedNodePending));
     const bossVictoryProgress = bossVictoryNode ? bossGetVictoryProgress() : null;
     const bossVictoryLocked = !!(bossVictoryNode && !checked && !pending && !bossVictoryProgress?.ready);
     btn.className = "nodeBtn" + (checked ? " checked" : "") + (pending ? " pending" : "");
@@ -48049,6 +49900,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
     if(nodeHint){
       btn.classList.add("hintTargetNode");
       if(hintIsBossTypeLabel(nodeHint?.typeLabel)) btn.classList.add("hintTargetNodeBoss");
+      if(hintIsFeatureTypeLabel(nodeHint?.typeLabel)) btn.classList.add("hintTargetNodeFeature");
     }
     // Fixed color/tier mapping by position:
     // first two = easy (green), next two = medium (yellow), last two = hard (red).
@@ -48128,8 +49980,9 @@ function renderTableBlock(parent, tableName, nodes, opts){
     if(nodeHint){
       const hintNodeTag = document.createElement("div");
       const isBossHint = hintIsBossTypeLabel(nodeHint?.typeLabel);
-      hintNodeTag.className = "hintNodeTag" + (isBossHint ? " hintBossTag" : "");
-      hintNodeTag.textContent = isBossHint ? "BOSS KEY HERE" : "HINT ITEM LOCATED";
+      const isFeatureHint = hintIsFeatureTypeLabel(nodeHint?.typeLabel);
+      hintNodeTag.className = "hintNodeTag" + (isBossHint ? " hintBossTag" : (isFeatureHint ? " hintFeatureTag" : ""));
+      hintNodeTag.textContent = isBossHint ? "BOSS KEY HERE" : (isFeatureHint ? "FEATURE KEY HERE" : "HINT ITEM LOCATED");
       btn.appendChild(hintNodeTag);
     }
     const taskTip = getTaskExplanationForNode(n);
@@ -48202,7 +50055,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
           toast("warn", activeDiff === "hard" ? "NO SUPER ITEM" : "NO JUNK REDEEM", activeDiff === "hard" ? "An EASY and MEDIUM redeem are no longer both available." : `${activeDiff.toUpperCase()} redeem is no longer available.`, 2200);
           return;
         }
-        const sent = sendCheckLocation(n, activeDiff === "hard" ? "super:hard" : `junk:${activeDiff}`, {
+        const sent = sendMergedCheckLocations(n, duplicateNodes, activeDiff === "hard" ? "super:hard" : `junk:${activeDiff}`, {
           difficulty: tier,
           counterTarget: taskCounterMeta?.target || null,
           counterValue: taskCounterMeta ? getTaskProgressValue(n.id) : null
@@ -48224,7 +50077,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
         toast("warn","AP DISCONNECTED", "Reconnect to AP before redeeming checks.", 2200);
         return;
       }
-      const sent = sendCheckLocation(n, "manual", {
+      const sent = sendMergedCheckLocations(n, duplicateNodes, "manual", {
         difficulty: tier,
         counterTarget: taskCounterMeta?.target || null,
         counterValue: taskCounterMeta ? getTaskProgressValue(n.id) : null
@@ -48271,7 +50124,7 @@ function renderTableBlock(parent, tableName, nodes, opts){
           toast("warn","AP DISCONNECTED", `Reconnect to auto-clear ${displayTaskName}.`, 2600);
           return;
         }
-        if(sendCheckLocation(n, sourceTag, {
+        if(sendMergedCheckLocations(n, duplicateNodes, sourceTag, {
           difficulty: tier,
           counterTarget: taskCounterMeta?.target || null,
           counterValue: getTaskProgressValue(n.id)
@@ -48309,17 +50162,21 @@ function renderTableBlock(parent, tableName, nodes, opts){
   }
   if(fallbackHintOnThisTable){
     const tag = document.createElement("div");
-    tag.className = "hintHereTag hintChecksTag" + (fallbackBossHintOnThisTable ? " hintBossTag" : "");
-    tag.textContent = fallbackBossHintOnThisTable ? "BOSS KEY HERE" : "HINT ITEM LOCATED";
+    tag.className = "hintHereTag hintChecksTag" + (fallbackBossHintOnThisTable ? " hintBossTag" : (fallbackFeatureHintOnThisTable ? " hintFeatureTag" : ""));
+    tag.textContent = fallbackBossHintOnThisTable ? "BOSS KEY HERE" : (fallbackFeatureHintOnThisTable ? "FEATURE KEY HERE" : "HINT ITEM LOCATED");
     block.appendChild(tag);
   }
-  if(fallbackBossHintOnThisTable && !hasBossHintNode){
+  if((fallbackBossHintOnThisTable && !hasBossHintNode) || (fallbackFeatureHintOnThisTable && !hasFeatureHintNode)){
     const wm = document.createElement("div");
     wm.className = "hintKeyWatermark hintKeyWatermarkChecks";
     wm.textContent = "\u{1F511}";
     block.appendChild(wm);
   }
   parent.appendChild(block);
+  if(isDeepRunCheckBlock){
+    restoreDeepRunChecksScroll(deepRunTaskColumn);
+    restoreDeepRunChecksScroll(deepRunScoreColumn);
+  }
   applyChecksTableNameMarquee(head);
   try{ relicDecorateTableVisual(block, opts.tableKey); }catch(_){}
   return block;
@@ -51093,12 +52950,15 @@ function renderWorldButtons(){
   const bossUnlocked = (typeof isBossUnlocked === "function") ? !!isBossUnlocked() : false;
   const bossRevealReady = (typeof isBossTableRevealReady === "function") ? !!isBossTableRevealReady() : false;
   const requiredBossKeys = getBossKeysRequiredForOpen();
-  const towerBossUnlockedNow = bossUnlocked || Number(window.__apBossKeyCount || 0) >= requiredBossKeys;
+  const bossSessionActive = !!ap?.connected;
+  const bossKeyCount = bossSessionActive
+    ? Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(window.__apBossKeyCount ?? getBossKeysAcquiredCount()) || 0))
+    : 0;
+  const towerBossUnlockedNow = bossUnlocked || (bossSessionActive && bossKeyCount >= requiredBossKeys);
   const towerBossThreatWanted =
     towerBossUnlockedNow
     && !(typeof isBossDefeatedForThreatVisual === "function" ? isBossDefeatedForThreatVisual() : false);
   const bossNameCenter = String(getRepoDisplayTableName((typeof getBossIncomingTableName === "function" ? getBossIncomingTableName() : (state?.bossTable || "Boss Table")) || "Boss Table") || "Boss Table").trim();
-  const bossKeyCount = Math.max(0, Math.min(BOSS_KEYS_COUNT, Number(window.__apBossKeyCount ?? getBossKeysAcquiredCount()) || 0));
   const besiegedLive = besiegedGetState();
 
   liveOrder.forEach(id=>{
@@ -51251,6 +53111,8 @@ function renderSelected(){
   try{
     const w = state.worlds[state.selected];
     if(!w) throw new Error(`Missing selected world: ${state.selected}`);
+    const selectedWorldKey = String(state.selected || "").trim();
+    const selectedIsBossWorld = isBossWorldId(selectedWorldKey, state);
 
     // v92: world banner background behind the selected table view
     try{
@@ -51258,8 +53120,8 @@ function renderSelected(){
       if(existing) existing.remove();
       const bg = document.createElement("div");
       bg.className = "selWorldBg";
-      const wid = state.selected;
-      const bannerUrl = (wid === "boss")
+      const wid = selectedWorldKey;
+      const bannerUrl = selectedIsBossWorld
         ? (getBossWorldBannerUrl() || "")
         : (getTowerWorldBannerUrl(wid) || getWorldBannerUrl(wid) || "");
       if(bannerUrl) bg.style.backgroundImage = `url('${bannerUrl}')`;
@@ -51268,9 +53130,9 @@ function renderSelected(){
 
     const { main, sub } = splitLabel(w.label);
     document.getElementById("selectedTitle").textContent = `${main.toUpperCase()}${sub ? "; " + sub.toUpperCase() : ""}`;
-    document.getElementById("selectedHint").textContent = (state.selected === "boss") ? "Abandon all hope, ye who enter the playfield" : (w && w.locked ? "Locked; unlock to toggle balls" : "");
+    document.getElementById("selectedHint").textContent = selectedIsBossWorld ? "Abandon all hope, ye who enter the playfield" : (w && w.locked ? "Locked; unlock to toggle balls" : "");
 
-    if(state.selected === "boss"){
+    if(selectedIsBossWorld){
       const bossRevealReady = (typeof isBossTableRevealReady === "function") ? !!isBossTableRevealReady() : false;
       const bossWrap = document.createElement("div");
       bossWrap.className = "bigBoss";
@@ -52617,6 +54479,13 @@ function setSwapMeterProgress(remain01){
   if(t) t.style.transform = `scaleX(${(isTower ? v : 1).toFixed(4)})`;
   if(o) o.style.transform = `scaleX(${(isOverview ? v : 1).toFixed(4)})`;
 }
+function syncBossTableChecksSpaceMode(){
+  const enabled = String(activeView || "") === "checks" && String(ap?.currentWorld || "") === "boss";
+  try{ document.body.classList.toggle("bossTableChecksActive", enabled); }catch(_){}
+  try{ document.getElementById("checksWorldTabs")?.classList.toggle("bossCompactWorldBar", enabled); }catch(_){}
+  try{ requestAnimationFrame(()=>updateCaptureShopBorderMetrics()); }catch(_){}
+  return enabled;
+}
 function tickSwapMeter(){
   let keepTicking = false;
   try{
@@ -52674,6 +54543,7 @@ function setTabUI(){
     el.setAttribute("aria-disabled", besieged ? "true" : "false");
   });
   setSwapMeterActivePanel(activeView);
+  syncBossTableChecksSpaceMode();
   layoutSwapMeterTracks();
   ensureSwapMeterTicker();
   const finishTabUi = ()=>{
@@ -52744,12 +54614,18 @@ function showView(next, opts){
     v.classList.remove("active");
     v.classList.remove("exitLeft");
     v.classList.remove("enterRight");
+    v.setAttribute("aria-hidden", "true");
+    try{ v.inert = true; }catch(_){}
   });
 
   activeView = next;
   try{ achTrackPanelClick(`view-${String(next || "")}`); }catch(_){}
   const nextEl = views[next];
-  if(nextEl) nextEl.classList.add("active");
+  if(nextEl){
+    nextEl.classList.add("active");
+    nextEl.setAttribute("aria-hidden", "false");
+    try{ nextEl.inert = false; }catch(_){}
+  }
   setTabUI();
   try{ musicRefreshScenario(); }catch(_){}
   if(isAutoSwapEligibleView(next) && !isAutoSwapEligibleView(prevView)){
@@ -53087,6 +54963,9 @@ function hintBuildTargetFromEntry(entry, typeLabel){
 function hintIsBossTypeLabel(typeLabel){
   return /\bboss\s*key\b/i.test(String(typeLabel || ""));
 }
+function hintIsFeatureTypeLabel(typeLabel){
+  return /\bfeature\s*key\b/i.test(String(typeLabel || ""));
+}
 function hintGetLiveTargets(){
   const out = [];
   const seen = new Set();
@@ -53361,6 +55240,7 @@ function hintNormalizeDash(s){
 }
 function hintTypeForEntry(itemName){
   const item = String(itemName || "").trim();
+  if(isFeatureKeyItemName(item)) return "Feature Key";
   if(/\bboss\s*key\b/i.test(item) && !/\bhint\b/i.test(item)) return "Boss Key";
   if(/^Progressive\s*Ball\b/i.test(item)) return "Ball Location";
   if(/^Ball\s*3\s*-/i.test(item) || /^Unlock\s*Ball\s*3$/i.test(item)) return "Ball 3";
@@ -53442,7 +55322,8 @@ function hintMakeMysteryHint(entry, typeLabel){
     "Ball 2": "Deeper ball clue online.",
     "Ball 3": "Late-seed ball clue online.",
     "Ball Location": "Ball location clue online.",
-    "Boss Key": "Boss key clue online."
+    "Boss Key": "Boss key clue online.",
+    "Feature Key": "Feature key clue online."
   }[srcType] || "Something important is concealed.";
   const maskedTable = hintMaskPhrase(entry?.tableName || "UNKNOWN TABLE");
   const checkCue = hintShortCheckTag(entry?.locationShort || entry?.locationName || "");
@@ -53732,18 +55613,23 @@ function hintPrintJsonLooksLikeActualHit(pkt){
   return false;
 }
 function hintBuildPools(entries){
-  const p = { ball1: [], ball2: [], ball3: [], ballProgressive: [], boss: [] };
+  const p = { ball1: [], ball2: [], ball3: [], ballProgressive: [], boss: [], feature: [] };
   const isBall1 = (item)=> /^Ball\s*1\s*-/i.test(item);
   const isBall2 = (item)=> /^Ball\s*2\s*-/i.test(item) || /^Unlock\s*Ball\s*2$/i.test(item);
   const isBall3 = (item)=> /^Ball\s*3\s*-/i.test(item) || /^Unlock\s*Ball\s*3$/i.test(item);
   const isProgressiveBall = (item)=> /^Progressive\s*Ball\b/i.test(item);
   const isBoss = (item)=> /\bboss\s*key\b/i.test(item) && !/\bhint\b/i.test(item);
+  const isFeature = (item)=> isFeatureKeyItemName(item);
   for(const e of (entries || [])){
     if(!isActiveSeedTableName(e?.tableName)) continue;
     const item = String(e.itemName || "").trim();
     const key = `${e.tableName} - ${e.locationName}`;
     const entry = { tableName: e.tableName, locationName: key, locationShort: e.locationName, rawLine: e.rawLine, itemName: item, locId: e.locId };
     if(isBoss(item)) p.boss.push(entry);
+    if(isFeature(item)){
+      p.feature.push(entry);
+      p.boss.push(entry);
+    }
     if(isProgressiveBall(item)) p.ballProgressive.push(entry);
     if(isBall3(item)) p.ball3.push(entry);
     if(isBall2(item)) p.ball2.push(entry);
@@ -53774,7 +55660,7 @@ function hintBuildRewardEntries(entries){
 function hintTargetedEntries(pools){
   const out = [];
   const seen = new Set();
-  ["ball1","ball2","ball3","ballProgressive","boss"].forEach((poolName)=>{
+  ["ball1","ball2","ball3","ballProgressive","feature","boss"].forEach((poolName)=>{
     (pools?.[poolName] || []).forEach((entry)=>{
       const key = String(entry?.locationName || "");
       if(!key || seen.has(key)) return;
@@ -54263,6 +56149,8 @@ function hintUpdateUi(){
   setDisabled("hintBossKeyBtn", bankBoss <= 0);
   setHidden("hintBallLocationBtn", bankBall <= 0);
   setHidden("hintBossKeyBtn", bankBoss <= 0);
+  const bossHintBtn = hintId("hintBossKeyBtn");
+  if(bossHintBtn) bossHintBtn.textContent = isDeepRunSeed(ap?.slotData) ? "HINT: KEY LOCATION" : "HINT: BOSS KEY";
   const tokenActions = hintId("hintTokenActions");
   if(tokenActions) tokenActions.hidden = bankBall <= 0 && bankBoss <= 0;
   const hpBtn = hintId("hintopediaBtn");
@@ -54550,7 +56438,7 @@ function hintRenderHangman(statusText){
         <span class="hintHangmanBadge warn">MISSES LEFT; ${missesLeft}</span>
       </div>
       ${cooldownHtml}
-      <div class="hintHangmanChat"><strong>CHAT:</strong> type <strong>!hangman [letter]</strong>. Each viewer has a 10 second letter cooldown.${status ? ` ${escapeHtml(status)}` : ""}</div>
+      <div class="hintHangmanChat"><strong>CHAT:</strong> type <strong class="hintHangmanCommand">!hangman [letter]</strong>. Each viewer has a 10 second letter cooldown.${status ? ` ${escapeHtml(status)}` : ""}</div>
       <div class="hintHangmanDirect">
         <input class="hintHangmanLetterInput" id="hintHangmanLetterInput" type="text" maxlength="1" inputmode="text" autocomplete="off" aria-label="Guess a Hangman letter directly" placeholder="A">
         <button class="hintHangmanLetterBtn" id="hintHangmanLetterBtn" type="button">GUESS</button>
@@ -55031,7 +56919,9 @@ function hintPickFromPool(poolName, typeLabel, opts){
   if(opts.focusHintsTab) hintFocusHintsView();
   hintState.used.add(entry.locationName);
   if(hintState.hintopediaOpen) hintSetHintopediaOpen(false);
-  const resolvedType = typeLabel || hintTypeForEntry(entry.itemName);
+  const resolvedType = (typeLabel && !(poolName === "boss" && isFeatureKeyItemName(entry.itemName)))
+    ? typeLabel
+    : hintTypeForEntry(entry.itemName);
   const tokenKind = String(opts.tokenKind || (poolName === "boss" ? "boss" : "ball")).trim().toLowerCase();
   const mystery = hintMakeMysteryHint(entry, resolvedType);
   hintState.activeTarget = mystery?.target ? { ...mystery.target, solved:false } : null;
@@ -60649,9 +62539,9 @@ function isDeepRunSeed(slotData){
   }catch(_){ return false; }
 }
 const FEATURE_GATE_COLORS = Object.freeze({
-  dmd_screen_games: { primary:"#25d7ff", secondary:"#2a7bff", label:"DMD" },
-  upper_playfield_games: { primary:"#b878ff", secondary:"#6b57ff", label:"UPPER" },
-  extra_flipper_games: { primary:"#ff4f9a", secondary:"#ff355e", label:"FLIPPER" },
+  dmd_screen_games: { primary:"#5BCEFA", secondary:"#2a7bff", label:"DMD" },
+  upper_playfield_games: { primary:"#FFFFFF", secondary:"#bfe8ff", label:"UPPER" },
+  extra_flipper_games: { primary:"#F5A9B8", secondary:"#ff4f9a", label:"FLIPPER" },
   spinner_games: { primary:"#ffd64f", secondary:"#ff9f1c", label:"SPIN" },
   ramp_games: { primary:"#34ff88", secondary:"#15c7a1", label:"RAMP" }
 });
@@ -60820,17 +62710,21 @@ function applyFeatureGateOverviewStyle(tile, tableName, slotData){
   });
   const text = document.createElement("span");
   text.className = "featureGateTagText";
+  const lockText = missingDefs.map((def)=>featureKeyCompactStatusTextForDef(def)).join(" + ");
+  if(isFeatureLocked) tag.classList.add("featureGateTagProgressOnly");
   text.textContent = isFeatureLocked
-    ? missingDefs.map((def)=>featureKeyCompactStatusTextForDef(def)).join(" + ")
+    ? ""
     : (defs.length === 1 ? `${defs[0].label || "FEATURE"} READY` : `${defs.length} GATES READY`);
+  if(isFeatureLocked) text.hidden = true;
   tag.appendChild(swatches);
   tag.appendChild(text);
   tile.appendChild(tag);
   if(isFeatureLocked){
     const lockLabel = document.createElement("div");
     lockLabel.className = "featureGateLockLabel";
-    lockLabel.textContent = `FEATURE LOCK: ${missingDefs.map((def)=>featureKeyCompactStatusTextForDef(def)).join(" + ")}`;
+    lockLabel.innerHTML = `<span class="featureGateLockEmoji">\u{1F512}</span><span class="featureGateLockText">${escapeHtml(lockText)}</span>`;
     lockLabel.title = title;
+    lockLabel.setAttribute("aria-label", `Feature Lock ${lockText}`);
     tile.appendChild(lockLabel);
   }
   return true;
@@ -60960,6 +62854,7 @@ function featureKeysConfigureFromSlotData(slotData, opts){
       dock.hidden = true;
       dock.classList.remove("enabled");
     }
+    try{ setTimeout(()=>updateCaptureShopBorderMetrics(), 0); }catch(_){}
     return false;
   }
   const defs = normalizeFeatureKeyDefinitions(payload.used_feature_keys && payload.used_feature_keys.length ? payload.used_feature_keys : payload.feature_keys);
@@ -60986,6 +62881,7 @@ function featureKeysConfigureFromSlotData(slotData, opts){
     dock.classList.add("enabled");
   }
   if(opts.render !== false) featureKeysRender();
+  try{ setTimeout(()=>updateCaptureShopBorderMetrics(), 0); }catch(_){}
   return true;
 }
 function featureKeysRender(){
@@ -60997,6 +62893,7 @@ function featureKeysRender(){
     dock.classList.remove("enabled");
     try{ document.body.classList.remove("deepRunFeatureKeysEnabled"); }catch(_){}
     row.innerHTML = "";
+    try{ setTimeout(()=>updateCaptureShopBorderMetrics(), 0); }catch(_){}
     return;
   }
   dock.hidden = false;
@@ -61004,17 +62901,30 @@ function featureKeysRender(){
   row.style.setProperty("--featureKeyCount", String(Math.max(1, featureKeysState.length)));
   row.innerHTML = "";
   featureKeysState.forEach((key, idx)=>{
+    const required = featureKeyRequiredPiecesForDef(key);
+    const count = Math.min(required, Math.max(0, Number(key.count) || 0));
+    const progress = key.acquired ? 1 : Math.max(0, Math.min(1, count / Math.max(1, required)));
     const card = document.createElement("div");
     card.className = "featureKeyCard" + (key.acquired ? " acquired" : "");
     card.tabIndex = 0;
     card.dataset.featureKeySlot = String(idx + 1);
+    card.title = `${String(key.fullLabel || key.label || `Feature Key ${idx + 1}`).trim()}: ${key.acquired ? "SECURED" : `${count}/${required} PIECES`}`;
     try{
-      const colors = featureGateColorForId(key.id, idx);
+      const baseColors = featureGateColorForId(key.id, idx);
+      const colors = {
+        primary: String(key.color || baseColors.primary || "#22ffd2"),
+        secondary: String(key.color2 || baseColors.secondary || "#00a6ff")
+      };
       card.style.setProperty("--featureKeyCardPrimary", colors.primary);
       card.style.setProperty("--featureKeyCardSecondary", colors.secondary);
       card.style.setProperty("--featureKeyCardBorder", featureGateHexToRgba(colors.primary, key.acquired ? .82 : .34));
       card.style.setProperty("--featureKeyCardGlow", featureGateHexToRgba(colors.primary, key.acquired ? .22 : .16));
       card.style.setProperty("--featureKeyCardSoftGlow", featureGateHexToRgba(colors.primary, .13));
+      card.style.setProperty("--featureKeyCardFill", featureGateHexToRgba(colors.primary, .24 + (progress * .16)));
+      card.style.setProperty("--featureKeyCardFillStrong", featureGateHexToRgba(colors.primary, .38 + (progress * .22)));
+      card.style.setProperty("--featureKeyCardOpacity", String(key.acquired ? 1 : Math.min(.92, .42 + (progress * .42))));
+      card.style.setProperty("--featureKeyFillPct", `${Math.round(progress * 1000) / 10}%`);
+      card.style.setProperty("--featureKeyFillOpacity", String(Math.min(.70, .14 + (progress * .46))));
     }catch(_){}
     const frame = document.createElement("div");
     frame.className = "bossKeyFrame";
@@ -61035,15 +62945,16 @@ function featureKeysRender(){
     label.textContent = key.label || `KEY ${idx + 1}`;
     const status = document.createElement("div");
     status.className = "featureKeyStatus";
-    status.textContent = key.acquired ? "SECURED" : `${Math.min(featureKeyRequiredPiecesForDef(key), Math.max(0, Number(key.count) || 0))}/${featureKeyRequiredPiecesForDef(key)} PIECES`;
+    status.textContent = key.acquired ? "SECURED" : `${count}/${required} PIECES`;
     body.appendChild(label);
     body.appendChild(status);
     card.appendChild(body);
     card.addEventListener("click", ()=>{
-      if(key.acquired) featureKeysAnimate(idx, true);
+      if(key.acquired) featureKeysAnimate(idx, true, { complete:true, manual:true });
     });
     row.appendChild(card);
   });
+  try{ setTimeout(()=>updateCaptureShopBorderMetrics(), 0); }catch(_){}
 }
 function featureKeyCardAt(idx){
   try{
@@ -61099,31 +63010,60 @@ function featureKeysGrantOne(itemName, opts){
   if(idx < 0) return false;
   const wasAcquired = !!featureKeysState[idx].acquired;
   const required = featureKeyRequiredPiecesForDef(featureKeysState[idx]);
-  featureKeysState[idx].count = Math.min(required, Math.max(0, Number(featureKeysState[idx].count) || 0) + 1);
+  const prevCount = Math.min(required, Math.max(0, Number(featureKeysState[idx].count) || 0));
+  featureKeysState[idx].count = Math.min(required, prevCount + 1);
   featureKeysState[idx].acquired = featureKeysState[idx].count >= required;
   featureKeysSave();
   featureKeysRender();
   featureKeysRefreshLockViews();
-  if(!opts.isSnapshot && !opts.isFlush && !wasAcquired && featureKeysState[idx].acquired){
-    featureKeysAnimate(idx, true);
+  const gainedPiece = featureKeysState[idx].count > prevCount;
+  if(!opts.isSnapshot && !opts.isFlush && gainedPiece){
+    featureKeysAnimate(idx, true, {
+      count:featureKeysState[idx].count,
+      required,
+      complete:featureKeysState[idx].acquired && !wasAcquired
+    });
   }
   return true;
 }
-function featureKeysAnimate(idx, force){
+function featureKeysAnimate(idx, force, opts){
+  opts = opts || {};
   try{
     if(window.__suppressBossKeyFx && !force) return;
+    const row = featureKeysState[Math.max(0, Number(idx) || 0)] || {};
     const card = featureKeyCardAt(idx);
     if(card) bossKeyApplyRevealClass(card, BOSS_KEY_COLLECTED_FADE_MS);
     if(typeof playBossKeyReceiveCinematic === "function"){
+      const required = Math.max(1, Number(opts.required || featureKeyRequiredPiecesForDef(row)) || 1);
+      const count = Math.min(required, Math.max(0, Number(opts.count ?? row.count) || 0));
+      const label = String(row.label || row.fullLabel || "KEY").trim().toUpperCase();
+      const complete = !!(opts.complete || row.acquired || count >= required);
+      const baseColors = featureGateColorForId(row.id, idx);
+      const primary = String(row.color || baseColors.primary || "#ff355e");
+      const secondary = String(row.color2 || baseColors.secondary || "#ff9f1c");
       playBossKeyReceiveCinematic(idx, {
         force:true,
         card,
         slotCount: Math.max(1, featureKeysState.length),
         topText:"FEATURE KEY",
-        bottomText:"ACQUIRED",
+        bottomText: complete ? `${label} SECURED` : `${label} ${count}/${required}`,
         dockId:"featureDock",
         core: featureKeyCinematicMakeKeyCore(idx),
-        skipBossReveal:true
+        primaryColor:primary,
+        secondaryColor:secondary,
+        skipBossReveal:true,
+        cinematicClass:"featureKeyCinematic",
+        totalMs:3350,
+        snapAtMs:430,
+        wordsAtMs:610,
+        chargeAtMs:1320,
+        flyAtMs:2050,
+        impactAtMs:2490,
+        lightningCount:32,
+        spiralCount:20,
+        shardCount:30,
+        sparkCount:56,
+        explosive:true
       });
     }
   }catch(_){}
@@ -61558,8 +63498,10 @@ function bossKeyCinematicSpawnShards(flyer, count){
     flyer.appendChild(shard);
   }
 }
-function bossKeyCinematicSpawnAetherSpiral(layer, count){
+function bossKeyCinematicSpawnAetherSpiral(layer, count, opts){
+  opts = opts || {};
   if(!layer) return;
+  const explosive = !!opts.explosive;
   const svgNs = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(svgNs, "svg");
   svg.classList.add("bossKeyCinematicAetherSvg");
@@ -61607,51 +63549,53 @@ function bossKeyCinematicSpawnAetherSpiral(layer, count){
     return path;
   };
 
-  const armCount = Math.max(7, Math.min(13, Math.floor((Number(count) || 26) * 0.34)));
+  const armCount = explosive
+    ? Math.max(9, Math.min(16, Math.floor((Number(count) || 26) * 0.58)))
+    : Math.max(7, Math.min(13, Math.floor((Number(count) || 26) * 0.34)));
   const turn = 1;
   for(let i=0;i<armCount;i++){
     const angle = (i * (360 / armCount)) + (Math.random() * 20 - 10);
     const jitter = Math.random() * 2 - 1;
     const d = armPath(angle, turn, jitter);
-    const delay = i * 58 + Math.random() * 140;
+    const delay = explosive ? (i * 16 + Math.random() * 42) : (i * 58 + Math.random() * 140);
     appendPath(d, "bossKeyCinematicAetherArm mist", i, {
       delay,
-      dur: 1980 + Math.random() * 520,
-      mistDur: 2140 + Math.random() * 620,
-      mistW: 30 + Math.random() * 28,
-      mistBlur: 7 + Math.random() * 7,
+      dur: explosive ? (520 + Math.random() * 190) : (1980 + Math.random() * 520),
+      mistDur: explosive ? (650 + Math.random() * 240) : (2140 + Math.random() * 620),
+      mistW: explosive ? (42 + Math.random() * 34) : (30 + Math.random() * 28),
+      mistBlur: explosive ? (5 + Math.random() * 5) : (7 + Math.random() * 7),
       opacity: .42,
       fadeOpacity: .22
     });
     appendPath(d, "bossKeyCinematicAetherArm", i, {
-      delay: delay + 90,
-      dur: 1480 + Math.random() * 420,
-      w: 4.2 + Math.random() * 4.8,
+      delay: delay + (explosive ? 28 : 90),
+      dur: explosive ? (430 + Math.random() * 180) : (1480 + Math.random() * 420),
+      w: explosive ? (6 + Math.random() * 5.2) : (4.2 + Math.random() * 4.8),
       opacity: .86,
       fadeOpacity: .44
     });
     appendPath(d, "bossKeyCinematicAetherArm hot", i, {
-      delay: delay + 230,
-      dur: 1040 + Math.random() * 360,
-      hotDur: 980 + Math.random() * 320,
-      hotW: 1.4 + Math.random() * 2.2,
+      delay: delay + (explosive ? 74 : 230),
+      dur: explosive ? (310 + Math.random() * 140) : (1040 + Math.random() * 360),
+      hotDur: explosive ? (300 + Math.random() * 130) : (980 + Math.random() * 320),
+      hotW: explosive ? (2.2 + Math.random() * 2.6) : (1.4 + Math.random() * 2.2),
       opacity: .95,
       fadeOpacity: .54
     });
   }
-  const moteCount = Math.max(12, Math.min(34, Number(count) || 24));
+  const moteCount = explosive ? Math.max(18, Math.min(46, Number(count) || 28)) : Math.max(12, Math.min(34, Number(count) || 24));
   for(let i=0;i<moteCount;i++){
     const mote = document.createElement("div");
     mote.className = "bossKeyCinematicSpiralMote";
     const angle = (i * (360 / moteCount)) + (Math.random() * 32 - 16);
     mote.style.setProperty("--mote-a", `${angle.toFixed(1)}deg`);
     mote.style.setProperty("--mote-spin", `${(300 + Math.random() * 180).toFixed(1)}deg`);
-    mote.style.setProperty("--mote-r0", `${(230 + Math.random() * 110).toFixed(1)}px`);
-    mote.style.setProperty("--mote-r1", `${(42 + Math.random() * 62).toFixed(1)}px`);
-    mote.style.setProperty("--mote-size", `${(3 + Math.random() * 7).toFixed(1)}px`);
-    mote.style.setProperty("--mote-tail", `${(42 + Math.random() * 82).toFixed(1)}px`);
-    mote.style.setProperty("--mote-delay", `${(Math.random() * 520).toFixed(0)}ms`);
-    mote.style.setProperty("--mote-dur", `${(1250 + Math.random() * 820).toFixed(0)}ms`);
+    mote.style.setProperty("--mote-r0", `${((explosive ? 170 : 230) + Math.random() * (explosive ? 170 : 110)).toFixed(1)}px`);
+    mote.style.setProperty("--mote-r1", `${((explosive ? 10 : 42) + Math.random() * (explosive ? 42 : 62)).toFixed(1)}px`);
+    mote.style.setProperty("--mote-size", `${((explosive ? 4 : 3) + Math.random() * (explosive ? 9 : 7)).toFixed(1)}px`);
+    mote.style.setProperty("--mote-tail", `${((explosive ? 54 : 42) + Math.random() * (explosive ? 110 : 82)).toFixed(1)}px`);
+    mote.style.setProperty("--mote-delay", `${(Math.random() * (explosive ? 210 : 520)).toFixed(0)}ms`);
+    mote.style.setProperty("--mote-dur", `${((explosive ? 520 : 1250) + Math.random() * (explosive ? 380 : 820)).toFixed(0)}ms`);
     layer.appendChild(mote);
   }
 }
@@ -61692,8 +63636,14 @@ function playBossKeyReceiveCinematic(idx, opts){
   try{
     if(isBossVictoryFinalizing()) return 0;
   }catch(_){}
+  const totalMs = Math.max(1400, Number(opts.totalMs || opts.durationMs || BOSS_KEY_CINEMATIC_TOTAL_MS) || BOSS_KEY_CINEMATIC_TOTAL_MS);
+  const snapAtMs = Math.max(120, Math.min(totalMs - 760, Number(opts.snapAtMs || BOSS_KEY_CINEMATIC_SNAP_AT_MS) || BOSS_KEY_CINEMATIC_SNAP_AT_MS));
+  const wordsAtMs = Math.max(160, Math.min(totalMs - 700, Number(opts.wordsAtMs || BOSS_KEY_CINEMATIC_WORDS_AT_MS) || BOSS_KEY_CINEMATIC_WORDS_AT_MS));
+  const chargeAtMs = Math.max(240, Math.min(totalMs - 620, Number(opts.chargeAtMs || 3040) || 3040));
+  const flyAtMs = Math.max(chargeAtMs + 80, Math.min(totalMs - 520, Number(opts.flyAtMs || BOSS_KEY_CINEMATIC_FLY_AT_MS) || BOSS_KEY_CINEMATIC_FLY_AT_MS));
+  const impactAtMs = Math.max(flyAtMs + 90, Math.min(totalMs - 220, Number(opts.impactAtMs || BOSS_KEY_CINEMATIC_IMPACT_AT_MS) || BOSS_KEY_CINEMATIC_IMPACT_AT_MS));
   bossKeyClearCinematic();
-  try{ if(typeof pauseAutoSwap === "function") pauseAutoSwap(BOSS_KEY_CINEMATIC_TOTAL_MS + 800); }catch(_){}
+  try{ if(typeof pauseAutoSwap === "function") pauseAutoSwap(totalMs + 800); }catch(_){}
 
   const host = document.querySelector(".capture") || document.body;
   const hostRect = host.getBoundingClientRect ? host.getBoundingClientRect() : { left:0, top:0, width:window.innerWidth, height:window.innerHeight };
@@ -61718,12 +63668,31 @@ function playBossKeyReceiveCinematic(idx, opts){
 
   if(card){
     card.classList.add("bossKeyReceivingSlot", "bossKeyAwaitingSlam");
-    if(!opts.skipBossReveal) bossKeyHoldReveal(idx, BOSS_KEY_CINEMATIC_TOTAL_MS + 900);
-    bossKeyApplyRevealClass(card, BOSS_KEY_CINEMATIC_TOTAL_MS + 900);
+    if(!opts.skipBossReveal) bossKeyHoldReveal(idx, totalMs + 900);
+    bossKeyApplyRevealClass(card, totalMs + 900);
   }
 
   const wrap = document.createElement("div");
   wrap.className = "bossKeyCinematic";
+  if(String(opts.cinematicClass || "").trim()){
+    String(opts.cinematicClass || "").trim().split(/\s+/).filter(Boolean).forEach((cls)=>wrap.classList.add(cls));
+  }
+  try{
+    const primaryColor = String(opts.primaryColor || opts.cinematicPrimaryColor || "").trim();
+    const secondaryColor = String(opts.secondaryColor || opts.cinematicSecondaryColor || "").trim() || primaryColor;
+    if(primaryColor){
+      wrap.style.setProperty("--bossKeyFxPrimary", primaryColor);
+      wrap.style.setProperty("--bossKeyFxSecondary", secondaryColor || primaryColor);
+      wrap.style.setProperty("--bossKeyFxPrimaryRgba", featureGateHexToRgba(primaryColor, .82));
+      wrap.style.setProperty("--bossKeyFxSecondaryRgba", featureGateHexToRgba(secondaryColor || primaryColor, .74));
+      wrap.style.setProperty("--bossKeyFxGlow", featureGateHexToRgba(primaryColor, .54));
+      wrap.style.setProperty("--bossKeyFxStrongGlow", featureGateHexToRgba(primaryColor, .82));
+      wrap.style.setProperty("--bossKeyFxSoftGlow", featureGateHexToRgba(primaryColor, .24));
+      wrap.style.setProperty("--bossKeyFxMist", featureGateHexToRgba(primaryColor, .34));
+      wrap.style.setProperty("--bossKeyFxTransparent", featureGateHexToRgba(primaryColor, 0));
+      wrap.style.setProperty("--bossKeyFxLight", "rgba(255,255,255,.98)");
+    }
+  }catch(_){}
   wrap.setAttribute("aria-hidden", "true");
   wrap.style.setProperty("--bk-center-x", `${centerX}px`);
   wrap.style.setProperty("--bk-center-y", `${centerY}px`);
@@ -61775,9 +63744,9 @@ function playBossKeyReceiveCinematic(idx, opts){
   sparks.className = "bossKeyCinematicSparks";
   wrap.appendChild(sparks);
 
-  bossKeyCinematicSpawnLightning(lightning, 24);
-  bossKeyCinematicSpawnAetherSpiral(spiral, 26);
-  bossKeyCinematicSpawnShards(flyer, 20);
+  bossKeyCinematicSpawnLightning(lightning, Number(opts.lightningCount) || 24);
+  bossKeyCinematicSpawnAetherSpiral(spiral, Number(opts.spiralCount) || 26, { explosive:!!opts.explosive });
+  bossKeyCinematicSpawnShards(flyer, Number(opts.shardCount) || 20);
 
   host.appendChild(wrap);
   const fx = bossKeyCinematicState();
@@ -61793,16 +63762,16 @@ function playBossKeyReceiveCinematic(idx, opts){
       snap.classList.add("on");
       playSfx("bossKeyEnergySnap");
     }catch(_){}
-  }, BOSS_KEY_CINEMATIC_SNAP_AT_MS);
-  bossKeyCinematicLater(()=>{ try{ playSfx("bossKeyAcquiredDing"); }catch(_){ } }, BOSS_KEY_CINEMATIC_WORDS_AT_MS);
+  }, snapAtMs);
+  bossKeyCinematicLater(()=>{ try{ playSfx("bossKeyAcquiredDing"); }catch(_){ } }, wordsAtMs);
   bossKeyCinematicLater(()=>{
     try{ wrap.classList.add("charging"); }catch(_){}
     try{ document.getElementById(String(opts.dockId || "bossDock"))?.classList.add("bossKeySectionCharge"); }catch(_){}
-  }, 3040);
+  }, chargeAtMs);
   bossKeyCinematicLater(()=>{
     try{ wrap.classList.add("flying"); }catch(_){}
     try{ playSfx("bossKeyTravelSizzle"); }catch(_){}
-  }, BOSS_KEY_CINEMATIC_FLY_AT_MS);
+  }, flyAtMs);
   bossKeyCinematicLater(()=>{
     try{
       wrap.classList.add("impact");
@@ -61812,24 +63781,24 @@ function playBossKeyReceiveCinematic(idx, opts){
         bossKeyTriggerSlotBurst(card);
       }
       host.classList.add("bossKeyScreenShake");
-      bossKeyCinematicSpawnSparks(sparks, targetX, targetY, 42);
+      bossKeyCinematicSpawnSparks(sparks, targetX, targetY, Number(opts.sparkCount) || 42);
       try{ sparksAtClient(hostRect.left + targetX, hostRect.top + targetY); }catch(_){}
       try{ playSfx("bossKeySlamBoom"); }catch(_){}
     }catch(_){}
-  }, BOSS_KEY_CINEMATIC_IMPACT_AT_MS);
+  }, impactAtMs);
   bossKeyCinematicLater(()=>{
     try{ wrap.classList.add("hide"); }catch(_){}
     try{ document.getElementById(String(opts.dockId || "bossDock"))?.classList.remove("bossKeySectionCharge"); }catch(_){}
     try{ host.classList.remove("bossKeyScreenShake"); }catch(_){}
-  }, BOSS_KEY_CINEMATIC_TOTAL_MS - 520);
+  }, Math.max(impactAtMs + 180, totalMs - 520));
   bossKeyCinematicLater(()=>{
     try{ wrap.remove(); }catch(_){}
     fx.active = null;
     try{
       if(card) card.classList.remove("bossKeyReceivingSlot", "bossKeyAwaitingSlam", "bossKeyImpact");
     }catch(_){}
-  }, BOSS_KEY_CINEMATIC_TOTAL_MS);
-  return BOSS_KEY_CINEMATIC_TOTAL_MS;
+  }, totalMs);
+  return totalMs;
 }
 function bossKeysLoad(){
   try{
@@ -63303,6 +65272,7 @@ function isBossTableRevealReady(){
     const testUnlockUntil = Number(window.__bossTestUnlockUntil || 0);
     if(testUnlockUntil > Date.now()) return true;
   }catch(_){}
+  if(!ap?.connected) return false;
   return bossKeysMeetRequiredForOpen();
 }
 function hasChosenBossTableName(){
@@ -63403,6 +65373,7 @@ function isBossUnlocked(){
     if(besiegedGetState().active && !besiegedBossUnlockedByAuthorizationOnly()) return false;
     const testUnlockUntil = Number(window.__bossTestUnlockUntil || 0);
     if(testUnlockUntil > Date.now()) return true;
+    if(!ap?.connected) return false;
     return bossKeysMeetRequiredForOpen();
   }catch(_){}
   return false;
@@ -63436,7 +65407,7 @@ function forceBossWorldUnlocked(reason){
   try{
     let bossWorldKey = (typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss";
     const allowTestUnlock = /test/i.test(String(reason || "")) || Number(window.__bossTestUnlockUntil || 0) > Date.now();
-    if(!bossKeysMeetRequiredForOpen() && !allowTestUnlock){
+    if((!ap?.connected || !bossKeysMeetRequiredForOpen()) && !allowTestUnlock){
       let changed = false;
       if(state && state.worlds && state.worlds[bossWorldKey]){
         if(state.worlds[bossWorldKey].locked !== true){
@@ -63499,12 +65470,15 @@ function flashBossThreatFadeIn(){
 
 function enforceBossTowerThreatVisual(active){
   try{
-    const on = (typeof active === "boolean")
-      ? active
-      : (((typeof isBossUnlocked === "function" ? !!isBossUnlocked() : false)
-          || isTowerWorldUnlockedByState((typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss")
-          || isTowerWorldUnlockedByState("boss"))
-          && !(typeof isBossDefeatedForThreatVisual === "function" ? !!isBossDefeatedForThreatVisual() : !!isBossDefeated()));
+    const idleBossLock = !ap?.connected && Number(window.__bossTestUnlockUntil || 0) <= Date.now();
+    const on = idleBossLock
+      ? false
+      : ((typeof active === "boolean")
+          ? active
+          : (((typeof isBossUnlocked === "function" ? !!isBossUnlocked() : false)
+              || isTowerWorldUnlockedByState((typeof getBossWorldKey === "function") ? getBossWorldKey() : "boss")
+              || isTowerWorldUnlockedByState("boss"))
+              && !(typeof isBossDefeatedForThreatVisual === "function" ? !!isBossDefeatedForThreatVisual() : !!isBossDefeated())));
 
     const bossWorldEls = getBossTowerWorldElements();
     if(!bossWorldEls || !bossWorldEls.length) return;
@@ -64194,7 +66168,7 @@ function bossDamageParse(name){
   return pct;
 }
 
-</script><div id="flprCursorFollower" class="flprCursorFollower"><span class="cursorLeader" style="transform: translate(1995px, 982px) rotate(0deg);"></span><span class="cursorPointer" style="font-size: 28px; transform: translate(2022px, 958px) rotate(-45deg);"></span></div>
+</script><div id="flprCursorFollower" class="flprCursorFollower"><span class="cursorLeader"></span><span class="cursorPointer"></span></div>
 
 
 

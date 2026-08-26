@@ -20,6 +20,16 @@
         "local": true
     },
     {
+        "count": "6",
+        "name": "Bagatelle Bonus Game",
+        "category": [
+            "Filler",
+            "Bonus Game"
+        ],
+        "useful": true,
+        "local": true
+    },
+    {
         "count": "10",
         "name": "Boss Key",
         "category": [

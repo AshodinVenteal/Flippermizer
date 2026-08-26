@@ -42,8 +42,12 @@ BASE_GAME_SEED_TYPE_STANDARD = "standard"
 BASE_GAME_SEED_TYPE_DEEP_RUN = "deep_run"
 FEATURE_KEY_ITEM_PREFIX = "Feature Key - "
 FEATURE_KEY_PIECES_REQUIRED = 3
+DEEP_RUN_BOSS_KEYS_REQUIRED = 4
 DEEP_RUN_DEFAULT_ACTIVE_TABLE_COUNT = 20
 DEEP_RUN_DEFAULT_START_OPEN_COUNT = 5
+DEEP_RUN_15_TABLE_ACTIVE_COUNT = 15
+DEEP_RUN_15_TABLE_START_OPEN_COUNT = 3
+DEEP_RUN_LOCK_TIER_SEQUENCE = (1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4)
 DEEP_RUN_TASKS_PER_TABLE = 10
 DEEP_RUN_SCORE_CHECKS_PER_TABLE = 10
 DEEP_RUN_GENERATED_TASK_TEMPLATES: dict[str, tuple[tuple[str, str], ...]] = {
@@ -878,81 +882,288 @@ def _deep_run_gate_bucket_for_entry(entry: dict[str, Any]) -> int:
     table_name = str(entry.get("name") or "").strip()
     gates = entry.get("feature_gates")
     count = len(gates) if isinstance(gates, list) else _feature_gate_count_for_table(table_name)
-    return max(0, min(3, int(count or 0)))
+    return max(0, min(4, int(count or 0)))
+
+
+def _deep_run_start_open_count_for_active_count(active_count: int, requested_start_open: int = 0) -> int:
+    active_count = max(1, int(active_count or 0))
+    requested_start_open = int(requested_start_open or 0)
+    if requested_start_open > 0:
+        return max(1, min(active_count, requested_start_open))
+    if active_count <= DEEP_RUN_15_TABLE_ACTIVE_COUNT:
+        return max(1, min(active_count, DEEP_RUN_15_TABLE_START_OPEN_COUNT))
+    return max(1, min(active_count, DEEP_RUN_DEFAULT_START_OPEN_COUNT))
+
+
+def _deep_run_bucket_targets(desired_count: int, requested_start_open: int = 0) -> dict[int, int]:
+    desired_count = max(1, int(desired_count or 0))
+    starter_count = _deep_run_start_open_count_for_active_count(desired_count, requested_start_open)
+    remaining = max(0, desired_count - starter_count)
+    targets = {0: starter_count, 1: 0, 2: 0, 3: 0, 4: 0}
+    for idx in range(remaining):
+        if idx < len(DEEP_RUN_LOCK_TIER_SEQUENCE):
+            tier = DEEP_RUN_LOCK_TIER_SEQUENCE[idx]
+        else:
+            tier = ((idx - len(DEEP_RUN_LOCK_TIER_SEQUENCE)) % 4) + 1
+        targets[tier] += 1
+    return targets
+
+
+def _deep_run_feature_gate_labels_for_ids(gate_ids: list[str]) -> list[str]:
+    definitions = _feature_key_definition_by_id()
+    return [
+        str((definitions.get(gate_id) or {}).get("label") or gate_id).strip()
+        for gate_id in gate_ids
+        if str(gate_id or "").strip()
+    ]
+
+
+def _deep_run_feature_gate_items_for_ids(gate_ids: list[str]) -> list[str]:
+    definitions = _feature_key_definition_by_id()
+    return [
+        str((definitions.get(gate_id) or {}).get("item") or "").strip()
+        for gate_id in gate_ids
+        if str((definitions.get(gate_id) or {}).get("item") or "").strip()
+    ]
+
+
+def _deep_run_spread_starter_names(
+    active_entries: list[dict[str, Any]],
+    requested_start_open: int,
+    rng: random.Random,
+) -> list[str]:
+    start_count = _deep_run_start_open_count_for_active_count(len(active_entries), requested_start_open)
+    if start_count <= 0:
+        return []
+
+    featureless_entries = [
+        entry
+        for entry in active_entries
+        if not _feature_gate_ids_for_table(str(entry.get("name") or "").strip())
+    ]
+    preferred_names = {str(entry.get("name") or "").strip() for entry in featureless_entries if str(entry.get("name") or "").strip()}
+    selected: list[str] = []
+    selected_set: set[str] = set()
+    group_order: list[str] = []
+    for entry in active_entries:
+        group_key = str(entry.get("active_group_key") or entry.get("group_key") or "").strip()
+        if group_key and group_key not in group_order:
+            group_order.append(group_key)
+
+    def choose_from(entries: list[dict[str, Any]]) -> str:
+        choices = [
+            str(entry.get("name") or "").strip()
+            for entry in entries
+            if str(entry.get("name") or "").strip() and str(entry.get("name") or "").strip() not in selected_set
+        ]
+        if not choices:
+            return ""
+        return str(rng.choice(choices))
+
+    for group_key in group_order:
+        if len(selected) >= start_count:
+            break
+        group_entries = [
+            entry
+            for entry in active_entries
+            if str(entry.get("active_group_key") or entry.get("group_key") or "").strip() == group_key
+        ]
+        name = choose_from([entry for entry in group_entries if str(entry.get("name") or "").strip() in preferred_names])
+        if not name:
+            name = choose_from(group_entries)
+        if name:
+            selected.append(name)
+            selected_set.add(name)
+
+    remaining_preferred = [
+        entry
+        for entry in active_entries
+        if str(entry.get("name") or "").strip() in preferred_names
+    ]
+    while len(selected) < start_count:
+        name = choose_from(remaining_preferred)
+        if not name:
+            name = choose_from(active_entries)
+        if not name:
+            break
+        selected.append(name)
+        selected_set.add(name)
+    return selected
+
+
+def _assign_deep_run_feature_lock_profile(
+    active_entries: list[dict[str, Any]],
+    rng: random.Random,
+    requested_start_open: int = 0,
+) -> tuple[list[dict[str, Any]], str]:
+    if not active_entries:
+        return [], ""
+
+    definitions = _feature_key_definitions()
+    gate_ids = [str(defn.get("id") or "").strip() for defn in definitions if str(defn.get("id") or "").strip()]
+    if not gate_ids:
+        return active_entries, "Deep Run Feature Lock profile skipped because no Feature Keys are defined"
+
+    targets = _deep_run_bucket_targets(len(active_entries), requested_start_open)
+    start_count = _deep_run_start_open_count_for_active_count(len(active_entries), requested_start_open)
+    starter_names = [
+        str(entry.get("name") or "").strip()
+        for entry in active_entries
+        if bool(entry.get("deep_run_starting_open")) and str(entry.get("name") or "").strip()
+    ]
+    if len(starter_names) < start_count:
+        seen_starters = set(starter_names)
+        starter_names.extend(
+            name
+            for name in _deep_run_spread_starter_names(active_entries, requested_start_open, rng)
+            if name not in seen_starters
+        )
+    starter_names = starter_names[:start_count]
+    starter_set = set(starter_names)
+    locked_entries = [dict(entry) for entry in active_entries if str(entry.get("name") or "").strip() not in starter_set]
+    rng.shuffle(locked_entries)
+
+    tier_queue: list[int] = []
+    for tier in (1, 2, 3, 4):
+        tier_queue.extend([tier] * int(targets.get(tier, 0)))
+    while len(tier_queue) < len(locked_entries):
+        tier_queue.append(((len(tier_queue) - sum(targets.get(t, 0) for t in (1, 2, 3, 4))) % 4) + 1)
+
+    key_order = list(gate_ids)
+    rng.shuffle(key_order)
+    while len(key_order) < 5:
+        key_order.append(key_order[len(key_order) % len(gate_ids)])
+    unlock_a, unlock_b, unlock_c, unlock_d, unlock_e = key_order[:5]
+    tier_gate_patterns: dict[int, list[list[str]]] = {
+        1: [[unlock_a], [unlock_a], [unlock_b], [unlock_c]],
+        2: [[unlock_a, unlock_b], [unlock_a, unlock_c], [unlock_b, unlock_c], [unlock_a, unlock_b]],
+        3: [[unlock_a, unlock_b, unlock_d], [unlock_a, unlock_c, unlock_d]],
+        4: [[unlock_a, unlock_b, unlock_c, unlock_e], [unlock_b, unlock_c, unlock_d, unlock_e]],
+    }
+    tier_pattern_indices = {1: 0, 2: 0, 3: 0, 4: 0}
+    locked_by_name: dict[str, dict[str, Any]] = {}
+    tier_counts = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
+    for entry, tier in zip(locked_entries, tier_queue):
+        tier_count = max(1, min(len(gate_ids), int(tier or 1)))
+        patterns = tier_gate_patterns.get(tier_count, [])
+        pattern_index = tier_pattern_indices.get(tier_count, 0)
+        assigned_gates = list(patterns[pattern_index % len(patterns)]) if patterns else list(rng.sample(gate_ids, tier_count))
+        tier_pattern_indices[tier_count] = pattern_index + 1
+        assigned_gates = list(dict.fromkeys(assigned_gates))
+        if len(assigned_gates) < tier_count:
+            assigned_gates.extend(gate_id for gate_id in key_order if gate_id not in assigned_gates)
+        assigned_gates = assigned_gates[:tier_count]
+        entry["natural_feature_gates"] = list(entry.get("feature_gates") or _feature_gate_ids_for_table(str(entry.get("name") or "").strip()))
+        entry["feature_gates"] = assigned_gates
+        entry["feature_gate_labels"] = _deep_run_feature_gate_labels_for_ids(assigned_gates)
+        entry["feature_gate_items"] = _deep_run_feature_gate_items_for_ids(assigned_gates)
+        entry["deep_run_lock_count"] = tier_count
+        entry["deep_run_feature_key_order"] = list(key_order[:5])
+        entry["deep_run_starting_open"] = False
+        locked_by_name[str(entry.get("name") or "").strip()] = entry
+        tier_counts[tier_count] = tier_counts.get(tier_count, 0) + 1
+
+    staged_entries: list[dict[str, Any]] = []
+    for entry in active_entries:
+        name = str(entry.get("name") or "").strip()
+        staged = locked_by_name.get(name, dict(entry))
+        if name in starter_set:
+            staged["natural_feature_gates"] = list(staged.get("feature_gates") or _feature_gate_ids_for_table(name))
+            staged["feature_gates"] = []
+            staged["feature_gate_labels"] = []
+            staged["feature_gate_items"] = []
+            staged["deep_run_lock_count"] = 0
+            staged["deep_run_starting_open"] = True
+            staged["deep_run_feature_key_order"] = list(key_order[:5])
+            tier_counts[0] = tier_counts.get(0, 0) + 1
+        staged_entries.append(staged)
+
+    notes = (
+        "Deep Run assigned Feature Lock profile: "
+        f"{tier_counts.get(0, 0)} open, "
+        f"{tier_counts.get(1, 0)} one-lock, "
+        f"{tier_counts.get(2, 0)} two-lock, "
+        f"{tier_counts.get(3, 0)} three-lock, "
+        f"{tier_counts.get(4, 0)} four-lock tables"
+    )
+    return staged_entries, notes
 
 
 def _make_deep_run_balanced_active_entries(
     generation_ready_entries: list[dict[str, Any]],
     rng: random.Random,
     requested_count: int,
+    requested_start_open: int = 0,
 ) -> tuple[list[dict[str, Any]], str]:
-    desired_count = max(DEEP_RUN_DEFAULT_ACTIVE_TABLE_COUNT, int(requested_count or 0))
+    requested_count = int(requested_count or 0)
+    desired_count = requested_count if requested_count > 0 else DEEP_RUN_DEFAULT_ACTIVE_TABLE_COUNT
     desired_count = min(len(generation_ready_entries), desired_count)
     if desired_count <= 0:
         return [], "no generation-ready tables available for Deep Run"
 
     decorated = _decorate_feature_gate_entries([dict(entry) for entry in generation_ready_entries])
-    buckets: dict[int, list[dict[str, Any]]] = {0: [], 1: [], 2: [], 3: []}
-    for entry in decorated:
-        table_name = str(entry.get("name") or "").strip()
-        if not table_name:
-            continue
-        buckets[_deep_run_gate_bucket_for_entry(entry)].append(entry)
-    for bucket_entries in buckets.values():
-        rng.shuffle(bucket_entries)
-
-    selected: list[dict[str, Any]] = []
+    rng.shuffle(decorated)
+    targets = _deep_run_bucket_targets(desired_count, requested_start_open)
+    starter_count = targets.get(0, _deep_run_start_open_count_for_active_count(desired_count, requested_start_open))
+    featureless = [entry for entry in decorated if not _feature_gate_ids_for_table(str(entry.get("name") or "").strip())]
+    rng.shuffle(featureless)
+    starter_entries: list[dict[str, Any]] = []
     selected_names: set[str] = set()
-    target_by_bucket = {0: 5, 1: 5, 2: 5, 3: 5}
-    notes: list[str] = []
 
-    def take_from_bucket(bucket: int, count: int) -> None:
-        nonlocal selected
-        taken = 0
-        for entry in buckets.get(bucket, []):
-            if taken >= count or len(selected) >= desired_count:
-                break
-            name = str(entry.get("name") or "").strip()
-            if not name or name in selected_names:
-                continue
-            selected_names.add(name)
-            selected.append(dict(entry))
-            taken += 1
-        if taken < count:
-            notes.append(f"Deep Run feature bucket {bucket} supplied {taken}/{count} requested tables")
-
-    for bucket, count in target_by_bucket.items():
-        take_from_bucket(bucket, min(count, desired_count - len(selected)))
-
-    remaining = [entry for entry in decorated if str(entry.get("name") or "").strip() not in selected_names]
-    rng.shuffle(remaining)
-    for entry in remaining:
-        if len(selected) >= desired_count:
+    for entry in featureless + decorated:
+        if len(starter_entries) >= starter_count:
             break
         name = str(entry.get("name") or "").strip()
         if not name or name in selected_names:
             continue
+        staged = dict(entry)
+        staged["deep_run_starting_open"] = True
+        starter_entries.append(staged)
         selected_names.add(name)
-        selected.append(dict(entry))
 
-    for idx, entry in enumerate(selected):
-        world_num = idx // 5 + 1
-        bucket = _deep_run_gate_bucket_for_entry(entry)
+    locked_entries: list[dict[str, Any]] = []
+    for entry in decorated:
+        if len(starter_entries) + len(locked_entries) >= desired_count:
+            break
+        name = str(entry.get("name") or "").strip()
+        if not name or name in selected_names:
+            continue
+        locked_entries.append(dict(entry))
+        selected_names.add(name)
+
+    world_count = max(1, (desired_count + 4) // 5)
+    world_chunks: list[list[dict[str, Any]]] = [[] for _ in range(world_count)]
+    for idx, entry in enumerate(starter_entries):
+        world_chunks[idx % world_count].append(entry)
+    for entry in locked_entries:
+        target_idx = min(range(world_count), key=lambda chunk_idx: (len(world_chunks[chunk_idx]), chunk_idx))
+        if len(world_chunks[target_idx]) >= 5:
+            target_idx = next((idx for idx, chunk in enumerate(world_chunks) if len(chunk) < 5), target_idx)
+        world_chunks[target_idx].append(entry)
+
+    selected: list[dict[str, Any]] = []
+    for world_idx, chunk in enumerate(world_chunks, start=1):
+        for entry in chunk:
+            staged = dict(entry)
+            staged["active_group_key"] = f"deep_run_w{world_idx}"
+            staged["active_group_label"] = f"Deep Run World {world_idx}"
+            selected.append(staged)
+    selected = selected[:desired_count]
+
+    selected, profile_note = _assign_deep_run_feature_lock_profile(selected, rng, requested_start_open)
+    for entry in selected:
+        bucket = max(0, min(4, int(entry.get("deep_run_lock_count") or 0)))
         if bucket <= 0:
             label = "Open Starter Tables"
-        elif bucket == 1:
-            label = "Feature Key I"
-        elif bucket == 2:
-            label = "Feature Key II"
         else:
-            label = "Feature Key III"
-        entry["active_group_key"] = f"deep_run_w{world_num}"
-        entry["active_group_label"] = label
+            label = f"Feature Key {'I' * bucket}"
+        entry["deep_run_lock_label"] = label
 
+    notes: list[str] = []
     if len(selected) < desired_count:
         notes.append(f"Deep Run selected {len(selected)}/{desired_count} active tables")
-    else:
-        notes.append("Deep Run balanced active tables: 5 open, 5 one-key, 5 two-key, 5 three-key tables where available")
+    if profile_note:
+        notes.append(profile_note)
     return selected, "; ".join([note for note in notes if note])
 
 
@@ -969,9 +1180,24 @@ def _choose_metasizer_starting_open_entries(
         return []
     default_open_count = min(DEEP_RUN_DEFAULT_START_OPEN_COUNT, active_count) if deep_run_enabled else min(5, active_count)
     start_open_count = max(1, min(active_count, requested_start_open if requested_start_open > 0 else default_open_count))
+    if deep_run_enabled:
+        marked = [
+            dict(entry)
+            for entry in active_entries
+            if bool(entry.get("deep_run_starting_open")) and str(entry.get("name") or "").strip()
+        ]
+        if marked:
+            marked.sort(
+                key=lambda entry: active_tables.index(str(entry.get("name") or "").strip())
+                if str(entry.get("name") or "").strip() in active_tables else 10**9
+            )
+            return marked[:start_open_count]
     candidates = [dict(entry) for entry in active_entries]
     if feature_unlock_enabled:
-        featureless = [entry for entry in candidates if not _feature_gate_ids_for_table(str(entry.get("name") or "").strip())]
+        featureless = [
+            entry for entry in candidates
+            if not list(entry.get("feature_gates") if "feature_gates" in entry else _feature_gate_ids_for_table(str(entry.get("name") or "").strip()))
+        ]
         if len(featureless) >= start_open_count:
             candidates = featureless
     opening_entries = [dict(entry) for entry in rng.sample(candidates, start_open_count)]
@@ -991,23 +1217,32 @@ def _build_feature_unlock_payload(enabled: bool, active_entries: list[dict[str, 
     table_feature_gates: dict[str, list[str]] = {}
     table_feature_labels: dict[str, list[str]] = {}
     table_feature_items: dict[str, list[str]] = {}
+    table_lock_counts: dict[str, int] = {}
     feature_gate_tables: dict[str, list[str]] = {str(defn.get("id") or "").strip(): [] for defn in definitions}
     used_gate_ids: list[str] = []
     for entry in active_entries:
         table_name = str(entry.get("name") or "").strip()
         if not table_name:
             continue
-        gates = list(entry.get("feature_gates") or _feature_gate_ids_for_table(table_name))
+        raw_gates = entry.get("feature_gates") if "feature_gates" in entry else _feature_gate_ids_for_table(table_name)
+        gates = list(raw_gates or [])
         labels = [str((by_id.get(gate_id) or {}).get("label") or gate_id).strip() for gate_id in gates]
         items = [str((by_id.get(gate_id) or {}).get("item") or "").strip() for gate_id in gates if str((by_id.get(gate_id) or {}).get("item") or "").strip()]
         table_feature_gates[table_name] = gates
         table_feature_labels[table_name] = labels
         table_feature_items[table_name] = items
+        table_lock_counts[table_name] = len(gates)
         for gate_id in gates:
             if gate_id not in used_gate_ids:
                 used_gate_ids.append(gate_id)
             feature_gate_tables.setdefault(gate_id, []).append(table_name)
     used_gate_ids = [gate_id for gate_id in [str(defn.get("id") or "").strip() for defn in definitions] if gate_id in used_gate_ids]
+    deep_run_key_order = []
+    for entry in active_entries:
+        raw_order = entry.get("deep_run_feature_key_order")
+        if isinstance(raw_order, list) and raw_order:
+            deep_run_key_order = [str(gate_id or "").strip() for gate_id in raw_order if str(gate_id or "").strip()]
+            break
     return {
         "enabled": bool(enabled),
         "version": 1,
@@ -1024,8 +1259,11 @@ def _build_feature_unlock_payload(enabled: bool, active_entries: list[dict[str, 
         "table_feature_gates": table_feature_gates,
         "table_feature_labels": table_feature_labels,
         "table_feature_items": table_feature_items,
+        "table_lock_counts": table_lock_counts,
         "feature_gate_tables": feature_gate_tables,
         "starting_open_tables": list(starting_open_tables),
+        "deep_run_key_order": deep_run_key_order,
+        "deep_run_key_tier_rewards": {"0": 1, "1": 2, "2": 1, "3": 1},
     }
 
 
@@ -1623,7 +1861,7 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
         if requested_count <= 0 or requested_count == 25:
             requested_count = min(DEEP_RUN_DEFAULT_ACTIVE_TABLE_COUNT, len(generation_ready_entries))
         if requested_start_open <= 0:
-            requested_start_open = DEEP_RUN_DEFAULT_START_OPEN_COUNT
+            requested_start_open = _deep_run_start_open_count_for_active_count(requested_count)
         desired_world_count = max(1, min(len(catalog_groups), (requested_count + group_size - 1) // group_size))
     if selection_mode_applied == "curated_table_list":
         custom_world_sets, unresolved_custom_world_tables, duplicate_custom_world_tables = _metasizer_resolve_custom_world_sets(generation_ready_entries, custom_world_sets_raw)
@@ -1649,10 +1887,28 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
                 active_entries.extend(chunk_entries)
                 active_world_sets.append({"name": world_name, "entries": chunk_entries})
             active_entries = _decorate_feature_gate_entries(active_entries)
+            custom_deep_run_profile_note = ""
+            if deep_run_enabled and feature_unlock_enabled:
+                active_entries, custom_deep_run_profile_note = _assign_deep_run_feature_lock_profile(
+                    active_entries,
+                    rng,
+                    requested_start_open,
+                )
+            active_entry_by_name = {
+                str(entry.get("name") or "").strip(): dict(entry)
+                for entry in active_entries
+                if str(entry.get("name") or "").strip()
+            }
             active_world_sets = [
                 {
                     "name": str(world.get("name") or "").strip(),
-                    "entries": _decorate_feature_gate_entries(list(world.get("entries") or [])),
+                    "entries": [
+                        active_entry_by_name.get(
+                            str(entry.get("name") or "").strip(),
+                            dict(entry),
+                        )
+                        for entry in _decorate_feature_gate_entries(list(world.get("entries") or []))
+                    ],
                 }
                 for world in active_world_sets
             ]
@@ -1770,6 +2026,7 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
                 "notes": [
                     "Base Game selected custom named world sets from YAML.",
                     f"Custom world sets active tables: {len(active_tables)}.",
+                    *([custom_deep_run_profile_note] if custom_deep_run_profile_note else []),
                     *custom_fallback_reasons,
                 ],
             }
@@ -1796,6 +2053,13 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
                     ] if reason
                 ])
             active_entries = _decorate_feature_gate_entries(active_entries)
+            curated_deep_run_profile_note = ""
+            if deep_run_enabled and feature_unlock_enabled:
+                active_entries, curated_deep_run_profile_note = _assign_deep_run_feature_lock_profile(
+                    active_entries,
+                    rng,
+                    requested_start_open,
+                )
             active_tables = [str(entry.get("name") or "").strip() for entry in active_entries if str(entry.get("name") or "").strip()]
             active_count = len(active_tables)
             if active_entries:
@@ -1893,6 +2157,7 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
                     "Curated world banners use generated names and generated color palettes instead of source table/background art.",
                     "Curated table selectors can be supplied as table names, table codes, guide keys, or flyer codes.",
                     "Only generation-ready tables with complete task/check data participate in the active AP graph.",
+                    *([curated_deep_run_profile_note] if curated_deep_run_profile_note else []),
                 ],
             }
         selection_mode_applied = METASIZER_DEFAULT_SELECTION_MODE
@@ -1992,6 +2257,7 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
             generation_ready_entries,
             rng,
             requested_count,
+            requested_start_open,
         )
         active_group_keys = []
         for entry in active_entries:
@@ -2253,6 +2519,28 @@ def _load_generic_check_pools() -> dict[str, Any]:
     except Exception as exc:
         logging.warning("Manual Pinball Generic: failed to load generic check pools: %s", exc)
         pools = {}
+    try:
+        deep_run_pools = load_data_file("deep_run_task_pools.json")
+    except Exception as exc:
+        logging.warning("Manual Pinball Deep Run: failed to load table-specific task pools: %s", exc)
+        deep_run_pools = {}
+    if isinstance(pools, dict) and isinstance(deep_run_pools, dict):
+        for table_name, difficulty_map in deep_run_pools.items():
+            if not isinstance(difficulty_map, dict):
+                continue
+            table_pool = pools.setdefault(str(table_name), {})
+            if not isinstance(table_pool, dict):
+                table_pool = {}
+                pools[str(table_name)] = table_pool
+            for difficulty in ("Easy", "Medium", "Hard"):
+                replacements = difficulty_map.get(difficulty)
+                if not isinstance(replacements, list):
+                    continue
+                score_entries = [
+                    dict(entry) for entry in table_pool.get(difficulty, []) or []
+                    if isinstance(entry, dict) and str(entry.get("type", "")).strip().lower() == "score"
+                ]
+                table_pool[difficulty] = score_entries + [dict(entry) for entry in replacements if isinstance(entry, dict)]
     globals()["_GENERIC_CHECK_POOLS_CACHE"] = pools
     return pools
 
@@ -2335,6 +2623,16 @@ def _generic_task_objective_tokens(table_name: str, pick: dict[str, Any]) -> lis
         if word and word not in stop_words:
             tokens.append(word)
     return tokens
+
+
+def _generic_task_objective_signature(table_name: str, pick: dict[str, Any], difficulty: str) -> str:
+    text = _generic_task_objective_text(table_name, pick)
+    normalized = _metasizer_normalize_lookup_key(text)
+    if normalized:
+        return f"{_metasizer_normalize_lookup_key(table_name)}:{normalized}"
+    return _metasizer_normalize_lookup_key(
+        f"{table_name}:{difficulty}:{pick.get('source_location', '')}:{pick.get('title', '')}"
+    )
 
 
 def _generic_task_similarity_family_signature(table_name: str, pick: dict[str, Any], difficulty: str) -> str:
@@ -2437,6 +2735,120 @@ def _generic_task_requirement_categories(pick: dict[str, Any]) -> set[str]:
     if has_word("extra ball", "extraball"):
         categories.add("requires:extra_ball")
     return categories
+
+
+def _generic_task_confidence_score(pick: dict[str, Any], target_difficulty: str, source_difficulty: str) -> float:
+    if not isinstance(pick, dict):
+        return 0.25
+    raw_confidence = pick.get("confidence_score", pick.get("confidence"))
+    if raw_confidence is not None:
+        try:
+            return max(0.0, min(1.0, float(raw_confidence)))
+        except (TypeError, ValueError):
+            pass
+
+    generated = bool(pick.get("generated"))
+    score = 0.38 if generated else 0.78
+    target = str(target_difficulty or "").strip().title()
+    source = str(source_difficulty or "").strip().title()
+    if source and source == target:
+        score += 0.08
+    elif source:
+        score -= 0.10
+
+    explanation = str(pick.get("explanation") or "").strip()
+    source_location = str(pick.get("source_location") or "").strip()
+    if source_location and not generated:
+        score += 0.04
+    if len(explanation) >= 80:
+        score += 0.03
+
+    categories = _generic_task_requirement_categories(pick)
+    if target == "Easy" and ({"requires:multiball", "requires:jackpot"} & categories):
+        score -= 0.25
+    if target == "Hard" and "requires:wizard" in categories:
+        score -= 0.15
+    return round(max(0.15, min(0.98, score)), 2)
+
+
+def _generic_task_confidence_label(score: float) -> str:
+    try:
+        value = float(score)
+    except (TypeError, ValueError):
+        return "low"
+    if value >= 0.82:
+        return "high"
+    if value >= 0.62:
+        return "medium"
+    return "low"
+
+
+def _generic_task_confidence_metadata(
+    table_name: str,
+    pick: dict[str, Any],
+    wanted_difficulty: str,
+    source_difficulty: str,
+    generated: bool,
+    family_reused: bool,
+) -> dict[str, Any]:
+    wanted = str(wanted_difficulty or "").strip().title()
+    source = str(source_difficulty or "").strip().title() or wanted
+    categories = _generic_task_requirement_categories(pick)
+    text = " ".join(str(pick.get(field, "") or "") for field in ("title", "source_location", "explanation"))
+    compact = _metasizer_normalize_lookup_key(text)
+    score = 94
+    reasons: list[str] = ["table-specific source task"]
+
+    if generated:
+        score -= 24
+        reasons = ["generated fallback task"]
+    if source != wanted:
+        score -= 14
+        reasons.append(f"source difficulty was {source}")
+    if family_reused:
+        score -= 8
+        reasons.append("shares a task family with another Deep Run task")
+
+    if wanted == "Easy":
+        if "requires:multiball" in categories or "requires:jackpot" in categories:
+            score -= 45
+            reasons.append("multiball/jackpot content is usually too much for Easy")
+        if "requires:wizard" in categories:
+            score -= 55
+            reasons.append("wizard-progress content does not fit Easy")
+        if any(category in categories for category in ("requires:target_bank", "requires:lane", "requires:spinner", "requires:ramp", "requires:award", "requires:scoop_saucer")):
+            score += 2
+            reasons.append("single-shot or simple-feature objective")
+    elif wanted == "Medium":
+        if "requires:wizard" in categories:
+            score -= 30
+            reasons.append("wizard-progress content is usually Hard")
+        if "requires:multiball" in categories or "requires:mode" in categories:
+            score += 2
+            reasons.append("setup or one-mode/multiball objective fits Medium")
+        if "superjackpot" in compact or "superjackpot" in text.lower():
+            score -= 12
+            reasons.append("super jackpot content leans Hard")
+    elif wanted == "Hard":
+        if any(category in categories for category in ("requires:jackpot", "requires:multiball", "requires:wizard", "requires:mode", "requires:bonus_multiplier")):
+            score += 2
+            reasons.append("multi-step or high-value objective fits Hard")
+        if not generated and not any(category in categories for category in ("requires:jackpot", "requires:multiball", "requires:wizard", "requires:mode", "requires:bonus_multiplier", "requires:combo")):
+            score -= 8
+            reasons.append("simple feature for Hard, verify table-specific difficulty")
+
+    score = max(0, min(100, int(score)))
+    if score >= 85:
+        label = "high"
+    elif score >= 70:
+        label = "medium"
+    else:
+        label = "low"
+    return {
+        "task_confidence": score,
+        "task_confidence_label": label,
+        "task_confidence_reasons": reasons,
+    }
 
 
 def _extract_generic_task_location(location_name: str) -> tuple[str, str] | None:
@@ -2732,6 +3144,9 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
         return _metasizer_normalize_lookup_key(difficulty)
 
     def task_family_signature(table_name: str, pick: dict[str, Any], difficulty: str) -> str:
+        explicit_family = _metasizer_normalize_lookup_key(str(pick.get("objective_family") or ""))
+        if explicit_family:
+            return f"{_metasizer_normalize_lookup_key(table_name)}:{explicit_family}"
         raw_title = str(pick.get("title", "")).strip()
         raw_source = str(pick.get("source_location", "")).strip()
         norm = _metasizer_normalize_lookup_key(f"{raw_source} {raw_title}")
@@ -2838,6 +3253,9 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
         if not isinstance(table_pool, dict):
             return candidates_by_difficulty, all_candidates
         shuffle_counter = 0
+        seen_candidate_signatures: set[str] = set()
+        seen_candidate_title_signatures: set[str] = set()
+        seen_candidate_objective_signatures: set[str] = set()
         for difficulty in ("Easy", "Medium", "Hard"):
             raw_candidates = []
             for raw_entry in table_pool.get(difficulty, []) or []:
@@ -2850,11 +3268,28 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
                 raw_candidates.append(raw_entry)
             rng.shuffle(raw_candidates)
             for raw_entry in raw_candidates:
+                signature = task_signature(raw_entry, difficulty)
+                title_signature = task_title_signature(raw_entry, difficulty)
+                objective_signature = _generic_task_objective_signature(table, raw_entry, difficulty)
+                if (
+                    (signature and signature in seen_candidate_signatures)
+                    or (title_signature and title_signature in seen_candidate_title_signatures)
+                    or (objective_signature and objective_signature in seen_candidate_objective_signatures)
+                ):
+                    continue
+                if signature:
+                    seen_candidate_signatures.add(signature)
+                if title_signature:
+                    seen_candidate_title_signatures.add(title_signature)
+                if objective_signature:
+                    seen_candidate_objective_signatures.add(objective_signature)
                 candidate = {
                     "pick": raw_entry,
+                    "table": table,
                     "source_difficulty": difficulty,
-                    "signature": task_signature(raw_entry, difficulty),
-                    "title_signature": task_title_signature(raw_entry, difficulty),
+                    "signature": signature,
+                    "title_signature": title_signature,
+                    "objective_signature": objective_signature,
                     "family": task_family_signature(table, raw_entry, difficulty),
                     "requirement_categories": _generic_task_requirement_categories(raw_entry),
                     "shuffle_index": shuffle_counter,
@@ -2871,12 +3306,14 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
         used_signatures: set[str],
         used_families: set[str],
         used_title_signatures: set[str],
+        used_objective_signatures: set[str],
     ) -> dict[str, Any] | None:
         ordered = list(candidates_by_difficulty.get(wanted_difficulty) or [])
         if not ordered:
             return None
         ordered.sort(key=lambda candidate: (
             str(candidate.get("title_signature", "")) in used_title_signatures,
+            str(candidate.get("objective_signature", "")) in used_objective_signatures,
             str(candidate.get("signature", "")) in used_signatures,
             str(candidate.get("family", "")) in used_families,
             int(candidate.get("shuffle_index", 0)),
@@ -2884,17 +3321,40 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
         for candidate in ordered:
             signature = str(candidate.get("signature", ""))
             title_signature = str(candidate.get("title_signature", ""))
+            objective_signature = str(candidate.get("objective_signature", ""))
             family = str(candidate.get("family", ""))
             if (
                 signature
                 and signature not in used_signatures
                 and title_signature
                 and title_signature not in used_title_signatures
+                and objective_signature
+                and objective_signature not in used_objective_signatures
                 and family
                 and family not in used_families
             ):
                 return candidate
         return None
+
+    def deep_task_confidence(
+        selected: dict[str, Any],
+        wanted_difficulty: str,
+        family_was_used: bool,
+    ) -> tuple[float, str, list[str]]:
+        pick = selected.get("pick") if isinstance(selected.get("pick"), dict) else {}
+        meta = _generic_task_confidence_metadata(
+            str(selected.get("table", "") or ""),
+            pick,
+            wanted_difficulty,
+            str(selected.get("source_difficulty", "") or wanted_difficulty),
+            bool(pick.get("generated")),
+            family_was_used,
+        )
+        return (
+            round(float(meta["task_confidence"]) / 100.0, 2),
+            str(meta["task_confidence_label"]),
+            list(meta["task_confidence_reasons"]),
+        )
 
     def build_generated_deep_candidate(
         table: str,
@@ -2903,6 +3363,7 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
         used_signatures: set[str],
         used_families: set[str],
         used_title_signatures: set[str],
+        used_objective_signatures: set[str],
     ) -> dict[str, Any]:
         templates = DEEP_RUN_GENERATED_TASK_TEMPLATES.get(difficulty) or DEEP_RUN_GENERATED_TASK_TEMPLATES["Easy"]
         start = max(0, index - 1)
@@ -2911,17 +3372,30 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
             template_index = (start + attempt) % len(templates)
             signature = f"generated:{_metasizer_normalize_lookup_key(table)}:{difficulty.lower()}:{template_index}"
             title_signature = _metasizer_normalize_lookup_key(templates[template_index][0])
+            objective_signature = f"{_metasizer_normalize_lookup_key(table)}:{title_signature}"
             family = f"generated:{_metasizer_normalize_lookup_key(table)}:{difficulty.lower()}:{template_index}"
-            if signature not in used_signatures and family not in used_families and title_signature not in used_title_signatures:
+            if (
+                signature not in used_signatures
+                and family not in used_families
+                and title_signature not in used_title_signatures
+                and objective_signature not in used_objective_signatures
+            ):
                 chosen_index = template_index
                 break
         title_template, explanation_template = templates[chosen_index]
         title_signature = _metasizer_normalize_lookup_key(title_template)
+        objective_signature = f"{_metasizer_normalize_lookup_key(table)}:{title_signature}"
         signature = f"generated:{_metasizer_normalize_lookup_key(table)}:{difficulty.lower()}:{chosen_index}"
         family = f"generated:{_metasizer_normalize_lookup_key(table)}:{difficulty.lower()}:{chosen_index}"
-        if signature in used_signatures or family in used_families or title_signature in used_title_signatures:
+        if (
+            signature in used_signatures
+            or family in used_families
+            or title_signature in used_title_signatures
+            or objective_signature in used_objective_signatures
+        ):
             title_template = f"{title_template} - Deep {difficulty} {index:02d}"
             title_signature = _metasizer_normalize_lookup_key(title_template)
+            objective_signature = f"{_metasizer_normalize_lookup_key(table)}:{title_signature}"
             signature = f"{signature}:{index:02d}"
             family = f"{family}:{index:02d}"
         if family in used_families:
@@ -2934,19 +3408,28 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
         }
         return {
             "pick": pick,
+            "table": table,
             "source_difficulty": difficulty,
             "signature": signature,
             "title_signature": title_signature,
+            "objective_signature": objective_signature,
             "family": family,
             "requirement_categories": set(),
             "shuffle_index": 100000 + index,
         }
+
+    def selected_deep_display_signature(selected: dict[str, Any], index: int) -> str:
+        pick = selected.get("pick") if isinstance(selected.get("pick"), dict) else {}
+        display_name = str(pick.get("title", "")).strip() or f"Deep Task {index:02d}"
+        return _metasizer_normalize_lookup_key(display_name)
 
     for table in sorted(deep_tasks.keys()):
         candidates_by_difficulty, all_candidates = build_deep_candidates(table)
         used_signatures: set[str] = set()
         used_families: set[str] = set()
         used_title_signatures: set[str] = set()
+        used_objective_signatures: set[str] = set()
+        used_display_signatures: set[str] = set()
         for index, location in sorted(deep_tasks.get(table, []), key=lambda item: item[0]):
             loc_name = str(location.get("name", "")).strip()
             difficulty = _deep_run_slot_difficulty(index)
@@ -2957,28 +3440,41 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
                 used_signatures,
                 used_families,
                 used_title_signatures,
+                used_objective_signatures,
             )
             if not selected:
-                selected = build_generated_deep_candidate(
-                    table,
-                    difficulty,
-                    index,
-                    used_signatures,
-                    used_families,
-                    used_title_signatures,
+                raise RuntimeError(
+                    f"Deep Run table '{table}' is missing a unique table-specific {difficulty} task for slot {index:02d}"
+                )
+            display_signature = selected_deep_display_signature(selected, index) if selected else ""
+            if display_signature and display_signature in used_display_signatures:
+                raise RuntimeError(
+                    f"Deep Run table '{table}' repeated task title '{selected.get('pick', {}).get('title', '')}'"
                 )
             pick = selected["pick"]
             signature = str(selected.get("signature", ""))
             title_signature = str(selected.get("title_signature", ""))
+            objective_signature = str(selected.get("objective_signature", ""))
             family = str(selected.get("family", ""))
+            family_was_used = bool(family and family in used_families)
+            confidence_score, confidence_label, confidence_reasons = deep_task_confidence(
+                selected,
+                difficulty,
+                family_was_used,
+            )
             if signature:
                 used_signatures.add(signature)
             if title_signature:
                 used_title_signatures.add(title_signature)
+            if objective_signature:
+                used_objective_signatures.add(objective_signature)
             if family:
                 used_families.add(family)
             requirement_categories = set(selected.get("requirement_categories") or set())
             display_name = str(pick.get("title", "")).strip() or f"Deep Task {index:02d}"
+            display_signature = _metasizer_normalize_lookup_key(display_name)
+            if display_signature:
+                used_display_signatures.add(display_signature)
             explanation = str(pick.get("explanation", "")).strip()
             source_location = str(pick.get("source_location", "")).strip()
             entry = {
@@ -2996,9 +3492,17 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
                 "source_location": source_location,
                 "task_signature": signature,
                 "task_title_signature": title_signature,
+                "task_objective_signature": objective_signature,
                 "task_family": family,
                 "requirement_categories": sorted(requirement_categories),
                 "generated": bool(pick.get("generated")),
+                "confidence": confidence_score,
+                "task_confidence": int(round(confidence_score * 100)),
+                "confidence_label": confidence_label,
+                "task_confidence_label": confidence_label,
+                "confidence_reasons": confidence_reasons,
+                "task_confidence_reasons": confidence_reasons,
+                "duplicate_guard": "exact_objective_unique",
                 "randomized": shuffle_enabled,
             }
             entries.append(entry)
@@ -3060,6 +3564,8 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
                 {
                     "pick": candidate,
                     "signature": task_signature(candidate, difficulty),
+                    "title_signature": task_title_signature(candidate, difficulty),
+                    "objective_signature": _generic_task_objective_signature(table, candidate, difficulty),
                     "family": task_family_signature(table, candidate, difficulty),
                     "requirement_categories": _generic_task_requirement_categories(candidate),
                     "shuffle_index": idx,
@@ -3077,8 +3583,18 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
                 continue
             pick = selected["pick"]
             signature = str(selected.get("signature", ""))
+            title_signature = str(selected.get("title_signature", ""))
+            objective_signature = str(selected.get("objective_signature", ""))
             family = str(selected.get("family", ""))
             requirement_categories = set(selected.get("requirement_categories") or set())
+            confidence_meta = _generic_task_confidence_metadata(
+                table,
+                pick,
+                difficulty,
+                difficulty,
+                bool(pick.get("generated")),
+                False,
+            )
             display_name = str(pick.get("title", "")).strip() or f"{difficulty} Task"
             explanation = str(pick.get("explanation", "")).strip()
             source_location = str(pick.get("source_location", "")).strip()
@@ -3095,12 +3611,78 @@ def _build_generic_checks_payload(world: World, multiworld: MultiWorld, player: 
                     "explanation": explanation,
                     "source_location": source_location,
                     "task_signature": signature,
+                    "task_title_signature": title_signature,
+                    "task_objective_signature": objective_signature,
                     "task_family": family,
                     "requirement_categories": sorted(requirement_categories),
+                    "confidence": round(float(confidence_meta["task_confidence"]) / 100.0, 2),
+                    "task_confidence": confidence_meta["task_confidence"],
+                    "confidence_label": confidence_meta["task_confidence_label"],
+                    "task_confidence_label": confidence_meta["task_confidence_label"],
+                    "confidence_reasons": confidence_meta["task_confidence_reasons"],
+                    "task_confidence_reasons": confidence_meta["task_confidence_reasons"],
+                    "duplicate_guard": "exact_objective_unique",
                     "randomized": shuffle_enabled,
                 }
                 entries.append(entry)
                 by_location[loc_name] = entry
+
+    if deep_tasks or deep_scores:
+        expected_difficulties = {"easy": 4, "medium": 4, "hard": 2}
+        deep_entries_by_table: dict[str, list[dict[str, Any]]] = {}
+        for entry in entries:
+            if entry.get("deep_run"):
+                deep_entries_by_table.setdefault(str(entry.get("table", "")), []).append(entry)
+
+        integrity_issues: list[str] = []
+        for table in sorted(set(deep_tasks) | set(deep_scores)):
+            table_entries = deep_entries_by_table.get(table, [])
+            task_entries = [entry for entry in table_entries if entry.get("kind") == "task"]
+            score_entries = [entry for entry in table_entries if entry.get("kind") == "score"]
+            if len(task_entries) != 10 or len(score_entries) != 10:
+                integrity_issues.append(
+                    f"{table}: expected 10 table tasks and 10 score tasks; "
+                    f"got {len(task_entries)} and {len(score_entries)}"
+                )
+
+            for kind, kind_entries in (("task", task_entries), ("score", score_entries)):
+                indexes = sorted(int(entry.get("deep_run_index", 0) or 0) for entry in kind_entries)
+                if indexes != list(range(1, 11)):
+                    integrity_issues.append(f"{table}: {kind} indexes are {indexes}")
+                difficulty_counts = {
+                    difficulty: sum(
+                        1
+                        for entry in kind_entries
+                        if str(entry.get("difficulty", "")).strip().lower() == difficulty
+                    )
+                    for difficulty in expected_difficulties
+                }
+                if difficulty_counts != expected_difficulties:
+                    integrity_issues.append(f"{table}: {kind} difficulty split is {difficulty_counts}")
+
+            objective_keys = [
+                _metasizer_normalize_lookup_key(entry.get("objective") or entry.get("display_name") or "")
+                for entry in task_entries
+            ]
+            objective_keys = [key for key in objective_keys if key]
+            if len(objective_keys) != len(set(objective_keys)):
+                integrity_issues.append(f"{table}: duplicate table task objective")
+
+            family_keys = [str(entry.get("task_family", "") or "").strip() for entry in task_entries]
+            if any(not key for key in family_keys) or len(family_keys) != len(set(family_keys)):
+                integrity_issues.append(f"{table}: duplicate or missing table task family")
+
+            ordered_scores = sorted(score_entries, key=lambda entry: int(entry.get("deep_run_index", 0) or 0))
+            score_targets = [int(entry.get("score_target", 0) or 0) for entry in ordered_scores]
+            if (
+                any(target <= 0 for target in score_targets)
+                or len(score_targets) != len(set(score_targets))
+                or score_targets != sorted(score_targets)
+            ):
+                integrity_issues.append(f"{table}: score ladder is not positive, unique, and ascending")
+
+        if integrity_issues:
+            raise ValueError("Deep Run check integrity failed: " + "; ".join(integrity_issues))
 
     payload["enabled"] = bool(entries)
     payload["entries"] = entries
@@ -3285,6 +3867,66 @@ def _round_boss_score_target(value: float) -> int:
     return max(step, int(round(float(value or 0) / step) * step))
 
 
+def _register_static_deep_run_location_ids() -> None:
+    """Reserve stable Deep Run location IDs for every table in the roster."""
+    pools = _load_generic_check_pools()
+    if not isinstance(pools, dict) or not pools:
+        return
+
+    next_id = max(
+        [int(value) for value in location_id_to_name.keys() if isinstance(value, int)] or [0]
+    ) + 1
+
+    def register(name: str, category: list[str], region: str) -> None:
+        nonlocal next_id
+        if name in location_name_to_id:
+            return
+        location = {
+            "id": next_id,
+            "name": name,
+            "region": region,
+            "category": category,
+            "requires": "",
+            "deep_run_static": True,
+        }
+        location_table.append(location)
+        location_id_to_name[next_id] = name
+        location_name_to_id[name] = next_id
+        location_name_to_location[name] = location
+        for category_name in category:
+            group = location_name_groups.setdefault(str(category_name), [])
+            if name not in group:
+                group.append(name)
+        next_id += 1
+
+    for table_name in sorted(str(name or "").strip() for name in pools if str(name or "").strip()):
+        table_pool = pools.get(table_name, {})
+        if not isinstance(table_pool, dict):
+            continue
+        table_category = _table_location_category(table_name)
+        for index in range(1, DEEP_RUN_TASKS_PER_TABLE + 1):
+            difficulty = _deep_run_slot_difficulty(index)
+            register(
+                f"{table_name} - Deep Task {index:02d}",
+                [table_category, "Generic", "DeepRun", difficulty, "Task"],
+                _deep_run_slot_region(index),
+            )
+
+        score_targets = _boss_table_score_targets(table_pool)
+        if len(score_targets) < DEEP_RUN_SCORE_CHECKS_PER_TABLE:
+            raise ValueError(f"Deep Run score ladder is incomplete for {table_name}")
+        for index, target in enumerate(score_targets[:DEEP_RUN_SCORE_CHECKS_PER_TABLE], start=1):
+            difficulty = _deep_run_slot_difficulty(index)
+            register(
+                f"{table_name} - Deep Score {index:02d} ({int(target):,}+)",
+                [table_category, "Generic", "DeepRun", difficulty, "Score"],
+                _deep_run_slot_region(index),
+            )
+
+
+_register_static_deep_run_location_ids()
+
+
 def _get_generic_checks_payload(world: World, multiworld: MultiWorld, player: int) -> dict[str, Any]:
     cached = getattr(world, "_generic_checks_payload", None)
     if isinstance(cached, dict):
@@ -3332,6 +3974,8 @@ def before_create_regions(world: World, multiworld: MultiWorld, player: int):
     removed_location_names: list[str] = []
     for location in original_locations:
         location_name = str(location.get("name") or "").strip()
+        if location.get("deep_run_static"):
+            continue
         table_name = _extract_metasizer_location_table_name(location_name)
         if table_name and table_name not in active_tables:
             removed_location_names.append(location_name)
@@ -3423,10 +4067,12 @@ def before_create_items_all(item_config: dict[str, int|dict], world: World, mult
             FEATURE_KEY_PIECES_REQUIRED,
         )
     if deep_run_enabled:
+        filtered_config["Boss Key"] = DEEP_RUN_BOSS_KEYS_REQUIRED
+        filtered_config["Bagatelle Bonus Game"] = 6
         for item_name, cap in (
-            ("Easy Junk Piece (1 of 3)", 6),
-            ("Medium Junk Piece (1 of 3)", 6),
-            ("Pinball Fragment (1 of 5)", 8),
+            ("Easy Junk Piece (1 of 3)", 3),
+            ("Medium Junk Piece (1 of 3)", 3),
+            ("Pinball Fragment (1 of 5)", 4),
         ):
             if item_name in filtered_config:
                 try:
@@ -3478,13 +4124,16 @@ def after_set_rules(world: World, multiworld: MultiWorld, player: int):
         required_boss_keys = 3
     required_boss_keys = max(1, min(10, required_boss_keys))
 
+    metasizer_payload = _get_metasizer_table_set_payload(world, multiworld, player)
+    if _metasizer_payload_is_deep_run(metasizer_payload):
+        required_boss_keys = DEEP_RUN_BOSS_KEYS_REQUIRED
+
     try:
         boss_region = multiworld.get_region("Boss Sphere", player)
     except Exception:
         logging.warning("Manual Pinball: Could not find Boss Sphere region to apply boss key requirement.")
         return
 
-    metasizer_payload = _get_metasizer_table_set_payload(world, multiworld, player)
     boss_table_name = str(metasizer_payload.get("boss_table_name") or metasizer_payload.get("boss_table") or "").strip()
     boss_feature_items = _feature_gate_item_names_for_table(boss_table_name) if (
         isinstance(metasizer_payload.get("feature_unlock"), dict)
@@ -3531,58 +4180,259 @@ def after_create_item(item: ManualItem, world: World, multiworld: MultiWorld, pl
 def before_generate_basic(world: World, multiworld: MultiWorld, player: int):
     # Keep Easy checks spicy: guarantee exactly one Easy location can (and will) hold a Boss Key.
     metasizer_payload = _get_metasizer_table_set_payload(world, multiworld, player)
+    deep_run_enabled = _metasizer_payload_is_deep_run(metasizer_payload)
     deep_run_starting_open_tables = {
         str(name or "").strip()
         for name in metasizer_payload.get("starting_open_tables", [])
         if str(name or "").strip()
-    } if _metasizer_payload_is_deep_run(metasizer_payload) else set()
+    } if deep_run_enabled else set()
+
+    def forbid_location_item(manual_location: dict[str, Any], item_name: str) -> None:
+        dont_place_item = manual_location.get("dont_place_item")
+        if isinstance(dont_place_item, list):
+            if item_name not in dont_place_item:
+                dont_place_item.append(item_name)
+        elif dont_place_item is None:
+            manual_location["dont_place_item"] = [item_name]
+        elif str(dont_place_item) != item_name:
+            manual_location["dont_place_item"] = [str(dont_place_item), item_name]
+
+    def remove_location_item_forbid(manual_location: dict[str, Any], item_name: str) -> None:
+        dont_place_item = manual_location.get("dont_place_item")
+        if isinstance(dont_place_item, list):
+            manual_location["dont_place_item"] = [item for item in dont_place_item if str(item) != item_name]
+            if not manual_location["dont_place_item"]:
+                manual_location.pop("dont_place_item", None)
+        elif dont_place_item is not None and str(dont_place_item) == item_name:
+            manual_location.pop("dont_place_item", None)
+
+    def remove_location_place_item(manual_location: dict[str, Any], item_name: str) -> None:
+        place_item = manual_location.get("place_item")
+        if isinstance(place_item, list):
+            manual_location["place_item"] = [item for item in place_item if str(item) != item_name]
+            if not manual_location["place_item"]:
+                manual_location.pop("place_item", None)
+        elif place_item is not None and str(place_item) == item_name:
+            manual_location.pop("place_item", None)
+
     easy_candidates: list[dict] = []
+    deep_run_candidates: list[dict[str, Any]] = []
     for location in multiworld.get_unfilled_locations(player=player):
         manual_location = location_name_to_location.get(location.name)
         if not manual_location:
             continue
-        if str(manual_location.get("region", "")).strip() != "Ball 1 Sphere":
-            continue
+        if deep_run_enabled and (
+            _extract_deep_run_task_location(str(manual_location.get("name", "") or ""))
+            or _extract_deep_run_score_location(str(manual_location.get("name", "") or ""))
+        ):
+            deep_run_candidates.append(manual_location)
         if deep_run_starting_open_tables:
             table_name = _extract_metasizer_location_table_name(str(manual_location.get("name", "") or ""))
-            if table_name not in deep_run_starting_open_tables:
-                continue
+            if table_name in deep_run_starting_open_tables:
+                forbid_location_item(manual_location, "Boss Key")
+                remove_location_place_item(manual_location, "Boss Key")
+        if str(manual_location.get("region", "")).strip() != "Ball 1 Sphere":
+            continue
         easy_candidates.append(manual_location)
 
-    if not easy_candidates:
-        logging.warning("Manual Pinball: No Easy (Ball 1 Sphere) locations found for Boss Key placement.")
+    if deep_run_enabled:
+        active_entries = [
+            dict(entry) for entry in metasizer_payload.get("active_table_entries", []) or []
+            if isinstance(entry, dict) and str(entry.get("name") or "").strip()
+        ]
+        feature_payload = metasizer_payload.get("feature_unlock") if isinstance(metasizer_payload.get("feature_unlock"), dict) else {}
+        definitions = _feature_key_definition_by_id()
+        key_order = [
+            str(gate_id or "").strip()
+            for gate_id in feature_payload.get("deep_run_key_order", []) or []
+            if str(gate_id or "").strip()
+        ]
+        tier_tables: dict[int, list[str]] = {tier: [] for tier in range(5)}
+        table_gate_ids: dict[str, list[str]] = {}
+        for entry in active_entries:
+            table_name = str(entry.get("name") or "").strip()
+            tier = max(0, min(4, int(entry.get("deep_run_lock_count") or 0)))
+            tier_tables[tier].append(table_name)
+            table_gate_ids[table_name] = [str(gate_id or "").strip() for gate_id in entry.get("feature_gates", []) or [] if str(gate_id or "").strip()]
+
+        reserved_location_names: set[str] = set()
+
+        def deep_location_meta(manual_location: dict[str, Any]) -> tuple[str, int] | None:
+            raw_name = str(manual_location.get("name") or "").strip()
+            task_meta = _extract_deep_run_task_location(raw_name)
+            if task_meta:
+                return task_meta
+            score_meta = _extract_deep_run_score_location(raw_name)
+            if score_meta:
+                return score_meta[0], score_meta[1]
+            return None
+
+        def reserve_deep_item(
+            item_name: str,
+            source_tables: list[str],
+            preferred_indices: tuple[int, ...] = (1, 2, 3, 4),
+            avoid_source_table: str = "",
+        ) -> str:
+            table_set = {str(name or "").strip() for name in source_tables if str(name or "").strip()}
+            candidates: list[dict[str, Any]] = []
+            for manual_location in deep_run_candidates:
+                raw_name = str(manual_location.get("name") or "").strip()
+                if not raw_name or raw_name in reserved_location_names or manual_location.get("place_item"):
+                    continue
+                meta = deep_location_meta(manual_location)
+                if not meta:
+                    continue
+                table_name, index = meta
+                if table_name not in table_set or index not in preferred_indices:
+                    continue
+                if avoid_source_table and table_name == avoid_source_table:
+                    continue
+                candidates.append(manual_location)
+            if not candidates and avoid_source_table:
+                return reserve_deep_item(item_name, source_tables, preferred_indices, "")
+            if not candidates:
+                return ""
+            world.random.shuffle(candidates)
+            chosen = candidates[0]
+            remove_location_item_forbid(chosen, item_name)
+            chosen["place_item"] = [item_name]
+            chosen_name = str(chosen.get("name") or "").strip()
+            reserved_location_names.add(chosen_name)
+            return chosen_name
+
+        # Five complete Feature Keys form the Deep Run route: 1 in starters,
+        # 2 in one-lock tables, 1 in two-lock tables, and 1 in three-lock tables.
+        feature_placements: list[tuple[str, list[str]]] = []
+        if len(key_order) >= 5:
+            unlock_a = key_order[0]
+            first_tier_sources = [
+                table_name for table_name in tier_tables[1]
+                if table_gate_ids.get(table_name) == [unlock_a]
+            ] or list(tier_tables[1])
+            feature_placements = [
+                (key_order[0], list(tier_tables[0])),
+                (key_order[1], first_tier_sources),
+                (key_order[2], first_tier_sources),
+                (key_order[3], list(tier_tables[2])),
+                (key_order[4], list(tier_tables[3])),
+            ]
+        placed_feature_pieces = 0
+        for gate_id, source_tables in feature_placements:
+            item_name = str((definitions.get(gate_id) or {}).get("item") or "").strip()
+            if not item_name:
+                continue
+            for _ in range(FEATURE_KEY_PIECES_REQUIRED):
+                if reserve_deep_item(item_name, source_tables):
+                    placed_feature_pieces += 1
+
+        expected_feature_pieces = len(feature_placements) * FEATURE_KEY_PIECES_REQUIRED
+        if placed_feature_pieces != expected_feature_pieces:
+            raise RuntimeError(
+                f"Deep Run progression could only place {placed_feature_pieces}/{expected_feature_pieces} Feature Key pieces"
+            )
+
+        # Four Boss Keys pace a 15-table run to roughly three hours. None can
+        # appear on a starter table; one is reserved in each gated tier.
+        boss_index_preferences = {
+            1: (5, 6, 7, 8),
+            2: (5, 6, 7, 8),
+            3: (9, 10),
+            4: (9, 10),
+        }
+        forced_boss_locations: list[str] = []
+        for tier in (1, 2, 3, 4):
+            chosen_name = reserve_deep_item("Boss Key", tier_tables[tier], boss_index_preferences[tier])
+            if not chosen_name:
+                chosen_name = reserve_deep_item("Boss Key", tier_tables[tier], tuple(range(1, 11)))
+            if chosen_name:
+                forced_boss_locations.append(chosen_name)
+        if len(forced_boss_locations) != DEEP_RUN_BOSS_KEYS_REQUIRED:
+            raise RuntimeError(
+                f"Deep Run progression could only place {len(forced_boss_locations)}/{DEEP_RUN_BOSS_KEYS_REQUIRED} Boss Keys"
+            )
+        world._forced_easy_boss_key_location = ""
+        world._forced_deep_run_boss_key_locations = list(forced_boss_locations)
+
+        # Guarantee every newly unlocked tier has its first playable ball in
+        # the previous tier, then spend the remaining preferences on tables
+        # that are already playable at that stage.
+        ball_counts = {table_name: (1 if table_name in deep_run_starting_open_tables else 0) for table_name in table_gate_ids}
+        ball_plan: list[tuple[int, list[int]]] = [
+            (0, [1, 1, 1, 1, 0, 0]),
+            (1, [2, 2, 2, 2, 0, 1]),
+            (2, [3, 3, 0, 1, 2]),
+            (3, [4, 4, 2, 3]),
+        ]
+        for source_tier, target_tiers in ball_plan:
+            source_tables = list(tier_tables[source_tier])
+            for target_tier in target_tiers:
+                eligible_targets = [
+                    table_name for table_name in tier_tables[target_tier]
+                    if ball_counts.get(table_name, 0) < 3
+                ]
+                if not eligible_targets:
+                    continue
+                eligible_targets.sort(key=lambda table_name: (ball_counts.get(table_name, 0), table_name))
+                lowest_count = ball_counts.get(eligible_targets[0], 0)
+                target_choices = [table_name for table_name in eligible_targets if ball_counts.get(table_name, 0) == lowest_count]
+                target_table = str(world.random.choice(target_choices))
+                item_name = _progressive_ball_item_name_for_table(target_table, world)
+                chosen_name = reserve_deep_item(
+                    item_name,
+                    source_tables,
+                    (1, 2, 3, 4),
+                    target_table if target_tier != 0 else "",
+                )
+                if not chosen_name:
+                    chosen_name = reserve_deep_item(item_name, source_tables, tuple(range(1, 9)), target_table)
+                if chosen_name:
+                    ball_counts[target_table] = ball_counts.get(target_table, 0) + 1
+
+        logging.info(
+            "Manual Pinball Deep Run: reserved %d Feature Key pieces, %d gated Boss Keys, and %d staged Progressive Balls.",
+            placed_feature_pieces,
+            len(forced_boss_locations),
+            sum(max(0, count - (1 if table_name in deep_run_starting_open_tables else 0)) for table_name, count in ball_counts.items()),
+        )
         return
 
-    forced_location_name = str(_get_ut_regen_slot_data(world).get(FORCED_EASY_BOSS_KEY_SLOT_KEY, "") or "").strip()
-    chosen = None
-    if forced_location_name:
-        chosen = next((location for location in easy_candidates if str(location.get("name", "")).strip() == forced_location_name), None)
-    if chosen is None:
-        chosen = world.random.choice(easy_candidates)
-    world._forced_easy_boss_key_location = str(chosen.get("name", "") or "").strip()
+    boss_key_candidates = easy_candidates
+    if deep_run_starting_open_tables:
+        boss_key_candidates = [
+            location
+            for location in easy_candidates
+            if _extract_metasizer_location_table_name(str(location.get("name", "") or "")) not in deep_run_starting_open_tables
+        ]
 
-    # Remove any explicit Boss Key forbids on the chosen Easy location.
-    dont_place_item = chosen.get("dont_place_item")
-    if isinstance(dont_place_item, list):
-        chosen["dont_place_item"] = [item for item in dont_place_item if str(item) != "Boss Key"]
-        if not chosen["dont_place_item"]:
-            chosen.pop("dont_place_item", None)
-    elif dont_place_item is not None and str(dont_place_item) == "Boss Key":
-        chosen.pop("dont_place_item", None)
-
-    # Guarantee one Easy Boss Key by locking one Boss Key onto this Easy check.
-    place_item = chosen.get("place_item")
-    if isinstance(place_item, list):
-        if "Boss Key" not in place_item:
-            place_item.append("Boss Key")
-    elif place_item is None:
-        chosen["place_item"] = ["Boss Key"]
+    if not boss_key_candidates:
+        logging.warning("Manual Pinball: No Easy (Ball 1 Sphere) locations found for Boss Key placement.")
+        if not deep_run_enabled:
+            return
     else:
-        chosen["place_item"] = [str(place_item), "Boss Key"]
+        forced_location_name = str(_get_ut_regen_slot_data(world).get(FORCED_EASY_BOSS_KEY_SLOT_KEY, "") or "").strip()
+        chosen = None
+        if forced_location_name:
+            chosen = next((location for location in boss_key_candidates if str(location.get("name", "")).strip() == forced_location_name), None)
+        if chosen is None:
+            chosen = world.random.choice(boss_key_candidates)
+        world._forced_easy_boss_key_location = str(chosen.get("name", "") or "").strip()
 
-    logging.info("Manual Pinball: Boss Key guaranteed on Easy check: %s", chosen.get("name", "Unknown"))
+        # Remove any explicit Boss Key forbids on the chosen Easy location.
+        remove_location_item_forbid(chosen, "Boss Key")
 
-    if not _metasizer_payload_is_deep_run(metasizer_payload):
+        # Guarantee one Easy Boss Key by locking one Boss Key onto this Easy check.
+        place_item = chosen.get("place_item")
+        if isinstance(place_item, list):
+            if "Boss Key" not in place_item:
+                place_item.append("Boss Key")
+        elif place_item is None:
+            chosen["place_item"] = ["Boss Key"]
+        else:
+            chosen["place_item"] = [str(place_item), "Boss Key"]
+
+        logging.info("Manual Pinball: Boss Key guaranteed on Easy check: %s", chosen.get("name", "Unknown"))
+
+    if not deep_run_enabled:
         return
     feature_payload = metasizer_payload.get("feature_unlock") if isinstance(metasizer_payload.get("feature_unlock"), dict) else {}
     if not feature_payload.get("enabled"):
@@ -3610,7 +4460,7 @@ def before_generate_basic(world: World, multiworld: MultiWorld, player: int):
     feature_piece_candidates = [
         location
         for location in easy_candidates
-        if str(location.get("name", "") or "").strip() != world._forced_easy_boss_key_location
+        if _extract_metasizer_location_table_name(str(location.get("name", "") or "")) in deep_run_starting_open_tables
     ]
     world.random.shuffle(feature_piece_candidates)
     placed_feature_pieces = 0
@@ -3670,6 +4520,9 @@ def after_fill_slot_data(slot_data: dict, world: World, multiworld: MultiWorld, 
     metasizer_payload = _get_metasizer_table_set_payload(world, multiworld, player)
     generic_checks_payload = _get_generic_checks_payload(world, multiworld, player)
     task_shuffle_payload = _get_task_shuffle_payload(world, multiworld, player)
+    if _metasizer_payload_is_deep_run(metasizer_payload):
+        slot_data["boss_keys_required_for_boss_table_open"] = DEEP_RUN_BOSS_KEYS_REQUIRED
+        slot_data["deep_run_boss_keys_required"] = DEEP_RUN_BOSS_KEYS_REQUIRED
     slot_data["task_shuffle_enabled"] = 1 if task_shuffle_payload.get("enabled") else 0
     if metasizer_payload.get("enabled"):
         active_tables = {

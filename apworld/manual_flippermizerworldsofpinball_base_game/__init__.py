@@ -24,7 +24,7 @@ from .Helpers import is_item_enabled, get_option_value, get_items_for_player, re
 
 from BaseClasses import CollectionState, ItemClassification, Item
 from Options import PerGameCommonOptions
-from worlds.AutoWorld import World
+from worlds.AutoWorld import World, data_package_checksum
 
 from .hooks.World import \
     hook_get_filler_item_name, before_create_regions, after_create_regions, \
@@ -459,6 +459,16 @@ class ManualWorld(World):
         with open(os.path.join(output_directory, filename), 'wb') as f:
             f.write(b64encode(bytes(json.dumps(data), 'utf-8')))
 
+    def modify_multidata(self, multidata: dict[str, Any]) -> None:
+        datapackage = multidata.get("datapackage")
+        if not isinstance(datapackage, dict):
+            return
+        game_data = datapackage.get(self.game)
+        if not isinstance(game_data, dict):
+            return
+        checksum_data = {key: value for key, value in sorted(game_data.items()) if key != "checksum"}
+        game_data["checksum"] = data_package_checksum(checksum_data)
+
     def write_spoiler(self, spoiler_handle):
         before_write_spoiler(self, self.multiworld, spoiler_handle)
 
@@ -502,7 +512,7 @@ class ManualWorld(World):
                 deep_run_enabled = seed_type_text in {"deep_run", "deeprun", "deep"}
             if deep_run_enabled:
                 try:
-                    trap_percent = min(int(trap_percent or 0), 8)
+                    trap_percent = min(int(trap_percent or 0), 20)
                 except (TypeError, ValueError):
                     trap_percent = 0
             enabled_traps = [
@@ -523,8 +533,12 @@ class ManualWorld(World):
                 item_pool.append(extra_item)
                 trap_count -= 1
 
+            weighted_traps = list(enabled_traps)
+            if deep_run_enabled and "Filter Mode Trap" in enabled_traps:
+                weighted_traps.extend(["Filter Mode Trap", "Filter Mode Trap"])
+
             for _ in range(0, trap_count):
-                extra_item = self.create_item(self.random.choice(enabled_traps))
+                extra_item = self.create_item(self.random.choice(weighted_traps or enabled_traps))
                 item_pool.append(extra_item)
 
             for _ in range(0, filler_count):
