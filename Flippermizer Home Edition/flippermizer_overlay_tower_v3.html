@@ -39846,6 +39846,8 @@ function openBagatelle(opts){
   const ctx = canvas.getContext("2d");
   const { Engine, Bodies, Body, Composite, Events } = Matter;
   const engine = Engine.create({ gravity:{ x:0, y:1.05, scale:0.001 } });
+  engine.positionIterations = 8;
+  engine.velocityIterations = 6;
   const playW = w - 104;
   const pocketW = playW / 6;
   const rewards = [
@@ -39856,21 +39858,91 @@ function openBagatelle(opts){
     { kind:"extra", value:1, label:"1 EXTRA BALL", color:"#22ff88" },
     { kind:"score", value:30, label:"30% NEXT SCORE BONUS", color:"#ff4f66" }
   ];
+  const launchGuide = Bodies.rectangle(w-66, 58, 170, 20, {
+    isStatic:true,
+    angle:-.54,
+    restitution:.94,
+    friction:0,
+    label:"bagatelle-launch-gate"
+  });
+  launchGuide.plugin.flprBagatelleLaunchGuide = { color:"#ff4f78" };
   const staticBodies = [
-    Bodies.rectangle(4, h/2, 12, h, { isStatic:true }),
-    Bodies.rectangle(w-4, h/2, 12, h, { isStatic:true }),
-    Bodies.rectangle(w/2, 4, w, 12, { isStatic:true }),
-    Bodies.rectangle(w/2, h-4, w, 12, { isStatic:true }),
-    Bodies.rectangle(playW+5, (h+80)/2, 10, h-80, { isStatic:true }),
-    Bodies.rectangle(w-51, 54, 120, 14, { isStatic:true, angle:-0.68, restitution:.88 })
+    Bodies.rectangle(4, h/2, 16, h, { isStatic:true }),
+    Bodies.rectangle(w-4, h/2, 16, h, { isStatic:true }),
+    Bodies.rectangle(w/2, 4, w, 20, { isStatic:true }),
+    Bodies.rectangle(w/2, h-4, w, 14, { isStatic:true }),
+    Bodies.rectangle(playW+5, h/2, 12, h, { isStatic:true }),
+    launchGuide
   ];
+  const railSpecs = [
+    { x:playW*.20, y:h*.23, length:118, angle:.48, color:"#00d9ff" },
+    { x:playW*.73, y:h*.26, length:132, angle:-.52, color:"#ff78b7" },
+    { x:playW*.39, y:h*.43, length:96, angle:.48, color:"#f4f6f8" },
+    { x:playW*.59, y:h*.43, length:96, angle:-.48, color:"#f4f6f8" },
+    { x:playW*.22, y:h*.64, length:126, angle:-.50, color:"#ffb14f" },
+    { x:playW*.76, y:h*.66, length:126, angle:.50, color:"#22ff88" }
+  ];
+  const rails = railSpecs.map((spec)=>{
+    const rail = Bodies.rectangle(spec.x, spec.y, spec.length, 10, {
+      isStatic:true,
+      angle:spec.angle,
+      restitution:.98,
+      friction:0
+    });
+    rail.plugin.flprBagatelleRail = spec;
+    staticBodies.push(rail);
+    return rail;
+  });
+  const bumperSpecs = [
+    { x:playW*.18, y:h*.34, radius:18, color:"#00d9ff" },
+    { x:playW*.49, y:h*.27, radius:20, color:"#ff4f78" },
+    { x:playW*.82, y:h*.38, radius:18, color:"#ffb14f" },
+    { x:playW*.34, y:h*.55, radius:20, color:"#22ff88" },
+    { x:playW*.68, y:h*.58, radius:19, color:"#a78bfa" }
+  ];
+  const bumpers = bumperSpecs.map((spec)=>{
+    const bumper = Bodies.circle(spec.x, spec.y, spec.radius, {
+      isStatic:true,
+      restitution:1.16,
+      friction:0,
+      label:"bagatelle-bumper"
+    });
+    bumper.plugin.flprBagatelleBumper = spec;
+    staticBodies.push(bumper);
+    return bumper;
+  });
+  const redirectorSpecs = [
+    { x:playW*.18, y:h*.48, radius:16, kickX:6.2, kickY:6.1, color:"#ff78b7" },
+    { x:playW*.50, y:h*.60, radius:17, kickX:-5.6, kickY:6.8, color:"#00d9ff" },
+    { x:playW*.82, y:h*.50, radius:16, kickX:-6.2, kickY:6.1, color:"#f4f6f8" }
+  ];
+  const redirectors = redirectorSpecs.map((spec)=>{
+    const redirector = Bodies.circle(spec.x, spec.y, spec.radius, {
+      isStatic:true,
+      restitution:.96,
+      friction:0,
+      label:"bagatelle-down-kick"
+    });
+    redirector.plugin.flprBagatelleRedirect = spec;
+    staticBodies.push(redirector);
+    return redirector;
+  });
   const pegs = [];
-  const pegRows = Math.max(7, Math.floor((h - 240) / 62));
+  const pegRows = Math.max(8, Math.floor((h - 230) / 54));
+  const pegPalette = ["#ecfaff", "#9ff6ff", "#ffd2e2", "#fff1bc"];
   for(let row=0; row<pegRows; row++){
-    const y = 120 + row * 62;
-    const offset = row % 2 ? 48 : 16;
-    for(let x=offset; x<playW-18; x+=82){
-      const peg = Bodies.circle(x, y, 7, { isStatic:true, restitution:.82, friction:0 });
+    const y = 112 + row * 54;
+    const offset = row % 2 ? 43 : 14;
+    for(let x=offset; x<playW-18; x+=72){
+      const nearRoundFeature = [...bumperSpecs, ...redirectorSpecs].some((spec)=>{
+        return Math.hypot(x-spec.x, y-spec.y) < spec.radius + 24;
+      });
+      const nearRail = railSpecs.some((spec)=>{
+        return Math.abs(x-spec.x) < spec.length*.54 && Math.abs(y-spec.y) < 24;
+      });
+      if(nearRoundFeature || nearRail) continue;
+      const peg = Bodies.circle(x, y, 7, { isStatic:true, restitution:.88, friction:0 });
+      peg.plugin.flprBagatellePegColor = pegPalette[row % pegPalette.length];
       pegs.push(peg);
       staticBodies.push(peg);
     }
@@ -39888,12 +39960,50 @@ function openBagatelle(opts){
     return sensor;
   });
   Composite.add(engine.world, [...staticBodies, ...sensors]);
-  const ball = Bodies.circle(w-51, h-78, 12, { isStatic:true, restitution:.72, friction:.005, frictionAir:.002, density:.008, label:"bagatelle-ball" });
+  const ball = Bodies.circle(w-51, h-78, 12, { restitution:.72, friction:.005, frictionAir:.002, density:.008, label:"bagatelle-ball" });
+  Body.setStatic(ball, true);
   Composite.add(engine.world, ball);
 
-  const runtime = bagatelleRuntime = { overlay, engine, ball, raf:0, rewarded:false, launched:false, charging:false, chargeStart:0, awardDeadline:0, failsafe:0 };
+  const runtime = bagatelleRuntime = {
+    overlay,
+    engine,
+    ball,
+    raf:0,
+    rewarded:false,
+    launched:false,
+    charging:false,
+    chargeStart:0,
+    awardDeadline:0,
+    failsafe:0,
+    resolveSource:"",
+    hitBursts:[],
+    ballTrail:[],
+    lastMotionAt:performance.now(),
+    lastMotionPosition:{ x:ball.position.x, y:ball.position.y },
+    courseHits:{ launch:0, bumper:0, redirect:0, rail:0, nudges:0, recoveries:0 }
+  };
+  const setExcitingVelocity = (vx, vy, maxSpeed)=>{
+    const limit = Math.max(10, Number(maxSpeed) || 20);
+    const speed = Math.hypot(vx, vy);
+    const scale = speed > limit ? limit / speed : 1;
+    Body.setVelocity(ball, { x:vx*scale, y:vy*scale });
+  };
+  const flashCourseHit = (body, color, kind)=>{
+    const now = performance.now();
+    body.plugin.flprHitUntil = now + (kind === "redirect" ? 560 : 420);
+    runtime.hitBursts.push({
+      x:body.position.x,
+      y:body.position.y,
+      color:String(color || "#ffffff"),
+      kind,
+      started:now,
+      expires:now + 620
+    });
+    if(runtime.hitBursts.length > 12) runtime.hitBursts.splice(0, runtime.hitBursts.length - 12);
+  };
   const resolveStalledBall = ()=>{
     if(runtime.rewarded || bagatelleRuntime !== runtime) return;
+    runtime.resolveSource = "fallback";
     const ballX = Number(ball?.position?.x);
     const safeX = Number.isFinite(ballX) ? Math.max(0, Math.min(playW - 1, ballX)) : (playW / 2);
     const index = Math.max(0, Math.min(5, Math.floor(safeX / pocketW)));
@@ -39905,9 +40015,54 @@ function openBagatelle(opts){
       const sensor = pair.bodyA?.plugin?.flprBagatelleReward ? pair.bodyA : (pair.bodyB?.plugin?.flprBagatelleReward ? pair.bodyB : null);
       const other = sensor === pair.bodyA ? pair.bodyB : pair.bodyA;
       if(sensor && other === ball){
+        runtime.resolveSource = "pocket";
         bagatelleApplyReward(sensor.plugin.flprBagatelleReward, statusEl);
         Body.setStatic(ball, true);
         break;
+      }
+      const gate = pair.bodyA?.plugin?.flprBagatelleLaunchGuide ? pair.bodyA : (pair.bodyB?.plugin?.flprBagatelleLaunchGuide ? pair.bodyB : null);
+      const gateOther = gate === pair.bodyA ? pair.bodyB : pair.bodyA;
+      if(gate && gateOther === ball){
+        Body.setPosition(ball,{ x:playW-72, y:118 });
+        setExcitingVelocity(-6.4-(Math.random()*1.4), 4.3+(Math.random()*1.0), 15);
+        runtime.lastMotionAt=performance.now();
+        runtime.lastMotionPosition={ x:ball.position.x, y:ball.position.y };
+        runtime.courseHits.launch += 1;
+        flashCourseHit(gate, gate.plugin.flprBagatelleLaunchGuide.color, "rail");
+      }
+      const bumper = pair.bodyA?.plugin?.flprBagatelleBumper ? pair.bodyA : (pair.bodyB?.plugin?.flprBagatelleBumper ? pair.bodyB : null);
+      const bumperOther = bumper === pair.bodyA ? pair.bodyB : pair.bodyA;
+      if(bumper && bumperOther === ball){
+        const spec = bumper.plugin.flprBagatelleBumper;
+        const dx = ball.position.x - bumper.position.x;
+        const dy = ball.position.y - bumper.position.y;
+        const distance = Math.max(1, Math.hypot(dx, dy));
+        setExcitingVelocity(
+          ball.velocity.x + (dx/distance)*6.4,
+          ball.velocity.y + (dy/distance)*6.4,
+          21
+        );
+        runtime.courseHits.bumper += 1;
+        flashCourseHit(bumper, spec.color, "bumper");
+      }
+      const redirector = pair.bodyA?.plugin?.flprBagatelleRedirect ? pair.bodyA : (pair.bodyB?.plugin?.flprBagatelleRedirect ? pair.bodyB : null);
+      const redirectOther = redirector === pair.bodyA ? pair.bodyB : pair.bodyA;
+      if(redirector && redirectOther === ball){
+        const spec = redirector.plugin.flprBagatelleRedirect;
+        const variation = (Math.random()-.5)*1.1;
+        setExcitingVelocity(
+          ball.velocity.x*.24 + spec.kickX + variation,
+          Math.max(5.4, Math.abs(ball.velocity.y)*.22 + spec.kickY),
+          18
+        );
+        runtime.courseHits.redirect += 1;
+        flashCourseHit(redirector, spec.color, "redirect");
+      }
+      const rail = pair.bodyA?.plugin?.flprBagatelleRail ? pair.bodyA : (pair.bodyB?.plugin?.flprBagatelleRail ? pair.bodyB : null);
+      const railOther = rail === pair.bodyA ? pair.bodyB : pair.bodyA;
+      if(rail && railOther === ball){
+        runtime.courseHits.rail += 1;
+        flashCourseHit(rail, rail.plugin.flprBagatelleRail.color, "rail");
       }
     }
   });
@@ -39915,19 +40070,104 @@ function openBagatelle(opts){
     if(bagatelleRuntime !== runtime) return;
     try{
       Engine.update(engine, 1000/60);
+      if(runtime.launched && !runtime.rewarded){
+        const px=Number(ball.position.x);
+        const py=Number(ball.position.y);
+        const vx=Number(ball.velocity.x);
+        const vy=Number(ball.velocity.y);
+        const invalid=!Number.isFinite(px) || !Number.isFinite(py) || !Number.isFinite(vx) || !Number.isFinite(vy);
+        const escaped=!invalid && (px < -36 || px > w+36 || py < -72 || py > h+42);
+        if(invalid || escaped){
+          const recoveryX=Number.isFinite(px) ? Math.max(28,Math.min(playW-28,px)) : playW*.50;
+          const recoveryY=Number.isFinite(py) ? Math.max(98,Math.min(h-188,py)) : h*.32;
+          Body.setPosition(ball,{ x:recoveryX, y:recoveryY });
+          Body.setVelocity(ball,{ x:(Math.random()-.5)*5, y:6.2 });
+          runtime.ballTrail.length=0;
+          runtime.courseHits.recoveries += 1;
+        }else{
+          const speed=Math.hypot(vx,vy);
+          if(speed>22) setExcitingVelocity(vx,vy,22);
+          const moved=Math.hypot(px-runtime.lastMotionPosition.x,py-runtime.lastMotionPosition.y);
+          const motionNow=performance.now();
+          if(speed>.24 || moved>1.4){
+            runtime.lastMotionAt=motionNow;
+            runtime.lastMotionPosition={ x:px, y:py };
+          }else if(motionNow-runtime.lastMotionAt>900 && py<h-92){
+            setExcitingVelocity((Math.random()-.5)*5.6,6.2,12);
+            runtime.lastMotionAt=motionNow;
+            runtime.lastMotionPosition={ x:px, y:py };
+            runtime.courseHits.nudges += 1;
+            flashCourseHit(ball,"#9ff6ff","redirect");
+          }
+        }
+      }
       if(runtime.launched && !runtime.rewarded && runtime.awardDeadline > 0 && performance.now() >= runtime.awardDeadline){
         resolveStalledBall();
       }
       ctx.setTransform(dpr,0,0,dpr,0,0);
       ctx.clearRect(0,0,w,h);
-      ctx.fillStyle="#030b12";
+      const boardGradient=ctx.createLinearGradient(0,0,0,h);
+      boardGradient.addColorStop(0,"#071522");
+      boardGradient.addColorStop(.48,"#071018");
+      boardGradient.addColorStop(1,"#02070d");
+      ctx.fillStyle=boardGradient;
       ctx.fillRect(0,0,w,h);
       ctx.strokeStyle="rgba(0,217,255,.20)";
       ctx.lineWidth=1;
       for(let y=22;y<h;y+=34){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+      ctx.strokeStyle="rgba(255,111,153,.17)";
+      for(let x=18;x<playW;x+=54){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x-82,h); ctx.stroke(); }
+      ctx.strokeStyle="rgba(0,217,255,.50)";
+      ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(playW,64); ctx.lineTo(playW,h-66); ctx.stroke();
+      ctx.save(); ctx.translate(launchGuide.position.x,launchGuide.position.y); ctx.rotate(launchGuide.angle);
+      ctx.shadowColor="#ff4f78"; ctx.shadowBlur=18;
+      ctx.fillStyle="rgba(255,79,120,.82)"; ctx.fillRect(-85,-10,170,20);
+      ctx.fillStyle="#fff3f7"; ctx.fillRect(-72,-2,144,4);
+      ctx.shadowBlur=0; ctx.restore();
+      for(const rail of rails){
+        const spec=rail.plugin.flprBagatelleRail;
+        ctx.save(); ctx.translate(rail.position.x,rail.position.y); ctx.rotate(rail.angle);
+        ctx.shadowColor=spec.color; ctx.shadowBlur=12;
+        ctx.fillStyle=spec.color+"b8"; ctx.fillRect(-spec.length/2,-5,spec.length,10);
+        ctx.fillStyle="#ffffff"; ctx.fillRect(-spec.length/2+8,-1,spec.length-16,2);
+        ctx.shadowBlur=0; ctx.restore();
+      }
       for(const peg of pegs){
         ctx.beginPath(); ctx.arc(peg.position.x, peg.position.y, 7, 0, Math.PI*2);
-        ctx.fillStyle="#ecfaff"; ctx.shadowColor="#00d9ff"; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
+        ctx.fillStyle=peg.plugin.flprBagatellePegColor || "#ecfaff"; ctx.shadowColor="#00d9ff"; ctx.shadowBlur=10; ctx.fill(); ctx.shadowBlur=0;
+      }
+      const now=performance.now();
+      for(const bumper of bumpers){
+        const spec=bumper.plugin.flprBagatelleBumper;
+        const hot=Number(bumper.plugin.flprHitUntil || 0) > now;
+        const pulse=1 + Math.sin(now/120 + bumper.position.x)*.08;
+        ctx.beginPath(); ctx.arc(bumper.position.x,bumper.position.y,spec.radius*pulse,0,Math.PI*2);
+        ctx.fillStyle=hot ? spec.color+"cc" : spec.color+"45";
+        ctx.strokeStyle=spec.color; ctx.lineWidth=hot ? 5 : 3;
+        ctx.shadowColor=spec.color; ctx.shadowBlur=hot ? 26 : 13; ctx.fill(); ctx.stroke(); ctx.shadowBlur=0;
+        ctx.beginPath(); ctx.arc(bumper.position.x,bumper.position.y,spec.radius*.42,0,Math.PI*2);
+        ctx.fillStyle="#f8fdff"; ctx.fill();
+      }
+      for(const redirector of redirectors){
+        const spec=redirector.plugin.flprBagatelleRedirect;
+        const hot=Number(redirector.plugin.flprHitUntil || 0) > now;
+        ctx.beginPath(); ctx.arc(redirector.position.x,redirector.position.y,spec.radius+(hot ? 4 : 0),0,Math.PI*2);
+        ctx.fillStyle=hot ? spec.color+"e6" : spec.color+"66";
+        ctx.strokeStyle=spec.color; ctx.lineWidth=hot ? 5 : 3;
+        ctx.shadowColor=spec.color; ctx.shadowBlur=hot ? 30 : 15; ctx.fill(); ctx.stroke(); ctx.shadowBlur=0;
+        const arrowAngle=Math.atan2(spec.kickY,spec.kickX)-Math.PI/2;
+        ctx.save(); ctx.translate(redirector.position.x,redirector.position.y); ctx.rotate(arrowAngle);
+        ctx.strokeStyle="#04111a"; ctx.lineWidth=4; ctx.lineCap="round";
+        ctx.beginPath(); ctx.moveTo(0,-8); ctx.lineTo(0,7); ctx.moveTo(-6,1); ctx.lineTo(0,8); ctx.lineTo(6,1); ctx.stroke();
+        ctx.restore();
+      }
+      runtime.hitBursts=runtime.hitBursts.filter((burst)=>burst.expires>now);
+      for(const burst of runtime.hitBursts){
+        const progress=Math.max(0,Math.min(1,(now-burst.started)/(burst.expires-burst.started)));
+        ctx.beginPath(); ctx.arc(burst.x,burst.y,14+progress*30,0,Math.PI*2);
+        ctx.strokeStyle=burst.color+Math.round((1-progress)*210).toString(16).padStart(2,"0");
+        ctx.lineWidth=4-progress*2.5; ctx.stroke();
       }
       for(const separator of separators){
         ctx.save(); ctx.translate(separator.position.x,separator.position.y); ctx.rotate(separator.angle);
@@ -39942,6 +40182,15 @@ function openBagatelle(opts){
         const mid=Math.ceil(words.length/2);
         ctx.fillText(words.slice(0,mid).join(" "),x+pocketW/2,h-36);
         ctx.fillText(words.slice(mid).join(" "),x+pocketW/2,h-22);
+      });
+      if(runtime.launched && !runtime.rewarded){
+        runtime.ballTrail.push({ x:ball.position.x, y:ball.position.y });
+        if(runtime.ballTrail.length>16) runtime.ballTrail.shift();
+      }
+      runtime.ballTrail.forEach((point,index)=>{
+        const strength=(index+1)/runtime.ballTrail.length;
+        ctx.beginPath(); ctx.arc(point.x,point.y,2+strength*5,0,Math.PI*2);
+        ctx.fillStyle=`rgba(255,79,120,${(.05+strength*.28).toFixed(3)})`; ctx.fill();
       });
       ctx.beginPath(); ctx.arc(ball.position.x,ball.position.y,12,0,Math.PI*2);
       ctx.fillStyle="#fff"; ctx.shadowColor="#ff4f78"; ctx.shadowBlur=16; ctx.fill(); ctx.shadowBlur=0;
@@ -39958,11 +40207,13 @@ function openBagatelle(opts){
     const charge=Math.min(1,Math.max(.08,(performance.now()-runtime.chargeStart)/1800));
     runtime.charging=false;
     runtime.launched=true;
+    runtime.lastMotionAt=performance.now();
+    runtime.lastMotionPosition={ x:ball.position.x, y:ball.position.y };
     plunger.style.setProperty("--charge","0");
     plunger.disabled=true;
     if(statusEl) statusEl.textContent="BALL IN PLAY";
     Body.setStatic(ball,false);
-    Body.setVelocity(ball,{ x:-2.1-(charge*1.6), y:-16-(charge*10) });
+    Body.setVelocity(ball,{ x:-2.4-(charge*1.2), y:-24-(charge*6) });
     runtime.awardDeadline = performance.now() + 14000;
     runtime.failsafe=setTimeout(resolveStalledBall,14000);
   };
