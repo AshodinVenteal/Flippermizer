@@ -26,7 +26,7 @@ Release assets:
 - Added a built-in AP-free 15-table Deep Run test seed with three starters, 10 unique table tasks and 10 ascending score tasks per table, feature gates, and staged progression.
 - Restored the original randomized built-in test seed as a separate Dev Tools option, so the classic and Deep Run fixtures can be tested independently.
 - Deep Run now seeds 10 Boss Keys across 10 different locked tables while requiring any 4 to open the Boss Table; starter tables cannot contain Boss Keys.
-- Added a direct Bagatelle button to Testing controls for exercising the enhanced bumper course and its one-use rewards.
+- Added a direct Bagatelle button to Testing controls; the game now appears over the OBS capture in the same presentation area as Bonus Pinball.
 
 ### Home Edition Task + Boss Hotfix - 2026-06-03
 
