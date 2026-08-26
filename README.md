@@ -12,14 +12,14 @@ This repository keeps the Home Edition source and viewable APWorld source folder
 
 ## Release
 
-The current stable release is **Home Edition 1.1.1**:
+The current stable release is **Home Edition 1.2.0**:
 
-https://github.com/AshodinVenteal/Flippermizer/releases/tag/flippermizer-v1.1.1-2026-06-03
+https://github.com/AshodinVenteal/Flippermizer/releases/tag/flippermizer-v1.2.0-2026-08-26
 
 Release assets:
 
-- `Flippermizer-Home-Edition-1.1.1-portable.exe`
-- `Flippermizer-Home-Edition-1.1.1-win-unpacked.zip`
+- `Flippermizer-Home-Edition-1.2.0-portable.exe`
+- `Flippermizer-Home-Edition-1.2.0-win-unpacked.zip`
 
 ### Home Edition Deep Run Test Update - 2026-08-26
 
