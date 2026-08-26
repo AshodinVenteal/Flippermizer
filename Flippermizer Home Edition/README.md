@@ -17,9 +17,10 @@ Release assets:
 
 ### Home Edition 1.2.0 Deep Run Update - 2026-08-26
 
-- Added 15-table Deep Run progression with staged Feature Keys, four Boss Keys, and table unlock tiers designed for longer three-hour runs.
+- Added 15-table Deep Run progression with staged Feature Keys, ten seeded Boss Keys (any four required), and table unlock tiers designed for longer three-hour runs.
 - Added ten table-specific tasks and ten ascending score tasks per Deep Run table, with duplicate-family guards and confidence metadata.
 - Added the Bagatelle Bonus Game, including hold-to-plunge physics and one-use score, junk fragment, and Extra Ball rewards.
+- Added separate Dev Tools buttons for the restored original randomized test seed and the 15-table Deep Run test seed.
 - Staggered score-check submissions and reward reveals, blocked hidden Checks interactions, and improved Hangman and siege layouts.
 - Updated the hosted YAML Builder with readable menus and per-world creator names.
 
