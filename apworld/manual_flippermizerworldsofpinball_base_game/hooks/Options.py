@@ -61,6 +61,8 @@ def after_options_defined(options: Type[PerGameCommonOptions]):
             }
     if "filter_mode_trap_enabled" in options.type_hints:
         options.type_hints["filter_mode_trap_enabled"].default = True
+    if "base_game_active_table_count" in options.type_hints:
+        options.type_hints["base_game_active_table_count"].range_end = 50
 
 # Use this Hook if you want to add your Option to an Option group (existing or not)
 def before_option_groups_created(groups: dict[str, list[Type[Option[Any]]]]) -> dict[str, list[Type[Option[Any]]]]:

@@ -1,0 +1,272 @@
+{
+  "The A-Team": {
+    "Easy": [
+      {"title":"Knock down 1 center skill-shot card","type":"task","explanation":"Knock down any one of the four raised center cards for its 1,000,000-point skill-shot award.","source_location":"The A-Team rules - Skillshot cards","objective_family":"skillshot_card","confidence_score":0.94},
+      {"title":"Move the secondary-mission selector with either ramp","type":"task","explanation":"Shoot the right ramp to raise or the left ramp to lower the secondary mission shown on the playfield and backglass.","source_location":"The A-Team rules - Secondary mission selection","objective_family":"secondary_selector","confidence_score":0.92},
+      {"title":"Complete the B.A. target bank once","type":"task","explanation":"Knock down the full B.A. target bank once in one game.","source_location":"The A-Team guide - B.A. targets","objective_family":"ba_targets","confidence_score":0.86},
+      {"title":"Collect a gift from the Barrel Hole","type":"task","explanation":"Shoot the Barrel Hole on the right and collect the gift it draws.","source_location":"The A-Team rules - Barrel Hole","objective_family":"barrel_gift","confidence_score":0.92}
+    ],
+    "Medium": [
+      {"title":"Complete any main mission objective","type":"task","explanation":"Start a main mission at the van and finish its displayed objective before the mode ends.","source_location":"The A-Team guide - Mission completion","objective_family":"mission_completion","confidence_score":0.90},
+      {"title":"Contact Mr. Lee with 10 van shots","type":"task","explanation":"During active main missions, shoot the van ten times to discover Hannibal's alter ego and contact Mr. Lee.","source_location":"The A-Team rules - Mr. Lee","objective_family":"mr_lee_contact","confidence_score":0.93},
+      {"title":"Start any secondary mission at the Jeep","type":"task","explanation":"Select a secondary mission with the ramps, then shoot the Jeep to start it.","source_location":"The A-Team rules - Secondary missions","objective_family":"secondary_mission","confidence_score":0.92},
+      {"title":"Activate SuperTargets with 50 bumper hits","type":"task","explanation":"Register fifty bumper hits to activate the special scoring on the green targets.","source_location":"The A-Team rules - SuperTargets","objective_family":"supertargets","confidence_score":0.92}
+    ],
+    "Hard": [
+      {"title":"Start TNT Multiball","type":"task","explanation":"Complete ten TNT-box hits, then make the required start shot to begin the three-ball TNT Multiball.","source_location":"The A-Team guide - TNT Multiball","objective_family":"tnt_multiball","confidence_score":0.91},
+      {"title":"Complete the Run Away video mission","type":"task","explanation":"Start Run Away at the Jeep and successfully pass all fifteen groups of police cars.","source_location":"The A-Team rules - Run Away video mode","objective_family":"run_away_video","confidence_score":0.90}
+    ]
+  },
+  "Cirqus Voltaire": {
+    "Easy": [
+      {"title":"Defeat the Ringmaster once","type":"task","explanation":"Raise the Ringmaster and land the full sequence of hits needed to defeat him once.","source_location":"Cirqus Voltaire guide - Ringmaster defeat","objective_family":"ringmaster_defeat","confidence_score":0.94},
+      {"title":"Spell R-I-N-G once","type":"task","explanation":"Complete the four RING rollovers to advance the end-of-ball bonus multiplier.","source_location":"Cirqus Voltaire guide - RING rollovers","objective_family":"ring_rollovers","confidence_score":0.91},
+      {"title":"Shoot the left ramp 3 times","type":"task","explanation":"Make three clean left-ramp shots in one game.","source_location":"Cirqus Voltaire guide - Left ramp","objective_family":"left_ramp","confidence_score":0.93},
+      {"title":"Collect a Side Show award","type":"task","explanation":"Enter the lit Side Show and collect its awarded feature.","source_location":"Cirqus Voltaire guide - Side Show award","objective_family":"sideshow_award","confidence_score":0.91}
+    ],
+    "Medium": [
+      {"title":"Complete the Acrobats Marvel","type":"task","explanation":"Shoot the right ramp four times to finish Acrobats and light Super Spinner.","source_location":"Cirqus Voltaire guide - Acrobats Marvel","objective_family":"acrobats_marvel","confidence_score":0.94},
+      {"title":"Defeat the Ringmaster twice in one game","type":"task","explanation":"Complete two full Ringmaster battles before the game ends.","source_location":"Cirqus Voltaire guide - Two Ringmasters","objective_family":"two_ringmasters","confidence_score":0.92},
+      {"title":"Start Juggler","type":"task","explanation":"Complete the JUGGLER targets, then make the lit start shot.","source_location":"Cirqus Voltaire guide - Juggler","objective_family":"juggler","confidence_score":0.91},
+      {"title":"Start Highwire Multiball","type":"task","explanation":"Qualify and lock the required balls, then begin Highwire Multiball.","source_location":"Cirqus Voltaire guide - Highwire Multiball","objective_family":"highwire_multiball","confidence_score":0.90}
+    ],
+    "Hard": [
+      {"title":"Collect a Ringmaster Jackpot","type":"task","explanation":"Reach a Ringmaster battle and collect one lit Ringmaster Jackpot shot.","source_location":"Cirqus Voltaire guide - Ringmaster Jackpot","objective_family":"ringmaster_jackpot","confidence_score":0.88},
+      {"title":"Collect Voltaire's Multiple Jackpots","type":"task","explanation":"Stack qualifying multiballs, return to one ball, then shoot the left ramp during the short collection window.","source_location":"Cirqus Voltaire guide - Voltaire's Multiple Jackpots","objective_family":"voltaires_multiple_jackpots","confidence_score":0.88}
+    ]
+  },
+  "Jokerz": {
+    "Easy": [
+      {"title":"Complete the lower-left drop bank","type":"task","explanation":"Knock down all three lower-left drop targets once.","source_location":"Jokerz guide - Lower-left bank","objective_family":"lower_left_bank","confidence_score":0.95},
+      {"title":"Complete the lower-right drop bank","type":"task","explanation":"Knock down all three lower-right drop targets once.","source_location":"Jokerz guide - Lower-right bank","objective_family":"lower_right_bank","confidence_score":0.95},
+      {"title":"Complete the upper-left drop bank","type":"task","explanation":"Knock down all three upper-left drop targets once.","source_location":"Jokerz guide - Upper-left bank","objective_family":"upper_left_bank","confidence_score":0.94},
+      {"title":"Complete the B-E-T rollover lanes","type":"task","explanation":"Light B, E, and T in the upper rollover lanes once, using lane change as needed.","source_location":"Jokerz guide - BET lanes","objective_family":"bet_lanes","confidence_score":0.94}
+    ],
+    "Medium": [
+      {"title":"Complete one upper-playfield card hand","type":"task","explanation":"Light every card rollover on the upper playfield to complete one hand.","source_location":"Jokerz guide - Card hand","objective_family":"card_hand","confidence_score":0.93},
+      {"title":"Collect a Draw Poker award","type":"task","explanation":"Light the Draw Poker saucer from the left inlane, then shoot the saucer and take its wheel award.","source_location":"Jokerz guide - Draw Poker","objective_family":"draw_poker","confidence_score":0.92},
+      {"title":"Start timed Millions","type":"task","explanation":"Complete all three drop-target banks to begin timed Millions scoring.","source_location":"Jokerz guide - Millions","objective_family":"millions_start","confidence_score":0.94},
+      {"title":"Raise and shoot the center ramp","type":"task","explanation":"Hit the center target to raise the ramp, then make the center-ramp shot.","source_location":"Jokerz guide - Center ramp","objective_family":"center_ramp","confidence_score":0.93}
+    ],
+    "Hard": [
+      {"title":"Collect 1,000,000 during timed Millions","type":"task","explanation":"Start timed Millions, then complete any full drop bank before the timer expires.","source_location":"Jokerz guide - Million award","objective_family":"million_award","confidence_score":0.92},
+      {"title":"Start Multiball and collect the Jackpot","type":"task","explanation":"Lock two balls at the raised center ramp, start Multiball, and complete the required center-ramp shots for Jackpot.","source_location":"Jokerz guide - Multiball Jackpot","objective_family":"multiball_jackpot","confidence_score":0.91}
+    ]
+  },
+  "AC/DC": {
+    "Easy": [
+      {"title":"Spell F-I-R-E once","type":"task","explanation":"Roll through all four FIRE inlane and outlane letters, using lane change to move the unlit letter.","source_location":"AC/DC guide - FIRE lanes","objective_family":"fire_lanes","confidence_score":0.95},
+      {"title":"Start 2X Playfield","type":"task","explanation":"Hit the bell three times to start the timed 2X playfield multiplier.","source_location":"AC/DC guide - 2X Playfield","objective_family":"two_x_playfield","confidence_score":0.95},
+      {"title":"Load the Cannon once","type":"task","explanation":"Shoot the right ramp once to load the Cannon for a center-target attempt.","source_location":"AC/DC guide - Cannon load","objective_family":"cannon_load","confidence_score":0.92},
+      {"title":"Complete one AC/DC, T.N.T., or ROCK target bank","type":"task","explanation":"Finish any one of the three labeled target banks once.","source_location":"AC/DC guide - Album targets","objective_family":"album_target_bank","confidence_score":0.93}
+    ],
+    "Medium": [
+      {"title":"Make 6 ramp shots in one game","type":"task","explanation":"Complete six total shots across the left and right ramps before the game ends.","source_location":"AC/DC guide - Ramp progress","objective_family":"six_ramps","confidence_score":0.92},
+      {"title":"Make 8 loop shots in one game","type":"task","explanation":"Complete eight total shots through the left and right loops before the game ends.","source_location":"AC/DC guide - Tour loops","objective_family":"eight_loops","confidence_score":0.92},
+      {"title":"Fire the Cannon and hit a lit target","type":"task","explanation":"Load the Cannon at the right ramp, then time the fire button to hit one of its lit playfield targets.","source_location":"AC/DC guide - Cannon shot","objective_family":"cannon_fire","confidence_score":0.93},
+      {"title":"Start 3X Playfield","type":"task","explanation":"Start 2X with three bell hits, then land three more bell hits before the multiplier expires.","source_location":"AC/DC guide - 3X Playfield","objective_family":"three_x_playfield","confidence_score":0.93}
+    ],
+    "Hard": [
+      {"title":"Start any main Multiball","type":"task","explanation":"Qualify and start Jam, Tour, or Album Multiball at the right ramp.","source_location":"AC/DC guide - Main Multiballs","objective_family":"main_multiball","confidence_score":0.91},
+      {"title":"Complete a song objective and collect its Encore progress","type":"task","explanation":"Finish the active song's shot objective and secure the resulting Encore progress before the game ends.","source_location":"AC/DC guide - Song completion and Encore","objective_family":"encore_progress","confidence_score":0.86}
+    ]
+  },
+  "Corvette": {
+    "Easy": [
+      {"title":"Make the flashing skill shot","type":"task","explanation":"Move the flashing top lane with the flippers and plunge through it for the skill-shot award.","source_location":"Corvette guide - Skill shot","objective_family":"skill_shot","confidence_score":0.95},
+      {"title":"Reveal the next Route 66 award","type":"task","explanation":"Shoot the right ramp once to open its diverter and reveal the next Route 66 award.","source_location":"Corvette guide - Route 66 reveal","objective_family":"route_66_reveal","confidence_score":0.94},
+      {"title":"Collect 1 spark plug","type":"task","explanation":"Make the major shot marked with a yellow arrow to collect one spark plug.","source_location":"Corvette guide - Spark plugs","objective_family":"spark_plug","confidence_score":0.93},
+      {"title":"Collect 1 Track Combo","type":"task","explanation":"Use the engine ramp or right orbit to feed the upper flipper, then complete its lit follow-up shot.","source_location":"Corvette guide - Track Combos","objective_family":"track_combo","confidence_score":0.93}
+    ],
+    "Medium": [
+      {"title":"Collect any Route 66 award","type":"task","explanation":"Reveal the next Route 66 award with one right-ramp shot, then shoot the ramp again to collect it.","source_location":"Corvette guide - Route 66 award","objective_family":"route_66_award","confidence_score":0.93},
+      {"title":"Win Race Today","type":"task","explanation":"Start Race Today at the right ramp, accelerate with the left flipper, and shift with the right when prompted.","source_location":"Corvette guide - Race Today","objective_family":"race_today","confidence_score":0.92},
+      {"title":"Collect a Multiball Jackpot","type":"task","explanation":"Reach Multiball and make one lit Jackpot shot.","source_location":"Corvette guide - Jackpot","objective_family":"jackpot","confidence_score":0.89},
+      {"title":"Complete a Challenge at the Pit","type":"task","explanation":"Collect a flashing blue car part, start its Challenge at the Pit, and win the race with flashing shots.","source_location":"Corvette guide - Challenges","objective_family":"challenge_completion","confidence_score":0.92}
+    ],
+    "Hard": [
+      {"title":"Complete the four-shot Catch Me sequence","type":"task","explanation":"Collect Catch Me from Route 66, then make the right ramp, skid-pad ramp, engine, and Pit shots in order before their timers expire.","source_location":"Corvette guide - Catch Me","objective_family":"catch_me","confidence_score":0.91},
+      {"title":"Collect a Multiball Super Jackpot","type":"task","explanation":"During Multiball, shoot the upper loop and immediately follow it with the skid-pad ramp.","source_location":"Corvette guide - Super Jackpot","objective_family":"super_jackpot","confidence_score":0.92}
+    ]
+  },
+  "High Speed": {
+    "Easy": [
+      {"title":"Complete the green stoplight targets","type":"task","explanation":"Hit or spot all three flashing green stoplight targets.","source_location":"High Speed guide - Green stoplights","objective_family":"green_stoplights","confidence_score":0.96},
+      {"title":"Make 1 Freeway","type":"task","explanation":"Use an inlane to light a timed Freeway arrow, then shoot the corresponding full orbit before it expires.","source_location":"High Speed guide - Freeway","objective_family":"one_freeway","confidence_score":0.95},
+      {"title":"Shoot the main ramp once","type":"task","explanation":"Make one full main-ramp shot to collect its ramp award and bonus multiplier.","source_location":"High Speed guide - Main ramp","objective_family":"main_ramp","confidence_score":0.95},
+      {"title":"Shoot the eject hole once","type":"task","explanation":"Land the ball in the eject hole once; on standard settings it also spots stoplight progress.","source_location":"High Speed guide - Eject hole","objective_family":"eject_hole","confidence_score":0.94}
+    ],
+    "Medium": [
+      {"title":"Advance the stoplight to Yellow","type":"task","explanation":"Complete all green stoplights so the main stoplight advances to Yellow.","source_location":"High Speed guide - Yellow light","objective_family":"yellow_light","confidence_score":0.94},
+      {"title":"Make 3 Freeways on one ball","type":"task","explanation":"Light and collect three timed Freeway orbit awards before the ball drains.","source_location":"High Speed guide - Three Freeways","objective_family":"three_freeways","confidence_score":0.93},
+      {"title":"Reach Red Light","type":"task","explanation":"Complete the green and yellow stoplight sets to reach Red.","source_location":"High Speed guide - Red light","objective_family":"red_light","confidence_score":0.94},
+      {"title":"Start Police Chase","type":"task","explanation":"Reach Red, then shoot the main ramp to run the red light and begin Police Chase.","source_location":"High Speed guide - Police Chase","objective_family":"police_chase","confidence_score":0.94}
+    ],
+    "Hard": [
+      {"title":"Escape and start Multiball","type":"task","explanation":"Start Police Chase, complete all nine stoplight targets, then make the lit Escape shot.","source_location":"High Speed guide - Escape Multiball","objective_family":"escape_multiball","confidence_score":0.93},
+      {"title":"Collect the Hideout Jackpot","type":"task","explanation":"After escaping into Multiball, shoot the main ramp to collect the Hideout Jackpot.","source_location":"High Speed guide - Hideout Jackpot","objective_family":"hideout_jackpot","confidence_score":0.93}
+    ]
+  },
+  "Bad Cats": {
+    "Easy": [
+      {"title":"Complete the Birds drop-target bank","type":"task","explanation":"Knock down all five Birds drop targets once.","source_location":"Bad Cats guide - Birds bank","objective_family":"birds_bank","confidence_score":0.95},
+      {"title":"Complete the Milk drop-target bank","type":"task","explanation":"Knock down the full Milk drop-target bank once.","source_location":"Bad Cats guide - Milk bank","objective_family":"milk_bank","confidence_score":0.95},
+      {"title":"Make 1 Tiger Ramp shot","type":"task","explanation":"Shoot the long left Tiger Ramp once.","source_location":"Bad Cats guide - Tiger Ramp","objective_family":"tiger_ramp","confidence_score":0.95},
+      {"title":"Collect one DogHouse award","type":"task","explanation":"Use the lit left inlane to open Bulldog's mouth, then shoot the DogHouse scoop.","source_location":"Bad Cats guide - DogHouse","objective_family":"doghouse","confidence_score":0.92}
+    ],
+    "Medium": [
+      {"title":"Complete both Birds and Milk banks","type":"task","explanation":"Finish the Birds bank and the Milk bank once each in the same game.","source_location":"Bad Cats guide - Both banks","objective_family":"both_banks","confidence_score":0.94},
+      {"title":"Collect one SeaFood wheel award","type":"task","explanation":"Light the Fishbowl ramp, make the center ramp, and take the SeaFood wheel award.","source_location":"Bad Cats guide - SeaFood wheel","objective_family":"seafood_wheel","confidence_score":0.92},
+      {"title":"Spell B-A-D C-A-T-S once","type":"task","explanation":"Complete enough drop-target banks to finish one full BAD CATS letter cycle.","source_location":"Bad Cats guide - BAD CATS letters","objective_family":"bad_cats_letters","confidence_score":0.91},
+      {"title":"Reach 5X bonus","type":"task","explanation":"Complete the top rollover lanes enough times to advance the bonus multiplier to 5X.","source_location":"Bad Cats guide - Bonus multiplier","objective_family":"bonus_multiplier","confidence_score":0.90}
+    ],
+    "Hard": [
+      {"title":"Light and collect the Jackpot at the Fishbowl ramp","type":"task","explanation":"Complete seven required target banks to light Jackpot, then shoot the center Fishbowl ramp before draining.","source_location":"Bad Cats guide - Jackpot","objective_family":"jackpot","confidence_score":0.93},
+      {"title":"Reach 7X bonus and collect a SeaFood award","type":"task","explanation":"Max the rollover bonus multiplier at 7X and collect one lit SeaFood wheel award in the same game.","source_location":"Bad Cats guide - Max bonus and SeaFood","objective_family":"max_bonus_seafood","confidence_score":0.88}
+    ]
+  },
+  "Dolly Parton": {
+    "Easy": [
+      {"title":"Light the spinner with the first inline target","type":"task","explanation":"Knock down the first inline drop target to light the spinner.","source_location":"Dolly Parton guide - Light spinner","objective_family":"light_spinner","confidence_score":0.96},
+      {"title":"Collect 1 D-O-L-L-Y letter","type":"task","explanation":"Hit any lit DOLLY standup target to add one DOLLY letter to bonus.","source_location":"Dolly Parton guide - DOLLY letters","objective_family":"dolly_letter","confidence_score":0.94},
+      {"title":"Collect 1 P-A-R-T-O-N saucer letter","type":"task","explanation":"Plunge or shoot the top saucer to collect its currently lit PARTON letter.","source_location":"Dolly Parton guide - PARTON saucer","objective_family":"parton_letter","confidence_score":0.94},
+      {"title":"Score the 5,000 return lane","type":"task","explanation":"Send the ball through the 5,000-point return lane below the spinner once.","source_location":"Dolly Parton guide - 5,000 lane","objective_family":"return_lane","confidence_score":0.90}
+    ],
+    "Medium": [
+      {"title":"Rip the lit spinner for at least 10 spins","type":"task","explanation":"Light the spinner, then make one spinner shot that registers at least ten spins.","source_location":"Dolly Parton guide - Lit spinner","objective_family":"spinner_rips","confidence_score":0.92},
+      {"title":"Reach 3X bonus at the inline targets","type":"task","explanation":"Knock down the first three inline targets to advance the bonus multiplier to 3X.","source_location":"Dolly Parton guide - 3X bonus","objective_family":"three_x_bonus","confidence_score":0.94},
+      {"title":"Complete D-O-L-L-Y once","type":"task","explanation":"Collect all five DOLLY standup letters in one game.","source_location":"Dolly Parton guide - Complete DOLLY","objective_family":"complete_dolly","confidence_score":0.92},
+      {"title":"Complete P-A-R-T-O-N once","type":"task","explanation":"Collect all six PARTON letters from the top saucer sequence.","source_location":"Dolly Parton guide - Complete PARTON","objective_family":"complete_parton","confidence_score":0.91}
+    ],
+    "Hard": [
+      {"title":"Complete D-O-L-L-Y P-A-R-T-O-N once","type":"task","explanation":"Finish the full eleven-letter DOLLY PARTON bonus sequence in one game.","source_location":"Dolly Parton guide - Full name","objective_family":"full_name","confidence_score":0.92},
+      {"title":"Reach 5X bonus and complete P-A-R-T-O-N","type":"task","explanation":"Clear all four inline targets for 5X and complete the PARTON saucer letters in the same game.","source_location":"Dolly Parton guide - Max bonus setup","objective_family":"max_bonus_parton","confidence_score":0.89}
+    ]
+  },
+  "Independence Day": {
+    "Easy": [
+      {"title":"Complete the Area 51 targets once","type":"task","explanation":"Light all three lower Area 51 targets once to light Alien Scan.","source_location":"Independence Day rules - Area 51 targets","objective_family":"area_51_targets","confidence_score":0.95},
+      {"title":"Complete the F-18 targets once","type":"task","explanation":"Light all three upper F-18 targets to start Hurry-Up.","source_location":"Independence Day rules - F-18 targets","objective_family":"f18_targets","confidence_score":0.95},
+      {"title":"Make 1 Alien ramp shot","type":"task","explanation":"Send the ball up the Alien ramp once toward its escalating awards.","source_location":"Independence Day rules - Alien ramp","objective_family":"alien_ramp","confidence_score":0.95},
+      {"title":"Complete the three I-D-4 lanes once","type":"task","explanation":"Light all three angled ID4 lanes to advance the bonus multiplier.","source_location":"Independence Day rules - ID4 lanes","objective_family":"id4_lanes","confidence_score":0.94}
+    ],
+    "Medium": [
+      {"title":"Start Red Alert","type":"task","explanation":"Make three shots up the left and right ramps to begin the thirty-second Red Alert mode.","source_location":"Independence Day rules - Red Alert","objective_family":"red_alert","confidence_score":0.94},
+      {"title":"Collect a Hurry-Up at the left orbit","type":"task","explanation":"Complete the F-18 bank, then shoot the left orbit before the Hurry-Up timer expires.","source_location":"Independence Day rules - Hurry-Up","objective_family":"hurry_up","confidence_score":0.94},
+      {"title":"Collect a Combo Jackpot","type":"task","explanation":"Use an inlane to light an orbit combo, complete it, then hit the lit Combo Target.","source_location":"Independence Day rules - Combo Jackpot","objective_family":"combo_jackpot","confidence_score":0.93},
+      {"title":"Collect an Alien Scan award","type":"task","explanation":"Complete the Area 51 targets to light Alien Scan, then complete the bank again to collect its award.","source_location":"Independence Day rules - Alien Scan","objective_family":"alien_scan","confidence_score":0.93}
+    ],
+    "Hard": [
+      {"title":"Collect the 100,000,000 Computer Virus award","type":"task","explanation":"Shoot the Computer Virus sinkhole five times to reach 100%, then collect the lit right-orbit award.","source_location":"Independence Day rules - Computer Virus","objective_family":"computer_virus","confidence_score":0.92},
+      {"title":"Collect the 160,000,000 Multiball Super Jackpot","type":"task","explanation":"Advance through the lock, orbit, and three-ramp Jackpot waves, then shoot the Combo Target for Super Jackpot.","source_location":"Independence Day rules - Multiball Super Jackpot","objective_family":"super_jackpot","confidence_score":0.92}
+    ]
+  },
+  "Batman 66": {
+    "Easy": [
+      {"title":"Start any Major Villain mode","type":"task","explanation":"Qualify a Major Villain at the Bat Phone and start its first phase.","source_location":"Batman 66 guide - Major Villain","objective_family":"major_villain_start","confidence_score":0.92},
+      {"title":"Start any Minor Villain mode","type":"task","explanation":"Qualify and start any Minor Villain encounter.","source_location":"Batman 66 guide - Minor Villain","objective_family":"minor_villain_start","confidence_score":0.92},
+      {"title":"Collect a Mystery award","type":"task","explanation":"Light Mystery and shoot its award shot once.","source_location":"Batman 66 guide - Mystery","objective_family":"mystery","confidence_score":0.93},
+      {"title":"Light one shot multiplier at Commissioner Gordon","type":"task","explanation":"Build Commissioner Gordon progress and light one playfield shot multiplier.","source_location":"Batman 66 guide - Shot multiplier","objective_family":"shot_multiplier","confidence_score":0.90}
+    ],
+    "Medium": [
+      {"title":"Complete any Major Villain phase","type":"task","explanation":"Start a Major Villain and finish one complete phase.","source_location":"Batman 66 guide - Major phase","objective_family":"major_phase","confidence_score":0.91},
+      {"title":"Complete any Minor Villain mode","type":"task","explanation":"Start and finish one full Minor Villain mode.","source_location":"Batman 66 guide - Minor completion","objective_family":"minor_completion","confidence_score":0.91},
+      {"title":"Start Villain Multiball","type":"task","explanation":"Complete Villain Multiball qualification and make its start shot.","source_location":"Batman 66 guide - Villain Multiball","objective_family":"villain_multiball","confidence_score":0.90},
+      {"title":"Complete any King Tut mode","type":"task","explanation":"Qualify King Tut and complete one of his mode objectives.","source_location":"Batman 66 guide - King Tut","objective_family":"king_tut","confidence_score":0.89}
+    ],
+    "Hard": [
+      {"title":"Complete Mr. Freeze","type":"task","explanation":"Reach Mr. Freeze and complete the full villain encounter.","source_location":"Batman 66 guide - Mr. Freeze","objective_family":"mr_freeze","confidence_score":0.90},
+      {"title":"Light all five shot multipliers","type":"task","explanation":"Use Commissioner Gordon progress to light all five major-shot multipliers in one game.","source_location":"Batman 66 guide - All multipliers","objective_family":"all_multipliers","confidence_score":0.89}
+    ]
+  },
+  "Dr. Dude": {
+    "Easy": [
+      {"title":"Complete the R-E-F-L-E-X targets","type":"task","explanation":"Hit every REFLEX target once to complete the bank.","source_location":"Dr. Dude guide - REFLEX targets","objective_family":"reflex_targets","confidence_score":0.95},
+      {"title":"Complete the four drop targets once","type":"task","explanation":"Knock down the full four-target bank once to earn 2X bonus and relight Bag O' Tricks.","source_location":"Dr. Dude rules - Drop targets","objective_family":"drop_targets","confidence_score":0.95},
+      {"title":"Collect one Bag O' Tricks award","type":"task","explanation":"Shoot the Bag O' Tricks when lit and accept one displayed award.","source_location":"Dr. Dude guide - Bag O' Tricks","objective_family":"bag_o_tricks","confidence_score":0.92},
+      {"title":"Complete Reflex 1-2-3 once","type":"task","explanation":"Make the three numbered Reflex shots in order once.","source_location":"Dr. Dude guide - Reflex 1-2-3","objective_family":"reflex_sequence","confidence_score":0.92}
+    ],
+    "Medium": [
+      {"title":"Collect Heart of Rock 'n Roll","type":"task","explanation":"Make the Heart shot when lit to collect that Element of Coolness.","source_location":"Dr. Dude guide - Heart","objective_family":"heart_element","confidence_score":0.93},
+      {"title":"Collect Magnetic Personality","type":"task","explanation":"Make the Magnetic Personality shot when lit to collect that element.","source_location":"Dr. Dude guide - Magnetic Personality","objective_family":"magnetic_element","confidence_score":0.93},
+      {"title":"Collect Gift of Gab","type":"task","explanation":"Make the Gift of Gab shot when lit to collect that element.","source_location":"Dr. Dude guide - Gift of Gab","objective_family":"gab_element","confidence_score":0.93},
+      {"title":"Bring the Mixmaster online","type":"task","explanation":"Collect all three Elements of Coolness so the Mixmaster becomes ready.","source_location":"Dr. Dude guide - Mixmaster qualification","objective_family":"mixmaster_ready","confidence_score":0.93}
+    ],
+    "Hard": [
+      {"title":"Become Super Dude and collect a Gazillion","type":"task","explanation":"Collect all elements, complete the Mixmaster sequence, start Multiball, and make the lit Gazillion shot.","source_location":"Dr. Dude guide - Gazillion","objective_family":"gazillion","confidence_score":0.91},
+      {"title":"Complete Reflex 1-2-3 twice in one game","type":"task","explanation":"Finish the full numbered Reflex sequence two separate times before the game ends.","source_location":"Dr. Dude guide - Double Reflex","objective_family":"double_reflex","confidence_score":0.89}
+    ]
+  },
+  "Hurricane": {
+    "Easy": [
+      {"title":"Complete the Ducks targets","type":"task","explanation":"Hit every Ducks standup target once to complete the group.","source_location":"Hurricane guide - Ducks","objective_family":"ducks_targets","confidence_score":0.95},
+      {"title":"Collect the 1,000,000 right-ramp award","type":"task","explanation":"Advance the right-ramp value and make the ramp when its 1,000,000 award is lit.","source_location":"Hurricane guide - Right ramp million","objective_family":"right_ramp_million","confidence_score":0.92},
+      {"title":"Collect a Ferris Wheel award","type":"task","explanation":"Light the Ferris Wheel and shoot it to collect one displayed award.","source_location":"Hurricane guide - Ferris Wheel","objective_family":"ferris_wheel","confidence_score":0.93},
+      {"title":"Make 1 Hurricane ramp shot","type":"task","explanation":"Send the ball around the full Hurricane ramp once from the playfield.","source_location":"Hurricane guide - Hurricane ramp","objective_family":"hurricane_ramp","confidence_score":0.94}
+    ],
+    "Medium": [
+      {"title":"Start Clown Time","type":"task","explanation":"Light all six parts of the Clown's Face, then shoot the Hurricane ramp to start the frenzy.","source_location":"Hurricane guide - Clown Time","objective_family":"clown_time","confidence_score":0.93},
+      {"title":"Collect a Mystery Wheel award","type":"task","explanation":"Qualify and collect one award from the backglass Mystery Wheel.","source_location":"Hurricane guide - Mystery Wheel","objective_family":"mystery_wheel","confidence_score":0.91},
+      {"title":"Reach unlimited millions on the Comet ramp","type":"task","explanation":"Make the timed Comet sequence through 100K, 200K, and 300K, then collect a 1,000,000 shot.","source_location":"Hurricane guide - Comet millions","objective_family":"comet_millions","confidence_score":0.93},
+      {"title":"Collect a Quick Score at the Ferris Wheel","type":"task","explanation":"Shoot the Ferris Wheel immediately after the ball crosses the right return-lane switch.","source_location":"Hurricane guide - Quick Score","objective_family":"quick_score","confidence_score":0.92}
+    ],
+    "Hard": [
+      {"title":"Start Multiball","type":"task","explanation":"Qualify and lock the required balls at the Juggler, then begin Multiball.","source_location":"Hurricane guide - Multiball","objective_family":"multiball","confidence_score":0.91},
+      {"title":"Spell P-A-L-A-C-E and collect the Jackpot","type":"task","explanation":"Finish PALACE, then make the lit Jackpot shot before the game ends.","source_location":"Hurricane guide - PALACE Jackpot","objective_family":"palace_jackpot","confidence_score":0.90}
+    ]
+  },
+  "Taxi": {
+    "Easy": [
+      {"title":"Pick up 1 passenger","type":"task","explanation":"Make the currently lit passenger pickup shot once.","source_location":"Taxi guide - Passenger pickup","objective_family":"one_passenger","confidence_score":0.95},
+      {"title":"Complete the C-A-B top lanes","type":"task","explanation":"Light C, A, and B at the top lanes once, using lane change as needed.","source_location":"Taxi guide - CAB lanes","objective_family":"cab_lanes","confidence_score":0.95},
+      {"title":"Collect the 25,000 Spinout skill shot","type":"task","explanation":"Plunge the ball so the Spinout saucer stops on 25,000 and awards a passenger pickup.","source_location":"Taxi guide - Spinout skill shot","objective_family":"spinout_skill_shot","confidence_score":0.91},
+      {"title":"Complete the L-O-L-A drop targets","type":"task","explanation":"Knock down all three LOLA targets before their ten-second reset.","source_location":"Taxi guide - LOLA targets","objective_family":"lola_targets","confidence_score":0.94}
+    ],
+    "Medium": [
+      {"title":"Complete the P-I-N-B-O-T drop targets","type":"task","explanation":"Knock down all three PINBOT targets before their fifteen-second reset.","source_location":"Taxi guide - PINBOT targets","objective_family":"pinbot_targets","confidence_score":0.94},
+      {"title":"Pick up 3 different passengers","type":"task","explanation":"Collect three different lit passenger pickups in one game.","source_location":"Taxi guide - Three passengers","objective_family":"three_passengers","confidence_score":0.93},
+      {"title":"Collect the 100,000 Spinout skill shot","type":"task","explanation":"Plunge into the Spinout saucer and stop its rotating value on 100,000.","source_location":"Taxi guide - 100,000 Spinout","objective_family":"spinout_100k","confidence_score":0.91},
+      {"title":"Advance Airport value 3 times","type":"task","explanation":"Light Airport from the left inlane, then complete CAB to collect and advance it three times.","source_location":"Taxi guide - Airport","objective_family":"airport_value","confidence_score":0.90}
+    ],
+    "Hard": [
+      {"title":"Pick up all 5 passengers and collect Jackpot","type":"task","explanation":"Collect GORBY, PINBOT, DRAC, LOLA, and SANTA, then shoot the lit Jackpot before its timer expires.","source_location":"Taxi guide - Passenger Jackpot","objective_family":"passenger_jackpot","confidence_score":0.93},
+      {"title":"Start Multiball","type":"task","explanation":"Light and collect the required ball locks, then begin Taxi Multiball.","source_location":"Taxi guide - Multiball","objective_family":"multiball","confidence_score":0.91}
+    ]
+  },
+  "Cyclone": {
+    "Easy": [
+      {"title":"Make 1 Comet ramp shot","type":"task","explanation":"Shoot the left Comet ramp once.","source_location":"Cyclone guide - Comet ramp","objective_family":"comet_ramp","confidence_score":0.95},
+      {"title":"Complete the Shooting Gallery targets","type":"task","explanation":"Hit the full Shooting Gallery target set once.","source_location":"Cyclone guide - Shooting Gallery","objective_family":"shooting_gallery","confidence_score":0.95},
+      {"title":"Complete the Ball Toss targets","type":"task","explanation":"Hit the full Ball Toss target set once.","source_location":"Cyclone guide - Ball Toss","objective_family":"ball_toss","confidence_score":0.95},
+      {"title":"Collect a Ferris Wheel award","type":"task","explanation":"Light the Ferris Wheel from an inlane, then shoot it and take one award.","source_location":"Cyclone guide - Ferris Wheel","objective_family":"ferris_wheel","confidence_score":0.94}
+    ],
+    "Medium": [
+      {"title":"Complete 1-2-3 and start Double Scoring","type":"task","explanation":"Complete all three top rollover lanes to start the timed Double Scoring feature.","source_location":"Cyclone guide - Double Scoring","objective_family":"double_scoring","confidence_score":0.95},
+      {"title":"Collect a Boomerang hole award","type":"task","explanation":"Shoot the Boomerang hole while its advance award is lit.","source_location":"Cyclone guide - Boomerang","objective_family":"boomerang","confidence_score":0.91},
+      {"title":"Collect a Mystery Wheel award","type":"task","explanation":"Qualify the backglass Mystery Wheel and collect one of its awards.","source_location":"Cyclone guide - Mystery Wheel","objective_family":"mystery_wheel","confidence_score":0.91},
+      {"title":"Make 2 Cyclone ramp shots in one game","type":"task","explanation":"Complete the right-side Cyclone ramp twice before the game ends.","source_location":"Cyclone guide - Cyclone ramp","objective_family":"cyclone_ramp","confidence_score":0.92}
+    ],
+    "Hard": [
+      {"title":"Collect the timed Jackpot with 3 right-ramp shots","type":"task","explanation":"Make the right ramp three times before its timer expires to collect the current Jackpot.","source_location":"Cyclone guide - Jackpot","objective_family":"jackpot","confidence_score":0.93},
+      {"title":"Light and collect the 1,000,000 Comet ramp","type":"task","explanation":"Advance the Comet value until 1,000,000 is lit, then make the Comet ramp shot.","source_location":"Cyclone guide - Comet million","objective_family":"comet_million","confidence_score":0.91}
+    ]
+  },
+  "Bride of Pinbot": {
+    "Easy": [
+      {"title":"Shoot the Shuttle Ramp once","type":"task","explanation":"Make one full left Shuttle Ramp shot.","source_location":"Bride of Pinbot guide - Shuttle Ramp","objective_family":"shuttle_ramp","confidence_score":0.95},
+      {"title":"Enter the Pinbot mini-playfield once","type":"task","explanation":"Shoot the lit Shuttle Ramp and send the ball into the upper Pinbot area.","source_location":"Bride of Pinbot guide - Pinbot area","objective_family":"pinbot_area","confidence_score":0.94},
+      {"title":"Complete the three 5K standups","type":"task","explanation":"Hit all three 5K standup targets to advance the bonus multiplier.","source_location":"Bride of Pinbot guide - 5K standups","objective_family":"standup_targets","confidence_score":0.94},
+      {"title":"Shoot the Heartbeat Ramp once","type":"task","explanation":"Make one full center Heartbeat Ramp shot.","source_location":"Bride of Pinbot guide - Heartbeat Ramp","objective_family":"heartbeat_ramp","confidence_score":0.95}
+    ],
+    "Medium": [
+      {"title":"Activate the Bride's voice","type":"task","explanation":"Advance the face sequence to the Activate Voice step and complete it.","source_location":"Bride of Pinbot guide - Activate Voice","objective_family":"activate_voice","confidence_score":0.93},
+      {"title":"Complete the first eye","type":"task","explanation":"Advance the face to Partial Optical Link and complete the first eye.","source_location":"Bride of Pinbot guide - First eye","objective_family":"first_eye","confidence_score":0.93},
+      {"title":"Reach 5X bonus at the 5K standups","type":"task","explanation":"Complete the three 5K standup targets enough times to advance the bonus multiplier to 5X.","source_location":"Bride of Pinbot guide - Bonus multiplier","objective_family":"five_x_bonus","confidence_score":0.92},
+      {"title":"Collect 3 Pinbot values in one game","type":"task","explanation":"Enter the upper Pinbot area three times and collect three successive Pinbot values.","source_location":"Bride of Pinbot guide - Pinbot values","objective_family":"pinbot_values","confidence_score":0.91}
+    ],
+    "Hard": [
+      {"title":"Collect the lit Jackpot at the left lane","type":"task","explanation":"Light Jackpot with right loops, then shoot the far-left lane before its timer expires.","source_location":"Bride of Pinbot guide - Collect Jackpot","objective_family":"collect_jackpot","confidence_score":0.93},
+      {"title":"Complete Metamorphosis","type":"task","explanation":"Complete both eyes to start Multiball, then return both balls to the face far enough to trigger Metamorphosis.","source_location":"Bride of Pinbot guide - Metamorphosis","objective_family":"metamorphosis","confidence_score":0.92}
+    ]
+  }
+}

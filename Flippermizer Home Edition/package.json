@@ -1,6 +1,6 @@
 {
   "name": "flippermizer-home-edition",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Home Edition AP/SP client for Flippermizer! Pinball Randomized!",
   "main": "electron/main.js",
   "private": true,
