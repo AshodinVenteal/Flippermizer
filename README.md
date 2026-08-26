@@ -21,6 +21,12 @@ Release assets:
 - `Flippermizer-Home-Edition-1.1.1-portable.exe`
 - `Flippermizer-Home-Edition-1.1.1-win-unpacked.zip`
 
+### Home Edition Deep Run Test Update - 2026-08-26
+
+- Added a built-in AP-free 15-table Deep Run test seed with three starters, 10 unique table tasks and 10 ascending score tasks per table, feature gates, and staged progression.
+- Deep Run now seeds 10 Boss Keys across 10 different locked tables while requiring any 4 to open the Boss Table; starter tables cannot contain Boss Keys.
+- Added a direct Bagatelle button to Testing controls for exercising the enhanced bumper course and its one-use rewards.
+
 ### Home Edition Task + Boss Hotfix - 2026-06-03
 
 - Retuned table goals and score targets for Attack from Mars, Harlem Globetrotters, Scared Stiff, Congo, Tales of the Arabian Nights, Cirqus Voltaire, Paragon, High Speed, and Bram Stoker's Dracula.
