@@ -1651,23 +1651,23 @@ body.flprFontHubot .checksTitle{
 /* Bagatelle bonus game */
 .bagatelleOverlay{
   position:absolute;
-  left:0;
-  top:0;
-  width:var(--captureW);
-  height:var(--captureH);
+  left:var(--bagatelle-x, 0px);
+  top:var(--bagatelle-y, 0px);
+  width:var(--bagatelle-width, var(--captureW));
+  height:var(--bagatelle-height, var(--captureH));
   z-index:2147483500;
   display:grid;
   place-items:center;
-  padding:24px;
+  padding:10px;
   background:rgba(0,4,10,.88);
   backdrop-filter:blur(5px) brightness(.48);
   pointer-events:auto;
 }
 .bagatelleOverlay[aria-hidden="true"]{ display:none; }
 .bagatelleCard{
-  width:min(790px, 94%);
-  height:min(1040px, 94%);
-  min-height:650px;
+  width:100%;
+  height:100%;
+  min-height:0;
   display:grid;
   grid-template-rows:auto minmax(0,1fr) auto;
   gap:10px;
@@ -24642,6 +24642,7 @@ body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChec
 <script src="./vendor/jszip.min.js"></script>
 <script src="./vendor/matter.min.js"></script>
 <script src="./flippermizer_table_repository.js"></script>
+<script src="./flippermizer_deep_run_catalog.js"></script>
 <script src="./flippermizer_task_explanations.js"></script>
 <script src="./flippermizer_task_repository_cfg.js"></script>
 <script>
@@ -39843,6 +39844,21 @@ function openBagatelle(opts){
       </div>
     </div>`;
   host.appendChild(overlay);
+  try{
+    const hostRect = host.getBoundingClientRect();
+    const headerRect = host.querySelector(".header")?.getBoundingClientRect();
+    const keyDockRect = host.querySelector("#keyDockSplit")?.getBoundingClientRect();
+    const top = headerRect ? headerRect.top - hostRect.top : 0;
+    const left = headerRect ? headerRect.left - hostRect.left : 0;
+    const right = headerRect ? headerRect.right - hostRect.left : hostRect.width;
+    const bottom = keyDockRect && keyDockRect.top > (headerRect?.top || hostRect.top)
+      ? keyDockRect.top - hostRect.top
+      : hostRect.height;
+    overlay.style.setProperty("--bagatelle-x", `${Math.round(left)}px`);
+    overlay.style.setProperty("--bagatelle-y", `${Math.round(top)}px`);
+    overlay.style.setProperty("--bagatelle-width", `${Math.max(1, Math.round(right-left))}px`);
+    overlay.style.setProperty("--bagatelle-height", `${Math.max(1, Math.round(bottom-top))}px`);
+  }catch(_){ }
   try{ pauseAutoSwap(45000); }catch(_){}
 
   const canvas = overlay.querySelector(".bagatelleCanvas");
@@ -39985,6 +40001,7 @@ function openBagatelle(opts){
     raf:0,
     rewarded:false,
     launched:false,
+    launchedAt:0,
     charging:false,
     chargeStart:0,
     awardDeadline:0,
@@ -40001,6 +40018,26 @@ function openBagatelle(opts){
     const speed = Math.hypot(vx, vy);
     const scale = speed > limit ? limit / speed : 1;
     Body.setVelocity(ball, { x:vx*scale, y:vy*scale });
+  };
+  const returnBallToPlunger = ()=>{
+    if(runtime.rewarded || bagatelleRuntime !== runtime) return;
+    try{ clearTimeout(runtime.failsafe); }catch(_){ }
+    runtime.failsafe=0;
+    runtime.launched=false;
+    runtime.launchedAt=0;
+    runtime.charging=false;
+    runtime.awardDeadline=0;
+    runtime.ballTrail.length=0;
+    runtime.lastMotionAt=performance.now();
+    Body.setPosition(ball,{ x:w-51, y:h-78 });
+    Body.setVelocity(ball,{ x:0, y:0 });
+    Body.setAngularVelocity(ball,0);
+    Body.setStatic(ball,true);
+    runtime.lastMotionPosition={ x:ball.position.x, y:ball.position.y };
+    runtime.courseHits.recoveries += 1;
+    plunger.disabled=false;
+    plunger.style.setProperty("--charge","0");
+    if(statusEl) statusEl.textContent="BALL RETURNED; PLUNGE AGAIN";
   };
   const flashCourseHit = (body, color, kind)=>{
     const now = performance.now();
@@ -40083,7 +40120,9 @@ function openBagatelle(opts){
   const draw = ()=>{
     if(bagatelleRuntime !== runtime) return;
     try{
-      Engine.update(engine, 1000/60);
+      // The launch is intentionally forceful; four compact steps keep the ball
+      // from tunneling through the thin shooter guide at that speed.
+      for(let physicsStep=0; physicsStep<4; physicsStep++) Engine.update(engine, 1000/240);
       if(runtime.launched && !runtime.rewarded){
         const px=Number(ball.position.x);
         const py=Number(ball.position.y);
@@ -40091,7 +40130,25 @@ function openBagatelle(opts){
         const vy=Number(ball.velocity.y);
         const invalid=!Number.isFinite(px) || !Number.isFinite(py) || !Number.isFinite(vx) || !Number.isFinite(vy);
         const escaped=!invalid && (px < -36 || px > w+36 || py < -72 || py > h+42);
-        if(invalid || escaped){
+        const motionNow=performance.now();
+        const clearedShooterLane = runtime.courseHits.launch === 0
+          && px > playW+10
+          && py <= 190;
+        if(clearedShooterLane){
+          Body.setPosition(ball,{ x:playW-72, y:118 });
+          setExcitingVelocity(-6.4-(Math.random()*1.4), 4.3+(Math.random()*1.0), 15);
+          runtime.lastMotionAt=motionNow;
+          runtime.lastMotionPosition={ x:ball.position.x, y:ball.position.y };
+          runtime.courseHits.launch += 1;
+          flashCourseHit(launchGuide, launchGuide.plugin.flprBagatelleLaunchGuide.color, "rail");
+        }
+        const trappedInShooterLane = runtime.courseHits.launch === 0
+          && motionNow-runtime.launchedAt > 900
+          && px > playW+10
+          && ((vy >= 0 && py > h*.42) || motionNow-runtime.launchedAt > 2600);
+        if(trappedInShooterLane){
+          returnBallToPlunger();
+        }else if(invalid || escaped){
           const recoveryX=Number.isFinite(px) ? Math.max(28,Math.min(playW-28,px)) : playW*.50;
           const recoveryY=Number.isFinite(py) ? Math.max(98,Math.min(h-188,py)) : h*.32;
           Body.setPosition(ball,{ x:recoveryX, y:recoveryY });
@@ -40102,7 +40159,6 @@ function openBagatelle(opts){
           const speed=Math.hypot(vx,vy);
           if(speed>22) setExcitingVelocity(vx,vy,22);
           const moved=Math.hypot(px-runtime.lastMotionPosition.x,py-runtime.lastMotionPosition.y);
-          const motionNow=performance.now();
           if(speed>.24 || moved>1.4){
             runtime.lastMotionAt=motionNow;
             runtime.lastMotionPosition={ x:px, y:py };
@@ -40189,13 +40245,21 @@ function openBagatelle(opts){
       }
       rewards.forEach((reward,index)=>{
         const x=index*pocketW;
-        ctx.fillStyle=reward.color+"22"; ctx.fillRect(x,h-58,pocketW-2,54);
-        ctx.strokeStyle=reward.color; ctx.strokeRect(x+1,h-57,pocketW-4,52);
-        ctx.fillStyle=reward.color; ctx.font="bold 9px monospace"; ctx.textAlign="center";
+        ctx.fillStyle=reward.color+"22"; ctx.fillRect(x,h-72,pocketW-2,68);
+        ctx.strokeStyle=reward.color; ctx.strokeRect(x+1,h-71,pocketW-4,66);
+        ctx.fillStyle=reward.color; ctx.font='10px "Press Start 2P", monospace'; ctx.textAlign="center";
         const words=reward.label.split(" ");
-        const mid=Math.ceil(words.length/2);
-        ctx.fillText(words.slice(0,mid).join(" "),x+pocketW/2,h-36);
-        ctx.fillText(words.slice(mid).join(" "),x+pocketW/2,h-22);
+        const lines=[];
+        let line="";
+        words.forEach((word)=>{
+          const next=line ? `${line} ${word}` : word;
+          if(line && ctx.measureText(next).width > pocketW-10){ lines.push(line); line=word; }
+          else line=next;
+        });
+        if(line) lines.push(line);
+        const shown=lines.slice(0,3);
+        const firstY=h-47-((shown.length-2)*7);
+        shown.forEach((text,index)=>ctx.fillText(text,x+pocketW/2,firstY+(index*15)));
       });
       if(runtime.launched && !runtime.rewarded){
         runtime.ballTrail.push({ x:ball.position.x, y:ball.position.y });
@@ -40221,13 +40285,14 @@ function openBagatelle(opts){
     const charge=Math.min(1,Math.max(.08,(performance.now()-runtime.chargeStart)/1800));
     runtime.charging=false;
     runtime.launched=true;
+    runtime.launchedAt=performance.now();
     runtime.lastMotionAt=performance.now();
     runtime.lastMotionPosition={ x:ball.position.x, y:ball.position.y };
     plunger.style.setProperty("--charge","0");
     plunger.disabled=true;
     if(statusEl) statusEl.textContent="BALL IN PLAY";
     Body.setStatic(ball,false);
-    Body.setVelocity(ball,{ x:-2.4-(charge*1.2), y:-24-(charge*6) });
+    Body.setVelocity(ball,{ x:.4, y:-56-(charge*14) });
     runtime.awardDeadline = performance.now() + 14000;
     runtime.failsafe=setTimeout(resolveStalledBall,14000);
   };
@@ -57811,6 +57876,10 @@ function inherentNiceScore(value){
   return Math.max(step, Math.round(n / step) * step);
 }
 function inherentDeepRunScoreLadder(entry, tableIndex){
+  if(Array.isArray(entry?.scoreTargets) && entry.scoreTargets.length >= 10){
+    const guided = entry.scoreTargets.slice(0,10).map((value)=>Math.max(0,Math.round(Number(value)||0)));
+    if(guided.every((value,index)=>value>0 && (index===0 || value>guided[index-1]))) return guided;
+  }
   const fallback = inherentFallbackScores(tableIndex);
   const source = entry?.scoreTargets || fallback;
   const numbers = {};
@@ -57869,12 +57938,7 @@ function inherentTaskSpecs(tableName, tableIndex){
       used.add(key);
       picked.push(label);
     });
-    while(picked.length < count){
-      const number = used.size + 1;
-      const label = `${String(tableName || "Table").trim()} ${difficulty} test objective ${number}`;
-      used.add(label.toLowerCase());
-      picked.push(label);
-    }
+    if(picked.length < count) throw new Error(`Deep Run catalog is missing ${count-picked.length} ${difficulty} task(s) for ${tableName}`);
     return picked.map((name)=>({ name, difficulty, kind:"task" }));
   };
   const tableTasks = [
@@ -57885,9 +57949,8 @@ function inherentTaskSpecs(tableName, tableIndex){
   const ladder = inherentDeepRunScoreLadder(entry, tableIndex);
   const scoreTasks = ladder.map((value, index)=>{
     const difficulty = index < 4 ? "easy" : (index < 8 ? "medium" : "hard");
-    const ordinal = index < 4 ? index + 1 : (index < 8 ? index - 3 : index - 7);
     return {
-      name:`${difficulty.charAt(0).toUpperCase()+difficulty.slice(1)} Score ${ordinal} (${inherentFormatScore(value)})`,
+      name:`${difficulty.charAt(0).toUpperCase()+difficulty.slice(1)} Score (${inherentFormatScore(value)})`,
       difficulty,
       kind:"score",
       scoreTarget:value

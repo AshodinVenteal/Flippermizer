@@ -2869,6 +2869,33 @@
   }
 
   function getBundledTaskCatalog(){
+    const deepRunCatalog = root.FLPR_DEEP_RUN_CATALOG;
+    if(deepRunCatalog && deepRunCatalog.tables && typeof deepRunCatalog.tables === "object"){
+      const deepTables = Object.keys(deepRunCatalog.tables).map(function(tableKey){
+        const source = deepRunCatalog.tables[tableKey] || {};
+        return {
+          tableKey: tableKey,
+          tableName: String(source.tableName || tableKey).trim(),
+          tasksByDifficulty: {
+            easy: Array.isArray(source.tasksByDifficulty?.easy) ? source.tasksByDifficulty.easy.slice() : [],
+            medium: Array.isArray(source.tasksByDifficulty?.medium) ? source.tasksByDifficulty.medium.slice() : [],
+            hard: Array.isArray(source.tasksByDifficulty?.hard) ? source.tasksByDifficulty.hard.slice() : []
+          },
+          scoreAnchors: Object.assign({}, source.scoreAnchors || {}),
+          scoreTargets: Array.isArray(source.scoreTargets) ? source.scoreTargets.slice() : []
+        };
+      });
+      const deepByTable = {};
+      deepTables.forEach(function(entry){
+        deepByTable[normalizeTableKey(entry.tableKey)] = entry;
+        deepByTable[normalizeTableKey(entry.tableName)] = entry;
+        try{
+          const canonical = root.FLPR_TABLE_REPO?.getCanonicalTableName?.(entry.tableName);
+          if(canonical) deepByTable[normalizeTableKey(canonical)] = entry;
+        }catch(_){ }
+      });
+      return { version: String(deepRunCatalog.version || "2.0.0"), tables: deepTables, byTable: deepByTable };
+    }
     const byTable = {};
     const tables = [];
     Object.keys(TABLE_TASK_GUIDES || {}).forEach(function(tableKey, tableIndex){

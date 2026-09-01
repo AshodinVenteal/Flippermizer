@@ -3819,14 +3819,14 @@ def _boss_table_score_targets(table_pool: dict[str, Any]) -> list[int]:
     else:
         easy, medium, hard = anchors[0], anchors[len(anchors) // 2], anchors[-1]
     raw_targets = [
-        easy * 0.55,
-        easy * 0.75,
+        easy * 0.70,
+        easy * 0.80,
+        easy * 0.90,
         easy,
         easy + (medium - easy) * 0.25,
-        easy + (medium - easy) * 0.55,
+        easy + (medium - easy) * 0.50,
+        easy + (medium - easy) * 0.75,
         medium,
-        medium + (hard - medium) * 0.30,
-        medium + (hard - medium) * 0.65,
         hard,
         hard * 1.25,
     ]
