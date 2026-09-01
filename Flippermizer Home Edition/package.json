@@ -8,7 +8,7 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "start": "electron .",
-    "check": "node --check electron/main.js && node --check electron/preload.js && node --check electron/standalone-overlay-bridge.js && node --check electron/standalone-gift-house-test.js && node --check flippermizer_table_repository.js && node --check flippermizer_task_explanations.js",
+    "check": "node --check electron/main.js && node --check electron/preload.js && node --check electron/standalone-overlay-bridge.js && node --check electron/standalone-gift-house-test.js && node --check flippermizer_table_repository.js && node --check flippermizer_deep_run_catalog.js && node --check flippermizer_task_explanations.js",
     "dist:dir": "node tools/ensure_home_icon_ico.js && electron-builder --dir && node tools/stamp_unpacked_icon.js",
     "dist:portable": "npm run dist:dir && electron-builder --win portable --prepackaged dist/win-unpacked",
     "dist": "npm run dist:portable"
@@ -33,6 +33,7 @@
       "electron/standalone-gift-house-test.js",
       "flippermizer_overlay_tower_v3.html",
       "flippermizer_table_repository.js",
+      "flippermizer_deep_run_catalog.js",
       "flippermizer_task_explanations.js",
       "flippermizer_task_repository.html",
       "flippermizer_task_repository_data.js",
