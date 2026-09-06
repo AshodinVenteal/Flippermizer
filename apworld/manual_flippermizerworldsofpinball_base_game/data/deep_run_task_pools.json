@@ -3556,7 +3556,7 @@
     ],
     "Medium": [
       {
-        "title": "Collect a jackpot",
+        "title": "Complete 2 Creature Features in one game",
         "type": "task",
         "explanation": "Complete the guide-defined \"Collect a jackpot\" objective on Bram Stoker's Dracula.",
         "source_location": "Collect a jackpot",
@@ -3652,12 +3652,12 @@
         "confidence_score": 0.86
       },
       {
-        "title": "Collect a jackpot",
+        "title": "Complete 2 Creature Features in one game",
         "type": "task",
-        "explanation": "Complete the guide-defined \"Collect a jackpot\" objective on Creature from the Black Lagoon.",
-        "source_location": "Collect a jackpot",
-        "objective_family": "jackpot",
-        "confidence_score": 0.86
+        "explanation": "Complete two CREATURE feature letters in one game; this is repeatable feature progress below the multiball jackpot sequence.",
+        "source_location": "Complete 2 Creature Features in one game",
+        "objective_family": "creature features",
+        "confidence_score": 0.9
       },
       {
         "title": "Lock 1 ball for multiball",
@@ -3686,12 +3686,12 @@
         "confidence_score": 0.86
       },
       {
-        "title": "Complete 2 Creature Features in one game",
+        "title": "Collect a jackpot",
         "type": "task",
-        "explanation": "Complete the guide-defined \"Complete 2 Creature Features in one game\" objective on Creature from the Black Lagoon.",
-        "source_location": "Complete 2 Creature Features in one game",
-        "objective_family": "creature features",
-        "confidence_score": 0.86
+        "explanation": "Start multiball and complete its jackpot shot sequence; player reports consistently describe Creature multiball control and conversion as demanding.",
+        "source_location": "Collect a jackpot",
+        "objective_family": "jackpot",
+        "confidence_score": 0.94
       }
     ]
   },

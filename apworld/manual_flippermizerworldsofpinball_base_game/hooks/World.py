@@ -810,6 +810,14 @@ def _feature_key_definitions() -> list[dict[str, Any]]:
     ]
 
 
+def _metasizer_is_original_vpx_entry(entry: dict[str, Any]) -> bool:
+    code = str(entry.get("code") or "").strip().upper()
+    name = _metasizer_normalize_lookup_key(entry.get("name"))
+    return bool(entry.get("original_vpx")) or code in {"ATEAM", "AERO", "GHOST"} or name in {
+        "the a team", "aerosmith", "ghostbusters"
+    }
+
+
 def _feature_key_definition_by_id() -> dict[str, dict[str, Any]]:
     return {str(defn.get("id") or "").strip(): dict(defn) for defn in _feature_key_definitions() if str(defn.get("id") or "").strip()}
 
@@ -1030,8 +1038,18 @@ def _assign_deep_run_feature_lock_profile(
     while len(tier_queue) < len(locked_entries):
         tier_queue.append(((len(tier_queue) - sum(targets.get(t, 0) for t in (1, 2, 3, 4))) % 4) + 1)
 
-    key_order = list(gate_ids)
-    rng.shuffle(key_order)
+    # Pick an unlock order that the selected machines can physically support:
+    # tier N may only depend on keys obtainable through tiers below it.
+    from itertools import permutations
+    natural_sets = [set(_feature_gate_ids_for_table(str(entry.get("name") or "").strip())) for entry in locked_entries]
+    def order_score(order: tuple[str, ...]) -> tuple[int, ...]:
+        return tuple(
+            sum(1 for gates in natural_sets if len(gates.intersection(order[:min(5, tier + 1)])) >= tier)
+            for tier in (4, 3, 2, 1)
+        )
+    candidate_orders = list(permutations(gate_ids, min(5, len(gate_ids))))
+    rng.shuffle(candidate_orders)
+    key_order = list(max(candidate_orders, key=order_score)) if candidate_orders else list(gate_ids)
     while len(key_order) < 5:
         key_order.append(key_order[len(key_order) % len(gate_ids)])
     unlock_a, unlock_b, unlock_c, unlock_d, unlock_e = key_order[:5]
@@ -1044,17 +1062,32 @@ def _assign_deep_run_feature_lock_profile(
     tier_pattern_indices = {1: 0, 2: 0, 3: 0, 4: 0}
     locked_by_name: dict[str, dict[str, Any]] = {}
     tier_counts = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
-    for entry, tier in zip(locked_entries, tier_queue):
+    # Give the most demanding tiers first pick of physically eligible tables.
+    pending_entries = list(locked_entries)
+    staged_pairs: list[tuple[dict[str, Any], int]] = []
+    for tier in sorted(tier_queue, reverse=True):
         tier_count = max(1, min(len(gate_ids), int(tier or 1)))
-        patterns = tier_gate_patterns.get(tier_count, [])
-        pattern_index = tier_pattern_indices.get(tier_count, 0)
-        assigned_gates = list(patterns[pattern_index % len(patterns)]) if patterns else list(rng.sample(gate_ids, tier_count))
-        tier_pattern_indices[tier_count] = pattern_index + 1
-        assigned_gates = list(dict.fromkeys(assigned_gates))
-        if len(assigned_gates) < tier_count:
-            assigned_gates.extend(gate_id for gate_id in key_order if gate_id not in assigned_gates)
-        assigned_gates = assigned_gates[:tier_count]
-        entry["natural_feature_gates"] = list(entry.get("feature_gates") or _feature_gate_ids_for_table(str(entry.get("name") or "").strip()))
+        available_gates = set(key_order[:min(len(key_order), tier_count + 1)])
+        if tier_count == 1:
+            available_gates = {key_order[0]}
+        eligible = [
+            entry for entry in pending_entries
+            if len(set(_feature_gate_ids_for_table(str(entry.get("name") or "").strip())).intersection(available_gates)) >= tier_count
+        ]
+        if not eligible:
+            eligible = [entry for entry in pending_entries if _feature_gate_ids_for_table(str(entry.get("name") or "").strip())]
+        if not eligible:
+            break
+        entry = rng.choice(eligible)
+        pending_entries.remove(entry)
+        staged_pairs.append((entry, tier_count))
+
+    for entry, requested_tier in staged_pairs:
+        natural_gates = list(dict.fromkeys(_feature_gate_ids_for_table(str(entry.get("name") or "").strip())))
+        tier_count = min(requested_tier, len(natural_gates))
+        preferred = [gate_id for gate_id in key_order[:min(len(key_order), tier_count + 1)] if gate_id in natural_gates]
+        assigned_gates = preferred[:tier_count]
+        entry["natural_feature_gates"] = natural_gates
         entry["feature_gates"] = assigned_gates
         entry["feature_gate_labels"] = _deep_run_feature_gate_labels_for_ids(assigned_gates)
         entry["feature_gate_items"] = _deep_run_feature_gate_items_for_ids(assigned_gates)
@@ -1123,11 +1156,23 @@ def _make_deep_run_balanced_active_entries(
         selected_names.add(name)
 
     locked_entries: list[dict[str, Any]] = []
+    for tier in (4, 3, 2, 1):
+        needed = int(targets.get(tier, 0))
+        candidates = [
+            entry for entry in decorated
+            if str(entry.get("name") or "").strip() not in selected_names
+            and len(_feature_gate_ids_for_table(str(entry.get("name") or "").strip())) >= tier
+        ]
+        rng.shuffle(candidates)
+        for entry in candidates[:needed]:
+            name = str(entry.get("name") or "").strip()
+            locked_entries.append(dict(entry))
+            selected_names.add(name)
     for entry in decorated:
         if len(starter_entries) + len(locked_entries) >= desired_count:
             break
         name = str(entry.get("name") or "").strip()
-        if not name or name in selected_names:
+        if not name or name in selected_names or not _feature_gate_ids_for_table(name):
             continue
         locked_entries.append(dict(entry))
         selected_names.add(name)
@@ -1859,6 +1904,8 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
     deep_run_enabled = seed_type == BASE_GAME_SEED_TYPE_DEEP_RUN
     feature_unlock_enabled = _is_feature_unlock_enabled(multiworld, player)
     if deep_run_enabled:
+        generation_ready_entries = [entry for entry in generation_ready_entries if not _metasizer_is_original_vpx_entry(entry)]
+        generation_ready_tables = [str(entry.get("name") or "").strip() for entry in generation_ready_entries]
         if requested_count <= 0 or requested_count == 25:
             requested_count = min(DEEP_RUN_DEFAULT_ACTIVE_TABLE_COUNT, len(generation_ready_entries))
         if requested_start_open <= 0:
@@ -4069,7 +4116,8 @@ def before_create_items_all(item_config: dict[str, int|dict], world: World, mult
         )
     if deep_run_enabled:
         filtered_config["Boss Key"] = DEEP_RUN_BOSS_KEYS_SEEDED
-        filtered_config["Bagatelle Bonus Game"] = 6
+        filtered_config["Bagatelle Bonus Game"] = 10
+        filtered_config["Deep Slot Machine"] = 8
         for item_name, cap in (
             ("Easy Junk Piece (1 of 3)", 3),
             ("Medium Junk Piece (1 of 3)", 3),
@@ -4248,6 +4296,15 @@ def before_generate_basic(world: World, multiworld: MultiWorld, player: int):
             for gate_id in feature_payload.get("deep_run_key_order", []) or []
             if str(gate_id or "").strip()
         ]
+        enabled_feature_items = {
+            str(item_name or "").strip()
+            for item_name in feature_payload.get("feature_key_items", []) or []
+            if str(item_name or "").strip()
+        }
+        key_order = [
+            gate_id for gate_id in key_order
+            if str((definitions.get(gate_id) or {}).get("item") or "").strip() in enabled_feature_items
+        ]
         tier_tables: dict[int, list[str]] = {tier: [] for tier in range(5)}
         table_gate_ids: dict[str, list[str]] = {}
         for entry in active_entries:
@@ -4304,18 +4361,16 @@ def before_generate_basic(world: World, multiworld: MultiWorld, player: int):
         # Five complete Feature Keys form the Deep Run route: 1 in starters,
         # 2 in one-lock tables, 1 in two-lock tables, and 1 in three-lock tables.
         feature_placements: list[tuple[str, list[str]]] = []
-        if len(key_order) >= 5:
+        if key_order:
             unlock_a = key_order[0]
             first_tier_sources = [
                 table_name for table_name in tier_tables[1]
                 if table_gate_ids.get(table_name) == [unlock_a]
             ] or list(tier_tables[1])
+            source_tiers = [0, 1, 1, 2, 3]
             feature_placements = [
-                (key_order[0], list(tier_tables[0])),
-                (key_order[1], first_tier_sources),
-                (key_order[2], first_tier_sources),
-                (key_order[3], list(tier_tables[2])),
-                (key_order[4], list(tier_tables[3])),
+                (gate_id, first_tier_sources if source_tier == 1 else list(tier_tables[source_tier]))
+                for gate_id, source_tier in zip(key_order, source_tiers)
             ]
         placed_feature_pieces = 0
         for gate_id, source_tables in feature_placements:
