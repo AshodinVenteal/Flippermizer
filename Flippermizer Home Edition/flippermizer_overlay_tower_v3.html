@@ -4638,14 +4638,27 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   text-align: center;
   text-shadow: 0 0 14px rgba(0,217,255,.18);
 }
+.checksLeft .checksCount{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:8px;
+  min-height:44px;
+  color:rgba(232,250,255,.96);
+  text-shadow:0 0 18px rgba(0,217,255,.30);
+}
+.checksLeft .checksCount .value{ font-size:28px; line-height:1; color:#75f4ff; }
+.checksLeft .checksCount .total{ font-size:9px; color:rgba(214,238,250,.74); }
+.checksLeft .checksSummary{ font-size:7px; line-height:1.2; color:rgba(164,214,236,.78); letter-spacing:.8px; text-align:center; }
 .checksLeft .row{
   display:flex;
   flex-wrap: wrap;
   justify-content:center;
   align-items:center;
-  gap:8px;
+  gap:6px;
   max-width: 100%;
 }
+.checksLeft .difficultyCount{ min-width:38px; padding:4px 5px 3px; font-size:8px; }
 .chkIcon{
   min-width: 22px;
   padding: 3px 4px 2px;
@@ -55009,8 +55022,19 @@ function getChecksLeftMarkup(tableName, hintTargets){
   const tKey = canonicalTableMapKey(tableName);
   const nodes = (ap && ap.locsByTableKey && ap.locsByTableKey.get(tKey)) ? ap.locsByTableKey.get(tKey) : [];
   if(!Array.isArray(nodes) || !nodes.length){
-    return `<div class="checksLeft"><div class="hdr">CHECKS LEFT</div><div class="row"><span class="chkIcon hh todo">--</span></div></div>`;
+    return `<div class="checksLeft"><div class="hdr">CHECKS LEFT</div><div class="checksCount"><span class="value">--</span><span class="total">AWAITING SEED</span></div></div>`;
   }
+  const uniqueNodes = [];
+  const seenIds = new Set();
+  nodes.forEach((node)=>{
+    const id = Number(node?.id);
+    if(!Number.isFinite(id) || id <= 0 || seenIds.has(id)) return;
+    seenIds.add(id);
+    uniqueNodes.push(node);
+  });
+  const total = uniqueNodes.length;
+  const remaining = uniqueNodes.reduce((count, node)=> count + (ap?.checked?.has?.(Number(node.id)) ? 0 : 1), 0);
+  const cleared = Math.max(0, total - remaining);
   const kindByIdx = new Map();
   try{
     (Array.isArray(hintTargets) ? hintTargets : []).forEach((target)=>{
@@ -55031,23 +55055,28 @@ function getChecksLeftMarkup(tableName, hintTargets){
       }
     });
   }catch(_){}
-  const classifyByIndex = (idx)=>{
-    // Requested mapping for overview check chips:
-    // first 2 easy, next 2 medium, last 2 hard.
-    if(idx < 2) return "easy";
-    if(idx < 4) return "medium";
-    return "hard";
+  const difficultyForNode = (node, idx)=>{
+    const explicit = String(node?.genericDifficulty || node?.genericEntry?.difficulty || inferLocationDifficulty(node) || "").trim().toLowerCase();
+    if(explicit === "easy" || explicit === "medium" || explicit === "hard") return explicit;
+    return inferLocationDifficultyByIndex(idx);
   };
-  const chips = nodes.slice(0, 6).map((n, idx)=>{
-    const d = classifyByIndex(idx);
+  const difficultyCounts = {easy:0, medium:0, hard:0};
+  const difficultyHints = {easy:false, medium:false, hard:false};
+  uniqueNodes.forEach((node, idx)=>{
+    if(ap?.checked?.has?.(Number(node.id))) return;
+    const difficulty = difficultyForNode(node, idx);
+    if(!Object.prototype.hasOwnProperty.call(difficultyCounts, difficulty)) return;
+    difficultyCounts[difficulty] += 1;
+    if(kindByIdx.has(idx)) difficultyHints[difficulty] = true;
+  });
+  const chips = ["easy", "medium", "hard"].map((d)=>{
     const cls = (d === "easy") ? "ee" : (d === "medium" ? "mm" : "hh");
     const txt = (d === "easy") ? "E" : (d === "medium" ? "M" : "H");
-    const done = !!(ap && ap.checked && ap.checked.has(n.id));
-    const hintKind = kindByIdx.get(idx) || "";
-    const hintCls = hintKind ? (" hintTargetChip" + (hintKind === "boss" ? " hintTargetChipBoss" : "")) : "";
-    return `<span class="chkIcon ${cls} ${done ? "done" : "todo"}${hintCls}">${txt}</span>`;
+    const left = difficultyCounts[d];
+    const hintCls = difficultyHints[d] ? " hintTargetChip" : "";
+    return `<span class="chkIcon difficultyCount ${cls} ${left ? "todo" : "done"}${hintCls}">${txt} ${left}</span>`;
   }).join("");
-  return `<div class="checksLeft"><div class="hdr">CHECKS LEFT</div><div class="row">${chips}</div></div>`;
+  return `<div class="checksLeft"><div class="hdr">CHECKS LEFT</div><div class="checksCount"><span class="value">${remaining}</span><span class="total">OF ${total}</span></div><div class="row">${chips}</div><div class="checksSummary">${cleared} CLEARED</div></div>`;
 }
 
 /* Overview */
