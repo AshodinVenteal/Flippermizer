@@ -96,6 +96,7 @@
         {
             "code": "ATEAM",
             "name": "The A-Team",
+            "original_vpx": true,
             "generation_ready": true,
             "pool_tier": "base",
             "group_key": "vintage_television",
@@ -618,6 +619,7 @@
         {
             "code": "AERO",
             "name": "Aerosmith",
+            "original_vpx": true,
             "generation_ready": true,
             "pool_tier": "candidate",
             "group_key": "rock_legends",
@@ -786,6 +788,7 @@
         {
             "code": "GHOST",
             "name": "Ghostbusters",
+            "original_vpx": true,
             "generation_ready": true,
             "pool_tier": "candidate",
             "group_key": "comic_book_collision",

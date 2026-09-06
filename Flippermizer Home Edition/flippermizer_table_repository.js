@@ -74,7 +74,7 @@
     { code:'CONGO', slug:'congo', name:'Congo', aliases:[] },
     { code:'MCAST', slug:'mystery_castle', name:'Mystery Castle', aliases:['Black Castle'] },
 
-    { code:'ATEAM', slug:'the_a_team', name:'The A-Team', aliases:['A Team'] },
+    { code:'ATEAM', slug:'the_a_team', name:'The A-Team', aliases:['A Team'], originalVpx:true },
     { code:'BAT66', slug:'batman_66', name:'Batman 66', aliases:['Batman (66 Premium)','Batman (66 Limited Edition)','Batman 66 Stern Tribute'] },
     { code:'HHEAT', slug:'hollywood_heat', name:'Hollywood Heat', aliases:[] },
     { code:'BAYW', slug:'baywatch', name:'Baywatch', aliases:[] },
@@ -137,7 +137,7 @@
     { code:'STROP', slug:'starship_troopers', name:'Starship Troopers', aliases:[] },
     { code:'ID4', slug:'independence_day', name:'Independence Day', aliases:['ID4'] },
     { code:'XFILES', slug:'the_x_files', name:'The X-Files', aliases:['X-Files'] },
-    { code:'AERO', slug:'aerosmith', name:'Aerosmith', aliases:[] },
+    { code:'AERO', slug:'aerosmith', name:'Aerosmith', aliases:[], originalVpx:true },
     { code:'BEAT', slug:'the_beatles', name:'The Beatles', aliases:[] },
     { code:'ELVIS', slug:'elvis', name:'Elvis', aliases:[] },
     { code:'RSTON', slug:'rolling_stones', name:'Rolling Stones', aliases:['The Rolling Stones'] },
@@ -152,7 +152,7 @@
     { code:'DHARRY', slug:'dirty_harry', name:'Dirty Harry', aliases:[] },
     { code:'JDREDD', slug:'judge_dredd', name:'Judge Dredd', aliases:[] },
     { code:'DEADP', slug:'deadpool', name:'Deadpool', aliases:[] },
-    { code:'GHOST', slug:'ghostbusters', name:'Ghostbusters', aliases:[] },
+    { code:'GHOST', slug:'ghostbusters', name:'Ghostbusters', aliases:[], originalVpx:true },
     { code:'RBULL', slug:'rocky_and_bullwinkle', name:'The Adventures of Rocky and Bullwinkle and Friends', aliases:['Rocky and Bullwinkle','Adventures of Rocky and Bullwinkle and Friends'] },
     { code:'SMB', slug:'super_mario_bros', name:'Super Mario Bros.', aliases:['Super Mario Bros','Super Mario Brothers'] },
     { code:'SF2', slug:'street_fighter_ii', name:'Street Fighter II', aliases:['Street Fighter 2','Street Fighter'] },
@@ -371,7 +371,7 @@
   var DEFAULT_WORLD_TABLE_CODES = {
     w1: ['MM','AFM','WCS','GET','ST13'],
     w2: ['TOTAN','FATH','HOOK','CONGO','MCAST'],
-    w3: ['ATEAM','BFOR','HHEAT','BAYW','STTNG'],
+    w3: ['BAT66','BFOR','HHEAT','BAYW','STTNG'],
     w4: ['MET','HGT','DP','PARA','ROBO'],
     w5: ['GLIZ','JOK','BCAT','TAXI','BOP'],
     boss: ['BOSS_TABLE']
@@ -648,10 +648,16 @@
       displayName: t.displayName || t.name,
       manufacturer: t.manufacturer || '',
       year: t.year,
+      originalVpx: !!t.originalVpx || /original\s+vpx/i.test(String(t.manufacturer || '')),
       worldGroups: Array.isArray(TABLE_WORLD_GROUPS_BY_CODE[t.code]) ? TABLE_WORLD_GROUPS_BY_CODE[t.code].slice() : [],
       aliases: (t.aliases || []).slice(),
       banner: t.banner || ''
     };
+  }
+
+  function isOriginalVpxTable(query){
+    var t = resolveTable(query);
+    return !!t && (!!t.originalVpx || /original\s+vpx/i.test(String(t.manufacturer || '')));
   }
 
   function getTableWorldGroups(query){
@@ -817,6 +823,7 @@
         displayName: resolved ? (resolved.displayName || resolved.name) : t.name,
         manufacturer: resolved ? (resolved.manufacturer || '') : '',
         year: resolved ? resolved.year : null,
+        originalVpx: !!(resolved && (resolved.originalVpx || /original\s+vpx/i.test(String(resolved.manufacturer || '')))),
         worldGroups: resolved ? (resolved.worldGroups || []).slice() : [],
         aliases: (t.aliases||[]).slice(),
         banner: String(TABLE_BANNER_REFS[code] || '').trim()
@@ -894,6 +901,7 @@
     getCanonicalTableCode: getCanonicalTableCode,
     getDisplayTableName: getDisplayTableName,
     getTableMeta: getTableMeta,
+    isOriginalVpxTable: isOriginalVpxTable,
     getTableWorldGroups: getTableWorldGroups,
     getTablesForWorldGroup: getTablesForWorldGroup,
     getTableCodesForWorldGroup: getTableCodesForWorldGroup,
