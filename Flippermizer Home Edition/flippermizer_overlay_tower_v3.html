@@ -58272,6 +58272,11 @@ function inherentFormatScore(value){
 }
 function inherentCloneWorlds(){
   const source = clone(buildDefaultWorldsFromRepo());
+  const repo = getTableRepo();
+  Object.entries(source || {}).forEach(([worldKey, world])=>{
+    if(!world || worldKey === "boss" || typeof repo?.isOriginalVpxTable !== "function") return;
+    world.tables = (Array.isArray(world.tables) ? world.tables : []).filter((tableName)=>!repo.isOriginalVpxTable(tableName));
+  });
   const worlds = {};
   const regular = Object.entries(source || {}).filter(([wk])=>wk && wk !== "boss").slice(0, 3);
   regular.forEach(([wk, rawWorld], index)=>{

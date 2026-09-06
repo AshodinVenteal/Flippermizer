@@ -320,6 +320,7 @@ def _metasizer_table_entries() -> list[dict[str, Any]]:
             "guide_key": code.lower() if code else re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_"),
             "flyer_code": code,
             "notes": notes,
+            "original_vpx": bool(raw.get("original_vpx")) if isinstance(raw, dict) else False,
         })
     return out
 
@@ -418,6 +419,7 @@ def _metasizer_generation_ready_table_entries() -> list[dict[str, Any]]:
         dict(entry)
         for entry in _metasizer_table_entries()
         if bool(entry.get("generation_ready"))
+        and not _metasizer_is_original_vpx_entry(entry)
         and str(entry.get("name") or "").strip()
         and _metasizer_table_has_complete_generation_data(str(entry.get("name") or "").strip())
     ]
@@ -428,6 +430,7 @@ def _metasizer_generation_ready_table_names() -> list[str]:
         str(entry.get("name") or "").strip()
         for entry in _metasizer_table_entries()
         if bool(entry.get("generation_ready"))
+        and not _metasizer_is_original_vpx_entry(entry)
         and str(entry.get("name") or "").strip()
         and _metasizer_table_has_complete_generation_data(str(entry.get("name") or "").strip())
     ]
@@ -1904,8 +1907,6 @@ def _build_metasizer_table_set_payload(world: World, multiworld: MultiWorld, pla
     deep_run_enabled = seed_type == BASE_GAME_SEED_TYPE_DEEP_RUN
     feature_unlock_enabled = _is_feature_unlock_enabled(multiworld, player)
     if deep_run_enabled:
-        generation_ready_entries = [entry for entry in generation_ready_entries if not _metasizer_is_original_vpx_entry(entry)]
-        generation_ready_tables = [str(entry.get("name") or "").strip() for entry in generation_ready_entries]
         if requested_count <= 0 or requested_count == 25:
             requested_count = min(DEEP_RUN_DEFAULT_ACTIVE_TABLE_COUNT, len(generation_ready_entries))
         if requested_start_open <= 0:

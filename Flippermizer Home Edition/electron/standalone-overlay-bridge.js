@@ -5571,6 +5571,7 @@
         if(!world || typeof world !== "object") return;
         world.locked = (wk === "boss");
         if(wk === "boss") world.tables = ["(Boss Table)"];
+        else if(typeof repo?.isOriginalVpxTable === "function") world.tables = (Array.isArray(world.tables) ? world.tables : []).filter((tableName)=>!repo.isOriginalVpxTable(tableName));
       });
       return worlds;
     }catch(_){}
