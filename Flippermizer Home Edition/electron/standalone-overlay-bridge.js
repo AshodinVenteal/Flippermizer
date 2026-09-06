@@ -25,6 +25,7 @@
   const STANDALONE_BOSS_VICTORY_AUTO_CHECKS_KEY = "flpr_standalone_boss_victory_auto_checks_v1";
   const STANDALONE_PROFILE_STATE_KEY = "flpr_standalone_home_profiles_v1";
   const STANDALONE_SEED_SAVES_KEY = "flpr_standalone_singleplayer_seed_saves_v1";
+  const STANDALONE_RUN_TYPE_LS_KEY = "flpr_standalone_singleplayer_run_type_v1";
   const STANDALONE_ACHIEVEMENT_LS_KEY = "flpr_achievements_v1";
   const STANDALONE_ACHIEVEMENT_UI_LS_KEY = "flpr_achievements_ui_v1";
   const STANDALONE_EPISODE_LS_KEY = "flpr_episode_v1";
@@ -2044,6 +2045,27 @@
         display:grid !important;
         grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
         gap:10px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRunTypePicker{
+        display:grid !important;
+        grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+        gap:8px !important;
+        margin-bottom:10px !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRunTypeBtn{
+        min-height:48px !important;
+        border:1px solid rgba(0,217,255,.30) !important;
+        background:linear-gradient(180deg, rgba(0,27,46,.82), rgba(0,10,20,.94)) !important;
+        color:rgba(210,244,250,.88) !important;
+        font:inherit !important;
+        font-size:9px !important;
+        cursor:pointer !important;
+      }
+      body.flprStandaloneOriginalClient .standaloneRunTypeBtn.active{
+        border-color:rgba(39,255,172,.94) !important;
+        color:#ecfff7 !important;
+        background:linear-gradient(180deg, rgba(16,98,72,.74), rgba(0,31,34,.96)) !important;
+        box-shadow:0 0 16px rgba(39,255,172,.22) !important;
       }
       body.flprStandaloneOriginalClient .standaloneSingleplayerIdea{
         border:1px solid rgba(0,166,255,.22) !important;
@@ -5542,7 +5564,6 @@
   }
 
   function standaloneCloneWorlds(){
-    try{ if(typeof inherentCloneWorlds === "function") return inherentCloneWorlds(); }catch(_){}
     try{
       const repo = window.FLPR_TABLE_REPO;
       const worlds = repo && typeof repo.buildDefaultWorldsState === "function" ? JSON.parse(JSON.stringify(repo.buildDefaultWorldsState())) : {};
@@ -5557,7 +5578,6 @@
   }
 
   function standaloneSeedTables(worlds){
-    try{ if(typeof inherentSeedTables === "function") return inherentSeedTables(worlds); }catch(_){}
     const out = [];
     Object.entries(worlds || {}).forEach(([wk, world])=>{
       if(!wk || wk === "boss") return;
@@ -5684,6 +5704,7 @@
     try{ if(typeof apDisconnect === "function") apDisconnect({ manual:false }); }catch(_){}
     window.__manualDisconnect = true;
     ap.inherentSeedActive = true;
+    ap.inherentSeedKind = "five-by-five";
     ap.connected = true;
     ap.seedName = seedName;
     ap.cfg = { ...(ap.cfg || {}), player: ap.cfg?.player || standaloneApDefaultPlayer(), game: STANDALONE_FLIPPERMIZER_GAME_NAME };
@@ -5759,6 +5780,10 @@
       <div class="standaloneSingleplayerLayout flprStandaloneSingleplayerLayout">
         <section class="standaloneControlSection standaloneSingleplayerSection" data-accent="green">
           <div class="standaloneSectionTitle">SINGLEPLAYER <span class="mini">local seed</span></div>
+          <div class="standaloneRunTypePicker" aria-label="Local run type">
+            <button class="standaloneRunTypeBtn" type="button" data-standalone-run-type="five-by-five">5X5 RUN</button>
+            <button class="standaloneRunTypeBtn" type="button" data-standalone-run-type="deep-run">DEEP RUN // 15 TABLES</button>
+          </div>
           <div class="cRow connectActionRow">
             <button class="cBtn" id="standaloneStartSeedBtn" type="button">START SINGLEPLAYER SEED</button>
             <button class="cBtn gray" id="standaloneQuickStartBtn" type="button">QUICK START</button>
@@ -5766,7 +5791,7 @@
             <button class="cBtn gray" id="standaloneTableListBtn" type="button">TABLE LIST</button>
             <button class="cBtn danger" id="standaloneResetSeedBtn" type="button">RESET LOCAL RUN</button>
           </div>
-          <div class="apHint">Start or continue a local Home Edition seed. Use Quick Start for rules, Ball 1 expectations, worlds, checks, sieges, and table requirements.</div>
+          <div class="apHint">Choose a 5X5 Run for five worlds of five tables, or Deep Run for the curated 15-table progression with 20 checks per table.</div>
         </section>
 
         <section class="standaloneControlSection standaloneSingleplayerToolsSection" data-accent="blue">
@@ -5923,8 +5948,7 @@
   }
 
   function standaloneVpsTableSearchUrl(row){
-    const query = String(row?.searchName || row?.name || "").trim();
-    return `https://virtualpinballspreadsheet.github.io/games?search=${encodeURIComponent(query)}`;
+    return "https://virtualpinballspreadsheet.github.io/games";
   }
 
   function standaloneQuickStartTableListMarkup(){
@@ -5938,7 +5962,7 @@
         <p>Each row opens a Virtual Pinball Spreadsheet search for that table. Use the spreadsheet to find current VPX releases, backglass/ROM notes, and update history.</p>
         <div class="flprQuickStartTableList">
           ${rows.map((row)=>`
-            <a class="flprQuickStartTableRow" href="${standaloneEscapeHtml(standaloneVpsTableSearchUrl(row))}" target="_blank" rel="noopener noreferrer">
+            <a class="flprQuickStartTableRow" href="${standaloneEscapeHtml(standaloneVpsTableSearchUrl(row))}" data-vps-table-search="${standaloneEscapeHtml(row.searchName || row.name)}" target="_blank" rel="noopener noreferrer">
               <span class="name">${standaloneEscapeHtml(row.name)}</span>
               <span class="meta">${standaloneEscapeHtml([row.manufacturer, row.year].filter(Boolean).join(" "))}</span>
             </a>
@@ -6045,6 +6069,19 @@
         standaloneCloseQuickStart({ markSeen:true });
       }, true);
     });
+    overlay.querySelectorAll("[data-vps-table-search]").forEach((link)=>{
+      if(link.__flprVpsTableSearchBound) return;
+      link.__flprVpsTableSearchBound = true;
+      link.addEventListener("click", (event)=>{
+        const query = String(link.dataset.vpsTableSearch || "").trim();
+        const openSearch = window.flprStandaloneElectron?.openVpsTableSearch;
+        if(!query || typeof openSearch !== "function") return;
+        event.preventDefault();
+        event.stopPropagation();
+        playClick();
+        Promise.resolve(openSearch(query)).catch(()=>{});
+      }, true);
+    });
     const tableBtn = overlay.querySelector("#flprQuickStartTablesBtn");
     if(tableBtn && !tableBtn.__flprQuickTablesBound){
       tableBtn.__flprQuickTablesBound = true;
@@ -6141,7 +6178,6 @@
         <div class="flprQuickStartHead">
           <div>
             <div class="flprQuickStartTitle" id="flprQuickStartTitle">Getting Started</div>
-            <div class="flprQuickStartSub">A readable guide for Home Edition: seeds, worlds, checks, Ball 1, UI parts, sieges, VPX workflow, and the table catalog.</div>
           </div>
           <div class="flprQuickStartHeadActions">
             <div class="flprQuickStartModeSwitch" aria-label="Guide mode">
@@ -6541,10 +6577,37 @@
     return raw ? raw.replace(/^FLPR[_-]?/i, "").replace(/[_-]+/g, " ").slice(0, 28) : "Local Seed";
   }
 
-  function standaloneNewSingleplayerSeedName(){
+  function standaloneNormalizeRunType(value){
+    return String(value || "").trim().toLowerCase() === "deep-run" ? "deep-run" : "five-by-five";
+  }
+
+  function standaloneSelectedRunType(){
+    try{ return standaloneNormalizeRunType(localStorage.getItem(STANDALONE_RUN_TYPE_LS_KEY)); }catch(_){}
+    return "five-by-five";
+  }
+
+  function standaloneSyncRunTypePicker(){
+    const selected = standaloneSelectedRunType();
+    document.querySelectorAll("[data-standalone-run-type]").forEach((button)=>{
+      const active = standaloneNormalizeRunType(button.dataset.standaloneRunType) === selected;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    return selected;
+  }
+
+  function standaloneSetRunType(value){
+    const selected = standaloneNormalizeRunType(value);
+    try{ localStorage.setItem(STANDALONE_RUN_TYPE_LS_KEY, selected); }catch(_){}
+    standaloneSyncRunTypePicker();
+    return selected;
+  }
+
+  function standaloneNewSingleplayerSeedName(runType){
     const code = Date.now().toString(36).toUpperCase();
     const salt = Math.random().toString(36).slice(2, 6).toUpperCase();
-    return `FLPR_HOME_${code}_${salt}`;
+    const prefix = standaloneNormalizeRunType(runType) === "deep-run" ? "FLPR_HOME_DEEP" : "FLPR_HOME_5X5";
+    return `${prefix}_${code}_${salt}`;
   }
 
   function standaloneSeedProgressSnapshot(){
@@ -6578,6 +6641,7 @@
     return {
       id: standaloneSeedSaveId(seedName),
       mode: "singleplayer",
+      runType: standaloneNormalizeRunType(ap?.inherentSeedKind),
       seedName,
       seedWord: standaloneSeedWord(seedName),
       updatedAt: Date.now(),
@@ -6607,6 +6671,7 @@
       worlds.sort();
       return JSON.stringify({
         seedName: patch.seedName,
+        runType: patch.runType,
         checked: checkedIds,
         balls,
         worlds,
@@ -6699,7 +6764,13 @@
     standaloneClearSeedLoadConfirm();
     standaloneSetSelectedMode("singleplayer");
     const seedName = String(save.seedName || "").trim();
-    await loadStandaloneSingleplayerSeed({ seedName, fromSave:true });
+    const runType = standaloneNormalizeRunType(save.runType);
+    standaloneSetRunType(runType);
+    if(runType === "deep-run" && typeof loadInherentDeepRunTestSeed === "function"){
+      await loadInherentDeepRunTestSeed({ seedName, indicatorLabel:"DEEP RUN", toastTitle:"DEEP RUN" });
+    }else{
+      await loadStandaloneSingleplayerSeed({ seedName, fromSave:true });
+    }
     const snapshot = standaloneCloneJson(save.stateSnapshot, null);
     let restoredSelected = "";
     let restoredLastSelected = "";
@@ -9058,6 +9129,15 @@
 
   function bindStandaloneControls(){
     bindStandaloneConnectionModeTabs();
+    document.querySelectorAll("[data-standalone-run-type]").forEach((button)=>{
+      if(button.__flprStandaloneBound) return;
+      button.__flprStandaloneBound = true;
+      button.addEventListener("click", ()=>{
+        playClick();
+        standaloneSetRunType(button.dataset.standaloneRunType || "five-by-five");
+      });
+    });
+    standaloneSyncRunTypePicker();
     const start = document.getElementById("standaloneStartSeedBtn");
     if(start && !start.__flprStandaloneBound){
       start.__flprStandaloneBound = true;
@@ -9065,7 +9145,20 @@
         playClick();
         standaloneSetSelectedMode("singleplayer");
         try{
-          await loadStandaloneSingleplayerSeed();
+          const runType = standaloneSelectedRunType();
+          const seedName = standaloneNewSingleplayerSeedName(runType);
+          if(runType === "deep-run" && typeof loadInherentDeepRunTestSeed === "function"){
+            await loadInherentDeepRunTestSeed({
+              seedName,
+              indicatorLabel:"DEEP RUN",
+              toastTitle:"DEEP RUN"
+            });
+            standaloneUpsertCurrentSeedSave({ createdAt:Date.now(), reason:"deep-run-seed-start", force:true });
+            standaloneMarkRandomizerReady("singleplayer");
+            standaloneRefreshProfileUi();
+          }else{
+            await loadStandaloneSingleplayerSeed({ seedName });
+          }
         }catch(err){
           try{ console.error(err); }catch(_){}
         }

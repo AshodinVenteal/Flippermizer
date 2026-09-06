@@ -9,6 +9,7 @@ const rendererApi = {
   unlockDevTools: (password) => ipcRenderer.invoke("flpr-dev-tools:unlock", String(password || "")),
   getFullscreenState: () => ipcRenderer.invoke("flpr-window:get-fullscreen-state"),
   toggleFullscreen: () => ipcRenderer.invoke("flpr-window:toggle-fullscreen"),
+  openVpsTableSearch: (query) => ipcRenderer.invoke("flpr-vps:open-table-search", String(query || "")),
   exitApp: () => ipcRenderer.invoke("flpr-window:exit-app")
 };
 

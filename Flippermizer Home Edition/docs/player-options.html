@@ -605,8 +605,21 @@
         </div>
 
         <div id="metasizerOptionsWrap" class="hidden">
-          <div class="inlineInfo">
-            Base Game builds a 25-table episode from curated or random five-table world groups. Table-list curation shuffles your selected tables into generated worlds with generated banner names.
+          <div class="inlineInfo" id="metasizerRunTypeInfo">
+            5x5 Run builds a 25-table episode from curated or random five-table world groups. Table-list curation preserves your selected table sets in generated worlds.
+          </div>
+
+          <div class="row">
+            <div class="col" style="flex:1;">
+              <div class="label">Run Type</div>
+              <div class="small">Choose a standard 5x5 campaign or the 15-table, 20-check-per-table Deep Run.</div>
+            </div>
+            <div style="width:220px;">
+              <select id="metasizerSeedType">
+                <option value="standard">5x5 Run (25 Tables)</option>
+                <option value="deep_run">Deep Run (15 Tables)</option>
+              </select>
+            </div>
           </div>
 
           <div class="row">
@@ -634,7 +647,7 @@
               <div class="label">Active Table Count</div>
               <div class="small">Curated world slots update this automatically. Random mode can still use a manual count.</div>
             </div>
-            <div style="width:90px;"><input id="metasizerActiveTableCount" type="number" min="5" max="90" step="5" value="20" /></div>
+            <div style="width:90px;"><input id="metasizerActiveTableCount" type="number" min="5" max="90" step="5" value="25" /></div>
           </div>
 
           <div class="row">
@@ -913,7 +926,8 @@
     random_start_tables_selection: [],
     random_start_revealed: false,
     base_game_enabled: true,
-    base_game_active_table_count: 20,
+    base_game_seed_type: "standard",
+    base_game_active_table_count: 25,
     base_game_selection_mode: "random_catalog_pool",
     base_game_curated_world_groups: "auto",
     base_game_curated_tables: "auto",
@@ -927,6 +941,20 @@
   function q(id){ return document.getElementById(id); }
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
   function asInt(v,fallback=0){ const n = Number(v); return Number.isFinite(n) ? Math.trunc(n) : fallback; }
+  function normalizeBaseGameSeedType(value){ return String(value || "").trim().toLowerCase() === "deep_run" ? "deep_run" : "standard"; }
+  function applyBaseGameSeedType(value){
+    state.base_game_seed_type = normalizeBaseGameSeedType(value);
+    const deepRun = state.base_game_seed_type === "deep_run";
+    state.base_game_active_table_count = deepRun ? 15 : 25;
+    state.base_game_starting_open_table_count = deepRun ? 3 : 5;
+    if(q("metasizerSeedType")) q("metasizerSeedType").value = state.base_game_seed_type;
+    if(q("metasizerActiveTableCount")) q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
+    if(q("metasizerStartingOpenTableCount")) q("metasizerStartingOpenTableCount").value = String(state.base_game_starting_open_table_count);
+    const info = q("metasizerRunTypeInfo");
+    if(info) info.textContent = deepRun
+      ? "Deep Run builds 15 tables across three worlds, starts three tables open, and gives every selected table 10 score checks plus 10 table-specific tasks."
+      : "5x5 Run builds 25 tables across five worlds, starts five tables open, and uses the standard six-check table layout.";
+  }
   function quoteYaml(s){ return '"' + String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"') + '"'; }
   function pushYamlTextOption(lines, key, value){
     const text = String(value == null ? "" : value).replace(/\r\n?/g, "\n").trim();
@@ -1408,7 +1436,7 @@
 
   function syncUiFromState(){
     normalizeBaseGameSelectionMode();
-    state.base_game_active_table_count = clamp(asInt(state.base_game_active_table_count, 20), 5, maxActiveTableCount());
+    applyBaseGameSeedType(state.base_game_seed_type);
     q("progression").value = String(state.progression_balancing);
     q("progressionRange").value = String(state.progression_balancing);
     q("accessibility").value = state.accessibility;
@@ -1457,7 +1485,8 @@
     state.random_start_tables_selection = [];
     state.random_start_revealed = false;
     state.base_game_enabled = true;
-    state.base_game_active_table_count = 20;
+    state.base_game_seed_type = "standard";
+    state.base_game_active_table_count = 25;
     state.base_game_selection_mode = "random_catalog_pool";
     state.base_game_curated_world_groups = "auto";
     state.base_game_curated_tables = "auto";
@@ -1627,8 +1656,13 @@
       state.base_game_enabled = q("metasizerEnabled").checked;
       renderYaml();
     });
+    q("metasizerSeedType").addEventListener("change", () => {
+      applyBaseGameSeedType(q("metasizerSeedType").value);
+      updateMetasizerCuratedInfo();
+      renderYaml();
+    });
     q("metasizerActiveTableCount").addEventListener("input", () => {
-      state.base_game_active_table_count = clamp(asInt(q("metasizerActiveTableCount").value, 20), 5, maxActiveTableCount());
+      state.base_game_active_table_count = clamp(asInt(q("metasizerActiveTableCount").value, 25), 5, maxActiveTableCount());
       q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
       updateMetasizerCuratedInfo();
       renderYaml();
@@ -1693,8 +1727,8 @@
     q("btnCuratedWellMade").addEventListener("click", () => {
       state.base_game_selection_mode = "curated_table_list";
       q("metasizerSelectionMode").value = "curated_table_list";
-      state.base_game_active_table_count = 20;
-      q("metasizerActiveTableCount").value = "20";
+      state.base_game_active_table_count = 25;
+      q("metasizerActiveTableCount").value = "25";
       state.base_game_custom_world_sets = "auto";
       q("metasizerCustomWorldSets").value = "auto";
       setCuratedTableSelection(WELL_MADE_TABLES_PRESET);
@@ -1782,6 +1816,7 @@
     lines.push(`  filler_traps: ${trapDensityValue()}`);
     if(isBaseGameVariant()){
       lines.push(`  score_adjustment_mode: ${state.score_adjustment_mode}`);
+      lines.push(`  base_game_seed_type: ${state.base_game_seed_type}`);
       lines.push(`  base_game_active_table_count: ${state.base_game_active_table_count}`);
       lines.push(`  base_game_selection_mode: ${state.base_game_selection_mode}`);
       lines.push(`  base_game_curated_world_groups: ${quoteYaml(state.base_game_curated_world_groups)}`);

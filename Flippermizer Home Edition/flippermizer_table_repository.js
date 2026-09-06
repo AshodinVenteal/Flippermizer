@@ -364,7 +364,8 @@
     DND: 'WorldsBanners/BestiaryFlyers/DND.jpg',
     WPT: 'WorldsBanners/BestiaryFlyers/WPT.jpg',
     HRC: 'WorldsBanners/BestiaryFlyers/HRC.jpg',
-    WHOD: 'WorldsBanners/BestiaryFlyers/WHOD.jpg'
+    WHOD: 'WorldsBanners/BestiaryFlyers/WHOD.jpg',
+    CSLICK: 'WorldsBanners/BestiaryFlyers/CSLICK.jpg'
   };
 
   var DEFAULT_WORLD_TABLE_CODES = {

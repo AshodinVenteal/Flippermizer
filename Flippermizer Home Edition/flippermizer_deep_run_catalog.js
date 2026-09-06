@@ -1574,13 +1574,13 @@
         ],
         "medium": [
           "Collect 2 Snack Bar awards in one game",
-          "Collect a jackpot",
+          "Complete 2 Creature Features in one game",
           "Lock 1 ball for multiball",
           "Start multiball"
         ],
         "hard": [
           "Collect a Super Jackpot",
-          "Complete 2 Creature Features in one game"
+          "Collect a jackpot"
         ]
       },
       "scoreAnchors": {

@@ -12,8 +12,8 @@ const OVERLAY_BASE_WIDTH = 910 + 306 + 1280 + 16 + 32;
 const OVERLAY_VERTICAL_BASE_WIDTH = 1080;
 const OVERLAY_BASE_HEIGHT = 1450;
 const OVERLAY_VERTICAL_BASE_HEIGHT = Math.round(OVERLAY_VERTICAL_BASE_WIDTH * 16 / 9);
-const DEFAULT_WINDOW_BOUNDS = { width: 1600, height: 960 };
-const MIN_WINDOW_BOUNDS = { width: 900, height: 640 };
+const DEFAULT_WINDOW_BOUNDS = { width: 1920, height: 1080 };
+const MIN_WINDOW_BOUNDS = { width: 1120, height: 720 };
 const WINDOW_STATE_FILE = "standalone-window-state.json";
 const RENDERER_SETTINGS_FILE = "standalone-renderer-settings.json";
 const TASK_REPOSITORY_CFG_FILE = "flippermizer_task_repository_cfg.js";
@@ -387,6 +387,36 @@ function windowFromIpcEvent(event){
 }
 
 function installWindowIpc(){
+  ipcMain.handle("flpr-vps:open-table-search", async (_event, rawQuery)=>{
+    const query = String(rawQuery || "").trim();
+    if(!query) return { ok:false, reason:"missing-query" };
+    const vps = new BrowserWindow({
+      width: 1360,
+      height: 900,
+      minWidth: 900,
+      minHeight: 640,
+      title: `Virtual Pinball Spreadsheet - ${query}`,
+      autoHideMenuBar: true,
+      backgroundColor: "#101820",
+      webPreferences: { contextIsolation:true, nodeIntegration:false, sandbox:true }
+    });
+    vps.webContents.setWindowOpenHandler(({ url })=>{
+      shell.openExternal(url);
+      return { action:"deny" };
+    });
+    vps.webContents.on("will-navigate", (event, url)=>{
+      if(!String(url || "").startsWith("https://virtualpinballspreadsheet.github.io/")){
+        event.preventDefault();
+        shell.openExternal(url);
+      }
+    });
+    vps.webContents.on("did-finish-load", ()=>{
+      const script = `(()=>{const query=${JSON.stringify(query)};const find=()=>Array.from(document.querySelectorAll('input')).find((node)=>node.type==='search'||/search/i.test(node.placeholder||'')||/search/i.test(node.getAttribute('aria-label')||''));const apply=()=>{const input=find();if(!input)return false;input.focus();input.value=query;input.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertText',data:query}));input.dispatchEvent(new Event('change',{bubbles:true}));return true;};if(!apply()){let tries=0;const timer=setInterval(()=>{tries+=1;if(apply()||tries>30)clearInterval(timer);},150);}})();`;
+      vps.webContents.executeJavaScript(script).catch(()=>{});
+    });
+    await vps.loadURL("https://virtualpinballspreadsheet.github.io/games");
+    return { ok:true };
+  });
   ipcMain.handle("flpr-window:get-fullscreen-state", (event)=>{
     const win = windowFromIpcEvent(event);
     return { ok: !!win, fullscreen: !!(win && win.isFullScreen()) };

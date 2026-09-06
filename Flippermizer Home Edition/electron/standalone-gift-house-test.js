@@ -1637,6 +1637,51 @@
       body.flprStandaloneOriginalClient .giftHouseHintRibbon{
         bottom:calc(24% + 16px) !important;
       }
+      /* A clean vault cutaway keeps the collection readable instead of burying it in scenery. */
+      body.flprStandaloneOriginalClient .giftHouseScene{
+        background:
+          linear-gradient(90deg, rgba(0,217,255,.08) 1px, transparent 1px),
+          linear-gradient(180deg, rgba(255,224,122,.06) 1px, transparent 1px),
+          linear-gradient(180deg, #07182a, #020914) !important;
+        background-size:32px 32px, 32px 32px, auto !important;
+      }
+      body.flprStandaloneOriginalClient .giftHouseStars,
+      body.flprStandaloneOriginalClient .giftHouseMoon,
+      body.flprStandaloneOriginalClient .giftHouseSkyline,
+      body.flprStandaloneOriginalClient .giftHouseSkylineFar,
+      body.flprStandaloneOriginalClient .giftHouseSkylineNear,
+      body.flprStandaloneOriginalClient .giftHouseNeonBillboard,
+      body.flprStandaloneOriginalClient .giftHouseStreet{
+        display:none !important;
+      }
+      body.flprStandaloneOriginalClient .giftHouseTower{
+        left:4% !important;
+        top:5% !important;
+        width:92% !important;
+        height:90% !important;
+        border-color:rgba(255,224,122,.78) !important;
+        background:rgba(1,8,17,.97) !important;
+        box-shadow:0 0 0 3px rgba(0,217,255,.22), 0 0 38px rgba(39,255,172,.16) !important;
+      }
+      body.flprStandaloneOriginalClient .giftHouseRoof{
+        background:linear-gradient(90deg, rgba(6,48,66,.96), rgba(20,48,30,.96)) !important;
+        border-bottom-color:rgba(255,224,122,.56) !important;
+      }
+      body.flprStandaloneOriginalClient .giftHouseFloor{
+        border-bottom-color:rgba(255,224,122,.36) !important;
+      }
+      body.flprStandaloneOriginalClient .giftHouseRoom{
+        border-right-color:rgba(255,224,122,.34) !important;
+      }
+      body.flprStandaloneOriginalClient .giftHouseRoom::before{
+        color:rgba(232,250,255,.66) !important;
+        font-size:8px !important;
+      }
+      body.flprStandaloneOriginalClient .giftHouseHintRibbon{
+        bottom:16px !important;
+        left:16px !important;
+        border-color:rgba(255,224,122,.48) !important;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -1646,8 +1691,8 @@
       <div id="${HOUSE_PANEL_ID}" class="giftHouseTest">
         <div class="giftHouseTopbar">
           <div class="giftHouseTitle">
-            <div class="giftHouseTitleMain">GIFT HOUSE TEST</div>
-            <div class="giftHouseTitleSub">One table gift each. Drag from the catalog, then drop to sticker it into the apartment.</div>
+            <div class="giftHouseTitleMain">FLPR VAULT</div>
+            <div class="giftHouseTitleSub">Place earned table keepsakes in a room. Drag from the catalog and drop it into the vault cutaway.</div>
           </div>
           <div class="giftHouseStats" id="giftHouseStats"></div>
           <button class="cBtn danger" id="giftHouseResetBtn" type="button">RESET PLACEMENTS</button>
@@ -1662,25 +1707,18 @@
           </aside>
           <main class="giftHouseStageWrap">
             <div class="giftHouseScene" id="giftHouseScene" aria-label="Gift House placement scene">
-              <div class="giftHouseStars" aria-hidden="true"></div>
-              <div class="giftHouseMoon" aria-hidden="true"></div>
-              <div class="giftHouseSkylineFar" aria-hidden="true"></div>
-              <div class="giftHouseSkyline" aria-hidden="true"></div>
-              <div class="giftHouseSkylineNear" aria-hidden="true"></div>
-              <div class="giftHouseNeonBillboard" aria-hidden="true">PIN CITY</div>
-              <div class="giftHouseNeonBillboard alt" aria-hidden="true">FLPR 24</div>
               <div class="giftHouseTower" aria-hidden="true">
                 <div class="giftHouseAntenna"></div>
-                <div class="giftHouseRoof"><span class="giftHouseRoofSign">FLPR HOUSE</span><span>APT // 50HZ</span></div>
+                <div class="giftHouseRoof"><span class="giftHouseRoofSign">FLPR VAULT</span><span>ROOMS // 6</span></div>
                 <div class="giftHouseFloor">
                   <span class="giftHouseFloorStairs floorStairsA"></span>
-                  <div class="giftHouseRoom" data-room-id="studio" data-room-label="STUDIO" style="--roomA:rgba(0,50,80,.88);--roomB:rgba(14,8,42,.92);--lampX:72%;--lampY:22%;">
+                  <div class="giftHouseRoom" data-room-id="studio" data-room-label="PIN LAB" style="--roomA:rgba(0,50,80,.88);--roomB:rgba(14,8,42,.92);--lampX:72%;--lampY:22%;">
                     <span class="giftHouseRoomFloorPattern floorDiamond"></span><span class="giftHouseDoor doorLeft"></span><span class="giftHouseWallPanel"></span>
                     <span class="giftHouseRoomShelf shelfTall"></span><span class="giftHouseRoomGlow"></span>
                     <span class="giftHouseWindowGrid"><span></span><span></span><span></span><span></span></span>
                     <span class="giftHouseBed"></span><span class="giftHouseFurniture" data-icon="&#x1F39B;&#xFE0F;"></span><span class="giftHouseDesk"></span><span class="giftHouseBalcony"></span>
                   </div>
-                  <div class="giftHouseRoom" data-room-id="arcade" data-room-label="ARCADE" style="--roomA:rgba(54,8,52,.88);--roomB:rgba(0,24,44,.94);--lampX:30%;--lampY:28%;">
+                  <div class="giftHouseRoom" data-room-id="arcade" data-room-label="ARCADE BAY" style="--roomA:rgba(54,8,52,.88);--roomB:rgba(0,24,44,.94);--lampX:30%;--lampY:28%;">
                     <span class="giftHouseRoomFloorPattern floorGrid"></span><span class="giftHouseDoor doorRight"></span><span class="giftHousePoster posterA"></span>
                     <span class="giftHouseRoomShelf shelfNeon"></span><span class="giftHouseRoomGlow"></span>
                     <span class="giftHouseArcadeCab"></span><span class="giftHouseArcadeCab cabMini"></span><span class="giftHouseDesk"></span><span class="giftHousePlant">&#x1FAB4;</span>
@@ -1715,20 +1753,9 @@
                   </div>
                 </div>
               </div>
-              <div class="giftHouseStreet" aria-hidden="true">
-                <div class="giftHouseSidewalk sidewalkTop"><span class="giftHousePedestrian pedOne">&#x1F6B6;&#xFE0F;</span><span class="giftHousePedestrian pedTwo">&#x1F9CD;</span></div>
-                <div class="giftHouseRoad">
-                  <span class="giftHouseLane laneOne"></span><span class="giftHouseLane laneTwo"></span>
-                  <span class="giftHouseLaneDash dashOne"></span><span class="giftHouseLaneDash dashTwo"></span>
-                  <span class="giftHouseCrosswalk"></span>
-                  <span class="giftHouseCar carOne">&#x1F697;</span><span class="giftHouseCar carTwo">&#x1F3CE;&#xFE0F;</span><span class="giftHouseCar carThree">&#x1F695;</span>
-                  <span class="giftHouseTrafficLight"><span class="light red"></span><span class="light amber"></span><span class="light green"></span></span>
-                </div>
-                <div class="giftHouseSidewalk sidewalkBottom"><span class="giftHousePedestrian pedThree">&#x1F9D1;&#x200D;&#x1F4BB;</span><span class="giftHousePedestrian pedFour">&#x1F6B6;</span></div>
-              </div>
               <div class="giftHouseResidentLayer" id="giftHouseResidentLayer"></div>
               <div class="giftHousePlacementLayer" id="giftHousePlacementLayer"></div>
-              <div class="giftHouseHintRibbon">CATALOG ITEMS ARE TEST-UNLOCKED FOR THIS SLICE</div>
+              <div class="giftHouseHintRibbon">EARNED TABLE KEEPSAKES // DRAG TO A ROOM</div>
             </div>
           </main>
           <aside class="giftHouseInspector">

@@ -30,6 +30,17 @@
         "local": true
     },
     {
+        "count": "0",
+        "name": "Deep Slot Machine",
+        "category": [
+            "Filler",
+            "Bonus Game",
+            "Deep Run"
+        ],
+        "useful": true,
+        "local": true
+    },
+    {
         "count": "10",
         "name": "Boss Key",
         "category": [

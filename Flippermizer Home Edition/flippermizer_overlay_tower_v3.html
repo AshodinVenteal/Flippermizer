@@ -5,6 +5,7 @@
 <title>Flippermizer! Pinball Randomized!</title>
 <link href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Press+Start+2P&display=swap" rel="stylesheet">
 <script>
+const FLPR_HOME_EDITION = true;
 (() => {
   try {
     const params = new URLSearchParams(window.location.search || "");
@@ -719,7 +720,7 @@ body.bonusPinballDim .randomizerIntro{
   padding:7px 8px;
   background:rgba(0,0,0,.22);
   color:rgba(255,244,212,.82);
-  font-size:7px;
+  font-size:14px;
   line-height:1.45;
   overflow:auto;
   overflow-wrap:anywhere;
@@ -1741,6 +1742,174 @@ body.flprFontHubot .checksTitle{
   font-size:10px;
   cursor:pointer;
 }
+.bagatelleWinCard{position:absolute;inset:12%;z-index:8;display:none;place-content:center;justify-items:center;gap:18px;padding:28px;border:3px solid #ff6f99;border-radius:8px;background:rgba(8,4,14,.96);box-shadow:0 0 0 4px rgba(0,217,255,.25) inset,0 0 52px rgba(255,70,118,.55);text-align:center}
+.bagatelleWinCard.show{display:grid;animation:bagatelleWinIn 320ms cubic-bezier(.16,1,.3,1) both}
+.bagatelleWinTitle{color:#fff1bc;font-size:38px;text-shadow:3px 3px 0 #ff3f70,0 0 22px #ff6f99}
+.bagatelleWinReward{color:#aef8ff;font-size:18px;line-height:1.35}
+@keyframes bagatelleWinIn{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:scale(1)}}
+#viewChecks .checksScoreModBtn.bagatelleBonusReady{color:#fff4b8;border-color:#ff5f91;background:linear-gradient(180deg,rgba(255,48,104,.62),rgba(36,4,24,.96));box-shadow:0 0 8px #fff,0 0 20px rgba(255,72,126,.9),0 0 34px rgba(0,217,255,.48);animation:bagatelleBonusGlow 1.15s ease-in-out infinite alternate}
+@keyframes bagatelleBonusGlow{to{filter:brightness(1.35);box-shadow:0 0 12px #fff,0 0 30px #ff5f91,0 0 46px #00d9ff}}
+.deepSlotOverlay{position:absolute;left:var(--bagatelle-x,0);top:var(--bagatelle-y,0);width:var(--bagatelle-width,var(--captureW));height:var(--bagatelle-height,var(--captureH));z-index:2147483500;display:grid;place-items:center;padding:18px;background:rgba(0,3,12,.9);backdrop-filter:blur(5px) brightness(.45);pointer-events:auto}
+.deepSlotCard{width:100%;height:100%;display:grid;place-content:center;justify-items:center;gap:24px;border:4px solid #ff4f78;border-radius:8px;background:radial-gradient(circle at 50% 32%,rgba(72,16,82,.95),rgba(3,9,20,.99) 66%);box-shadow:0 0 0 4px rgba(0,217,255,.28) inset,0 0 50px rgba(255,69,120,.42)}
+.deepSlotTitle{font-size:40px;color:#fff1bc;text-shadow:4px 4px 0 #c51b58,0 0 28px #ff4f78}.deepSlotSub{font-size:12px;color:#9ff6ff}
+.deepSlotReels{display:grid;grid-template-columns:repeat(3,150px);gap:16px}.deepSlotReel{height:170px;display:grid;place-items:center;border:4px solid #ffd56a;border-radius:8px;background:linear-gradient(#fff,#dff7ff);box-shadow:inset 0 0 22px rgba(0,0,0,.3),0 0 24px rgba(255,208,80,.35);overflow:hidden}
+.deepSlotSymbol{font-size:82px;line-height:1;filter:drop-shadow(0 5px 2px rgba(0,0,0,.25))}.deepSlotSymbol img{width:104px;height:104px;object-fit:contain}.deepSlotReel.spinning .deepSlotSymbol{animation:deepSlotSpin 90ms linear infinite}@keyframes deepSlotSpin{50%{transform:translateY(9px) scale(.94);filter:blur(2px)}}
+.deepSlotAward{min-height:64px;font-size:19px;color:#fff;text-align:center;text-shadow:0 0 16px #00d9ff}.deepSlotCollect{min-width:180px;min-height:48px;border:2px solid #00d9ff;border-radius:6px;background:#07283b;color:#fff;font:inherit;font-size:13px;cursor:pointer}.deepSlotJackpot .deepSlotReel{animation:deepSlotJackpot 380ms ease-in-out infinite alternate}@keyframes deepSlotJackpot{to{transform:scale(1.05);box-shadow:0 0 22px #fff,0 0 48px #ff4f78}}
+
+/* Deep Slot cabinet: dark casino glass, mechanical reel strips, and pay table. */
+.deepSlotOverlay{
+  padding:12px;
+  background:rgba(0,2,7,.965);
+  backdrop-filter:blur(6px) brightness(.24) saturate(.72);
+}
+.deepSlotCard{
+  position:relative;
+  overflow:hidden;
+  grid-template-rows:auto minmax(300px,1fr) auto auto;
+  align-content:center;
+  place-content:unset;
+  gap:10px;
+  padding:18px 28px;
+  border:4px solid #d5a83d;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 0 0/32px 32px,
+    radial-gradient(ellipse at 50% 18%,rgba(121,22,42,.26),transparent 48%),
+    linear-gradient(180deg,#10070b 0%,#07090d 48%,#030609 100%);
+  box-shadow:0 0 0 3px #3b170d inset,0 0 0 7px rgba(255,215,105,.14) inset,0 0 34px rgba(194,34,61,.18);
+}
+.deepSlotCard::before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(255,224,137,.32);
+  pointer-events:none;
+}
+.deepSlotTitle{
+  z-index:1;
+  position:relative;
+  justify-self:center;
+  width:min(590px,92%);
+  padding:14px 24px 12px;
+  border:3px solid #f2cd68;
+  border-radius:7px 7px 3px 3px;
+  background:linear-gradient(180deg,#74152d,#290912 58%,#10070a);
+  box-shadow:0 0 0 3px #4b190f,0 0 22px rgba(255,49,91,.48),inset 0 0 18px rgba(255,211,91,.15);
+  font-size:38px;
+  color:#ffe5a0;
+  text-align:center;
+  text-shadow:3px 3px 0 #71152c,0 0 12px rgba(255,196,72,.8);
+}
+.deepSlotTitle::before,.deepSlotTitle::after{content:"◆";position:absolute;top:50%;transform:translateY(-50%);font-size:17px;color:#ffcf4b;text-shadow:0 0 10px #ff315b}.deepSlotTitle::before{left:18px}.deepSlotTitle::after{right:18px}
+.deepSlotSub{z-index:1;font-size:9px;color:#ffe9a5;text-align:center;letter-spacing:0}
+.deepSlotMachineBody{
+  z-index:1;
+  position:relative;
+  align-self:center;
+  justify-self:center;
+  width:min(650px,92%);
+  display:grid;
+  gap:10px;
+  padding:18px 22px 14px;
+  border:5px solid #9c7028;
+  border-radius:8px;
+  background:linear-gradient(180deg,#341014,#16090c 48%,#09080a);
+  box-shadow:0 0 0 3px #f0ca65 inset,0 12px 28px #000,0 0 26px rgba(224,53,79,.2);
+}
+.deepSlotReels{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  padding:12px;
+  border:4px solid #e5bd58;
+  border-radius:6px;
+  background:#070707;
+  box-shadow:0 0 0 3px #52210f,0 0 18px rgba(255,195,61,.22) inset;
+}
+.deepSlotReels::after{
+  content:"";
+  position:absolute;
+  left:5px;right:5px;top:50%;height:3px;
+  transform:translateY(-50%);
+  background:#e52f54;
+  box-shadow:0 0 8px #ff315b;
+  pointer-events:none;
+  z-index:4;
+}
+.deepSlotReel{
+  position:relative;
+  height:210px;
+  border:3px solid #6b5528;
+  border-radius:4px;
+  background:linear-gradient(90deg,#9c998d,#f2eee0 18%,#fff 50%,#e4e0d4 82%,#89867c);
+  box-shadow:inset 14px 0 18px rgba(0,0,0,.28),inset -14px 0 18px rgba(0,0,0,.28),inset 0 14px 20px rgba(0,0,0,.4),inset 0 -14px 20px rgba(0,0,0,.4);
+}
+.deepSlotReel::before,.deepSlotReel::after{content:"";position:absolute;left:0;right:0;height:34%;z-index:3;pointer-events:none}
+.deepSlotReel::before{top:0;background:linear-gradient(#121212cc,transparent)}
+.deepSlotReel::after{bottom:0;background:linear-gradient(transparent,#121212cc)}
+.deepSlotStrip{height:100%;display:grid;grid-template-rows:repeat(3,1fr);align-items:center;transition:transform 180ms cubic-bezier(.2,.9,.25,1)}
+.deepSlotStripCell{display:grid;place-items:center;height:70px;font-size:46px;line-height:1;filter:saturate(.88)}
+.deepSlotStripCell.center{font-size:64px;filter:saturate(1.15) drop-shadow(0 4px 2px rgba(0,0,0,.3))}
+.deepSlotStripCell img{width:58px;height:58px;object-fit:contain}.deepSlotStripCell.center img{width:78px;height:78px}
+.deepSlotReel.spinning .deepSlotStrip{animation:deepSlotReelRoll 160ms linear infinite}
+@keyframes deepSlotReelRoll{from{transform:translateY(-23px)}to{transform:translateY(23px)}}
+.deepSlotLeverLamp{height:9px;border-radius:2px;background:linear-gradient(90deg,#5c101b,#ff315b 50%,#5c101b);box-shadow:0 0 12px rgba(255,49,91,.6)}
+.deepSlotLegend{
+  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:5px;
+  width:min(760px,96%);
+  justify-self:center;
+}
+.deepSlotLegendItem{display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:5px;min-height:38px;padding:5px 7px;border:1px solid rgba(213,168,61,.42);border-radius:4px;background:rgba(6,8,11,.9);color:#dce7e8;font-size:6px;line-height:1.25}
+.deepSlotLegendSymbol{display:grid;place-items:center;font-size:21px;color:#ffe29a}.deepSlotLegendSymbol img{width:27px;height:27px;object-fit:contain}
+.deepSlotAward{z-index:1;min-height:30px;font-size:15px;color:#ffe7a2;text-shadow:0 0 10px rgba(255,200,75,.5);transition:opacity .2s ease}
+.deepSlotAward.dispensed{opacity:0;visibility:hidden}
+.deepSlotCollect{z-index:1;min-width:190px;min-height:40px;border:2px solid #d7ae4c;background:linear-gradient(#64172a,#270a13);color:#fff1b8;box-shadow:0 0 12px rgba(232,45,83,.28)}
+.deepSlotCollect:disabled{filter:grayscale(.7);opacity:.55}
+.deepSlotJackpot .deepSlotCard{animation:deepSlotCabinetWin 280ms ease-in-out infinite alternate}
+.deepSlotJackpot .deepSlotReel{animation:deepSlotJackpot 300ms ease-in-out infinite alternate}
+@keyframes deepSlotCabinetWin{to{box-shadow:0 0 0 3px #5a1a10 inset,0 0 0 7px rgba(255,239,173,.28) inset,0 0 48px rgba(255,196,55,.5)}}
+.pachislotDrawer{display:none;--pachislot-fill:0%}
+body.deepRunFeatureKeysEnabled #viewChecks #checksCountersDock .pachislotDrawer{display:block}
+.pachislotDrawer .counterDrawerHead{min-height:76px;border-color:rgba(224,177,65,.7);background:linear-gradient(180deg,rgba(55,16,25,.97),rgba(14,7,10,.97));box-shadow:inset 0 -1px 0 rgba(255,208,85,.35)}
+.pachislotDrawer .counterDrawerHead::before{opacity:.62;transform:scaleY(var(--pachislot-fill));background:linear-gradient(180deg,rgba(255,216,80,.64),rgba(202,29,66,.86));transition:transform 1.25s cubic-bezier(.2,.75,.2,1)}
+.pachislotCrank{position:relative;z-index:2;display:grid;grid-template-columns:42px 1fr;align-items:center;gap:8px;width:100%;pointer-events:none}
+.pachislotCrankTrack{position:relative;width:18px;height:48px;justify-self:center;border:2px solid #cda94c;border-radius:10px;background:#080707;box-shadow:inset 0 0 8px #000,0 0 8px rgba(255,202,61,.2)}
+.pachislotCrankArm{position:absolute;left:6px;top:4px;width:24px;height:5px;border-radius:4px;background:linear-gradient(90deg,#6f7377,#f3e9c1);box-shadow:0 2px 3px #000;transform-origin:2px 50%;transform:rotate(-35deg);transition:transform .22s ease}
+.pachislotCrankKnob{position:absolute;right:-9px;top:-5px;width:13px;height:13px;border:2px solid #ffc75c;border-radius:50%;background:#b51e3d;box-shadow:0 0 9px rgba(255,47,91,.7)}
+.pachislotCrankCopy{display:flex;flex-direction:column;gap:5px;align-items:center;min-width:0}
+.pachislotCrankLabel{font-size:7px;color:#ffe6a3;line-height:1.25;text-shadow:0 0 9px rgba(255,197,56,.45)}
+.pachislotCoinCount{font-size:11px;color:#fff3c2;text-shadow:0 0 8px rgba(255,201,65,.65)}
+.pachislotCrankPrompt{font-size:6px;color:#d9aeb6}
+.pachislotDrawer.hasReady{border-color:rgba(255,205,71,.9);box-shadow:0 0 0 1px rgba(255,226,122,.4),0 0 22px rgba(255,52,94,.38)}
+.pachislotDrawer.hasReady .counterDrawerHead{animation:pachislotReadyPulse .8s ease-in-out infinite alternate}
+.pachislotDrawer.hasReady .pachislotCrankPrompt{color:#fff1a8}
+.pachislotDrawer.pulling .pachislotCrankArm{transform:rotate(75deg)}
+@keyframes pachislotReadyPulse{to{filter:brightness(1.28);box-shadow:inset 0 -1px 0 rgba(255,232,146,.7),0 0 18px rgba(255,48,91,.36)}}
+#viewChecks #checksCountersDock:not(.expanded) .pachislotDrawer:not(.open):not(.autoOpen) .counterDrawerHead{min-height:76px}
+#viewChecks #checksCountersDock:not(.expanded) .pachislotDrawer:not(.open):not(.autoOpen) .pachislotCrankCopy{display:none}
+.deepSlotMarquee{z-index:1;display:grid;grid-template-columns:repeat(11,9px);justify-content:center;gap:14px}
+.deepSlotMarquee i{width:9px;height:9px;border-radius:50%;background:#ffcf4b;box-shadow:0 0 10px #ff9d20;animation:deepSlotLamp .7s steps(2,end) infinite alternate}
+.deepSlotMarquee i:nth-child(2n){background:#ff315b;box-shadow:0 0 10px #ff315b;animation-delay:.35s}
+@keyframes deepSlotLamp{to{filter:brightness(.35);box-shadow:none}}
+.deepSlotSeven{display:inline-grid;place-items:center;font-family:var(--flprUiFontFamily),"Press Start 2P",monospace;font-size:1.05em;font-weight:400;line-height:.9;color:#df173e;-webkit-text-stroke:2px #55101d;text-shadow:3px 3px 0 #f7c94b,0 0 8px rgba(221,25,63,.55)}
+.deepSlotLegend{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:min(790px,97%)}
+.deepSlotLegendItem{grid-template-columns:62px minmax(0,1fr);min-height:64px;padding:8px 14px;border-width:2px;font-size:10px;line-height:1.35;background:linear-gradient(180deg,rgba(38,17,16,.98),rgba(5,7,10,.98));box-shadow:inset 0 0 0 1px rgba(255,218,111,.08)}
+.deepSlotLegendSymbol{font-size:42px}.deepSlotLegendSymbol img{width:52px;height:52px}
+.deepSlotLegendRewards{display:grid;gap:5px}.deepSlotLegendLine{display:grid;grid-template-columns:76px 10px minmax(0,1fr);align-items:center}.deepSlotLegendMatch{color:#ffe39a}.deepSlotLegendSep{color:#e64a68;text-align:center}.deepSlotLegendPrize{color:#f4f7ef}
+.deepSlotPayoutAssembly{z-index:7;position:relative;justify-self:center;width:min(650px,92%);display:grid;justify-items:center;gap:8px}
+.deepSlotPayoutSign{position:relative;z-index:8;width:min(420px,78%);padding:10px 18px 9px;border:3px solid #f0c75d;border-radius:6px;background:linear-gradient(180deg,#78172f,#2c0a14);color:#fff0ad;text-align:center;font-size:14px;text-shadow:2px 2px 0 #6d1127,0 0 12px rgba(255,211,85,.7);box-shadow:0 0 0 2px #4b190e,0 0 18px rgba(255,49,91,.36),inset 0 0 10px rgba(255,221,110,.18)}
+.deepSlotPayoutSign::before,.deepSlotPayoutSign::after{content:"◆";position:absolute;top:50%;transform:translateY(-50%);font-size:10px;color:#ffcf4b}.deepSlotPayoutSign::before{left:14px}.deepSlotPayoutSign::after{right:14px}
+.deepSlotPrizeChute{z-index:7;position:relative;width:100%;height:142px;border:4px solid #8b692d;border-radius:7px;background:linear-gradient(#080808,#1d1510 45%,#030303);box-shadow:inset 0 14px 24px #000,0 0 0 2px #e6bd59,0 8px 18px #000;overflow:visible}
+.deepSlotPrizeChute::before{content:"";position:absolute;z-index:9;left:8%;right:8%;top:14px;height:15px;border:2px solid #b78e38;border-radius:3px;background:#010101;box-shadow:inset 0 5px 8px #000,0 0 8px rgba(255,196,62,.2)}
+.deepSlotWinCard{position:absolute;left:18px;right:18px;top:24px;z-index:20;min-height:112px;display:grid;grid-template-columns:82px minmax(0,1fr) 150px;align-items:center;gap:12px;padding:10px 14px;border:3px solid #ffd66e;border-radius:5px;background:linear-gradient(135deg,#fff3bd,#f8c75d 55%,#de8d26);color:#29090e;box-shadow:0 12px 30px rgba(0,0,0,.7),0 0 24px rgba(255,205,75,.75);transform:translateY(118px);opacity:0;transition:transform .65s cubic-bezier(.16,1.25,.3,1),opacity .25s ease}
+.deepSlotWinCard.show{transform:translateY(0);opacity:1}
+.deepSlotWinSymbol{display:grid;place-items:center;font-size:62px}.deepSlotWinSymbol img{width:72px;height:72px;object-fit:contain}.deepSlotWinSymbol .deepSlotSeven{font-size:68px}
+.deepSlotWinCopy{display:flex;flex-direction:column;gap:7px;min-width:0}.deepSlotWinTitle{font-size:18px;color:#981630;text-shadow:1px 1px 0 #fff3bd}.deepSlotWinReward{font-size:11px;line-height:1.3;color:#321016}
+.deepSlotWinCard .deepSlotCollect{min-width:140px;min-height:48px;border-color:#651226;background:linear-gradient(#9d1a3b,#4d0d20);color:#fff6ce;box-shadow:0 4px 0 #2c0711,0 0 12px rgba(150,18,49,.3)}
+.deepSlotWinCard .deepSlotCollect:disabled{visibility:hidden}
 
 /* Dim main overlay while Bonus Pinball field is actively running in OBS. */
 .capture{
@@ -1856,6 +2025,20 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
 }
 .hintPrimaryBody{
   flex: 1 1 auto;
+  position: relative;
+}
+.hintCard.hangmanExpanded .hintPrimaryActions,
+.hintCard.hangmanExpanded .hintTokenActions{
+  visibility: hidden;
+  pointer-events: none;
+}
+.hintCard.hangmanExpanded .hintReveal.hangman{
+  position: absolute;
+  inset: 8px;
+  z-index: 24;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
 }
 .hintFile{
   font-size: 10px;
@@ -2880,6 +3063,14 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   gap: 6px;
   min-height: 0;
 }
+.hintRouteIntro{
+  padding: 7px 8px;
+  border-left: 3px solid rgba(34,255,136,.68);
+  background: rgba(34,255,136,.07);
+  color: rgba(220,255,236,.88);
+  font-size: 8px;
+  line-height: 1.35;
+}
 .hintRouteItem{
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 10px;
@@ -2919,6 +3110,24 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
   color: rgba(255,232,158,.94);
   font-size: 7px;
   padding: 4px 6px;
+}
+.hintRouteTag.high{
+  border-color: rgba(34,255,136,.60);
+  background: rgba(8,64,38,.62);
+  color: rgba(190,255,216,.98);
+}
+.hintRouteTag.medium{
+  border-color: rgba(255,210,96,.56);
+  background: rgba(72,48,8,.58);
+  color: rgba(255,232,158,.98);
+}
+.hintRouteTag.scout{
+  border-color: rgba(0,217,255,.48);
+  background: rgba(0,54,74,.56);
+  color: rgba(180,246,255,.96);
+}
+.hintRouteItem.lockedRoute{
+  opacity: .64;
 }
 .hintRouteMeta,
 .hintRouteEmpty{
@@ -4117,7 +4326,7 @@ body.bonusPinballDim .capture > :not(.bonusPinballIntegratedHost){
     inset 0 0 0 1px rgba(255,255,255,.06);
   color:rgba(245,252,255,.96);
   font-family:var(--flprUiFontFamily);
-  font-size:7px;
+  font-size:14px;
   line-height:1;
   letter-spacing:.06em;
   white-space:nowrap;
@@ -11349,13 +11558,13 @@ body.chromaBlue .bossKeyCard::before{
 }
 .flprPatchNotesCard{
   position:relative;
-  width:min(760px, calc(100vw - 56px));
-  max-height:calc(100vh - 56px);
+  width:min(1120px, calc(100vw - 48px));
+  max-height:calc(100vh - 48px);
   overflow:hidden;
   display:flex;
   flex-direction:column;
   border:2px solid rgba(34,255,136,.72);
-  border-radius:18px;
+  border-radius:12px;
   background:
     radial-gradient(120% 180% at 0% 0%, rgba(34,255,136,.16), rgba(0,0,0,0) 58%),
     linear-gradient(180deg, rgba(7,22,34,.98), rgba(3,10,18,.98));
@@ -11368,32 +11577,32 @@ body.chromaBlue .bossKeyCard::before{
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
-  gap:14px;
-  padding:16px 18px 12px;
+  gap:20px;
+  padding:22px 26px 18px;
   border-bottom:1px solid rgba(34,255,136,.28);
   background:linear-gradient(90deg, rgba(34,255,136,.12), rgba(0,217,255,.06), transparent);
 }
 .flprPatchNotesTitle{
-  font-size:18px;
+  font-size:30px;
   line-height:1.25;
   color:rgba(232,250,255,.98);
 }
 .flprPatchNotesSub{
-  margin-top:7px;
-  font-size:9px;
+  margin-top:10px;
+  font-size:15px;
   line-height:1.45;
   color:rgba(198,236,224,.74);
 }
 .flprPatchNotesClose{
   flex:0 0 auto;
-  min-height:30px;
-  padding:8px 10px 7px;
+  min-height:48px;
+  padding:12px 16px 11px;
   border:1px solid rgba(255,226,142,.72);
   border-radius:10px;
   background:rgba(58,38,8,.36);
   color:rgba(255,246,216,.96);
   font-family:var(--flprUiFontFamily);
-  font-size:8px;
+  font-size:13px;
   cursor:pointer;
 }
 .flprPatchNotesClose:hover,
@@ -11404,36 +11613,36 @@ body.chromaBlue .bossKeyCard::before{
   box-shadow:0 0 14px rgba(34,255,136,.22);
 }
 .flprPatchNotesBody{
-  padding:14px 18px 16px;
+  padding:20px 26px 22px;
   display:grid;
-  gap:12px;
+  gap:16px;
   overflow:auto;
 }
 .flprPatchNotesFooter{
   display:flex;
   align-items:center;
   justify-content:flex-start;
-  gap:10px;
-  padding:0 18px 16px;
+  gap:12px;
+  padding:0 26px 22px;
 }
 .flprPatchNotesDontShow{
   display:inline-flex;
   align-items:center;
-  gap:9px;
-  min-height:30px;
-  padding:7px 10px 6px;
+  gap:12px;
+  min-height:44px;
+  padding:10px 14px 9px;
   border:1px solid rgba(116,240,255,.30);
   border-radius:10px;
   background:rgba(0,18,31,.48);
   color:rgba(232,250,255,.82);
-  font-size:8px;
+  font-size:13px;
   line-height:1.35;
   cursor:pointer;
   user-select:none;
 }
 .flprPatchNotesDontShow input{
-  width:14px;
-  height:14px;
+  width:18px;
+  height:18px;
   accent-color:#22ff88;
 }
 .flprPatchNotesDontShow:hover{
@@ -11442,16 +11651,16 @@ body.chromaBlue .bossKeyCard::before{
 }
 .flprPatchNotesItem{
   border:1px solid rgba(0,217,255,.24);
-  border-radius:12px;
+  border-radius:8px;
   background:rgba(0,18,31,.58);
-  padding:11px 12px;
+  padding:16px 18px;
   display:grid;
-  gap:7px;
+  gap:10px;
 }
 .flprPatchNotesItem:first-child{
   border-width:3px;
   border-color:rgba(34,255,136,.86);
-  padding:13px 14px;
+  padding:18px 20px;
   background:
     radial-gradient(110% 180% at 0% 0%, rgba(34,255,136,.18), rgba(0,0,0,0) 58%),
     rgba(0,22,34,.70);
@@ -11461,24 +11670,41 @@ body.chromaBlue .bossKeyCard::before{
 }
 .flprPatchNotesItem .k{
   color:rgba(255,226,142,.96);
-  font-size:10px;
+  font-size:16px;
   line-height:1.35;
 }
 .flprPatchNotesItem:first-child .k{
-  font-size:12px;
+  font-size:20px;
   color:rgba(255,238,174,.98);
 }
 .flprPatchNotesItem .d{
   color:rgba(232,250,255,.82);
-  font-size:9px;
+  font-size:14px;
   line-height:1.55;
 }
 .flprPatchNotesMeta{
   border-top:1px solid rgba(255,255,255,.10);
-  padding-top:11px;
+  padding-top:14px;
   color:rgba(196,236,255,.70);
-  font-size:8px;
+  font-size:12px;
   line-height:1.5;
+}
+@media (max-width:760px){
+  .flprPatchNotesOverlay{ padding:14px; }
+  .flprPatchNotesCard{ width:calc(100vw - 28px); max-height:calc(100vh - 28px); }
+  .flprPatchNotesHd{ padding:16px 18px 14px; gap:12px; }
+  .flprPatchNotesTitle{ font-size:22px; }
+  .flprPatchNotesSub{ font-size:11px; }
+  .flprPatchNotesClose{ min-height:40px; padding:10px 12px 9px; font-size:10px; }
+  .flprPatchNotesBody{ padding:14px 18px 16px; gap:12px; }
+  .flprPatchNotesFooter{ padding:0 18px 16px; }
+  .flprPatchNotesDontShow{ min-height:38px; padding:8px 10px 7px; font-size:10px; }
+  .flprPatchNotesItem{ padding:12px 14px; gap:8px; }
+  .flprPatchNotesItem:first-child{ padding:14px 16px; }
+  .flprPatchNotesItem .k{ font-size:13px; }
+  .flprPatchNotesItem:first-child .k{ font-size:16px; }
+  .flprPatchNotesItem .d{ font-size:11px; }
+  .flprPatchNotesMeta{ font-size:10px; }
 }
 .designerInfoOverlay{
   position:absolute;
@@ -15054,6 +15280,22 @@ body.deepRunFeatureKeysEnabled .viewport{
   height: calc((var(--captureH) - 75px - 14px - 22px - 450px) * 1.10) !important;
   max-height: calc((var(--captureH) - 75px - 14px - 22px - 450px) * 1.10) !important;
 }
+body.deepRunFeatureKeysEnabled #viewOverview{
+  height:100%;
+  min-height:0;
+  padding-bottom:8px !important;
+}
+body.deepRunFeatureKeysEnabled #viewOverview #grid.overviewTables15{
+  flex:1 1 0;
+  min-height:0;
+  height:auto;
+  align-content:stretch;
+  grid-template-columns:repeat(5, minmax(0, 1fr));
+  grid-template-rows:repeat(3, minmax(0, 1fr));
+}
+body.deepRunFeatureKeysEnabled #viewOverview #grid.overviewTables15 .tile{
+  min-height:0;
+}
 </style>
 
 
@@ -16421,7 +16663,10 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 
 /* v138: Boss world checks; stack boss card above checks and use Boss World banner as the ONLY background */
 #viewChecks .checksBody.bossMode{
-  display:block !important;
+  display:grid !important;
+  grid-template-rows:auto minmax(0,1fr) !important;
+  min-height:0 !important;
+  overflow:hidden !important;
 }
 #viewChecks .checksBody.bossMode .bossInfoCard,
 #viewChecks .checksBody.bossMode .bossChecksScaler{
@@ -17335,11 +17580,14 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 #viewChecks .checksBody.bossMode .bossChecksScaler{
   margin: 0 auto !important;
   width: 100% !important;
+  min-height:0 !important;
+  overflow:hidden !important;
 }
 #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig{
   display: flex !important;
   flex-direction: column !important;
-  max-height: 346px;
+  height:100% !important;
+  max-height:none !important;
   overflow: hidden !important;
 }
 #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .tableHead{
@@ -17350,7 +17598,7 @@ body.checksBgCircuit #viewChecks .checksWrap:not(.bossBannerMode)::after{
 #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig .nodeGrid{
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 236px;
+  max-height:none;
   overflow-y: auto;
   overflow-x: hidden;
   align-content: start;
@@ -18559,9 +18807,11 @@ body.controlsLayoutEdit .connectPanelDropZone.is-panel-drop-zone{
   gap:5px;
 }
 .connectPanelCollapseBtn{
-  min-height:22px;
-  padding:0 7px;
-  border-radius:8px;
+  width:28px;
+  min-width:28px;
+  min-height:26px;
+  padding:0;
+  border-radius:6px;
   border:1px solid rgba(160,214,255,.24);
   background:rgba(0,18,31,.64);
   color:rgba(230,248,255,.88);
@@ -22847,12 +23097,12 @@ body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysHint{
   transform: translate(-50%,-50%) scale(.88);
   width:min(1100px, calc(100% - 42px));
   max-height: calc(100% - 54px);
-  border-radius:22px;
-  border:3px solid rgba(0,217,255,.82);
+  border-radius:8px;
+  border:4px solid rgba(0,217,255,.92);
   background:
     linear-gradient(155deg, rgba(0,26,56,.95), rgba(3,14,28,.95)),
     repeating-linear-gradient(45deg, rgba(0,217,255,.07) 0 2px, rgba(0,0,0,0) 2px 10px);
-  box-shadow: 0 28px 70px rgba(0,0,0,.62), 0 0 34px rgba(0,217,255,.24), inset 0 0 0 1px rgba(255,255,255,.12);
+  box-shadow:0 28px 70px rgba(0,0,0,.72),0 0 24px rgba(0,217,255,.65),0 0 54px rgba(255,66,118,.28),inset 0 0 0 2px rgba(255,255,255,.12);
   padding: 18px 20px 16px;
   display:flex;
   flex-direction:column;
@@ -22867,7 +23117,7 @@ body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysHint{
   100%{ transform: translate(-50%,-50%) scale(1); opacity:1; }
 }
 .endRunTitle{
-  font-size:30px;
+  font-size:40px;
   letter-spacing:1.6px;
   color:#d8fbff;
   text-shadow:0 0 16px rgba(0,217,255,.42), 0 0 24px rgba(34,255,136,.30);
@@ -22911,17 +23161,22 @@ body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysHint{
 .endRunStatsGrid{
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap:10px;
+  gap:12px;
 }
 .endRunStatCard{
-  border:1px solid rgba(0,217,255,.24);
-  border-radius:14px;
+  position:relative;
+  overflow:hidden;
+  border:2px solid rgba(0,217,255,.52);
+  border-radius:7px;
   background:
     radial-gradient(120% 140% at 18% 0%, rgba(0,217,255,.12), rgba(0,0,0,0) 58%),
     linear-gradient(180deg, rgba(5,22,40,.88), rgba(2,10,18,.92));
-  padding:10px 12px;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+  padding:14px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 0 18px rgba(0,217,255,.16);
+  animation:endRunStatReveal 520ms cubic-bezier(.16,1,.3,1) both;
 }
+.endRunStatCard:nth-child(2){animation-delay:80ms}.endRunStatCard:nth-child(3){animation-delay:160ms}.endRunStatCard:nth-child(4){animation-delay:240ms}.endRunStatCard:nth-child(5){animation-delay:320ms}.endRunStatCard:nth-child(6){animation-delay:400ms}
+@keyframes endRunStatReveal{from{opacity:0;transform:translateY(24px) scale(.9);filter:brightness(2)}to{opacity:1;transform:none;filter:brightness(1)}}
 .endRunStatK{
   font-size:8px;
   letter-spacing:.8px;
@@ -22929,7 +23184,7 @@ body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysHint{
 }
 .endRunStatV{
   margin-top:6px;
-  font-size:16px;
+  font-size:24px;
   line-height:1.1;
   color:#ebfbff;
   text-shadow:0 0 12px rgba(0,217,255,.18);
@@ -23050,8 +23305,8 @@ body.deepRunFeatureKeysEnabled .keyDockSplit .bossKeysHint{
   min-width:58px;
 }
 .musicScenarioModeInput{
-  min-width:118px;
-  max-width:150px;
+  min-width:176px;
+  max-width:230px;
   padding-right:24px;
 }
 .musicScenarioVolumeRow{
@@ -23786,16 +24041,20 @@ body.bossTableChecksActive #viewChecks .checksBody.bossMode .bossRaidBarWrap{
 }
 body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChecksBig{
   flex:1 1 auto !important;
-  height:100% !important;
+  height:auto !important;
   min-height:0 !important;
-  max-height:none !important;
+  max-height:100% !important;
   width:calc(100% - 8px) !important;
   margin:0 auto !important;
+  box-sizing:border-box !important;
 }
 body.bossTableChecksActive #viewChecks .checksBody.bossMode .bossChecksScaler{
   flex:1 1 0 !important;
   display:flex !important;
   min-height:0 !important;
+  height:auto !important;
+  max-height:100% !important;
+  overflow:hidden !important;
   width:100% !important;
   margin:0 !important;
   padding:0 4px 4px !important;
@@ -24165,16 +24424,13 @@ body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChec
           </div>
           <div class="hintCard hintSecondary">
             <div class="hintCardHd">
-              <div class="hintCardTitle">BOSS KEY ROUTE SIGNALS</div>
-              <div class="hintPill">LOCATION INFO</div>
+              <div class="hintCardTitle">PLAY NEXT; PROGRESSION SIGNALS</div>
+              <div class="hintPill">EDUCATED GUESS</div>
             </div>
             <div class="hintCardBody">
-              <div class="hintRouteSummary">
-                <div class="hintRouteStat"><span class="k">Progressive ball clues on boss path</span><span class="v" id="hintRouteBossPathCount">0</span></div>
-                <div class="hintRouteStat"><span class="k">Known boss-key checks</span><span class="v" id="hintRouteBossKeyCount">0</span></div>
-              </div>
+              <div class="hintRouteIntro">Ranks playable tables by uncollected progression signals, then by remaining check density.</div>
               <div class="hintRouteList" id="hintRouteList">
-                <div class="hintRouteEmpty">Awaiting AP location info.</div>
+                <div class="hintRouteEmpty">Connect to AP to calculate the next route.</div>
               </div>
               <div class="hintLog" id="hintLog" hidden></div>
             </div>
@@ -24396,6 +24652,7 @@ body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChec
         <button class="cBtn testFlow" id="testHintBallPopupBtn" data-testtag="Hint Ball">TEST HINT BALL</button>
         <button class="cBtn testFlow" id="testHintBossPopupBtn" data-testtag="Hint Key">TEST HINT KEY</button>
         <button class="cBtn testPrimary" id="testBagatelleBtn" data-testtag="Bagatelle">TEST BAGATELLE</button>
+        <button class="cBtn testPrimary" id="testDeepSlotBtn" data-testtag="Pachislot">TEST PACHISLOT-MIZER</button>
         <button class="cBtn testFlow" id="testHangmanBtn" data-testtag="Hangman">TEST HANGMAN</button>
         <button class="cBtn" id="testAchievementPopupBtn">TEST ACHIEVEMENT</button>
         <button class="cBtn danger testDanger" id="testBossDamageCheckBtn" data-testtag="Boss">TEST BOSS HIT</button>
@@ -25494,25 +25751,17 @@ function computeOverlayRecentChanges(){
 }
 const FLPR_OVERLAY_VERSION_CODE = computeOverlayVersionCode();
 const FLPR_OVERLAY_CHANGELOG = computeOverlayRecentChanges();
-const FLPR_PATCH_NOTES_SEEN_LS_KEY = "flpr_changelog_patch_notes_seen_v1";
-const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = "flpr_changelog_patch_notes_suppress_v1";
+const FLPR_PATCH_NOTES_STORAGE_NAMESPACE = (typeof FLPR_HOME_EDITION !== "undefined" && FLPR_HOME_EDITION) ? "home" : "stream";
+const FLPR_PATCH_NOTES_SEEN_LS_KEY = `flpr_${FLPR_PATCH_NOTES_STORAGE_NAMESPACE}_patch_notes_seen_v1`;
+const FLPR_PATCH_NOTES_SUPPRESS_LS_KEY = `flpr_${FLPR_PATCH_NOTES_STORAGE_NAMESPACE}_patch_notes_suppress_v1`;
 const FLPR_PATCH_NOTES_BUILD_ID = String(FLPR_OVERLAY_VERSION_CODE || "unknown").trim() || "unknown";
-const FLPR_PATCH_NOTES_RELEASE_LABEL = "August 26 Deep Run Test Update";
-const FLPR_PATCH_NOTES_ITEMS_SHARED = [
-  {
-    k: "Two built-in test seeds",
-    d: "Dev Tools can independently load the restored original randomized fixture or the AP-free 15-table Deep Run fixture."
-  },
-  {
-    k: "Ten Boss Key routes",
-    d: "Deep Run places Boss Keys on ten different locked tables, never on starters, while any four keys still open the Boss Table."
-  },
-  {
-    k: "Bagatelle testing",
-    d: "Testing now launches Bagatelle directly over the OBS capture, in the same presentation area used by integrated Bonus Pinball."
-  }
+const FLPR_PATCH_NOTES_RELEASE_LABEL = "Home Edition Interface Update";
+const FLPR_PATCH_NOTES_ITEMS_SHARED = [];
+const FLPR_PATCH_NOTES_ITEMS_HOME = [
+  { k: "Home control rooms", d: "The Home workspace now uses clearer room-style panels, with independent local controls and saved layout preferences." },
+  { k: "Catalog handoff", d: "Table-list entries now open Virtual Pinball Spreadsheet with the selected table already entered into its search field." },
+  { k: "Larger-display tuning", d: "Home Edition now uses the available desktop workspace more effectively at 1440p and above." }
 ];
-const FLPR_PATCH_NOTES_ITEMS_HOME = [];
 const FLPR_PATCH_NOTES_ITEMS_STREAM = [];
 const LEGACY_MAIN_STATE_KEYS = [
   "flpr_vertical_worlds_overview_v3_restore",
@@ -25572,10 +25821,10 @@ function flprEnsurePatchNotesOverlay(){
   try{ overlay.querySelector("#flprPatchNotesClose")?.addEventListener("click", close); }catch(_){}
   try{
     overlay.querySelector("#flprPatchNotesDontShow")?.addEventListener("change", (ev)=>{
-      if(!ev.target?.checked) return;
       const edition = flprPatchNotesEditionLabel();
       const value = String(overlay?.dataset?.patchNotesValue || flprPatchNotesStorageValue(edition));
-      localStorage.setItem(FLPR_PATCH_NOTES_SUPPRESS_LS_KEY, value);
+      if(ev.target?.checked) localStorage.setItem(FLPR_PATCH_NOTES_SUPPRESS_LS_KEY, value);
+      else localStorage.removeItem(FLPR_PATCH_NOTES_SUPPRESS_LS_KEY);
     });
   }catch(_){}
   document.body.appendChild(overlay);
@@ -25607,7 +25856,7 @@ function flprShowPatchNotes(opts){
     if(sub) sub.textContent = `${edition}; ${FLPR_PATCH_NOTES_RELEASE_LABEL}; version ${FLPR_PATCH_NOTES_BUILD_ID}`;
     if(body) body.innerHTML = flprPatchNotesMarkup(edition);
     overlay.dataset.patchNotesValue = flprPatchNotesStorageValue(edition);
-    if(dontShow) dontShow.checked = false;
+    if(dontShow) dontShow.checked = localStorage.getItem(FLPR_PATCH_NOTES_SUPPRESS_LS_KEY) === overlay.dataset.patchNotesValue;
     overlay.classList.remove("hidden");
     overlay.setAttribute("aria-hidden", "false");
     setTimeout(()=>{ try{ overlay.querySelector("#flprPatchNotesClose")?.focus?.(); }catch(_){} }, 0);
@@ -26240,6 +26489,8 @@ const defaultState = {
   siegesSuppressedForRun:false,
   extraBallTokens:0,
   nextScoreBonusPct:0,
+  nextScoreMultiplier:1,
+  pachislotCoins:0,
   bagatelleGamesPlayed:0,
   extraBallAssignments:{},
   junkRedeems:{ easy:0, medium:0 },
@@ -26803,6 +27054,10 @@ function normalizeExtraBallState(srcState){
     s.extraBallTokens = Math.max(0, Math.round(Number(s.extraBallTokens) || 0));
     if(!Number.isFinite(Number(s.nextScoreBonusPct))) s.nextScoreBonusPct = 0;
     s.nextScoreBonusPct = Math.max(0, Math.min(100, Math.round(Number(s.nextScoreBonusPct) || 0)));
+    if(!Number.isFinite(Number(s.nextScoreMultiplier))) s.nextScoreMultiplier = 1;
+    s.nextScoreMultiplier = Math.max(1, Math.min(777, Math.round(Number(s.nextScoreMultiplier) || 1)));
+    if(!Number.isFinite(Number(s.pachislotCoins))) s.pachislotCoins = 0;
+    s.pachislotCoins = Math.max(0, Math.round(Number(s.pachislotCoins) || 0));
     if(!Number.isFinite(Number(s.bagatelleGamesPlayed))) s.bagatelleGamesPlayed = 0;
     s.bagatelleGamesPlayed = Math.max(0, Math.round(Number(s.bagatelleGamesPlayed) || 0));
     if(!s.extraBallAssignments || typeof s.extraBallAssignments !== "object") s.extraBallAssignments = {};
@@ -28245,6 +28500,24 @@ function bossHandleVictoryValidated(){
     }
   }catch(_){}
   try{ episodeMarkBossComplete(); }catch(_){}
+  try{
+    const remaining = resolveBossChecksNodes().filter((node)=>
+      node && !bossIsVictoryLocationNode(node) && !ap.checked.has(Number(node.id))
+    );
+    const ids = remaining.map((node)=>Number(node.id)).filter((id)=>Number.isFinite(id) && id > 0);
+    if(ids.length){
+      window.__bossSilentClearLocIds = window.__bossSilentClearLocIds || new Set();
+      ids.forEach((id)=>{
+        window.__bossSilentClearLocIds.add(id);
+        ap.checked.add(id);
+        try{ clearPending(id); }catch(_){}
+        try{ clearTaskProgressValue(id, { save:false }); }catch(_){}
+      });
+      apSend({ cmd:"LocationChecks", locations:ids });
+      setTimeout(()=>{ try{ ids.forEach((id)=>window.__bossSilentClearLocIds.delete(id)); }catch(_){} }, 30000);
+      apLog(`Boss victory silently cleared ${ids.length} remaining boss checks.`);
+    }
+  }catch(_){}
   bossClearNonVictoryNotifications();
   try{ bossFocusVictoryChecksView({ render:true, showView:true }); }catch(_){}
   try{
@@ -28456,6 +28729,7 @@ function claimExistingBonusPinballUtilityWindow(){
   return null;
 }
 function toggleBonusPinballUtilityWindow(){
+  if(FLPR_HOME_EDITION) return false;
   if(isBonusPinballUtilityOpen()){
     try{ bonusPinballUtilityWindow.close(); }catch(_){}
     bonusPinballUtilityWindow = null;
@@ -31640,9 +31914,10 @@ function setControlPanelCollapsed(panel, collapsed, opts){
   }
   const btn = panel.querySelector(":scope > .connectPanelSectionTitle .connectPanelCollapseBtn");
   if(btn){
-    btn.textContent = next ? "SHOW" : "HIDE";
-    btn.title = next ? "Show this panel" : "Collapse this panel";
+    btn.textContent = next ? ">" : "V";
+    btn.title = next ? "Open this panel" : "Close this panel";
     btn.setAttribute("aria-pressed", next ? "true" : "false");
+    btn.setAttribute("aria-label", next ? "Open this panel" : "Close this panel");
   }
   if(key && (!opts || opts.persist !== false)){
     controlLayoutState.collapsed[key] = next;
@@ -31869,7 +32144,10 @@ function ensureControlPanelChrome(panel){
     const btn = document.createElement("button");
     btn.className = "connectPanelCollapseBtn";
     btn.type = "button";
-    btn.textContent = panel.classList.contains("is-collapsed") ? "SHOW" : "HIDE";
+    const collapsed = panel.classList.contains("is-collapsed");
+    btn.textContent = collapsed ? ">" : "V";
+    btn.title = collapsed ? "Open this panel" : "Close this panel";
+    btn.setAttribute("aria-label", collapsed ? "Open this panel" : "Close this panel");
     btn.addEventListener("click", (ev)=>{
       ev.preventDefault();
       ev.stopPropagation();
@@ -37550,7 +37828,9 @@ function musicCrossfadeToScenario(name, opts){
   if(!opts.preview){
     try{ musicShowNowPlayingToast(name, info); }catch(_){}
     if(String(name || "") === "boss_battle_phase2"){
-      try{ musicShowBossPhase2Notice(); }catch(_){}
+      // The HP panel rerenders during the same damage receipt. Mount the phase
+      // notice after that render so it is not immediately discarded.
+      setTimeout(()=>{ try{ musicShowBossPhase2Notice(); }catch(_){} }, 180);
     }
   }
   const startedAt = Date.now();
@@ -37634,7 +37914,7 @@ function musicPlayScenario(name, opts){
   if(!opts.preview && (prevCurrent !== String(name || "") || prevUrl !== url)){
     try{ musicShowNowPlayingToast(name, info); }catch(_){}
     if(String(name || "") === "boss_battle_phase2"){
-      try{ musicShowBossPhase2Notice(); }catch(_){}
+      setTimeout(()=>{ try{ musicShowBossPhase2Notice(); }catch(_){} }, 180);
     }
   }
   try{ renderMusicScenarioCard(); }catch(_){}
@@ -39481,6 +39761,52 @@ function updateCounterBarsQuietly(){
   return withCounterDrawerFxSuppressed(()=>updateCounterBars());
 }
 
+function ensurePachislotCounter(){
+  if(FLPR_HOME_EDITION) return null;
+  const dock = document.getElementById("checksCountersDock");
+  if(!dock) return null;
+  let counter = document.getElementById("pachislotCounter");
+  if(!counter){
+    counter = document.createElement("div");
+    counter.id = "pachislotCounter";
+    counter.className = "counterDrawer pachislotDrawer";
+    counter.dataset.counter = "pachislot";
+    counter.innerHTML = '<button class="counterDrawerHead pachislotPlayBtn" id="pachislotPlayBtn" type="button" data-tip="Collect three Pachislot Coins, then pull the crank to play PACHISLOT-MIZER."><span class="pachislotCrank"><span class="pachislotCrankTrack"><span class="pachislotCrankArm"><span class="pachislotCrankKnob"></span></span></span><span class="pachislotCrankCopy"><span class="pachislotCrankLabel">PACHISLOT-MIZER</span><span class="pachislotCoinCount" id="pachislotCoinCount">0 / 3</span><span class="pachislotCrankPrompt" id="pachislotCrankPrompt">CHARGING</span></span></span></button>';
+    const drawers = dock.querySelector(".counterDrawers");
+    if(drawers) drawers.insertBefore(counter, drawers.firstChild);
+    else dock.appendChild(counter);
+    counter.addEventListener("pointerenter", ()=>{ clearCounterDockRetreat(); armCounterDockHover(counter); });
+    counter.addEventListener("focusin", ()=>{ clearCounterDockRetreat(); armCounterDockHover(counter); });
+    counter.addEventListener("pointerleave", ()=>{ if(!dock.matches(":hover")) collapseCounterDockIfIdle(); else clearCounterDockHoverPrime(); });
+    counter.querySelector("#pachislotPlayBtn")?.addEventListener("click", ()=>{
+      if(String(activeView || "") !== "checks") return;
+      clearCounterDockRetreat();
+      if(Math.max(0, Math.round(Number(state.pachislotCoins)||0)) < 3){
+        setCounterDockActive(1800);
+        playPachislotMizer();
+        return;
+      }
+      counter.classList.add("pulling");
+      setTimeout(()=>counter.classList.remove("pulling"), 520);
+      setTimeout(()=>playPachislotMizer(), 180);
+    });
+  }
+  return counter;
+}
+function playPachislotMizer(){
+  if(!isDeepRunSeed(ap?.slotData)) return false;
+  normalizeExtraBallState(state);
+  const coins = Math.max(0, Math.round(Number(state.pachislotCoins)||0));
+  if(coins < 3){
+    toast("warn","PACHISLOT-MIZER",`Need ${3-coins} more coin${3-coins===1?"":"s"}.`,2400);
+    return false;
+  }
+  state.pachislotCoins = coins - 3;
+  try{ saveState({immediate:true}); }catch(_){ try{saveState();}catch(__){} }
+  updateCounterBarsQuietly();
+  return openDeepSlotMachine();
+}
+
 // --- Counter bars ---
 function updateCounterBars(){
   if(counterRewardRedemptionsDisabled()){
@@ -39516,8 +39842,22 @@ function updateCounterBars(){
   setCounterDrawerSummary("easy", e, 3, eTotal);
   setCounterDrawerSummary("med", m, 3, mTotal);
   setCounterDrawerSummary("frag", f, 5, fTotal);
+  const pachislotCounter = ensurePachislotCounter();
+  const coinCount = Math.max(0, Math.round(Number(state?.pachislotCoins)||0));
+  const coinText = pachislotCounter?.querySelector("#pachislotCoinCount");
+  const playBtn = pachislotCounter?.querySelector("#pachislotPlayBtn");
+  const crankPrompt = pachislotCounter?.querySelector("#pachislotCrankPrompt");
+  if(coinText) coinText.textContent = `${coinCount} / 3`;
+  if(playBtn){
+    playBtn.setAttribute("aria-label", coinCount >= 3 ? "Pull the PACHISLOT-MIZER crank" : `PACHISLOT-MIZER charging; ${coinCount} of 3 coins`);
+  }
+  if(crankPrompt) crankPrompt.textContent = coinCount >= 3 ? "PULL TO PLAY" : "CHARGING";
+  if(pachislotCounter){
+    pachislotCounter.style.setProperty("--pachislot-fill", `${Math.min(100, (coinCount / 3) * 100)}%`);
+    pachislotCounter.classList.toggle("hasReady", coinCount >= 3);
+  }
 
-  const prev = (window.__counterDrawerPrev ||= { inited:false, e:0, m:0, f:0, et:0, mt:0, ft:0 });
+  const prev = (window.__counterDrawerPrev ||= { inited:false, e:0, m:0, f:0, p:0, et:0, mt:0, ft:0 });
   if(prev.inited && !suppressFx){
     if(e !== prev.e || eTotal !== prev.et){
       animateCounterFill("barEasyFill", prev.e, e, 3);
@@ -39531,9 +39871,11 @@ function updateCounterBars(){
       animateCounterFill("barFragFill", prev.f, f, 5);
       pulseCounterDrawer("frag");
     }
+    if(coinCount !== Number(prev.p || 0)) pulseCounterDrawer("pachislot", { holdMs:2400, growMs:1100 });
   }
   prev.inited = true;
   prev.e = e; prev.m = m; prev.f = f;
+  prev.p = coinCount;
   prev.et = eTotal; prev.mt = mTotal; prev.ft = fTotal;
 }
 
@@ -39765,7 +40107,99 @@ function closeOverviewModal(){
 
 let bagatelleRuntime = null;
 function isBagatelleItemName(name){
+  if(FLPR_HOME_EDITION) return false;
   return /\bbagatelle\b/i.test(String(name || ""));
+}
+function isDeepSlotMachineItemName(name){
+  if(FLPR_HOME_EDITION) return false;
+  return /\b(?:deep\s+slot\s+machine|pachislot\s+coin)\b/i.test(String(name || ""));
+}
+function deepSlotPlayTick(step){
+  try{ playTone({ freq:190 + ((Number(step)||0)%4)*28, dur:.035, type:"square", gain:.045, sweepTo:145, sweepDur:.03 }); }catch(_){}
+}
+function deepSlotPlayStop(index){
+  try{
+    playTone({ freq:110 + (Number(index)||0)*18, dur:.09, type:"square", gain:.12, sweepTo:72, sweepDur:.08 });
+    setTimeout(()=>playTone({ freq:520 + (Number(index)||0)*90, dur:.055, type:"triangle", gain:.09, sweepTo:390, sweepDur:.05 }),35);
+  }catch(_){}
+}
+function deepSlotPlayWin(jackpot){
+  try{
+    if(jackpot){
+      [523,659,784,1047,1319,1568].forEach((freq,index)=>setTimeout(()=>playTone({freq,dur:.16,type:index%2?"triangle":"square",gain:.14,sweepTo:freq*1.08,sweepDur:.13}),index*105));
+      setTimeout(()=>playSfx("receive"),180);
+      setTimeout(()=>playSfx("chaching"),720);
+    }else{
+      playSfx("chaching");
+      setTimeout(()=>playTone({freq:659,dur:.11,type:"triangle",gain:.1,sweepTo:880,sweepDur:.1}),120);
+    }
+  }catch(_){}
+}
+function openDeepSlotMachine(){
+  if(document.querySelector(".deepSlotOverlay")) return false;
+  const host = document.querySelector(".capture") || document.body;
+  const overlay = document.createElement("div");
+  overlay.className = "deepSlotOverlay";
+  const symbols = [
+    { id:"cherry", html:"🍒", reward:{kind:"score",value:10,label:"10% NEXT SCORE BONUS"}, pairReward:{kind:"score",value:5,label:"5% NEXT SCORE BONUS"} },
+    { id:"crown", html:"👑", reward:{kind:"score",value:30,label:"30% NEXT SCORE BONUS"}, pairReward:{kind:"score",value:15,label:"15% NEXT SCORE BONUS"} },
+    { id:"7", html:'<span class="deepSlotSeven">7</span>', reward:{kind:"multiplier",value:777,label:"777X NEXT SCORE"}, pairReward:{kind:"multiplier",value:7,label:"7X NEXT SCORE"} },
+    { id:"bunnyhop", html:'<img src="./SlotMachineEmojis/bunnyhop.webp" alt="Bunnyhop">', reward:{kind:"extra",value:1,label:"1 EXTRA BALL"}, pairReward:{kind:"easy",value:1,label:"1 EASY JUNK FRAGMENT"} },
+    { id:"hitkat", html:'<img src="./SlotMachineEmojis/hitkat.webp" alt="Hitkat">', reward:{kind:"medium",value:1,label:"1 MEDIUM JUNK FRAGMENT"}, pairReward:{kind:"easy",value:1,label:"1 EASY JUNK FRAGMENT"} },
+    { id:"eliaheart", html:'<img src="./SlotMachineEmojis/eliaheart.webp" alt="Eliaheart">', reward:{kind:"score",value:20,label:"20% NEXT SCORE BONUS"}, pairReward:{kind:"score",value:10,label:"10% NEXT SCORE BONUS"} },
+    { id:"wow", html:'<img src="./SlotMachineEmojis/wow.webp" alt="Wow">', reward:{kind:"easy",value:1,label:"1 EASY JUNK FRAGMENT"}, pairReward:{kind:"easy",value:1,label:"1 EASY JUNK FRAGMENT"} },
+    { id:"ding", html:'<img src="./SlotMachineEmojis/ding.webp" alt="Ding">', reward:{kind:"extra",value:1,label:"1 EXTRA BALL"}, pairReward:{kind:"easy",value:1,label:"1 EASY JUNK FRAGMENT"} }
+  ];
+  const legend = symbols.map((symbol)=>`<div class="deepSlotLegendItem"><span class="deepSlotLegendSymbol">${symbol.html}</span><span class="deepSlotLegendRewards"><span class="deepSlotLegendLine"><b class="deepSlotLegendMatch">3 MATCH</b><b class="deepSlotLegendSep">|</b><span class="deepSlotLegendPrize">${escapeHtml(symbol.reward.label)}</span></span><span class="deepSlotLegendLine"><b class="deepSlotLegendMatch">2 MATCH</b><b class="deepSlotLegendSep">|</b><span class="deepSlotLegendPrize">${escapeHtml(symbol.pairReward.label)}</span></span></span></div>`).join("");
+  overlay.innerHTML = `<div class="deepSlotCard"><div class="deepSlotMarquee" aria-hidden="true">${Array.from({length:11},()=>"<i></i>").join("")}</div><div class="deepSlotMachineBody"><div class="deepSlotTitle">PACHISLOT-MIZER</div><div class="deepSlotReels">${[0,1,2].map(()=>'<div class="deepSlotReel spinning"><div class="deepSlotStrip"></div></div>').join("")}</div><div class="deepSlotLeverLamp"></div></div><div class="deepSlotPayoutAssembly"><div class="deepSlotPayoutSign">PRIZE PAYOUT</div><div class="deepSlotPrizeChute"><div class="deepSlotWinCard" role="status" aria-live="polite"><div class="deepSlotWinSymbol"></div><div class="deepSlotWinCopy"><div class="deepSlotWinTitle">YOU WON!</div><div class="deepSlotWinReward">REWARD</div></div><button class="deepSlotCollect" type="button" disabled>COLLECT</button></div></div></div><div class="deepSlotLegend">${legend}</div></div>`;
+  host.appendChild(overlay);
+  try{
+    const hostRect=host.getBoundingClientRect(), headerRect=host.querySelector(".header")?.getBoundingClientRect(), keyRect=host.querySelector("#keyDockSplit")?.getBoundingClientRect();
+    const top=headerRect?headerRect.top-hostRect.top:0, left=headerRect?headerRect.left-hostRect.left:0, right=headerRect?headerRect.right-hostRect.left:hostRect.width;
+    const bottom=keyRect&&keyRect.top>(headerRect?.top||hostRect.top)?keyRect.top-hostRect.top:hostRect.height;
+    overlay.style.setProperty("--bagatelle-x",`${Math.round(left)}px`); overlay.style.setProperty("--bagatelle-y",`${Math.round(top)}px`); overlay.style.setProperty("--bagatelle-width",`${Math.round(right-left)}px`); overlay.style.setProperty("--bagatelle-height",`${Math.round(bottom-top)}px`);
+  }catch(_){}
+  const reels=[...overlay.querySelectorAll(".deepSlotReel")], collect=overlay.querySelector(".deepSlotCollect"), winCard=overlay.querySelector(".deepSlotWinCard"), winSymbol=overlay.querySelector(".deepSlotWinSymbol"), winTitle=overlay.querySelector(".deepSlotWinTitle"), winReward=overlay.querySelector(".deepSlotWinReward");
+  const randomSymbol=()=>symbols[Math.floor(Math.random()*symbols.length)];
+  const show=(reel,symbol)=>{ const strip=reel.querySelector(".deepSlotStrip"); if(strip) strip.innerHTML=[randomSymbol(),symbol,randomSymbol()].map((item,index)=>`<div class="deepSlotStripCell${index===1?" center":""}">${item.html}</div>`).join(""); };
+  reels.forEach((reel)=>show(reel,randomSymbol()));
+  let tickStep=0;
+  const timers=reels.map((reel,index)=>setInterval(()=>{ show(reel,randomSymbol()); if(index===0 && tickStep++%2===0) deepSlotPlayTick(tickStep); },105));
+  const outcomeRoll=Math.random();
+  const jackpot=outcomeRoll<.18;
+  const pairWin=!jackpot && outcomeRoll<.62;
+  const winner=symbols[Math.floor(Math.random()*symbols.length)];
+  let result;
+  if(jackpot){
+    result=[winner,winner,winner];
+  }else if(pairWin){
+    const other=symbols.filter((symbol)=>symbol.id!==winner.id)[Math.floor(Math.random()*(symbols.length-1))];
+    result=[winner,winner,other];
+    result.sort(()=>Math.random()-.5);
+  }else{
+    result=[...symbols].sort(()=>Math.random()-.5).slice(0,3);
+  }
+  try{ playTone({freq:115,dur:.22,type:"sawtooth",gain:.11,sweepTo:220,sweepDur:.2}); }catch(_){}
+  reels.forEach((reel,index)=>setTimeout(()=>{ clearInterval(timers[index]); reel.classList.remove("spinning"); show(reel,result[index]); deepSlotPlayStop(index); if(index===2){
+    const reward=jackpot?winner.reward:(pairWin?winner.pairReward:{kind:"easy",value:1,label:"NO MATCH | 1 EASY JUNK FRAGMENT"});
+    if(reward.kind==="score") state.nextScoreBonusPct=Math.min(100,Math.max(0,Number(state.nextScoreBonusPct)||0)+reward.value);
+    else if(reward.kind==="multiplier") state.nextScoreMultiplier=Math.max(Number(state.nextScoreMultiplier)||1,Number(reward.value)||1);
+    else if(reward.kind==="extra") state.extraBallTokens=Math.max(0,Number(state.extraBallTokens)||0)+1;
+    else bagatelleGrantJunkFragment(reward.kind==="medium"?"medium":"easy");
+    try{ saveState({immediate:true}); }catch(_){ try{saveState();}catch(__){} }
+    const rewardSymbol=(jackpot||pairWin)?winner:(symbols.find((symbol)=>symbol.id==="wow")||winner);
+    if(winSymbol) winSymbol.innerHTML=rewardSymbol.html;
+    if(winTitle) winTitle.textContent=jackpot?"JACKPOT!":(pairWin?"PAIR WIN!":"YOU WON!");
+    if(winReward) winReward.textContent=reward.label;
+    collect.disabled=false;
+    if(jackpot) overlay.classList.add("deepSlotJackpot");
+    setTimeout(()=>{
+      winCard?.classList.add("show");
+    },260);
+    deepSlotPlayWin(jackpot);
+  } },1100+index*720));
+  collect.addEventListener("click",()=>{ timers.forEach(clearInterval); overlay.remove(); try{updateCounterBarsQuietly();renderChecks();}catch(_){} });
+  return true;
 }
 function bagatelleGrantJunkFragment(tier){
   try{
@@ -39803,6 +40237,10 @@ function bagatelleApplyReward(reward, statusEl){
   toast("good", "BAGATELLE AWARD", label, 3400);
   const close = bagatelleRuntime?.overlay?.querySelector?.(".bagatelleClose");
   if(close){ close.disabled = false; close.textContent = "COLLECT"; }
+  const winCard = bagatelleRuntime?.overlay?.querySelector?.(".bagatelleWinCard");
+  const winReward = bagatelleRuntime?.overlay?.querySelector?.(".bagatelleWinReward");
+  if(winReward) winReward.textContent = label;
+  if(winCard) winCard.classList.add("show");
 }
 function closeBagatelle(){
   const runtime = bagatelleRuntime;
@@ -39816,6 +40254,7 @@ function closeBagatelle(){
   try{ updateCounterBarsQuietly(); }catch(_){}
 }
 function openBagatelle(opts){
+  if(FLPR_HOME_EDITION) return false;
   opts = opts || {};
   if(!window.Matter){
     toast("warn", "BAGATELLE", "Physics engine unavailable.", 3200);
@@ -39837,6 +40276,10 @@ function openBagatelle(opts){
       <div class="bagatelleBoardWrap">
         <canvas class="bagatelleCanvas" aria-label="Bagatelle board"></canvas>
         <button class="bagatellePlunger" type="button" aria-label="Hold and release the plunger"><span>PLUNGER</span></button>
+        <div class="bagatelleWinCard" role="status" aria-live="polite">
+          <div class="bagatelleWinTitle">YOU WON</div>
+          <div class="bagatelleWinReward">BONUS</div>
+        </div>
       </div>
       <div class="bagatelleFoot">
         <div class="bagatelleStatus">BALL READY</div>
@@ -43712,6 +44155,22 @@ function setGenericCheckPayload(slotData){
 function getTaskNameFromLocationNode(node){
   const preferred = getPreferredGenericObjective(node?.taskShuffleEntry, node?.genericEntry);
   if(preferred) return remapGenericObjectiveLabel(preferred);
+  const deepMeta = getDeepRunSlotMeta(String(node?.full || node?.name || "").trim());
+  if(deepMeta){
+    try{
+      const wanted = canonicalTableMapKey(deepMeta.table);
+      const catalog = Object.values(window.FLPR_DEEP_RUN_CATALOG?.tables || {}).find((entry)=> canonicalTableMapKey(entry?.tableName) === wanted);
+      if(catalog && deepMeta.kind === "score"){
+        const target = Number(catalog.scoreTargets?.[deepMeta.index - 1]);
+        if(Number.isFinite(target) && target > 0) return `Obtain a score of ${target.toLocaleString("en-US")}+`;
+      }
+      if(catalog && deepMeta.kind === "task"){
+        const tasks = [...(catalog.tasksByDifficulty?.easy || []), ...(catalog.tasksByDifficulty?.medium || []), ...(catalog.tasksByDifficulty?.hard || [])];
+        const task = String(tasks[deepMeta.index - 1] || "").trim();
+        if(task) return task;
+      }
+    }catch(_){}
+  }
   const short = String(node?.short || "").trim();
   if(short){
     const fromShort = splitLocName(short);
@@ -44606,6 +45065,8 @@ function apReceivedHistoryHasIndex(recvIndex){
 
 function processReceivedItem(it, itemIndex, locId, opts){
   opts = opts || {};
+  const bossSilentClearReceipt = !!(Number(locId) > 0 && window.__bossSilentClearLocIds?.has?.(Number(locId)));
+  if(bossSilentClearReceipt) opts = { ...opts, noPopup:true };
 
   // Only track items that come from real LocationChecks in THIS game's checks tab.
   // This prevents "weird" server/system items from polluting the Received Items list.
@@ -44632,6 +45093,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
   const trapByFlag = !!(itemFlags & 0b100);
   const isHintRewardItem = isHintRewardItemName(effectiveName);
   const isBagatelleRewardItem = isBagatelleItemName(effectiveName);
+  const isDeepSlotRewardItem = isDeepSlotMachineItemName(effectiveName);
   const isTrapReward = trapByFlag || isTrapItem(effectiveName);
   let progressiveTarget = parseProgressiveBallTarget(effectiveName);
   const isProgressiveBallItem = !!progressiveTarget;
@@ -44640,7 +45102,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
   const isPinballFragment = isPinballFragmentItem(effectiveName);
   const streamCounterRewardDisplayOnly = counterRewardRedemptionsDisabled() && !!(junkTier || isPinballFragment);
   const isBossSegmentItem = isBossSegmentItemName(effectiveName);
-  const explicitBossPct = bossDamageParse(effectiveName);
+  let explicitBossPct = bossDamageParse(effectiveName);
   let resolvedBossPct = null;
   const pairedIsBossCheck = !!(paired && (
     paired.isBossCheck ||
@@ -44648,6 +45110,9 @@ function processReceivedItem(it, itemIndex, locId, opts){
     isBossPercentHpLocationNode(paired) ||
     bossIsVictoryLocationNode(paired)
   ));
+  // Boss-table checks always use the seeded 4-16% roll. Legacy item names
+  // containing "16%" must not pin every hit to that old fixed value.
+  if(pairedIsBossCheck && !bossIsVictoryLocationNode(paired)) explicitBossPct = null;
   if(paired?.tableName && !pairedIsBossCheck && !isActiveSeedTableName(paired.tableName)){
     apLog(`Ignoring off-seed receipt from ${paired.tableName}: ${effectiveName}`);
     return;
@@ -44766,7 +45231,20 @@ function processReceivedItem(it, itemIndex, locId, opts){
 
     }
 
-  let junkPopupDelayMs = 0;
+    if(isTrapReward && opts.noPopup && !bossSilentClearReceipt){
+      try{ setTrapCheckLock(true, { silent:true }); }catch(_){}
+      try{ playSfx("trap"); }catch(_){}
+      if(isFilterTrapName(effectiveName)){
+        try{
+          const chosen = String(pickRandomFilterTrapMode());
+          applyCaptureTrapFilterMode(chosen);
+          enqueueTrapBanner(effectiveName, `${chosen} Applied. Play the next ball obscured by the visual effect, then disable.`, { filterMode:chosen });
+        }catch(_){}
+      }else{
+        try{ enqueueTrapBanner(effectiveName, trapInstructionText(effectiveName)); }catch(_){}
+      }
+    }
+    let junkPopupDelayMs = 0;
   let rewardPopupDelayMs = 0;
   let deferCounterBarsForJunk = false;
   let deferCounterBarsForFragment = false;
@@ -44793,7 +45271,7 @@ function processReceivedItem(it, itemIndex, locId, opts){
     }else{
       // Progressive Ball items have their own flow (modal; then apply ball after), handled later.
       // Boss Key items have their own dock-slot cinematic, so skip the generic reward popup.
-      if(!isProgressiveBallItem && !isBossSegmentItem && !isBossKeyItemName(effectiveName) && !isFeatureKeyItemName(effectiveName) && !isBagatelleRewardItem){
+      if(!isProgressiveBallItem && !isBossSegmentItem && !isBossKeyItemName(effectiveName) && !isFeatureKeyItemName(effectiveName) && !isBagatelleRewardItem && !isDeepSlotRewardItem){
         playSfx("receive");
         const holdMs = 3000;
         const modalMeta = (paired && paired.locationName ? ("CHECK; " + paired.locationName) : "");
@@ -44849,6 +45327,17 @@ function processReceivedItem(it, itemIndex, locId, opts){
       setTimeout(()=>{
         try{ openBagatelle({ itemName:effectiveName, locationName:paired?.locationName || locNm || "" }); }catch(_){}
       }, 420);
+    }
+    updateCounterBarsQuietly();
+    return;
+  }
+  if(isDeepSlotRewardItem){
+    const liveReceipt = !opts.isSnapshot && !opts.isFlush && !opts.inventoryReplayOnly && (Number(locId) > 0 || !!paired);
+    if(liveReceipt && !bossSilentClearReceipt){
+      normalizeExtraBallState(state);
+      state.pachislotCoins = Math.max(0, Math.round(Number(state.pachislotCoins)||0)) + 1;
+      try{ saveState({immediate:true}); }catch(_){ try{saveState();}catch(__){} }
+      toast("good","PACHISLOT COIN",`${state.pachislotCoins}/3 coins; ${state.pachislotCoins >= 3 ? "PACHISLOT-MIZER ready." : "Collect three to play."}`,3200);
     }
     updateCounterBarsQuietly();
     return;
@@ -49798,11 +50287,14 @@ function renderTableBlock(parent, tableName, nodes, opts){
     const scoreMultiplier = getManualScoreMultiplierForTable(tableKey, tableName);
     const scoreMultiplierLabel = formatManualScoreMultiplier(scoreMultiplier);
     const nextScoreBonusPct = Math.max(0, Math.round(Number(state?.nextScoreBonusPct) || 0));
-    const scoreModifierDisplay = nextScoreBonusPct > 0 ? `${scoreMultiplierLabel} +${nextScoreBonusPct}%` : scoreMultiplierLabel;
+    const nextScoreMultiplier = FLPR_HOME_EDITION ? 1 : Math.max(1, Math.round(Number(state?.nextScoreMultiplier) || 1));
+    const scoreModifierDisplay = nextScoreMultiplier > 1
+      ? `${nextScoreMultiplier}X SLOT`
+      : (nextScoreBonusPct > 0 ? `${scoreMultiplierLabel} +${nextScoreBonusPct}%` : scoreMultiplierLabel);
     scorePanel.innerHTML = `
       <label class="checksScoreLabel" for="scoreInput-${escapeHtml(String(tableKey || tableName).replace(/[^a-z0-9_-]+/gi, "-"))}">SCORE:</label>
       <div class="checksScoreEntryRow">
-        <button class="checksScoreModBtn" type="button" title="Current score modifier ${escapeHtml(scoreModifierDisplay)}" aria-label="Score modifier ${escapeHtml(scoreModifierDisplay)}">${escapeHtml(scoreModifierDisplay)}</button>
+        <button class="checksScoreModBtn${nextScoreBonusPct > 0 || nextScoreMultiplier > 1 ? " bagatelleBonusReady" : ""}" type="button" title="${nextScoreMultiplier > 1 ? `PACHISLOT-MIZER bonus ready: ${nextScoreMultiplier}x on next score` : (nextScoreBonusPct > 0 ? `${FLPR_HOME_EDITION ? "Score" : "Bagatelle"} bonus ready: +${nextScoreBonusPct}% on next score` : `Current score modifier ${scoreModifierDisplay}`)}" aria-label="Score modifier ${escapeHtml(scoreModifierDisplay)}">${escapeHtml(scoreModifierDisplay)}</button>
         <input class="checksScoreInput" id="scoreInput-${escapeHtml(String(tableKey || tableName).replace(/[^a-z0-9_-]+/gi, "-"))}" inputmode="numeric" pattern="[0-9,]*" placeholder="0" aria-label="Score for ${escapeHtml(tableName)}">
       </div>
       <div class="checksScoreHigh">Current High Score: ${escapeHtml(formatManualScoreValue(getTableHighScoreValue(tableKey, tableName)))}</div>
@@ -50051,17 +50543,20 @@ function renderTableBlock(parent, tableName, nodes, opts){
       }
       const scoreMultiplier = getManualScoreMultiplierForTable(tableKey, tableName);
       const nextScoreBonusPct = Math.max(0, Math.round(Number(state?.nextScoreBonusPct) || 0));
-      const effectiveScore = Math.max(0, Math.round(score * scoreMultiplier * (1 + nextScoreBonusPct / 100)));
+      const nextScoreMultiplier = FLPR_HOME_EDITION ? 1 : Math.max(1, Math.round(Number(state?.nextScoreMultiplier) || 1));
+      const effectiveScore = Math.max(0, Math.round(score * scoreMultiplier * nextScoreMultiplier * (1 + nextScoreBonusPct / 100)));
       const eligible = scoreCheckEntries.filter((entry)=>{
         if(effectiveScore < Number(entry.target || 0)) return false;
         if(ap.checked.has(entry.id)) return false;
         if(ap.pendingByLoc && ap.pendingByLoc.has(entry.id)) return false;
         return true;
       }).sort((a,b)=>Number(a.target || 0)-Number(b.target || 0));
-      if(nextScoreBonusPct > 0){
+      if(nextScoreBonusPct > 0 || nextScoreMultiplier > 1){
         state.nextScoreBonusPct = 0;
+        state.nextScoreMultiplier = 1;
         try{ saveState({ immediate:true }); }catch(_){ try{ saveState(); }catch(__){} }
-        toast("good", "BAGATELLE BONUS USED", `+${nextScoreBonusPct}% applied; ${formatManualScoreValue(effectiveScore)} check score.`, 2600);
+        const awardLabel = nextScoreMultiplier > 1 ? `${nextScoreMultiplier}x PACHISLOT-MIZER` : `+${nextScoreBonusPct}% ${FLPR_HOME_EDITION ? "Score Bonus" : "Bagatelle"}`;
+        toast("good", "SCORE BONUS USED", `${awardLabel} applied; ${formatManualScoreValue(effectiveScore)} check score.`, 2600);
       }
       if(!eligible.length){
         toast("good", "SCORE RECORDED", `High score now ${formatManualScoreValue(getTableHighScoreValue(tableKey, tableName))}.`, 2000);
@@ -56070,100 +56565,117 @@ function hintRouteHistoryRecord(entry, poolNames){
   return null;
 }
 function hintBuildBossKeyRouteSnapshot(){
-  const records = [];
-  const seenRecords = new Set();
+  const candidates = new Map();
+  const ensureCandidate = (tableKey, tableName)=>{
+    const key = String(tableKey || "").trim();
+    if(!key || !tableName) return null;
+    if(!candidates.has(key)){
+      const ballOpen = relicTableKeyIsOpen(key);
+      const featureLocked = ballOpen && isTableFeatureLocked(tableName, ap?.slotData);
+      const open = ballOpen && !featureLocked;
+      const remainingChecks = relicGetUncheckedNodesForTable(key).length;
+      let lockReason = "";
+      if(featureLocked) lockReason = tableFeatureGateMissingText(tableName, ap?.slotData) || "Feature Key required";
+      else if(!ballOpen) lockReason = "Ball 1 or world access required";
+      candidates.set(key, {
+        tableKey:key,
+        tableName:String(tableName || "").trim(),
+        open,
+        lockReason,
+        remainingChecks,
+        bossSignals:0,
+        featureSignals:0,
+        ballSignals:0,
+        signalKeys:new Set()
+      });
+    }
+    return candidates.get(key);
+  };
   try{
-    (Array.isArray(hintState?.history) ? hintState.history : []).forEach((entry)=>{
-      const record = hintRouteHistoryRecord(entry);
-      if(!record || !record.sig || seenRecords.has(record.sig)) return;
-      seenRecords.add(record.sig);
-      records.push(record);
+    relicGetWorldKeys().forEach((worldKey)=>{
+      const tables = Array.isArray(state?.worlds?.[worldKey]?.tables) ? state.worlds[worldKey].tables : [];
+      tables.forEach((tableName, index)=>{
+        const key = `${worldKey}|${index}`;
+        if(relicGetUncheckedNodesForTable(key).length) ensureCandidate(key, String(tableName || "").trim());
+      });
     });
   }catch(_){}
-  const bossEntries = records.filter((record)=> hintIsBossTypeLabel(record.type));
-  const bossTables = new Map();
-  bossEntries.forEach((record)=>{
-    const tableName = String(record?.target?.tableName || "").trim();
-    const key = hintRouteTableKey(tableName);
-    if(!key) return;
-    if(!bossTables.has(key)) bossTables.set(key, { tableName, entries: [] });
-    bossTables.get(key).entries.push(record);
-  });
-  const progressiveEntries = records.filter((record)=> !!parseProgressiveBallTarget(record.itemName));
-  const rows = [];
-  const seen = new Set();
-  progressiveEntries.forEach((record)=>{
-    const targetTable = String(parseProgressiveBallTarget(record?.itemName) || "").trim();
-    const targetKey = hintRouteTableKey(targetTable);
-    if(!targetKey || !bossTables.has(targetKey)) return;
-    const rowKey = `${record.sig}|${targetKey}`;
-    if(seen.has(rowKey)) return;
-    seen.add(rowKey);
-    const targetInfo = bossTables.get(targetKey);
-    rows.push({
-      targetTable: targetTable || targetInfo?.tableName || "",
-      sourceTable: String(record?.target?.tableName || "").trim(),
-      sourceCheck: String(record?.target?.locationShort || record?.target?.locationFull || "").trim(),
-      sourceOpen: hintIsSourceTableOpen({
-        tableName: record?.target?.tableName,
-        locationShort: record?.target?.locationShort || record?.target?.locationFull
-      }),
-      bossChecks: Array.isArray(targetInfo?.entries) ? targetInfo.entries.length : 0
+  const addSignal = (entry, kind)=>{
+    try{
+      if(!entry || hintEntryAlreadyCollected(entry)) return;
+      const tableName = String(entry.tableName || "").trim();
+      const tableKey = String(getTableKeyForName(tableName) || "").trim();
+      const row = ensureCandidate(tableKey, tableName);
+      if(!row) return;
+      const signalKey = `${kind}|${Number(entry.locId || 0)}|${hintNormalizeLoose(entry.locationShort || entry.locationName || "")}`;
+      if(row.signalKeys.has(signalKey)) return;
+      row.signalKeys.add(signalKey);
+      if(kind === "boss") row.bossSignals += 1;
+      else if(kind === "feature") row.featureSignals += 1;
+      else row.ballSignals += 1;
+    }catch(_){}
+  };
+  try{
+    (hintState?.pools?.boss || []).forEach((entry)=>{
+      const itemName = String(entry?.itemName || "");
+      addSignal(entry, isFeatureKeyItemName(itemName) ? "feature" : "boss");
     });
-  });
+    (hintState?.pools?.ballProgressive || []).forEach((entry)=>addSignal(entry, "ball"));
+  }catch(_){}
+  const rows = Array.from(candidates.values()).map((row)=>{
+    const signalCount = row.bossSignals + row.featureSignals + row.ballSignals;
+    const signalScore = row.bossSignals * 30 + row.featureSignals * 24 + row.ballSignals * 16;
+    const score = (row.open ? 120 : 0) + signalScore + Math.min(18, row.remainingChecks);
+    const confidence = signalScore >= 40 ? "HIGH" : (signalScore > 0 ? "MEDIUM" : "SCOUT");
+    return { ...row, signalCount, signalScore, score, confidence };
+  }).filter((row)=>row.remainingChecks > 0);
   rows.sort((a, b)=>{
-    if(!!a.sourceOpen !== !!b.sourceOpen) return a.sourceOpen ? -1 : 1;
-    return String(a.targetTable || "").localeCompare(String(b.targetTable || ""));
+    if(!!a.open !== !!b.open) return a.open ? -1 : 1;
+    if(b.score !== a.score) return b.score - a.score;
+    if(b.signalCount !== a.signalCount) return b.signalCount - a.signalCount;
+    return String(a.tableName || "").localeCompare(String(b.tableName || ""));
   });
   return {
+    connected: !!ap?.connected,
     loaded: !!hintState.loaded,
-    revealedHintCount: records.length,
-    bossCheckCount: bossEntries.length,
+    openCount: rows.filter((row)=>row.open).length,
     routeCount: rows.length,
     rows
   };
 }
 function hintRenderBossKeyRouteSnapshot(){
   const snap = hintBuildBossKeyRouteSnapshot();
-  const setTxt = (id, v)=>{ const el = hintId(id); if(el) el.textContent = String(v); };
-  setTxt("hintRouteBossPathCount", snap.routeCount);
-  setTxt("hintRouteBossKeyCount", snap.bossCheckCount);
   const list = hintId("hintRouteList");
   if(!list) return;
   list.innerHTML = "";
-  if(!snap.loaded){
-    list.innerHTML = `<div class="hintRouteEmpty">Awaiting AP location info.</div>`;
-    return;
-  }
-  if(!snap.revealedHintCount){
-    list.innerHTML = `<div class="hintRouteEmpty">No decrypted hints have identified a boss-key route yet.</div>`;
-    return;
-  }
-  if(!snap.bossCheckCount){
-    list.innerHTML = `<div class="hintRouteEmpty">No revealed Boss Key hints yet.</div>`;
+  if(!snap.connected){
+    list.innerHTML = `<div class="hintRouteEmpty">Connect to AP to calculate the next route.</div>`;
     return;
   }
   if(!snap.routeCount){
-    list.innerHTML = `<div class="hintRouteEmpty">No revealed Progressive Ball hints point directly at a known Boss Key hint yet.</div>`;
+    list.innerHTML = `<div class="hintRouteEmpty">No playable tables with unchecked locations remain.</div>`;
     return;
   }
   snap.rows.slice(0, 4).forEach((row)=>{
-    const target = escapeHtml(getRepoDisplayTableName(row.targetTable || "Unknown table"));
-    const source = escapeHtml(getRepoDisplayTableName(row.sourceTable || "Unknown table"));
-    const check = escapeHtml(row.sourceCheck || "Unknown check");
-    const tag = row.sourceOpen ? "CHECK OPEN" : "CHECK LOCKED";
+    const table = escapeHtml(getRepoDisplayTableName(row.tableName || "Unknown table"));
+    const tagClass = String(row.confidence || "SCOUT").toLowerCase();
+    const tag = `${row.confidence} SIGNAL`;
+    const routeText = row.signalCount > 0
+      ? `${row.signalCount} uncollected progression signal${row.signalCount === 1 ? "" : "s"}; ${row.remainingChecks} check${row.remainingChecks === 1 ? "" : "s"} remain.`
+      : `No confirmed key signal yet; ${row.remainingChecks} unchecked location${row.remainingChecks === 1 ? "" : "s"} make this the best scout lane.`;
+    const stateText = row.open ? "PLAYABLE NOW" : `FUTURE ROUTE; ${row.lockReason || "locked"}`;
     const div = document.createElement("div");
-    div.className = "hintRouteItem";
+    div.className = `hintRouteItem${row.open ? "" : " lockedRoute"}`;
     div.innerHTML = `
-      <div class="hintRouteMain"><span class="name">Progressive Ball -> ${target}</span><span class="hintRouteTag">${tag}</span></div>
-      <div class="hintRouteMeta">Found at ${source} // ${check}</div>
+      <div class="hintRouteMain"><span class="name">${table}</span><span class="hintRouteTag ${tagClass}">${tag}</span></div>
+      <div class="hintRouteMeta">${escapeHtml(stateText)} // ${escapeHtml(routeText)}</div>
     `;
     list.appendChild(div);
   });
   if(snap.rows.length > 4){
     const more = document.createElement("div");
     more.className = "hintRouteEmpty";
-    more.textContent = `+${snap.rows.length - 4} more boss-path Progressive Ball clue${snap.rows.length - 4 === 1 ? "" : "s"}.`;
+    more.textContent = `+${snap.rows.length - 4} more progression route${snap.rows.length - 4 === 1 ? "" : "s"} ranked below these.`;
     list.appendChild(more);
   }
 }
@@ -56667,6 +57179,7 @@ function hintHangmanPuzzleText(round){
   }).join("").replace(/\s+/g, " ").trim();
 }
 function hintCanStartHangman(h, opts){
+  if(FLPR_HOME_EDITION) return false;
   opts = opts || {};
   if(opts.skipHangman) return false;
   if(opts.forceHangman) return true;
@@ -56752,6 +57265,7 @@ function hintRenderHangman(statusText){
   if(box){
     box.classList.add("show","hangman");
     box.classList.remove("typing");
+    box.closest(".hintCard")?.classList.add("hangmanExpanded");
   }
   if(preludeEl) preludeEl.innerHTML = hintStylizeGreetingHtml(round.prelude || "Hint signal intercepted. Chat must solve the table name.");
   const guessed = (round.guessed || []).join(" ") || "None";
@@ -57088,7 +57602,10 @@ function hintCancelHangman(){
   hintStopHangmanCooldownTimer();
   hintStopFlprBotHangmanPoll();
   const box = hintId("hintRevealBox");
-  if(box) box.classList.remove("hangman");
+  if(box){
+    box.classList.remove("hangman");
+    box.closest(".hintCard")?.classList.remove("hangmanExpanded");
+  }
 }
 function hintHideRevealMeta(){
   const meta = hintId("hintRevealMeta");
@@ -57127,6 +57644,7 @@ function hintShowReveal(h, opts){
   if(box){
     box.classList.add("show");
     box.classList.remove("typing","hangman");
+    box.closest(".hintCard")?.classList.remove("hangmanExpanded");
   }
   if(!opts.typewrite || !txt){
     if(preludeEl) preludeEl.innerHTML = hintStylizeGreetingHtml(preludeText);
@@ -58081,7 +58599,8 @@ function inherentRewardFor(tableIndex, taskIndex, tableName, tables, overrides, 
   if(j%5===0) return "Pinball Fragment";
   return (i+j)%3===0 ? "Medium Junk Item" : "Easy Junk Item";
 }
-function buildInherentDeepRunTestSeedFixture(){
+function buildInherentDeepRunTestSeedFixture(seedName){
+  const activeSeedName = String(seedName || INHERENT_DEEP_RUN_TEST_SEED_NAME).trim() || INHERENT_DEEP_RUN_TEST_SEED_NAME;
   const worlds = inherentCloneWorlds();
   const tables = inherentSeedTables(worlds);
   const startingTables = inherentPickStartingTables(tables, 3);
@@ -58179,7 +58698,7 @@ function buildInherentDeepRunTestSeedFixture(){
     locationItemByLocId,
     spoilerText: spoilerLines.join("\n"),
     slotData: {
-      seed_name: INHERENT_DEEP_RUN_TEST_SEED_NAME,
+      seed_name: activeSeedName,
       base_game_seed_type: "deep_run",
       deep_run: true,
       deep_run_enabled: true,
@@ -58513,15 +59032,17 @@ async function loadOriginalInherentTestSeed(){
     toastBody:`Randomized ${Math.max(0, (fixture.startingTables || []).length)} starting tables with Ball 1 only.`
   });
 }
-async function loadInherentDeepRunTestSeed(){
-  const fixture = buildInherentDeepRunTestSeedFixture();
+async function loadInherentDeepRunTestSeed(opts){
+  opts = opts || {};
+  const seedName = String(opts.seedName || INHERENT_DEEP_RUN_TEST_SEED_NAME).trim() || INHERENT_DEEP_RUN_TEST_SEED_NAME;
+  const fixture = buildInherentDeepRunTestSeedFixture(seedName);
   return loadInherentSeedFixture(fixture, {
     kind:"deep-run",
-    seedName:INHERENT_DEEP_RUN_TEST_SEED_NAME,
-    spoilerSource:INHERENT_DEEP_RUN_TEST_SPOILER_SOURCE,
-    indicatorLabel:"DEEP RUN TEST SEED",
+    seedName,
+    spoilerSource:String(opts.spoilerSource || INHERENT_DEEP_RUN_TEST_SPOILER_SOURCE),
+    indicatorLabel:String(opts.indicatorLabel || "DEEP RUN"),
     bossKeysRequired:INHERENT_DEEP_RUN_BOSS_KEYS,
-    toastTitle:"DEEP RUN TEST SEED",
+    toastTitle:String(opts.toastTitle || "DEEP RUN"),
     toastBody:`${fixture.tables.length} tables, ${Math.max(0, (fixture.startingTables || []).length)} starters, and 20 checks per table.`,
     toastDuration:4800
   });
@@ -60235,14 +60756,14 @@ function compactConnectControlsLayout(panelConnect){
   const flprBotUtility = ensureFlprBotUtilityControl();
   const inherentSeedUtility = ensureInherentSeedUtilityControl();
   const apToolsGrid = ensureApConnectionToolsGrid(connectRow, flprBotUtility, inherentSeedUtility);
-  const bonusPinballPanel = ensureBonusPinballControlsPanel();
+  const bonusPinballPanel = FLPR_HOME_EDITION ? null : ensureBonusPinballControlsPanel();
   const recvTitle = document.getElementById("receivedHdr");
   const recvRow = document.getElementById("apSyncReceivedBtn")?.closest(".cRow");
   const recvWrap = panelConnect.querySelector(".recvWrap") || document.querySelector(".recvWrap");
   const apLogWrap = panelConnect.querySelector(".apConnLog");
-  const twitchVideoPanel = ensureTwitchVideoPanel();
-  const twitchChatPanel = ensureTwitchChatPanel();
-  const obsFilterTrapPanel = ensureObsFilterTrapControlsPanel();
+  const twitchVideoPanel = FLPR_HOME_EDITION ? null : ensureTwitchVideoPanel();
+  const twitchChatPanel = FLPR_HOME_EDITION ? null : ensureTwitchChatPanel();
+  const obsFilterTrapPanel = FLPR_HOME_EDITION ? null : ensureObsFilterTrapControlsPanel();
   const testingPanel = document.querySelector('.controlsTabPanel[data-ctrl-panel="testing"]');
   if(apLogWrap && testingPanel && apLogWrap.parentElement !== testingPanel) testingPanel.appendChild(apLogWrap);
   unique([recvTitle, recvRow, recvWrap]).forEach((node)=>moveTo(testingPanel, node));
@@ -60274,16 +60795,18 @@ function compactConnectControlsLayout(panelConnect){
   };
 
   makeSection(top, "AP Connection", [archLabel, apGrid, apToolsGrid, versionCodeNote, changelogNote], { accent:"green", mini:"server / player / bot / test seed", panelKey:"ap-connection" });
-  makeSection(left, "Twitch Stream Player", [twitchVideoPanel], { accent:"blue", mini:"16:9 stream preview", panelKey:"twitch-stream-player" });
-  bindTwitchVideoAutoFit();
-  scheduleTwitchVideoFit();
+  if(!FLPR_HOME_EDITION){
+    makeSection(left, "Twitch Stream Player", [twitchVideoPanel], { accent:"blue", mini:"16:9 stream preview", panelKey:"twitch-stream-player" });
+    bindTwitchVideoAutoFit();
+    scheduleTwitchVideoFit();
+  }
   makeSection(left, "Episode Tracking", [episodeTitle, episodeRow, episodeState], { accent:"green", mini:"records / FLPRP / achievements", panelKey:"episode-tracking" });
-  makeSection(left, "OBS Filter Traps", [obsFilterTrapPanel], { accent:"red", mini:"playfield source filters", panelKey:"obs-filter-traps" });
+  if(!FLPR_HOME_EDITION) makeSection(left, "OBS Filter Traps", [obsFilterTrapPanel], { accent:"red", mini:"playfield source filters", panelKey:"obs-filter-traps" });
   makeSection(left, "Hint Location Info", [hintTitle, hintNote, hintCtlRow, hintLast, hintAutoRow, trackerRow], { accent:"gold", mini:"AP location info", panelKey:"hint-spoiler-source", collapsible:true, defaultCollapsed:true });
   makeSection(left, "Counters + Reconcile", [itemTitle, easyBlock, easyNote, medBlock, medNote, fragBlock, countTitle, countGrid], { accent:"blue", mini:"items / checks / delta", panelKey:"counters-reconcile" });
-  const bonusSection = makeSection(right, "Bonus Pinball", [bonusPinballPanel], { accent:"gold", mini:"field / layout / tests", panelKey:"bonus-pinball", collapsible:true, defaultCollapsed:true });
+  const bonusSection = FLPR_HOME_EDITION ? null : makeSection(right, "Bonus Pinball", [bonusPinballPanel], { accent:"gold", mini:"field / layout / tests", panelKey:"bonus-pinball", collapsible:true, defaultCollapsed:true });
   if(bonusSection) bonusSection.id = "bonusPinballSectionCard";
-  makeSection(right, "Twitch Chat", [twitchChatPanel], { accent:"blue", mini:"twitch.tv/ashodin", grow:true, panelKey:"twitch-chat" });
+  if(!FLPR_HOME_EDITION) makeSection(right, "Twitch Chat", [twitchChatPanel], { accent:"blue", mini:"twitch.tv/ashodin", grow:true, panelKey:"twitch-chat" });
 
   // Park any legacy loose controls invisibly. The old fallback "Additional Controls"
   // section crowded the panel and often only contained recovered placeholders.
@@ -61213,13 +61736,13 @@ function compactTestingControlsLayout(panelTesting){
     "testFragmentPopupBtn",
     "testJunkGenericPopupBtn",
     "testBallPopupBtn",
-    "testBagatelleBtn",
+    ...(!FLPR_HOME_EDITION ? ["testBagatelleBtn", "testDeepSlotBtn"] : []),
     "testAchievementPopupBtn"
   ]);
   const hintFlowGrid = buildTestingButtonGrid([
     "testHintBallPopupBtn",
     "testHintBossPopupBtn",
-    "testHangmanBtn",
+    ...(!FLPR_HOME_EDITION ? ["testHangmanBtn"] : []),
     "testOpeningRandomizerBtn",
     "testVictoryStatsPageBtn"
   ]);
@@ -61272,6 +61795,8 @@ function decorateTestingButtons(){
     { id:"testFragmentPopupBtn", tag:"Junk-M", cls:"testJunk" },
     { id:"testJunkGenericPopupBtn", tag:"Junk-Roll", cls:"testJunk" },
     { id:"testBallPopupBtn", tag:"Ball", cls:"testPrimary" },
+    { id:"testBagatelleBtn", tag:"Bagatelle", cls:"testPrimary" },
+    { id:"testDeepSlotBtn", tag:"Pachislot", cls:"testPrimary" },
     { id:"testHintBallPopupBtn", tag:"Hint Ball", cls:"testFlow" },
     { id:"testHintBossPopupBtn", tag:"Hint Key", cls:"testFlow" },
     { id:"testHangmanBtn", tag:"Hangman", cls:"testFlow" },
@@ -62049,6 +62574,7 @@ if(saveBtn){
 }
 
 function wireTwitchChatControls(){
+  if(FLPR_HOME_EDITION) return;
   try{
     const cfg = loadTwitchChatCfg();
     const user = document.getElementById("twitchChatUser");
@@ -62968,6 +63494,11 @@ restartTimer();
     playSfx("click");
     uiLog("test bagatelle");
     openBagatelle({ itemName:"Bagatelle Bonus Game", locationName:"DEV TOOLS TEST" });
+  }, { lockMs:1200 });
+  bind("testDeepSlotBtn", ()=>{
+    playSfx("click");
+    uiLog("test Pachislot-Mizer");
+    openDeepSlotMachine();
   }, { lockMs:1200 });
   bind("testAchievementPopupBtn", ()=>{ playSfx("click"); runAchievementTestFlow(); }, { lockMs:1200 });
   bind("testBossDamageCheckBtn", ()=>{ playSfx("click"); uiLog("test boss hit"); runBossDamageCheckTest(); }, { lockMs:1200 });
@@ -66733,9 +67264,7 @@ function bossResolveSegmentDamagePct(opts){
   opts = opts || {};
   const explicit = Number(opts.explicitPct);
   if(Number.isFinite(explicit) && explicit > 0) return Math.max(1, Math.round(explicit));
-  const weighted = [
-    5,5,6,6,7,7,8,8,8,9,9,9,10,10,10,10,10,11,11,11,12,12,12,13,13,14,14,15,16,17,18,20,22,25
-  ];
+  const weighted = [4,5,6,7,8,9,10,11,12,12,12,13,13,13,14,14,14,14,15,15,15,16,16,16,16];
   const stableKey = [
     bossGetPersistenceSeedSig(),
     Number.isFinite(Number(opts.itemIndex)) ? Number(opts.itemIndex) : "",
@@ -66748,9 +67277,7 @@ function bossResolveSegmentDamagePct(opts){
   return weighted[hash % weighted.length] || 10;
 }
 function bossRollWeightedSegmentDamagePct(){
-  const weighted = [
-    5,5,6,6,7,7,8,8,8,9,9,9,10,10,10,10,10,11,11,11,12,12,12,13,13,14,14,15,16,17,18,20,22,25
-  ];
+  const weighted = [4,5,6,7,8,9,10,11,12,12,12,13,13,13,14,14,14,14,15,15,15,16,16,16,16];
   return weighted[Math.floor(Math.random() * weighted.length)] || 10;
 }
 
@@ -66943,6 +67470,14 @@ function bossApplyDamagePct(pct, sourceKey, opts){
       bossPlayHitSoundOnly();
     }
   }catch(_){}
+  // Phase presentation is gameplay state, not a music feature. Always show it
+  // when a live hit crosses 50%, even when no separate Phase 2 track is set.
+  const crossedIntoPhase2 = prevPct > 50 && nextPct <= 50 && nextPct > 0;
+  if(crossedIntoPhase2){
+    setTimeout(()=>{
+      try{ musicShowBossPhase2Notice(); }catch(_){}
+    }, 220);
+  }
   const reachedZeroFromThisHit = !!(prev > 0 && state.bossHpLive.cur === 0);
   if(reachedZeroFromThisHit){
     try{ episodeMarkBossComplete(); }catch(_){}
