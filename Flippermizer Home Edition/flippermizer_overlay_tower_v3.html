@@ -24149,6 +24149,24 @@ body.bossTableChecksActive #viewChecks .checksBody.bossMode .tableBlock.bossChec
   filter:brightness(.68) saturate(1.02) !important;
   background-position:center 38% !important;
 }
+
+/* Home Edition: Deep Run has no Stream-only lower overlays competing for this room.
+   Let its 15-table Overview use the remaining capture height rather than preserving
+   the larger Stream Edition reserve, and make the three rows fill that canvas. */
+body.flprStandaloneOriginalClient.deepRunFeatureKeysEnabled:not(.bossTableChecksActive) .viewport{
+  height:calc((var(--captureH) - 75px - 14px - 22px - 300px) * 1.10) !important;
+  max-height:calc((var(--captureH) - 75px - 14px - 22px - 300px) * 1.10) !important;
+}
+body.flprStandaloneOriginalClient.deepRunFeatureKeysEnabled:not(.bossTableChecksActive) #viewOverview #grid.overviewTables15{
+  height:100% !important;
+  min-height:0 !important;
+  grid-template-columns:repeat(5, minmax(0, 1fr)) !important;
+  grid-template-rows:repeat(3, minmax(0, 1fr)) !important;
+  align-content:stretch !important;
+}
+body.flprStandaloneOriginalClient.deepRunFeatureKeysEnabled:not(.bossTableChecksActive) #viewOverview #grid.overviewTables15 .tile{
+  min-height:0 !important;
+}
 </style>
 
 </head>
