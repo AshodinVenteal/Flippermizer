@@ -19,9 +19,7 @@ Release assets:
 
 - Added 15-table Deep Run progression with staged Feature Keys, ten seeded Boss Keys (any four required), and table unlock tiers designed for longer three-hour runs.
 - Added ten table-specific tasks and ten ascending score tasks per Deep Run table, with duplicate-family guards and confidence metadata.
-- Added the Bagatelle Bonus Game over the OBS capture area, including hold-to-plunge physics and one-use score, junk fragment, and Extra Ball rewards.
 - Added separate Dev Tools buttons for the restored original randomized test seed and the 15-table Deep Run test seed.
-- Staggered score-check submissions and reward reveals, blocked hidden Checks interactions, and improved Hangman and siege layouts.
 - Updated the hosted YAML Builder with readable menus and per-world creator names.
 
 ### Home Edition 1.1.1 Task + Boss Hotfix - 2026-06-03
@@ -37,7 +35,7 @@ Release assets:
 - Kept the Boss Table section on the Boss Table banner while the boss world bubble uses the boss world banner treatment.
 - Fixed Item Counters so full AP inventory snapshots rebuild Junk Redeems from the given/used ledger instead of minting fresh charges after reconnecting.
 - Added an Easy + Medium fusion animation that visibly transforms both ready redeems into a combined HARD redeem before targeting Hard checks.
-- Refreshed the Toccata Terror and Tabletop Rumblespot banner art across Home Edition and Stream Edition assets.
+- Refreshed the Toccata Terror and Tabletop Rumblespot banner art for Home Edition.
 - Rebuilt and refreshed the portable EXE and win-unpacked release copy with these fixes.
 
 ### Home Edition 1.1.1 Incremental - 2026-05-28
