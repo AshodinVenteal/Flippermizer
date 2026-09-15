@@ -547,6 +547,27 @@
         <h2>World Options</h2>
         <div class="desc">Options found in your current installed AP world package.</div>
 
+        <div id="metasizerRunModeWrap" class="hidden">
+          <div class="row">
+            <div class="col" style="flex:1;">
+              <div class="label">Run Mode</div>
+              <div class="small">Choose the table layout and check structure for this Base Game seed.</div>
+            </div>
+            <div style="width:220px;">
+              <select id="metasizerSeedType">
+                <option value="standard">5x5 Run (25 tables)</option>
+                <option value="deep_run">Deep Run (15 tables)</option>
+              </select>
+            </div>
+          </div>
+          <div id="metasizerRunModeInfo" class="inlineInfo"></div>
+
+          <div class="row">
+            <div class="col"><div class="label">Feature Key Gating</div><div id="metasizerFeatureUnlockDescription" class="small">Lock eligible feature-heavy tables behind Feature Keys.</div></div>
+            <input id="metasizerFeatureUnlockEnabled" type="checkbox" class="toggle" />
+          </div>
+        </div>
+
         <div class="row">
           <div class="col" style="flex:1;">
             <div class="label">Boss Keys Required</div>
@@ -632,9 +653,9 @@
           <div class="row">
             <div class="col" style="flex:1;">
               <div class="label">Active Table Count</div>
-              <div class="small">Curated world slots update this automatically. Random mode can still use a manual count.</div>
+              <div class="small">Set by the selected run mode: 25 for 5x5, or 15 for Deep Run.</div>
             </div>
-            <div style="width:90px;"><input id="metasizerActiveTableCount" type="number" min="5" max="90" step="5" value="20" /></div>
+            <div style="width:90px;"><input id="metasizerActiveTableCount" type="number" min="5" max="90" step="5" value="25" disabled /></div>
           </div>
 
           <div class="row">
@@ -658,9 +679,9 @@
           <div class="row">
             <div class="col" style="flex:1;">
               <div class="label">Starting Open Table Count</div>
-              <div class="small">How many tables the seed-time payload marks open at the start.</div>
+              <div class="small">Set by the selected run mode: 5 for 5x5, or 3 for Deep Run.</div>
             </div>
-            <div style="width:90px;"><input id="metasizerStartingOpenTableCount" type="number" min="1" max="10" step="1" value="5" /></div>
+            <div style="width:90px;"><input id="metasizerStartingOpenTableCount" type="number" min="1" max="10" step="1" value="5" disabled /></div>
           </div>
           <textarea id="metasizerCuratedGroups" class="machineField" spellcheck="false"></textarea>
         </div>
@@ -913,7 +934,9 @@
     random_start_tables_selection: [],
     random_start_revealed: false,
     base_game_enabled: true,
-    base_game_active_table_count: 20,
+    base_game_seed_type: "standard",
+    base_game_feature_unlock_enabled: false,
+    base_game_active_table_count: 25,
     base_game_selection_mode: "random_catalog_pool",
     base_game_curated_world_groups: "auto",
     base_game_curated_tables: "auto",
@@ -927,6 +950,30 @@
   function q(id){ return document.getElementById(id); }
   function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
   function asInt(v,fallback=0){ const n = Number(v); return Number.isFinite(n) ? Math.trunc(n) : fallback; }
+  function isDeepRun(){ return state.base_game_seed_type === "deep_run"; }
+  function runModeTableCount(){ return isDeepRun() ? 15 : 25; }
+  function runModeStartingOpenCount(){ return isDeepRun() ? 3 : 5; }
+  function applyRunModeRules(){
+    state.base_game_seed_type = isDeepRun() ? "deep_run" : "standard";
+    state.base_game_active_table_count = runModeTableCount();
+    state.base_game_starting_open_table_count = runModeStartingOpenCount();
+    if(isDeepRun()) state.base_game_feature_unlock_enabled = true;
+  }
+  function syncRunModeUi(){
+    const baseGame = isBaseGameVariant();
+    q("metasizerRunModeWrap")?.classList.toggle("hidden", !baseGame);
+    if(!baseGame) return;
+    applyRunModeRules();
+    q("metasizerSeedType").value = state.base_game_seed_type;
+    q("metasizerFeatureUnlockEnabled").checked = state.base_game_feature_unlock_enabled;
+    q("metasizerFeatureUnlockEnabled").disabled = isDeepRun();
+    q("metasizerFeatureUnlockDescription").textContent = isDeepRun()
+      ? "Required by Deep Run and enabled automatically."
+      : "Lock eligible feature-heavy tables behind Feature Keys.";
+    q("metasizerRunModeInfo").textContent = isDeepRun()
+      ? "Deep Run: 15 tables, 3 starting tables, 10 table tasks plus 10 score checks per table. Feature Key gates are required, and the boss requires 4 Boss Keys."
+      : "5x5 Run: 25 tables across five table worlds, 5 starting tables, and the standard six checks per table.";
+  }
   function quoteYaml(s){ return '"' + String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"') + '"'; }
   function pushYamlTextOption(lines, key, value){
     const text = String(value == null ? "" : value).replace(/\r\n?/g, "\n").trim();
@@ -957,6 +1004,7 @@
     if(q("metasizerSelectionMode")) q("metasizerSelectionMode").value = state.base_game_selection_mode;
     if(q("metasizerActiveTableCount")) q("metasizerActiveTableCount").max = String(maxActiveTableCount());
     if(baseGame){
+      applyRunModeRules();
       state.random_start_tables_open = false;
       state.random_start_tables_selection = [];
       state.random_start_revealed = false;
@@ -976,6 +1024,7 @@
     return Math.max(5, Math.min(METASIZER_MAX_ACTIVE_TABLES, currentTableList().length || METASIZER_MAX_ACTIVE_TABLES));
   }
   function activeTableCountForCuratedSelection(tableCount){
+    if(isBaseGameVariant()) return runModeTableCount();
     const count = Math.max(0, asInt(tableCount, 0));
     if(count <= 0) return clamp(asInt(state.base_game_active_table_count, 20), 5, maxActiveTableCount());
     const rounded = Math.ceil(count / METASIZER_WORLD_SLOT_SIZE) * METASIZER_WORLD_SLOT_SIZE;
@@ -1408,7 +1457,8 @@
 
   function syncUiFromState(){
     normalizeBaseGameSelectionMode();
-    state.base_game_active_table_count = clamp(asInt(state.base_game_active_table_count, 20), 5, maxActiveTableCount());
+    applyRunModeRules();
+    state.base_game_active_table_count = clamp(asInt(state.base_game_active_table_count, 25), 5, maxActiveTableCount());
     q("progression").value = String(state.progression_balancing);
     q("progressionRange").value = String(state.progression_balancing);
     q("accessibility").value = state.accessibility;
@@ -1423,6 +1473,8 @@
     q("trapCustomWrap").classList.toggle("hidden", state.trapMode !== "custom");
     q("randomStartTables").checked = state.random_start_tables_open;
     q("metasizerEnabled").checked = state.base_game_enabled;
+    q("metasizerSeedType").value = state.base_game_seed_type;
+    q("metasizerFeatureUnlockEnabled").checked = state.base_game_feature_unlock_enabled;
     q("metasizerActiveTableCount").max = String(maxActiveTableCount());
     q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
     q("metasizerSelectionMode").value = state.base_game_selection_mode;
@@ -1434,6 +1486,7 @@
     q("metasizerStartingOpenTableCount").value = String(state.base_game_starting_open_table_count);
     buildStartEditors();
     syncVariantUi();
+    syncRunModeUi();
     updateRandomStartInfo();
     updateProgressiveInputsLock();
     syncStartEditors();
@@ -1457,7 +1510,9 @@
     state.random_start_tables_selection = [];
     state.random_start_revealed = false;
     state.base_game_enabled = true;
-    state.base_game_active_table_count = 20;
+    state.base_game_seed_type = "standard";
+    state.base_game_feature_unlock_enabled = false;
+    state.base_game_active_table_count = 25;
     state.base_game_selection_mode = "random_catalog_pool";
     state.base_game_curated_world_groups = "auto";
     state.base_game_curated_tables = "auto";
@@ -1623,12 +1678,25 @@
       state.score_adjustment_mode = q("scoreAdjustmentMode").value;
       renderYaml();
     });
+    q("metasizerSeedType").addEventListener("change", () => {
+      state.base_game_seed_type = q("metasizerSeedType").value === "deep_run" ? "deep_run" : "standard";
+      applyRunModeRules();
+      syncRunModeUi();
+      updateMetasizerCuratedInfo();
+      renderYaml();
+    });
+    q("metasizerFeatureUnlockEnabled").addEventListener("change", () => {
+      state.base_game_feature_unlock_enabled = q("metasizerFeatureUnlockEnabled").checked;
+      applyRunModeRules();
+      syncRunModeUi();
+      renderYaml();
+    });
     q("metasizerEnabled").addEventListener("change", () => {
       state.base_game_enabled = q("metasizerEnabled").checked;
       renderYaml();
     });
     q("metasizerActiveTableCount").addEventListener("input", () => {
-      state.base_game_active_table_count = clamp(asInt(q("metasizerActiveTableCount").value, 20), 5, maxActiveTableCount());
+      state.base_game_active_table_count = runModeTableCount();
       q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
       updateMetasizerCuratedInfo();
       renderYaml();
@@ -1646,7 +1714,7 @@
       renderYaml();
     });
     q("metasizerStartingOpenTableCount").addEventListener("input", () => {
-      state.base_game_starting_open_table_count = clamp(asInt(q("metasizerStartingOpenTableCount").value, 5), 1, 10);
+      state.base_game_starting_open_table_count = runModeStartingOpenCount();
       q("metasizerStartingOpenTableCount").value = String(state.base_game_starting_open_table_count);
       renderYaml();
     });
@@ -1693,8 +1761,8 @@
     q("btnCuratedWellMade").addEventListener("click", () => {
       state.base_game_selection_mode = "curated_table_list";
       q("metasizerSelectionMode").value = "curated_table_list";
-      state.base_game_active_table_count = 20;
-      q("metasizerActiveTableCount").value = "20";
+      state.base_game_active_table_count = runModeTableCount();
+      q("metasizerActiveTableCount").value = String(state.base_game_active_table_count);
       state.base_game_custom_world_sets = "auto";
       q("metasizerCustomWorldSets").value = "auto";
       setCuratedTableSelection(WELL_MADE_TABLES_PRESET);
@@ -1782,6 +1850,8 @@
     lines.push(`  filler_traps: ${trapDensityValue()}`);
     if(isBaseGameVariant()){
       lines.push(`  score_adjustment_mode: ${state.score_adjustment_mode}`);
+      lines.push(`  base_game_seed_type: ${state.base_game_seed_type}`);
+      lines.push(`  base_game_feature_unlock_enabled: ${state.base_game_feature_unlock_enabled ? "true" : "false"}`);
       lines.push(`  base_game_active_table_count: ${state.base_game_active_table_count}`);
       lines.push(`  base_game_selection_mode: ${state.base_game_selection_mode}`);
       lines.push(`  base_game_curated_world_groups: ${quoteYaml(state.base_game_curated_world_groups)}`);
