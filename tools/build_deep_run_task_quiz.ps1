@@ -6,7 +6,6 @@ $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $dataRoot = Join-Path $projectRoot "apworld\manual_flippermizerworldsofpinball_base_game\data"
 $poolPath = Join-Path $dataRoot "deep_run_task_pools.json"
-$catalogPath = Join-Path $projectRoot "Flippermizer Home Edition\flippermizer_deep_run_catalog.js"
 
 function Get-NormalizedKey([string]$Value) {
   if ($null -eq $Value) { $Value = "" }
@@ -18,18 +17,11 @@ function Get-DuplicateValues([object[]]$Values) {
 }
 
 $taskPools = Get-Content -Raw -LiteralPath $poolPath | ConvertFrom-Json
-$catalogText = Get-Content -Raw -LiteralPath $catalogPath
-$catalogMatch = [regex]::Match($catalogText, "Object\.freeze\((\{[\s\S]*\})\);\s*\}\)\((?:window|this)\);")
-if (-not $catalogMatch.Success) { throw "Could not read the Deep Run catalog from $catalogPath" }
-$catalog = $catalogMatch.Groups[1].Value | ConvertFrom-Json
 
 $difficultyOrder = @("Easy", "Medium", "Hard")
 $questionsByTable = @()
-foreach ($catalogEntry in @($catalog.tables.PSObject.Properties | Sort-Object { $_.Value.tableName })) {
-  $catalogTable = $catalogEntry.Value
-  $tableName = [string]$catalogTable.tableName
-  $poolProperty = $taskPools.PSObject.Properties[$tableName]
-  if ($null -eq $poolProperty) { throw "Missing Deep Run task pool for '$tableName'" }
+foreach ($poolProperty in @($taskPools.PSObject.Properties | Sort-Object Name)) {
+  $tableName = [string]$poolProperty.Name
 
   $tableQuestions = @()
   $taskNumber = 0
@@ -53,35 +45,13 @@ foreach ($catalogEntry in @($catalog.tables.PSObject.Properties | Sort-Object { 
   }
   if ($taskNumber -ne 10) { throw "'$tableName' has $taskNumber Deep Run tasks; expected 10" }
 
-  $scoreTargets = @($catalogTable.scoreTargets)
-  if ($scoreTargets.Count -ne 10) { throw "'$tableName' has $($scoreTargets.Count) Deep Run scores; expected 10" }
-  for ($index = 0; $index -lt $scoreTargets.Count; $index++) {
-    $suggested = if ($index -lt 4) { "Easy" } elseif ($index -lt 8) { "Medium" } else { "Hard" }
-    $target = [int64]$scoreTargets[$index]
-    $tableQuestions += [ordered]@{
-      id = "$(Get-NormalizedKey $tableName)-score-$('{0:d2}' -f ($index + 1))"
-      type = "score"
-      table = $tableName
-      order = $index + 1
-      title = "Score $($index + 1): $($target.ToString('N0'))+"
-      explanation = "Reach $($target.ToString('N0')) points in one game."
-      sourceLocation = "Deep Run score ladder"
-      objectiveFamily = "score target $($index + 1)"
-      scoreTarget = $target
-      suggestedDifficulty = $suggested
-      confidence = 1
-    }
-  }
-
-  $taskOnly = @($tableQuestions | Where-Object type -eq "task")
-  $duplicateTitles = Get-DuplicateValues @($taskOnly | ForEach-Object { Get-NormalizedKey $_.title })
-  $duplicateFamilies = Get-DuplicateValues @($taskOnly | ForEach-Object { Get-NormalizedKey $_.objectiveFamily })
+  $duplicateTitles = Get-DuplicateValues @($tableQuestions | ForEach-Object { Get-NormalizedKey $_.title })
+  $duplicateFamilies = Get-DuplicateValues @($tableQuestions | ForEach-Object { Get-NormalizedKey $_.objectiveFamily })
   $questionsByTable += [ordered]@{
     name = $tableName
     questions = $tableQuestions
     audit = [ordered]@{
-      taskCount = $taskOnly.Count
-      scoreCount = $scoreTargets.Count
+      taskCount = $tableQuestions.Count
       duplicateTaskTitles = $duplicateTitles
       duplicateObjectiveFamilies = $duplicateFamilies
     }
@@ -93,7 +63,6 @@ $quizData = [ordered]@{
   generatedAt = (Get-Date).ToUniversalTime().ToString("o")
   source = [ordered]@{
     taskPools = "apworld/manual_flippermizerworldsofpinball_base_game/data/deep_run_task_pools.json"
-    scoreCatalog = "Flippermizer Home Edition/flippermizer_deep_run_catalog.js"
   }
   tables = $questionsByTable
 }
@@ -115,8 +84,8 @@ $html = @'
 </head>
 <body>
 <header>
-  <h1>Deep Run Task &amp; Score Review</h1>
-  <p>Review every task and score target for every Deep Run table. Each answer is saved to your chosen local JSON file immediately.</p>
+  <h1>Deep Run Task Review</h1>
+  <p>Review the ten regular Deep Run tasks for every eligible table. Each answer is saved to your chosen local JSON file immediately.</p>
   <div class="toolbar">
     <button id="newFile" class="primary">Choose local review file</button>
     <button id="loadFile">Load review file</button>
