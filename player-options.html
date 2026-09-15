@@ -708,7 +708,14 @@
         <textarea id="metasizerWorldCurators" class="machineField" spellcheck="false"></textarea>
       </div>
       <div class="actions" style="margin-top:8px;">
+        <button id="btnPresetStandardRun" type="button">Preset: 5x5 Run</button>
+        <button id="btnPresetDeepRun" type="button">Preset: Deep Run</button>
+      </div>
+      <div class="actions" style="margin-top:8px;">
         <button id="btnCuratedWellMade" type="button">Preset: Well-Made Tables</button>
+        <button id="btnPresetMixedClassics" type="button">Preset: Mixed Classics</button>
+        <button id="btnPresetMixedBlockbusters" type="button">Preset: Mixed Blockbusters</button>
+        <button id="btnPresetMixedDeepRun" type="button">Preset: Mixed Deep Run</button>
         <button id="btnCuratedAllTables" class="gray" type="button">Select All Ready Tables</button>
         <button id="btnCuratedTablesClear" class="alt" type="button">Clear Table List</button>
       </div>
@@ -818,6 +825,26 @@
     "Fathom","Skateball","Vector","Space Invaders","Q*bert's Quest",
     "Bram Stoker's Dracula","Creature from the Black Lagoon","Phantom of the Opera","Jurassic Park","Demolition Man",
     "Lord of the Rings","Star Trek Stern 2013","Iron Man Vault Edition","Game of Thrones","The Walking Dead"
+  ];
+  // Every table in these ready-to-play mixes is verified as a non-Original-VPX entry in table_pool.json.
+  const MIXED_CLASSICS_TABLES_PRESET = [
+    "Medieval Madness","Fathom","Meteor","Harlem Globetrotters","Taxi",
+    "White Water","Hurricane","Comet","Cyclone","Whirlwind",
+    "High Speed","No Fear: Dangerous Sports","Party Animal","Elvira and the Party Monsters","Scared Stiff",
+    "Bram Stoker's Dracula","Creature from the Black Lagoon","Cirqus Voltaire","Phantom of the Opera","Theatre of Magic",
+    "Demolition Man","Jurassic Park","Skateball","Vector","Q*bert's Quest"
+  ];
+  const MIXED_BLOCKBUSTERS_TABLES_PRESET = [
+    "Attack from Mars","World Cup Soccer","The Getaway","Star Trek Stern 2013","Tales of the Arabian Nights",
+    "Congo","Batman 66","Hollywood Heat","Baywatch","Star Trek: The Next Generation",
+    "Spider-Man Vault Edition","Iron Man Vault Edition","AC/DC","Party Zone","Dr. Dude",
+    "Police Force","Batman Forever","GoldenEye","Stargate","Starship Troopers",
+    "Independence Day","The X-Files","Deadpool","Game of Thrones","The Walking Dead"
+  ];
+  const MIXED_DEEP_RUN_TABLES_PRESET = [
+    "Medieval Madness","Attack from Mars","Fathom","High Speed","White Water",
+    "Cirqus Voltaire","Theatre of Magic","Monster Bash","Bram Stoker's Dracula","Jurassic Park",
+    "Star Trek Stern 2013","Iron Man Vault Edition","AC/DC","Lord of the Rings","The Walking Dead"
   ];
   const STREAM_EDITION_TABLES_PRESET = WELL_MADE_TABLES_PRESET.slice();
   const STREAM_EDITION_WORLD_SET_PRESET = [
@@ -1535,6 +1562,21 @@
     syncUiFromState();
   }
 
+  function applyBaseGameRunPreset(seedType, tables){
+    state.worldVariant = "home";
+    state.base_game_enabled = true;
+    state.base_game_seed_type = seedType === "deep_run" ? "deep_run" : "standard";
+    state.base_game_feature_unlock_enabled = state.base_game_seed_type === "deep_run";
+    state.boss_keys_required_for_boss_table_open = state.base_game_seed_type === "deep_run" ? 4 : 3;
+    state.base_game_selection_mode = tables?.length ? "curated_table_list" : "random_catalog_pool";
+    state.base_game_curated_world_groups = "auto";
+    state.base_game_custom_world_sets = "auto";
+    state.base_game_world_curators = "auto";
+    state.base_game_curated_tables = tables?.length ? tables.join(", ") : "auto";
+    applyRunModeRules();
+    syncUiFromState();
+  }
+
   function syncStartEditors(){
     document.querySelectorAll("input[data-start-key]").forEach(inp => {
       const key = inp.getAttribute("data-start-key");
@@ -1627,6 +1669,8 @@
 
     q("accessibility").addEventListener("change", () => { state.accessibility = q("accessibility").value; renderYaml(); });
     q("btnStreamStarter").addEventListener("click", applyStreamEditionStarter);
+    q("btnPresetStandardRun").addEventListener("click", () => applyBaseGameRunPreset("standard"));
+    q("btnPresetDeepRun").addEventListener("click", () => applyBaseGameRunPreset("deep_run"));
     q("worldVariant").addEventListener("change", () => {
       state.worldVariant = q("worldVariant").value;
       const meta = getVariantMeta();
@@ -1767,6 +1811,9 @@
       q("metasizerCustomWorldSets").value = "auto";
       setCuratedTableSelection(WELL_MADE_TABLES_PRESET);
     });
+    q("btnPresetMixedClassics").addEventListener("click", () => applyBaseGameRunPreset("standard", MIXED_CLASSICS_TABLES_PRESET));
+    q("btnPresetMixedBlockbusters").addEventListener("click", () => applyBaseGameRunPreset("standard", MIXED_BLOCKBUSTERS_TABLES_PRESET));
+    q("btnPresetMixedDeepRun").addEventListener("click", () => applyBaseGameRunPreset("deep_run", MIXED_DEEP_RUN_TABLES_PRESET));
     q("btnCuratedAllTables").addEventListener("click", () => {
       state.base_game_selection_mode = "curated_table_list";
       q("metasizerSelectionMode").value = "curated_table_list";
